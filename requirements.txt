@@ -1,0 +1,4 @@
+# install django
+django==2.2.2
+XlsxWriter==1.1.8
+openpyxl==2.6.2
