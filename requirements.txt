@@ -1,5 +1,5 @@
 # install django
-django==2.2.2
+django==2.2.3
 XlsxWriter==1.1.8
 openpyxl==2.6.2
 envparse
