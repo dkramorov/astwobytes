@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 def login_view(request, *args, **kwargs):
 
@@ -14,6 +15,7 @@ def login_view(request, *args, **kwargs):
 
     return HttpResponse('Hi')
 
+#@login_required
 def logout_view(request, *args, **kwargs):
     logout(request)
     return HttpResponse('Logout successful')
