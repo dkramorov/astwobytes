@@ -1,0 +1,235 @@
+# ----------------------------------------------------------
+# 1) First, create a parent directory for polls,
+# outside of your Django project.
+# Call this directory django-polls.
+# ----------------------------------------------------------
+# my dir for packaging
+# /home/jocker/astwobytes/packages/django-dkramorov-telegram
+# ----------------------------------------------------------
+
+# -----------------------------------------------------------
+# 2) Move the polls directory into the django-polls directory
+# -----------------------------------------------------------
+# move telegram to
+# /home/jocker/astwobytes/packages/django-dkramorov-telegram
+# -----------------------------------------------------------
+
+# -----------------------------------------------------
+# 3) Create a file django-polls/README.rst
+# with the following contents
+# -----------------------------------------------------
+django-polls/README.rst
+
+=====
+Polls
+=====
+
+Polls is a simple Django app to conduct Web-based polls
+For each question, visitors can choose between
+a fixed number of answers.
+
+Detailed documentation is in the "docs" directory.
+
+Quick start
+-----------
+
+1. Add "polls" to your INSTALLED_APPS setting like this::
+
+    INSTALLED_APPS = [
+        ...
+        'polls',
+    ]
+
+2. Include the polls URLconf in your project urls.py like this::
+
+    path('polls/', include('polls.urls')),
+
+3. Run `python manage.py migrate` to create the polls models.
+
+4. Start the development server and visit http://127.0.0.1:8000/admin/
+   to create a poll (you'll need the Admin app enabled).
+
+5. Visit http://127.0.0.1:8000/polls/ to participate in the poll.
+
+# -------------------------------------
+# 4. Create a django-polls/LICENSE file
+# -------------------------------------
+
+# ---------------------------------------------------
+# 5. Next we’ll create a setup.py file which provides
+# details about how to build and install the app
+# A full explanation of this file is beyond the scope
+# of this tutorial, but the setuptools docs have
+# a good explanation
+# Create a file django-polls/setup.py
+# with the following contents:
+# ---------------------------------------------------
+
+django-polls/setup.py
+
+import os
+from setuptools import find_packages, setup
+
+with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
+    README = readme.read()
+
+# allow setup.py to be run from any path
+os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+
+setup(
+    name='django-polls',
+    version='0.1',
+    packages=find_packages(),
+    include_package_data=True,
+    license='BSD License',  # example license
+    description='A simple Django app to conduct Web-based polls.',
+    long_description=README,
+    url='https://www.example.com/',
+    author='Your Name',
+    author_email='yourname@example.com',
+    classifiers=[
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Framework :: Django :: X.Y',  # replace "X.Y" as appropriate
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',  # example license
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+    ],
+)
+# ------------------------------------------------
+# 6. Only Python modules and packages are included
+# in the package by default.
+# To include additional files, we’ll need to
+# create a MANIFEST.in file
+# The setuptools docs referred to in the previous
+# step discuss this file in more details
+# To include the templates, the README.rst
+# and our LICENSE file, create a file
+# django-polls/MANIFEST.in
+# with the following contents:
+# ------------------------------------------------
+django-polls/MANIFEST.in
+
+include LICENSE
+include README.rst
+recursive-include polls/static *
+recursive-include polls/templates *
+
+
+# ---------------------------------------------
+# 7. It’s optional, but recommended, to include
+# detailed documentation with your app
+# Create an empty directory django-polls/docs
+# for future documentation
+# Add an additional line to
+# django-polls/MANIFEST.in:
+# ---------------------------------------------
+recursive-include docs *
+
+Note that the docs directory won’t be included in your package unless you add some files to it. Many Django apps also provide their documentation online through sites like readthedocs.org.
+
+# -------------------------------------------------------
+# 8. Try building your package with python setup.py sdist
+# (run from inside django-polls)
+# This creates a directory called dist
+# and builds your new package, django-polls-0.1.tar.gz
+# -------------------------------------------------------
+
+# ---------------------------------------------------------------
+# 9. pip install --user django-polls/dist/django-polls-0.1.tar.gz
+# !!! env: pip install django-polls/dist/django-polls-0.1.tar.gz
+# ---------------------------------------------------------------
+
+$ pip install django-dkramorov-telegram-0.1.tar.gz
+Processing ./django-dkramorov-telegram-0.1.tar.gz
+Building wheels for collected packages: django-dkramorov-telegram
+  Building wheel for django-dkramorov-telegram (setup.py) ... done
+  Stored in directory: /Users/jocker/Library/Caches/pip/wheels/7e/41/53/5b2d598b1e7caa1f7c944815b586a10f2c1c68dc222392ad01
+Successfully built django-dkramorov-telegram
+Installing collected packages: django-dkramorov-telegram
+Successfully installed django-dkramorov-telegram-0.1
+
+
+$ pip uninstall django-dkramorov-telegram
+
+
+
+
+
+# -----------------------------------
+# Uploading the distribution archives
+# -----------------------------------
+
+Finally, it’s time to upload your package to the Python Package Index!
+
+The first thing you’ll need to do is register an account on Test PyPI. Test PyPI is a separate instance of the package index intended for testing and experimentation. It’s great for things like this tutorial where we don’t necessarily want to upload to the real index. To register an account, go to https://test.pypi.org/account/register/ and complete the steps on that page. You will also need to verify your email address before you’re able to upload any packages. For more details on Test PyPI, see Using TestPyPI.
+
+Now that you are registered, you can use twine to upload the distribution packages. You’ll need to install Twine:
+
+python3 -m pip install --user --upgrade twine
+
+Once installed, run Twine to upload all of the archives under dist:
+
+python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+You will be prompted for the username and password you registered with Test PyPI. After the command completes, you should see output similar to this:
+
+Uploading distributions to https://test.pypi.org/legacy/
+Enter your username: [your username]
+Enter your password:
+Uploading example_pkg_your_username-0.0.1-py3-none-any.whl
+100%|█████████████████████| 4.65k/4.65k [00:01<00:00, 2.88kB/s]
+Uploading example_pkg_your_username-0.0.1.tar.gz
+100%|█████████████████████| 4.25k/4.25k [00:01<00:00, 3.05kB/s]
+
+Once uploaded your package should be viewable on TestPyPI, for example, https://test.pypi.org/project/example-pkg-your-username
+Installing your newly uploaded package
+
+You can use pip to install your package and verify that it works. Create a new virtualenv (see Installing Packages for detailed instructions) and install your package from TestPyPI:
+
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps example-pkg-your-username
+
+Make sure to specify your username in the package name!
+
+pip should install the package from Test PyPI and the output should look something like this:
+
+Collecting example-pkg-your-username
+  Downloading https://test-files.pythonhosted.org/packages/.../example-pkg-your-username-0.0.1-py3-none-any.whl
+Installing collected packages: example-pkg-your-username
+Successfully installed example-pkg-your-username-0.0.1
+
+Note
+
+This example uses --index-url flag to specify TestPyPI instead of live PyPI. Additionally, it specifies --no-deps. Since TestPyPI doesn’t have the same packages as the live PyPI, it’s possible that attempting to install dependencies may fail or install something unexpected. While our example package doesn’t have any dependencies, it’s a good practice to avoid installing dependencies when using TestPyPI.
+
+You can test that it was installed correctly by importing the module and referencing the name property you put in __init__.py earlier.
+
+Run the Python interpreter (make sure you’re still in your virtualenv):
+
+python
+
+And then import the module and print out the name property. This should be the same regardless of what you name you gave your distribution package in setup.py (in this case, example-pkg-your-username) because your import package is example_pkg.
+>>>
+
+>>> import example_pkg
+>>> example_pkg.name
+'example_pkg'
+
+Next steps
+
+Congratulations, you’ve packaged and distributed a Python project! ✨ 🍰 ✨
+
+Keep in mind that this tutorial showed you how to upload your package to Test PyPI, which isn’t a permanent storage. The Test system occasionally deletes packages and accounts. It is best to use Test PyPI for testing and experiments like this tutorial.
+
+When you are ready to upload a real package to the Python Package Index you can do much the same as you did in this tutorial, but with these important differences:
+
+    Choose a memorable and unique name for your package. You don’t have to append your username as you did in the tutorial.
+    Register an account on https://pypi.org - note that these are two separate servers and the login details from the test server are not shared with the main server.
+    Use twine upload dist/* to upload your package and enter your credentials for the account you registered on the real PyPI.
+    Install your package from the real PyPI using pip install [your-package].
+

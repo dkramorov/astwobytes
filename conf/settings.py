@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from envparse import env
+env.read_envfile()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     #'django.contrib.messages',
     #'django.contrib.staticfiles',
     'apps.login',
+    'apps.telegram',
 ]
 
 MIDDLEWARE = [
@@ -119,3 +122,60 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOG_LEVEL = env('LOG_LEVEL', default='INFO')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': env('DISABLE_EXISTING_LOGGERS', cast=bool, default=True),
+    'formatters': {
+        'simple': {
+            'format': '\t'.join((
+                '%(asctime)s',
+                '%(levelname)s',
+                '%(pathname)s:%(lineno)s',
+                '%(message)s',
+            )),
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': LOG_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        }
+    },
+    'root': {
+        'level': LOG_LEVEL,
+        'handlers': ['console'],
+    },
+    'loggers': {
+        'django.server': {
+            'level': LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'main': {
+            'level': LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'requests': {
+            'level': LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    },
+}
+
+# -----------------------
+# Настройки телеграм-бота
+# -----------------------
+TELEGRAM_TOKEN = env('TELEGRAM_TOKEN', default='')
+TELEGRAM_PROXY = env('TELEGRAM_PROXY', default='')
+TELEGRAM_CHAT_ID = env('TELEGRAM_CHAT_ID', default=0)
+TELEGRAM_ENABLED = env('TELEGRAM_ENABLED', cast=bool, default=False)
+
+# -----------------------
+# Проверить все настройки
+# -----------------------
+# $ python manage.py diffsettings --all
