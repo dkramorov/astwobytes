@@ -1,0 +1,32 @@
+<div class="paginator_table">
+  {% if paginator.onepage %}
+    <div class="paginator_link">
+      <b>{{ paginator.total_records }} {{ ends }}</b>
+    </div>
+  {% else %}
+    {% for page in pages %}
+      <div class="paginator_link{% if page.active %}_active{% endif %}">
+        {% if page.active %}
+          {{ page.content }}
+        {% else %}
+          {% if page.ellipsis %}...{% else %}
+            <a href="{{ page.link }}">{{ page.content }}</a>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endfor %}
+    <div class="paginator_link">
+      <b>{{ paginator.total_records }} {{ ends }}</b>
+    </div>
+  {% endif %}
+
+  <div class="paginator_by">
+    <select onchange="javascript:window.location='{{ q_string.link }}?{{ page_request }}page={{ q_string.page }}&by='+(this.options[this.selectedIndex].value);">
+      {% for item in select %}
+        <option value="{{ item }}" {% ifequal item q_string.by %}selected{% endifequal %}>по {{ item }} записей</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <br class="clear">
+</div>

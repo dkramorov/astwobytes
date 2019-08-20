@@ -20,11 +20,25 @@ Including another URLconf
 # re_path(r'^bio/(?P<username>\w+)/$', views.bio, name='bio'),
 # re_path(r'^weblog/', include('blog.urls')),
 # -----------------------------------------------------------
-
-#from django.contrib import admin
+from django.conf import settings
 from django.urls import path, include, re_path
+from django.conf.urls import url
+
 
 urlpatterns = [
-    #path('admin/', admin.site.urls),
-    re_path(r'^(auth|admin)/', include('apps.login.urls')),
+    re_path(r'^admin/', include('apps.login.urls')),
+    # Афиша
+    re_path(r'^afisha/', include('apps.afisha.urls')),
+    # Стат. странички
+    re_path(r'^flatcontent/', include('apps.flatcontent.urls')),
+    # Файлы
+    re_path(r'^files/', include('apps.files.urls')),
+    re_path(r'^', include('apps.files.urls_static'))
 ]
+
+# Обработка статических файлов под DEBUG=True
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

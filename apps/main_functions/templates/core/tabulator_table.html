@@ -1,0 +1,87 @@
+<!-- START panel-->
+<div class="panel panel-default">
+  <div class="panel-heading">{{ plural_obj }}
+    <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
+      <em class="fa fa-times"></em>
+    </a>
+    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть" class="pull-right">
+      <em class="fa fa-minus"></em>
+    </a>
+  </div>
+  <!-- Скачивание таблицы -->
+  <div class="panel-body">
+    <button class="mb-sm btn btn-primary" type="button" id="download-csv">
+      <em class="fa fa-file-text fa-fw mr-sm"></em>Скачать csv
+    </button>
+    <button class="mb-sm btn btn-primary" type="button" id="download-json">
+      <em class="fa fa-file-text-o fa-fw mr-sm"></em>Скачать json
+    </button>
+    <button class="mb-sm btn btn-primary" type="button" id="download-xlsx">
+      <em class="fa fa-files-o fa-fw mr-sm"></em>Скачать xlsx
+    </button>
+    <a class="mb-sm btn btn-primary" id="main-table-link">
+      <em class="fa fa-link fa-fw mr-sm"></em>Ссылка на таблицу
+    </a>
+  </div>
+
+  <div class="clearfix"></div>
+  <div id="main-table"></div>
+  <div id="main-table-footer">
+    <span class="start"></span> - <span class="end"></span> из <span class="max"></span>
+  </div>
+</div>
+<script type="text/javascript">
+var actionsFormatter = function(cell, formatterParams, onRendered){
+  var row = cell.getRow();
+  var rowIndex = row.getIndex();
+  var pk = cell.getValue();
+  var actions = "<div class='padding-rl5'>";
+  actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+  actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+  actions += "</div>";
+  return actions;
+};
+var booleanFormatter = function(cell, formatterParams, onRendered){
+  var value = cell.getValue();
+  var result = "<div class='padding-rl5 text-center'>";
+  if(value){
+    result += " <a class='btn text-success' href='javascript:void(0);'><i class='fa fa-check-square-o'></i></a> ";
+  }else{
+    result += " <a class='btn text-danger' href='javascript:void(0);'><i class='fa fa-square-o'></i></a> ";
+  }
+  result += "</div>";
+  return result;
+};
+var imgFormatter = function(cell, formatterParams, onRendered){
+  var value = cell.getValue();
+  var data = cell.getData();
+  var result = "<div style='height:150px;'>";
+  if(value){
+    result += "<img src='" + data.thumb + "' />";
+  }
+  result += "</div>";
+  return result;
+};
+
+$(document).ready(function(){
+  //trigger download of data.csv file
+  $("#download-csv").click(function(){
+    main_table.download("csv", "{{ plural_obj }}.csv");
+  });
+  //trigger download of data.json file
+  $("#download-json").click(function(){
+    main_table.download("json", "{{ plural_obj }}.json");
+  });
+  //trigger download of data.xlsx file
+  $("#download-xlsx").click(function(){
+    main_table.download("xlsx", "{{ plural_obj }}.xlsx", {sheetName:"{{ plural_obj }}"});
+  });
+  //trigger download of data.pdf file
+  $("#download-pdf").click(function(){
+    main_table.download("pdf", "{{ plural_obj }}.pdf", {
+      orientation:"portrait", //set page orientation to portrait
+      title:"{{ plural_obj }}", //add title to report
+    });
+  });
+});
+</script>

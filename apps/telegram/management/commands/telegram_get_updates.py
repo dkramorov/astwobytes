@@ -10,8 +10,8 @@ from apps.telegram.telegram import TelegramBot
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-  def handle(self, *args, **options):
-    bot = TelegramBot()
-    logger.info(json_pretty_print(bot.get_updates()))
+    def handle(self, *args, **options):
+        bot = TelegramBot()
+        logger.info(json_pretty_print(bot.get_updates()))
 
 

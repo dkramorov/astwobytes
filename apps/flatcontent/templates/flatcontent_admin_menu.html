@@ -1,0 +1,34 @@
+{% if perms.flatcontent.view_containers %}
+<li{% ifequal menu 'flatcontent' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="">
+    <em class="fa fa-dropbox"></em>
+    <div class="label label-primary pull-right">5</div>
+    <span class="item-text">Контент</span>
+  </a>
+  <!-- START SubMenu item-->
+  <ul class="nav collapse{% ifequal menu 'flatcontent' %} in{% endifequal %}">
+    <li{% ifequal submenu 'flatmenu' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatmenu' %}">
+        <span class="item-text">Меню</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'flatpages' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatpages' %}">
+        <span class="item-text">Стат. Странички</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'flatmain' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatmain' %}">
+        <span class="item-text">Контент для всех страничек</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'flattemplates' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flattemplates' %}">
+        <span class="item-text">Шаблоны</span>
+      </a>
+    </li>
+  </ul>
+  <!-- END SubMenu item-->
+</li>
+{% endif %}
+

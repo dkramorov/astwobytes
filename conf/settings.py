@@ -25,10 +25,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '=3+k48o8@y*j1@sd(@_se4-@o7%l1id-=r7-iv#nbi!h2ho+^8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG', cast=bool, default=True)
+DEBUG = env('TEMPLATE_DEBUG', cast=bool, default=True)
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    '*',
+    #'.example.com',  # Allow domain and subdomains
+    #'.example.com.',  # Also allow FQDN and subdomains
+]
 
 # Application definition
 
@@ -38,9 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     #'django.contrib.messages',
-    #'django.contrib.staticfiles',
+    #'django.contrib.staticfiles', # => STATICFILES_DIRS
+    'apps.main_functions',
     'apps.login',
     'apps.telegram',
+    'apps.files',
+    'apps.afisha',
+    'apps.flatcontent',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +67,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
+        #'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,11 +85,27 @@ WSGI_APPLICATION = 'conf.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
 
+# mysql с autoreload.py вызывает иногда embedded null byte error
+# mysqlclient==1.4... вызывал проблему
+# mysqlclient==1.3.13 решил проблему
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'conf', 'my.cnf'),
+        },
+        #'NAME': 'astwobytes',
+        #'USER': 'root',
+        #'PASSWORD': '',
+        #'HOST': 'localhost',
+        #'PORT': '3306',
     }
 }
 
@@ -109,35 +134,63 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+#TIME_ZONE = 'UTC'
+TIME_ZONE = env('TIME_ZONE', default='Asia/Irkutsk')
+USE_TZ = env('USE_TZ', cast=bool, default=False)
 
-USE_I18N = True
+USE_I18N = False
+USE_L10N = False
 
-USE_L10N = True
-
-USE_TZ = True
-
+LOGIN_REDIRECT_URL = '/admin/login/welcome/'
+LOGIN_URL = '/admin/login/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+STATICFILES_DIRS = [
+    STATIC_ROOT,
+]
 
 LOG_LEVEL = env('LOG_LEVEL', default='INFO')
+
+def skip_static_requests(record):
+    """Фильтр для запросов на статику"""
+    if record.args[0].startswith('GET /static/'):
+        return False
+    return True
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': env('DISABLE_EXISTING_LOGGERS', cast=bool, default=True),
+    'filters': {
+        'skip_static_requests': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': skip_static_requests,
+        }
+    },
     'formatters': {
         'simple': {
             'format': '\t'.join((
                 '%(asctime)s',
                 '%(levelname)s',
-                '%(pathname)s:%(lineno)s',
+                #'%(pathname)s:%(lineno)s',
                 '%(message)s',
             )),
         },
     },
     'handlers': {
+        'debug_console': {
+            'level': LOG_LEVEL,
+            'filters': ['skip_static_requests'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
         'console': {
             'level': LOG_LEVEL,
             'class': 'logging.StreamHandler',
@@ -151,7 +204,7 @@ LOGGING = {
     'loggers': {
         'django.server': {
             'level': LOG_LEVEL,
-            'handlers': ['console'],
+            'handlers': ['debug_console'],
             'propagate': False,
         },
         'main': {

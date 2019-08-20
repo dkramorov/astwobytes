@@ -1,0 +1,113 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+  <link rel="stylesheet" href="/static/jquery-ui/jquery-ui.min.css">
+  <!-- FullCalendar-->
+  <link rel="stylesheet" href="/static/fullcalendar/fullcalendar.css">
+  <link rel="stylesheet" href="/static/fullcalendar/fullcalendar.print.css" type="text/css" media="print">
+{% endblock %}
+
+{% block content %}
+<h3>Full Calendar
+   <br>
+   <small>Drag and Drop events and tasks</small>
+</h3>
+<!-- START row-->
+<div class="row">
+   <div class="col-md-3">
+      <!-- START panel-->
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <h4 class="panel-title">Draggable Events</h4>
+         </div>
+         <!-- Default external events list-->
+         <div class="external-events-trash">
+            <div class="panel-body">
+               <div class="external-events">
+                  <div class="bg-green">Lunch</div>
+                  <div class="bg-danger">Go home</div>
+                  <div class="bg-info">Do homework</div>
+                  <div class="bg-warning">Work on UI design</div>
+                  <div class="bg-inverse">Sleep tight</div>
+               </div>
+               <p>
+                  <span class="checkbox c-checkbox">
+                     <label>
+                        <input id="remove-after-drop" type="checkbox">
+                        <span class="fa fa-check"></span>Remove after Drop</label>
+                  </span>
+               </p>
+            </div>
+         </div>
+      </div>
+      <!-- END panel-->
+      <!-- START panel-->
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Create Event</h3>
+         </div>
+         <div class="panel-body">
+            <div class="input-group mb">
+               <input type="text" placeholder="Event name..." class="form-control external-event-name">
+               <div class="input-group-btn">
+                  <button type="button" class="btn btn-default external-event-add-btn">Add</button>
+               </div>
+            </div>
+            <p class="text-muted">
+               <small>Choose a Color</small>
+            </p>
+            <ul class="list-inline external-event-color-selector">
+               <li class="p0">
+                  <a href="#" class="point point-danger point-xl selected"></a>
+               </li>
+               <li class="p0">
+                  <a href="#" class="point point-primary point-xl"></a>
+               </li>
+               <li class="p0">
+                  <a href="#" class="point point-info point-xl"></a>
+               </li>
+               <li class="p0">
+                  <a href="#" class="point point-success point-xl"></a>
+               </li>
+               <li class="p0">
+                  <a href="#" class="point point-warning point-xl"></a>
+               </li>
+               <li class="p0">
+                  <a href="#" class="point point-green point-xl"></a>
+               </li>
+               <li class="p0">
+                  <a href="#" class="point point-pink point-xl"></a>
+               </li>
+               <li class="p0">
+                  <a href="#" class="point point-inverse point-xl"></a>
+               </li>
+               <li class="p0">
+                  <a href="#" class="point point-purple point-xl"></a>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <!-- END panel-->
+   </div>
+   <div class="col-md-9">
+      <!-- START panel-->
+      <div class="panel">
+         <div class="panel-body">
+            <!-- START calendar-->
+            <div id="calendar"></div>
+            <!-- END calendar-->
+         </div>
+      </div>
+      <!-- END panel-->
+   </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/jquery-ui/jquery-ui.min.js"></script>
+  <script src="/static/jquery-ui/jquery.ui.touch-punch.min.js"></script>
+  <!-- MomentJs-->
+  <script src="/static/codemirror/moment-with-langs.min.js"></script>
+  <!-- FulCalendar-->
+  <script src="/static/fullcalendar/fullcalendar.min.js"></script>
+{% endblock %}

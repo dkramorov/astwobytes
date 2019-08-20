@@ -1,0 +1,120 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+
+  var pathFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var data = cell.getRow().getData();
+    var value = cell.getValue();
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      result += " <a class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
+    }
+    result += "</div>";
+    return result;
+  };
+
+  var linkFormatter = function(cell, formatterParams, onRendered){
+    var value = cell.getValue();
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      result += " <a class='btn' target='_blank' href='" + value + "'>" + value + "</a> ";
+    }
+    result += "</div>";
+    return result;
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+/*
+      {
+        formatter: "responsiveCollapse",
+        width: 30,
+        minWidth: 30,
+        align: "center",
+        resizable: false,
+        headerSort: false,
+      },
+*/
+      {
+        rowHandle:true,
+        formatter:"handle",
+        headerSort:false,
+        frozen:true,
+        width:30,
+        minWidth:30
+      },
+      {
+        title: "ID",
+        field: "id",
+        sorter: "number",
+        align: "center",
+        headerFilterPlaceholder: "ID",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 80,
+      },
+      {
+        title: "Название",
+        field: "name",
+        headerFilterPlaceholder: "Название",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Альт. название",
+        field: "altname",
+        headerFilterPlaceholder: "Альт. название",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Тег",
+        field: "tag",
+        headerFilterPlaceholder: "Тег",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Позиция",
+        field: "position",
+        sorter: "number",
+        align: "center",
+        headerFilterPlaceholder: "Позиция",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 90,
+      },
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsFormatter,
+        width: 100,
+      },
+    ],
+  });
+});
+</script>
+{% endblock %}

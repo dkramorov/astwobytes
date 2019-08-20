@@ -1,0 +1,38 @@
+{% if perms.afisha.view_revents %}
+<li{% ifequal menu 'afisha' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="">
+    <em class="fa fa-bullhorn"></em>
+    <div class="label label-primary pull-right">5</div>
+    <span class="item-text">Афиша</span>
+  </a>
+  <!-- START SubMenu item-->
+  <ul class="nav collapse{% ifequal menu 'afisha' %} in{% endifequal %}">
+    <li{% ifequal submenu 'rubrics' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_rubrics' %}">
+        <span class="item-text">Рубрики мест</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'genres' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_genres' %}">
+        <span class="item-text">Рубрики жанров</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'events' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_events' %}">
+        <span class="item-text">События Афиши</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'places' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_places' %}">
+        <span class="item-text">Места Афиши</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'seances' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_seances' %}">
+        <span class="item-text">Сеансы Афиши</span>
+      </a>
+    </li>
+  </ul>
+  <!-- END SubMenu item-->
+</li>
+{% endif %}

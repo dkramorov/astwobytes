@@ -1,0 +1,149 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{{ action_create }} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<!-- START row-->
+<div class="row">
+  <div class="col-sm-12">
+    <!-- START panel-->
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Логин</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Ваш логин" class="form-control" name="username" value="{% if row.username %}{{ row.username }}{% endif %}" autocomplete="off"{% if row %} disabled{% else %} data-parsley-required{% endif %}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Имя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Имя" class="form-control" name="first_name" value="{% if row.first_name %}{{ row.first_name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Фамилия</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Фамилия" class="form-control" name="last_name" value="{% if row.last_name %}{{ row.last_name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Email</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Email" class="form-control" name="email" value="{% if row.email %}{{ row.email }}{% endif %}" autocomplete="off" data-parsley-type="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Пароль</label>
+            <div class="col-lg-10">
+              <input type="password" placeholder="Пароль" class="form-control" name="passwd" id="passwd1" autocomplete="off" {% ifequal action "create" %}data-parsley-required{% endifequal %} data-parsley-equalto="#passwd2">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Повторите пароль</label>
+            <div class="col-lg-10">
+              <input type="password" placeholder="Повторите пароль" class="form-control" id="passwd2" autocomplete="off" {% ifequal action "create" %}data-parsley-required{% endifequal %} data-parsley-equalto="#passwd1">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="is_superuser" {% if row.is_superuser %} checked{% endif %} autocomplete="off">
+                  <span class="fa fa-check"></span> Суперпользователь
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="is_staff" {% if row.is_staff %} checked{% endif %} autocomplete="off">
+                  <span class="fa fa-check"></span> В штате
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="is_active" {% if row.is_active %} checked{% endif %} autocomplete="off">
+                  <span class="fa fa-check"></span> Включен
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" id="ajax_result">
+          </div>
+        </div>
+        <div class="panel-footer">
+          <div class="col-lg-6 col-sm-6 padding-tb5">
+            <button type="submit" class="btn btn-labeled btn-success">
+              <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
+            </button>
+          </div>
+          <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+            <a class="btn btn-labeled btn-danger" href="{{ root_url }}">
+              <span class="btn-label"><i class="fa fa-times"></i></span>Вернуться
+            </a>
+          </div>
+        </form>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    <!-- END panel-->
+  </div>
+</div>
+<!-- END row-->
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+    });
+  </script>
+{% endblock %}
