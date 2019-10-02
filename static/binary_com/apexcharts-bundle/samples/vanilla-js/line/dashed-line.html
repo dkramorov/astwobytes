@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Dashed Line Chart</title>
+
+  <link href="../../assets/styles.css" rel="stylesheet" />
+
+  <style>
+    #chart {
+      max-width: 650px;
+      margin: 35px auto;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="chart">
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@latest"></script>
+
+  <script>
+    var options = {
+
+      "annotations": {
+        "xaxis": [{
+            "x": 0.9991725030347123,
+            "x2": null,
+            "strokeDashArray": 2,
+            "fillColor": "#c2c2c2",
+            "borderColor": "#00E396",
+            "opacity": 0.3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "label": {
+              "borderColor": "#00E396",
+              "borderWidth": 1,
+              "text": "Average Profit",
+              "textAnchor": "middle",
+              "orientation": "vertical",
+              "position": "top",
+              "offsetX": 0,
+              "offsetY": 0,
+              "style": {
+                "background": "#00E396",
+                "color": "#fff",
+                "fontSize": "11px",
+                "cssClass": "",
+                "padding": {
+                  "left": 5,
+                  "right": 5,
+                  "top": 2,
+                  "bottom": 2
+                }
+              }
+            }
+          },
+          {
+            "x": 1.000032771264139,
+            "x2": null,
+            "strokeDashArray": 2,
+            "fillColor": "#c2c2c2",
+            "borderColor": "#775DD0",
+            "opacity": 0.3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "label": {
+              "borderColor": "#775DD0",
+              "borderWidth": 1,
+              "text": "Median Profit",
+              "textAnchor": "middle",
+              "orientation": "vertical",
+              "position": "top",
+              "offsetX": 0,
+              "offsetY": 0,
+              "style": {
+                "background": "#775DD0",
+                "color": "#fff",
+                "fontSize": "11px",
+                "cssClass": "",
+                "padding": {
+                  "left": 5,
+                  "right": 5,
+                  "top": 2,
+                  "bottom": 2
+                }
+              }
+            }
+          }
+        ],
+        "yaxis": [],
+        "points": []
+      },
+      "chart": {
+        "id": "PortFolioChart",
+        type: 'bar',
+        "animations": {
+          "enabled": false
+        },
+        "stacked": false,
+        "background": "#fff",
+        "toolbar": {
+          "show": false,
+          "autoSelected": "pan"
+        }
+      },
+      "dataLabels": {
+        "enabled": false
+      },
+      "plotOptions": {
+        "bar": {
+          "columnWidth": "100%"
+        }
+      },
+      "xaxis": {
+        "labels": {
+          formatter: function(val) {
+            return val.toFixed(3)
+          }
+        },
+        "min": 0.993,
+        "max": 1.0019999999999998
+      },
+      "yaxis": {
+        "tickAmount": 3
+      },
+      "series": [{
+        "data": [
+          [
+            0.994,
+            1
+          ],
+          [
+            0.999,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1.001,
+            1
+          ]
+        ],
+        "name": "Number of trades"
+      }]
+    }
+    var chart = new ApexCharts(
+      document.querySelector("#chart"),
+      options
+    );
+
+    chart.render();
+
+  </script>
+</body>
+
+</html>

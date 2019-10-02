@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Basic Line Chart</title>
+
+
+  <link href="../../assets/styles.css" rel="stylesheet" />
+
+  <style>
+    #chart {
+      max-width: 650px;
+      margin: 35px auto;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="chart">
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@latest"></script>
+
+  <script>
+    var options = {
+      chart: {
+        toolbar: {
+          show: true
+        }
+      },
+      grid: {
+        padding: {
+          right: 30,
+          left: 30
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: v => v
+      },
+      stroke: {
+        curve: "smooth"
+      },
+      xaxis: {
+        type: "categories",
+        categories: ["апр. 2017", "май 2017", "июнь 2017", "июль 2017", "авг. 2017", "сент. 2017", "окт. 2017",
+          "нояб. 2017", "дек. 2017", "янв. 2018", "февр. 2018", "март 2018", "апр. 2018", "май 2018", "июнь 2018",
+          "июль 2018", "авг. 2018", "сент. 2018", "окт. 2018", "нояб. 2018", "дек. 2018", "янв. 2019", "февр. 2019",
+          "март 2019"
+        ],
+        title: {
+          text: "Месяц"
+        }
+      },
+      yaxis: {
+        labels: {
+          formatter: v => v
+        }
+      },
+      markers: {
+        size: 5
+      },
+      series: [{
+        name: "График",
+        data: [21346, 19770, 18583, 14256, 16651, 16798, 19265, 20404, 32267, 14006, 23277, 23930, 22089, 19245, 17401, 14866, 17900, 16928, 20711, 19641, 29243, 9872, 22103, 5572
+        ]
+      }]
+    }
+
+    var chart = new ApexCharts(
+      document.querySelector("#chart"),
+      options
+    );
+
+    chart.render();
+
+  </script>
+</body>
+
+</html>

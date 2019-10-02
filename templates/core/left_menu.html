@@ -1,0 +1,30 @@
+<!-- START Sidebar (left)-->
+<nav class="sidebar">
+  <!-- USER -->
+  <div class="item user-block">
+    <!-- User picture-->
+    <div class="user-block-picture">
+      <div class="user-block-status">
+        <img src="/static/admin/misc/avatar_small.png" class="img-thumbnail img-circle" width="60" height="60">
+        <div class="point point-success point-lg"></div>
+      </div>
+      <!-- Status when collapsed-->
+    </div>
+    <!-- Name and Role-->
+    <div class="user-block-info">
+      <span class="user-block-name item-text">{{ request.user }}</span>
+      <span class="user-block-role">{% if request.user.is_superuser %}Администратор{% else %}Пользователь{% endif %}</span>
+    </div>
+  </div>
+  <!-- END USER -->
+  <ul class="nav">
+    <!-- START Menu-->
+    <li class="nav-heading">Управление</li>
+    {% include "users_admin_menu.html" %}
+    {% include "files_admin_menu.html" %}
+    {% include "afisha_admin_menu.html" %}
+    {% include "flatcontent_admin_menu.html" %}
+    {% include "spamcha_admin_menu.html" %}
+  </ul>
+</nav>
+<!-- END Sidebar (left)-->

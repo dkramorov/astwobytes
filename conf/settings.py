@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'apps.files',
     'apps.afisha',
     'apps.flatcontent',
+    'apps.spamcha',
+    'apps.binary_com',
 ]
 
 MIDDLEWARE = [
@@ -66,8 +68,8 @@ ROOT_URLCONF = 'conf.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        #'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        #'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,6 +102,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
             'read_default_file': os.path.join(BASE_DIR, 'conf', 'my.cnf'),
+            'sql_mode': 'traditional',
         },
         #'NAME': 'astwobytes',
         #'USER': 'root',

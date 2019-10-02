@@ -22,17 +22,24 @@ Including another URLconf
 # -----------------------------------------------------------
 from django.conf import settings
 from django.urls import path, include, re_path
+from django.shortcuts import redirect
 from django.conf.urls import url
 
 
 urlpatterns = [
     re_path(r'^admin/', include('apps.login.urls')),
+    path('auth/', lambda request: redirect('/admin/', permanent=False)),
     # Афиша
     re_path(r'^afisha/', include('apps.afisha.urls')),
     # Стат. странички
     re_path(r'^flatcontent/', include('apps.flatcontent.urls')),
     # Файлы
     re_path(r'^files/', include('apps.files.urls')),
+    # Рассылки
+    re_path(r'^spamcha/', include('apps.spamcha.urls')),
+    # binary.com
+    re_path(r'^binary_com/', include('apps.binary_com.urls')),
+
     re_path(r'^', include('apps.files.urls_static'))
 ]
 

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Gradient Line</title>
+
+
+  <link href="../../assets/styles.css" rel="stylesheet" />
+
+  <style>
+    #chart,
+    #chart-gradient {
+      max-width: 300px;
+      margin: 35px auto;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div id="chart">
+    </div>
+
+    <div id="chart-gradient">
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@latest"></script>
+
+    <script>
+      var options = {
+        chart: {
+          height: 200,
+          width: "100%",
+          type: "line"
+        },
+        series: [{
+          name: "Series 1",
+          data: [2, 2, 2, 2]
+        }]
+      };
+
+      var optionsGradient = {
+        chart: {
+          height: 200,
+          width: "100%",
+          type: "line"
+        },
+        fill: {
+           type: "gradient",
+        },
+        series: [{
+          name: "Series 1",
+          data: [1, 1, 1, 1, 1, 1, 1]
+        }],
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return val
+                }
+            }
+        }
+      };
+
+      var chart = new ApexCharts(document.querySelector("#chart"), options);
+      chart.render();
+
+      var chartGradient = new ApexCharts(document.querySelector("#chart-gradient"), optionsGradient);
+      chartGradient.render();
+
+    </script>
+</body>
+
+</html>
