@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import logging
 
 from django.contrib.auth.models import Permission
 from django.db.models import Count, Q, Min, Max
@@ -12,6 +13,8 @@ from apps.main_functions.functions import (object_foreign_keys,
 from apps.main_functions.string_parser import q_string_fill
 from apps.main_functions.paginator import myPaginator, navigator
 from apps.main_functions.date_time import str_to_date
+
+logger = logging.getLogger()
 
 class ModelHelper:
     """Покрываем одним классом всю рутину
@@ -151,6 +154,7 @@ class ModelHelper:
             user = self.request.user
 
             self.permissions = {
+                # add_ instead create_
                 'create': user.has_perm('%s.create_%s' % (self.app_label, self.model_name)),
                 'edit': user.has_perm('%s.change_%s' % (self.app_label, self.model_name)),
                 'drop': user.has_perm('%s.delete_%s' % (self.app_label, self.model_name)),
@@ -210,11 +214,15 @@ class ModelHelper:
         pos = obj['position__max']
         return pos or 1
 
-    def post_vars(self, pass_fields:list = []):
-        """Получаем переменные из формы"""
+    def post_vars(self, pass_fields: list = None):
+        """Получаем переменные из формы
+           pass_fields - пропускаем поля"""
         if not self.request:
             self.error = 1
             return None
+
+        if not pass_fields:
+            pass_fields = []
 
         types = object_fields_types(self.model())
         auto_now_fields = object_auto_now_fields(self.model)
@@ -251,8 +259,9 @@ class ModelHelper:
                     if key in auto_now_fields:
                         continue
                     value = str_to_date(value)
+            else:
+                logger.warning('there is no field %s in %s model types' % (key, self.model))
             row_vars[key] = value
-
         if self.request.FILES:
             if self.request.FILES.get('img'):
                 row_vars['img'] = self.request.FILES['img']
@@ -325,6 +334,16 @@ class ModelHelper:
                             continue
                         except foreign_keys[key].DoesNotExist:
                             continue
+            # --------------------------------------------
+            # Временное решение, надо прогонять, конечно,
+            # полностью через новый model_helper - TODO!!!
+            # --------------------------------------------
+            #if '__' in key:
+            #    foreign_key, foreign_field = key.split('__')
+            #    foreign_obj = getattr(self.row, foreign_key)
+            #    setattr(foreign_obj, foreign_field, value)
+            #    logger.warning('Update related %s {%s: %s}' % (foreign_obj, foreign_field, value))
+            #    continue
             setattr(self.row, key, value)
         self.row.save()
         # ---------------
@@ -333,19 +352,24 @@ class ModelHelper:
         self.uploads()
         return self.row
 
-    def uploads(self):
-        """Загружаем файлы"""
-        if self.request.FILES and self.row:
+    def uploads(self, row = None):
+        """Загружаем файлы/изображения
+           row позволяет грузить
+           в экземпляр другой модели"""
+        dest = self.row
+        if row:
+            dest = row
+        if self.request.FILES and dest:
             for key, value in self.request.FILES.items():
                 if key in self.files:
-                    if hasattr(self.row, key) and hasattr(self.row, 'upload_img'):
-                        self.row.upload_file(value, key)
+                    if hasattr(dest, key) and hasattr(dest, 'upload_img'):
+                        dest.upload_file(value, key)
         if "img" in self.row_vars:
             # -----------------------------
             # Может быть файлом или ссылкой
             # -----------------------------
-            if hasattr(self.row, 'upload_img'):
-                self.row.upload_img(self.row_vars['img'])
+            if hasattr(dest, 'upload_img'):
+                dest.upload_img(self.row_vars['img'])
 
     def standard_show(self, only_query:bool = False):
         """Стандартный вывод данных по модели
@@ -523,8 +547,10 @@ class ModelHelper:
         self.context['rows'] = result
         return result
 
-    def update_positions(self):
-        """Изменение позиций моделей"""
+    def update_positions(self, custom_positions: list = None):
+        """Изменение позиций моделей
+           если нужно изменить позиции не из request,
+           тогда передаем custom_positions id в нужном порядке"""
         result = {}
         if not self.request:
             return result
@@ -534,6 +560,8 @@ class ModelHelper:
             positions = self.request.POST.getlist('positions[]')
         elif self.request.method == 'GET':
             positions = self.request.GET.getlist('positions[]')
+        if custom_positions:
+            positions = custom_positions
 
         self.filter_add({'pk__in': positions})
         query = self.standard_show(only_query=True)

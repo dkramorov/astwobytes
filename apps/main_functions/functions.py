@@ -66,12 +66,13 @@ def object_fields_types(row):
     """Все типы полей в объекте"""
     result = {}
     types = {
-        'primary_key' : (fields.AutoField, ),
-        'str' : (fields.CharField, fields.TextField),
-        'int' : (fields.IntegerField, fields.BigIntegerField),
+        #'one_to_one': (fields.related.OneToOneRel, ), # row.__class__._meta.get_fields()
+        'primary_key': (fields.AutoField, ),
+        'str': (fields.CharField, fields.TextField, fields.EmailField),
+        'int': (fields.IntegerField, fields.BigIntegerField),
         'boolean': (fields.BooleanField, ),
-        'float' : (fields.DecimalField, ),
-        'date' : (fields.DateField, ),
+        'float': (fields.DecimalField, ),
+        'date': (fields.DateField, ),
         'datetime': (fields.DateTimeField, ),
         'foreign_key': (fields.related.ForeignKey, ),
     }
@@ -96,19 +97,24 @@ def object_fields_names(row):
         result.append(field.get_attname_column())
     return result
 
-def object_fields(row, pass_fields:tuple = ()):
+def object_fields(row, pass_fields:tuple = (), only_fields:tuple = ()):
     """Все параметры объекта (id, state, created...)
        Можно сделать row.full_clean(), что приведет
+       pass_fields = ('пропускаем', 'эти', 'поля')
+       only_fields = ('достаем', 'только', 'эти', 'поля')
        все данные к нужному типу/виду"""
     result = {}
     #row.full_clean()
     default_values = object_default_values(row)
     ftypes = object_fields_types(row)
     for field in row.__class__._meta.fields:
-        if field.name in pass_fields:
-            continue
-        if field.name in ftypes:
 
+        if pass_fields and field.name in pass_fields:
+            continue
+        elif only_fields and not field.name in only_fields:
+            continue
+
+        if field.name in ftypes:
             if ftypes[field.name] == 'foreign_key':
                 value = getattr(row, '%s_id' % field.name)
                 # ---------------------------------------------

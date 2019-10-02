@@ -1,0 +1,111 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+/*
+      {
+        formatter: "responsiveCollapse",
+        width: 30,
+        minWidth: 30,
+        align: "center",
+        resizable: false,
+        headerSort: false,
+      },
+*/
+      {
+        rowHandle:true,
+        formatter:"handle",
+        headerSort:false,
+        frozen:true,
+        width:30,
+        minWidth:30
+      },
+      {
+        title: "ID",
+        field: "id",
+        sorter: "number",
+        align: "center",
+        headerFilterPlaceholder: "ID",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 80,
+      },
+      {
+        title: "Email",
+        field: "email",
+        headerFilterPlaceholder: "Email",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "smtp сервер",
+        field: "smtp_server",
+        headerFilterPlaceholder: "smtp сервер",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "smtp порт",
+        field: "smtp_port",
+        headerFilterPlaceholder: "smtp порт",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Включен",
+        field: "is_active",
+        editor: "select",
+        headerFilterPlaceholder: "Включен",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        formatter: booleanFormatter,
+        width: 110,
+      },
+      {
+        title: "Позиция",
+        field: "position",
+        sorter: "number",
+        align: "center",
+        headerFilterPlaceholder: "Позиция",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 90,
+      },
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsFormatter,
+        width: 100,
+      },
+    ],
+  });
+});
+</script>
+{% endblock %}

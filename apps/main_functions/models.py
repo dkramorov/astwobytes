@@ -23,13 +23,13 @@ class Config(models.Model):
     """Различные настройки"""
     name = models.CharField(max_length = 255,
                             blank = True, null = True,
-                            db_index = True, )
+                            db_index = True)
     attr = models.CharField(max_length = 255,
                             blank = True, null = True,
-                            db_index = True, )
+                            db_index = True)
     value = models.CharField(max_length = 255,
                              blank = True, null = True,
-                             db_index = True, )
+                             db_index = True)
 
 class Tasks(models.Model):
     """Задачи для call_command"""
@@ -38,11 +38,11 @@ class Tasks(models.Model):
     description = models.CharField(blank=True, null=True, max_length=255)
 
     def save(self, *args, **kwargs):
-      analog = Tasks.objects.filter(command=self.command).first()
-      if analog:
-          analog.update(start = datetime.datetime.today())
-      else:
-          super(Tasks, self).save(*args, **kwargs)
+        analog = Tasks.objects.filter(command=self.command).first()
+        if analog:
+            analog.update(start = datetime.datetime.today())
+        else:
+            super(Tasks, self).save(*args, **kwargs)
 
 class Standard(models.Model):
     """Абстрактная модель

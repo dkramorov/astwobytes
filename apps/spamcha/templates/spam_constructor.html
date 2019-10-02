@@ -1,0 +1,136 @@
+<html class="tea14">
+<head>
+<meta content="ie=edge, chrome=1" http-equiv="x-ua-compatible">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<link href="/static/admin/css/font-awesome.min.css" type="text/css" rel="stylesheet">
+<link href="/static/constructor/css/spectrum.css" type="text/css" rel="stylesheet">
+<link href="/static/constructor/css/reveal.css" type="text/css" rel="stylesheet">
+<link href="/static/constructor/css/main.css" type="text/css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Muli">
+<link rel="stylesheet" type="text/css" href="/static/constructor/css/skin.min.css">
+<link rel="stylesheet" type="text/css" href="/static/constructor/css/content.inline.min.css">
+
+<script type="text/javascript" src="/static/admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/redactor/jquery.browser.js"></script>
+<script type="text/javascript" src="/static/redactor/redactor.js"></script>
+<link href="/static/redactor/redactor_air.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+  var upload_path = "{% if upload_path %}{{ upload_path }}{% else %}0{% endif %}";
+</script>
+</head>
+<body spellcheck="false">
+
+<!-- MAIN : editor================================================== -->
+<iframe style="display: none;" data-src="{% url 'spamcha:edit_spam_table' action='html_result' row_id=row.id %}" id="tea14-src"></iframe>
+<div class="tea14-main">
+  <div class="tea14-top">
+    <button id="tea14-tools-switch" title="Скрыть панель инструментов"><i class="fa fa-gear"></i></button>
+    <button id="tea14-tools-download" title="Сохранить"><i class="fa fa-download"></i></button>
+    <button id="tea14-tools-refresh" title="Удалить редакторы"><i class="fa fa-refresh"></i></button>
+  </div>
+  <div class="tea14-left">
+    <ul class="tea14-settings-nav">
+      <li><a href="#tea14-module-list" title="Доступные модули"><i class="fa fa-tasks"></i></a></li>
+      <li><a href="#tea14-module-colors" title="Цвета" class="tea14-settings-nav-current"><i class="fa fa-tint"></i></a></li>
+      <li><a href="#tea14-module-advanced" title="Другое"><i class="fa fa-cogs"></i></a></li>
+    </ul>
+    <div class="tea14-placeholder">
+
+      <ul id="tea14-module-colors">
+        <li>
+          <input class="spectrum main" value="#ca9146">
+          <label>Фон блоков</label>
+        </li>
+        <li>
+          <input class="spectrum background" value="#f1f1f1">
+          <label>Общий фон</label>
+        </li>
+        <li>Альтернативные цвета</li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-text' data-tea14dc-backup='#464344' data-tea14dc-old='#464344' value='#464344'>
+          <label>Заголовки</label>
+        </li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-text' data-tea14dc-backup='#949393' data-tea14dc-old='#949393' value='#949393'>
+          <label>Основной текст</label>
+        </li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-text' data-tea14dc-backup='#ffffff' data-tea14dc-old='#ffffff' value='#ffffff'>
+          <label>Текст в блоках</label>
+        </li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-text' data-tea14dc-backup='#a9a9a9' data-tea14dc-old='#a9a9a9' value='#a9a9a9'>
+          <label>Текст в подвале</label>
+        </li>
+        <li>Альтернативные фоны</li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-background' data-tea14dc-backup='#464344' data-tea14dc-old='#464344' value='#464344'>
+          <label>Фон блоков</label>
+        </li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-background' data-tea14dc-backup='#e9e9e9' data-tea14dc-old='#e9e9e9' value='#e9e9e9'>
+          <label>Фон социалок</label>
+        </li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-background' data-tea14dc-backup='#393939' data-tea14dc-old='#393939' value='#393939'>
+          <label>Фон подвала</label>
+        </li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-background' data-tea14dc-backup='#2c2c2c' data-tea14dc-old='#2c2c2c' value='#2c2c2c'>
+          <label>Фон лого в подвале</label>
+        </li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-background' data-tea14dc-backup='#ffffff' data-tea14dc-old='#ffffff' value='#ffffff'>
+          <label>Фон предложения</label>
+        </li>
+        <li>Альтернативные цвета рамок</li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-border' data-tea14dc-backup='#ffffff' data-tea14dc-old='#ffffff' value='#ffffff'>
+          <label>Рамка кнопки</label>
+        </li>
+        <li>
+          <input class='spectrum tea14dc-opt tea14dc-opt-border' data-tea14dc-backup='#ededed' data-tea14dc-old='#ededed' value='#ededed'>
+          <label>Рамка заголовка</label>
+        </li>
+      </ul>
+
+      <ul id="tea14-module-list"></ul>
+      <ul id="tea14-module-advanced">
+
+        <li>
+          <form method="post" action="{% url 'spamcha:edit_spam_table' action='html' row_id=row.id %}" enctype="multipart/form-data" id="template_form">
+            {% csrf_token %}
+            <input type="hidden" id="template" value="{% if row.html_msg %}{{ row.html_msg }}{% endif %}" name="html_msg" />
+          </form>
+        </li>
+
+        <li><button id="tea14-tools-advanced-clean" title="Удалить все блоки">* ПНХ все блоки</button></li>
+        <li><button id="tea14-tools-advanced-all" title="Показать все блоки">* Показать все блоки</button></li>
+        <li><em>* Цвет сохранится, а настройки блоков потеряются</em></li>
+        <li><hr></li>
+        <li>Режим редактирования</li>
+        <li>
+          <select id="tea14-tools-advanced-mode" title="Режим редактирования">
+            <option value="0">Перетаскивание + Сортировка</option>
+            <option value="1">Редактирование текста и картинок</option>
+          </select>
+        </li>
+        <li id="tea14-tools-advanced-editor"></li>
+      </ul>
+    </div>
+  </div>
+  <div class="tea14-right">
+    <div class="tea14-placeholder">
+      <ul id="tea14-preview"></ul>
+    </div>
+  </div>
+</div>
+<!--<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>-->
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script src="/static/constructor/js/spectrum.js"></script>
+<script src="/static/constructor/js/jquery.reveal.js"></script>
+<script src="/static/constructor/js/organictabs.jquery.js"></script>
+<script src="/static/constructor/js/helpers.js"></script>
+<script src="/static/constructor/js/main.js"></script>
+</body>
+</html>

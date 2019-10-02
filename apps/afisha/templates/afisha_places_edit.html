@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<h3>{{ singular_obj }}<br /><small>{{ action_create }} {{ rp_singular_obj }}</small></h3>
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
 <!-- START row-->

@@ -1,0 +1,352 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<link media="all" rel="stylesheet" href='{% static "css/custom_bootstrap.min.css" %}' />
+
+<script type="text/javascript" src='{% static "js/jquery-3.3.1.min.js" %}'></script>
+<script src='{% static "js/apexcharts.js" %}'></script>
+
+<script type='text/javascript'>
+function log(func, msg){
+  console.log(func, "=>", msg);
+}
+var ws_token = "S2CdZcfFPZ6Q0A2"
+var ws = null;
+var active_symbols = null;
+var subscribed_tick_ids = Array(); // по каким контрактам подписаны на тики
+var ticks_data = {};
+var MAX_TICKS = 1000;
+
+var ru_chart_locale = null;
+$.getJSON('{% static "ru.json" %}', function(data) {
+  ru_chart_locale = data;
+});
+
+// -------------
+// Инициализация
+// -------------
+function init_websocket(){
+  var ws_instance = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089&l=RU');
+  ws_instance.onopen = function(evt) {
+    log("ws_instance.onopen", "ws opened");
+    ws = ws_instance;
+  };
+  ws_instance.onmessage = function(msg) {
+    var data = JSON.parse(msg.data);
+    switch(data.msg_type){
+      case 'ping':
+        return;
+      case 'forget':
+        log("ws_instance.onmessage", "forget subscribe");
+        return;
+      case 'active_symbols':
+        active_symbols = data.active_symbols;
+        show_active_symbols();
+        break;
+      case 'tick':
+        save_new_tick(data.tick);
+        check_subscribed_ticks(data.tick.symbol, data.subscription.id);
+        //break;
+        return;
+      case 'history':
+        save_new_ticks(data.echo_req.ticks_history, data.history);
+      default:
+        break;
+    }
+    log("ws_instance.onmessage", data);
+  };
+}
+// -----------------------------------
+// Запоминаем полученные тики в потоке
+// -----------------------------------
+function save_new_tick(tick){
+  if(!(tick.symbol in ticks_data)){
+    ticks_data[tick.symbol] = Array();
+  }
+  ticks_data[tick.symbol].push([tick.epoch*1000,parseFloat(tick.quote)]);
+  if(ticks_data[tick.symbol].length > MAX_TICKS){
+    ticks_data[tick.symbol].shift();
+  }
+
+  // -----------------
+  // Создаем диаграмму
+  // -----------------
+  if($("#chart_" + tick.symbol).length < 1){
+    create_chart(tick.symbol);
+  }
+}
+// -------------------------------------
+// Запоминаем полученные тики по истории
+// -------------------------------------
+function save_new_ticks(symbol, history){
+  for(var i=0; i<history.prices.length; i++){
+    var tick = {
+      symbol: symbol,
+      quote: history.prices[i],
+      epoch: history.times[i],
+    };
+    save_new_tick(tick);
+  }
+}
+// ----------------------------------
+// Если приходят какие то тики,
+// то добавляем айди потоков в массив
+// ----------------------------------
+function check_subscribed_ticks(symbol, id){
+  for(var i=0; i<subscribed_tick_ids.length; i++){
+    if(subscribed_tick_ids[i][0] === symbol && subscribed_tick_ids[i][1] === id){
+      return;
+    }
+  }
+  subscribed_tick_ids.push([symbol, id]);
+  // ------------------------------------------
+  // Запрашиваем историю по тикам для контракта
+  // ------------------------------------------
+  get_ticks_history(symbol);
+}
+// ----------------------------
+// Запрашиваем историю по тикам
+// ----------------------------
+function get_ticks_history(symbol){
+  send({
+    "ticks_history": symbol,
+    "end": "latest",
+    "start": 1,
+    "style": "ticks",
+    "adjust_start_time": 1,
+    "count": MAX_TICKS
+  })
+}
+// ---------------------------------
+// Сгруппировать возможные контракты
+// Вывести возможные контракты
+// ---------------------------------
+function show_active_symbols(){
+  var result = {};
+  var container = $("#active_symbols");
+  for(var i=0; i<active_symbols.length; i++){
+    var active_symbol = active_symbols[i];
+    // ------
+    // Маркет
+    // ------
+    var market = active_symbol.market;
+    var market_container = container.find("#market_" + market);
+    if((market_container).length < 1){
+      container.append($(
+        `<div class='market' id='market_${market}'>
+          <h2>${active_symbol.market_display_name}</h2>
+        </div>`)
+      );
+    }
+    // ---------
+    // Субмаркет
+    // ---------
+    var submarket = active_symbol.submarket;
+    market_container = container.find("#market_" + market);
+    var submarket_container = market_container.find("#submarket_" + submarket);
+    if((submarket_container).length < 1){
+      market_container.append($(
+        `<div class='submarket' id='submarket_${submarket}'>
+          <h3>${active_symbol.submarket_display_name}</h3>
+        </div>`)
+      );
+    }
+    // ------
+    // Индекс
+    // ------
+    var symbol = active_symbol.symbol;
+    submarket_container = market_container.find("#submarket_" + submarket);
+    var symbol_container = submarket_container.find("#symbol_" + symbol);
+    if((symbol_container).length < 1){
+      submarket_container.append($(
+        `<div class='symbol' id='symbol_${symbol}'>
+          <label for='symbol_${symbol}_checkbox'>
+            <input type='checkbox' name='symbol_${symbol}' class='checkbox_symbol' id='symbol_${symbol}_checkbox' data-symbol='${symbol}' onchange='subscribe_ticks_stream()' >
+            ${active_symbol.display_name}
+          </label>
+        </div>`)
+      );
+    }
+  }
+  return result;
+}
+// ----------
+// Пингуем ws
+// ----------
+function ping(){
+  if(ws !== null){
+    if(active_symbols === null){
+      get_active_symbols();
+      return;
+    }
+    send({ping: 1});
+  }
+}
+function send(msg){
+  ws.send(JSON.stringify(msg)); // {ticks:'R_100'}
+}
+// -----------------------------------------
+// Проверить все тиковые потоки и на нужные
+// подписаться (где стоит галка), а от
+// ненужных - отписаться
+// -----------------------------------------
+function subscribe_ticks_stream(){
+  $(".symbol .checkbox_symbol").each(function(){
+    var symbol = $(this).attr("data-symbol");
+    var subscribe = 0;
+    if($(this).prop("checked")){
+      // ------------------------------------
+      // Не подписываемся, если уже подписаны
+      // ------------------------------------
+      var already_subscribed = false;
+      for(var i=0; i<subscribed_tick_ids.length; i++){
+        if(subscribed_tick_ids[i][0] === symbol){
+          already_subscribed = true;
+        }
+      }
+      if(!already_subscribed){
+        log("subscribe_ticks_stream", "RUN=>" + symbol);
+        send({
+          ticks: symbol,
+          subscribe: 1,
+        });
+      }
+    }else{
+      for(var i=0; i<subscribed_tick_ids.length; i++){
+        if(subscribed_tick_ids[i][0] === symbol){
+          send({
+            "forget": subscribed_tick_ids[i][1],
+          });
+          subscribed_tick_ids.splice(i, 1);
+          break;
+        }
+      }
+    }
+  })
+/*
+
+*/
+}
+// ----------------------------
+// Получаем возможные контракты
+// ----------------------------
+function get_active_symbols(){
+  send({
+    active_symbols: "brief",
+    product_type: "basic",
+  });
+}
+
+// -----------------------
+// Актуализируем диаграммы
+// -----------------------
+function create_chart(symbol){
+  $("#charts").append($(`<div id="chart_${symbol}"></div>`));
+
+  var lastDate = 0;
+  var data = []
+  var options = {
+    chart: {
+
+      locales: [ru_chart_locale],
+      defaultLocale: 'ru',
+
+      height: 350,
+      type: 'line',
+      animations: {
+        enabled: true,
+        easing: 'linear',
+        dynamicAnimation: {
+          speed: 2000
+        }
+      },
+      toolbar: {
+        show: false
+      },
+      zoom: {
+        enabled: false
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      //curve: 'smooth'
+    },
+    series: [{
+      data: data
+    }],
+    title: {
+      text: symbol,
+      align: 'left'
+    },
+    markers: {
+      size: 0
+    },
+    xaxis: {
+      type: 'datetime',
+    },
+    yaxis: {
+    },
+
+    legend: {
+      show: false
+    },
+  }
+  var chart = new ApexCharts(
+    document.querySelector("#chart_" + symbol),
+    options
+  );
+  chart.render();
+  var dataPointsLength = 10;
+  window.setInterval(function () {
+    chart.updateSeries([{
+      data: ticks_data[symbol]
+    }])
+  }, 2000)
+
+
+}
+
+// ----------------------------
+// Браузер загрузил все ресурсы
+// ----------------------------
+window.onload = function(){
+  init_websocket();
+  setInterval(function(){
+    ping();
+  }, 1000);
+}
+// ---------------------------------------
+// Браузер загрузил HTML и построил дерево
+// ---------------------------------------
+document.addEventListener('DOMContentLoaded', dom_loaded);
+function dom_loaded(){
+}
+// ----------------
+// Уход со страницы
+// ----------------
+window.onbeforeunload = function() {
+  //return "Данные не сохранены. Точно перейти?";
+};
+</script>
+<style type="text/css">
+  .clear{
+    clear:both;
+    width:100%;
+  }
+</style>
+
+</head>
+<body class="custom_bootstrap">
+<div id="active_symbols"></div>
+
+<div id="charts"></div>
+
+
+
+</body>
+</html>

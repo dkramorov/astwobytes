@@ -131,12 +131,11 @@ def edit_rubric(request, action:str, row_id:int = None, *args, **kwargs):
             else:
                 context['error'] = 'Недостаточно прав'
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
 
         if action == 'create' or (action == 'edit' and row):
-            analogs = None
             if action == 'create':
                 if mh.permissions['create']:
                     mh.row = mh.model()
@@ -268,12 +267,11 @@ def edit_genre(request, action:str, row_id:int = None, *args, **kwargs):
             else:
                 context['error'] = 'Недостаточно прав'
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
 
         if action == 'create' or (action == 'edit' and row):
-            analogs = None
             if action == 'create':
                 if mh.permissions['create']:
                     mh.row = mh.model()
@@ -411,12 +409,11 @@ def edit_event(request, action:str, row_id:int = None, *args, **kwargs):
             else:
                 context['error'] = 'Недостаточно прав'
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
 
         if action == 'create' or (action == 'edit' and row):
-            analogs = None
             if action == 'create':
                 if mh.permissions['create']:
                     mh.row = mh.model()
@@ -433,7 +430,7 @@ def edit_event(request, action:str, row_id:int = None, *args, **kwargs):
         # --------------------
         # Загрузка изображения
         # --------------------
-        if action == 'img' and request.FILES:
+        elif action == 'img' and request.FILES:
             mh.uploads()
 
     if mh.row:
@@ -559,12 +556,11 @@ def edit_place(request, action:str, row_id:int = None, *args, **kwargs):
             else:
                 context['error'] = 'Недостаточно прав'
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
 
         if action == 'create' or (action == 'edit' and row):
-            analogs = None
             if action == 'create':
                 if mh.permissions['create']:
                     mh.row = mh.model()
@@ -704,12 +700,11 @@ def edit_seance(request, action:str, row_id:int = None, *args, **kwargs):
             else:
                 context['error'] = 'Недостаточно прав'
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
 
         if action == 'create' or (action == 'edit' and row):
-            analogs = None
             if action == 'create':
                 if mh.permissions['create']:
                     mh.row = mh.model()

@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block content %}
-<h3>{{ singular_obj }}<br /><small>{{ action_create }} {{ rp_singular_obj }}</small></h3>
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
 <!-- START row-->
@@ -35,11 +35,47 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-lg-2 control-label">Телефон</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Телефон" class="form-control phone" name="customuser.phone" value="{% if row.customuser.phone %}{{ row.customuser.phone }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-2 control-label">Email</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Email" class="form-control" name="email" value="{% if row.email %}{{ row.email }}{% endif %}" autocomplete="off" data-parsley-type="email">
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Изображение</label>
+            <div class="col-lg-10">
+              <img src="{{ row.customuser.thumb }}" class="img-responsive" id="preview_img">
+            </div>
+          </div>
+
+          {% if row %}
+          <fieldset>
+            <div class="form-group">
+              <label class="col-sm-2 control-label"><small>Загрузка изображения</small></label>
+              <div class="col-sm-10">
+                <div id="upload-drop-files" class="box-placeholder text-center">
+                  <p>
+                    <em class="fa fa-cloud-upload fa-2x"></em>
+                  </p>Перетащите файл сюда или
+                  <div class="btn-link form-file">выберите файл для загрузки
+                    <input id="upload-select-files" type="file" name="path">
+                  </div>
+                </div>
+                <div id="progressbar-files" class="progress hidden">
+                  <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
+                </div>
+                <input type="text" placeholder="Загрузить по ссылке" class="form-control" name="grab_img_by_url" value="" autocomplete="off">
+              </div>
+            </div>
+          </fieldset>
+          {% endif %}
+
           <div class="form-group">
             <label class="col-lg-2 control-label">Пароль</label>
             <div class="col-lg-10">
@@ -70,6 +106,12 @@
                   <span class="fa fa-check"></span> В штате
                 </label>
               </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Позиция</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Позиция" class="form-control" name="customuser.position" value="{% if row.customuser.position %}{{ row.customuser.position }}{% endif %}" autocomplete="off">
             </div>
           </div>
           <div class="form-group">
@@ -134,6 +176,9 @@
           },{
             status: status,
           });
+          // Обновление ссылок
+          update_links(r);
+
         }).fail(function() {
           $.notify({
             message: msg,
@@ -144,6 +189,45 @@
         //отмена действия по умолчанию для кнопки submit
         e.preventDefault();
       });
+      function update_links(r){
+        var thumb = r['row']['customuser']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      {% if row %}
+        var progressbar = $('#progressbar-files'),
+          bar         = progressbar.find('.progress-bar-files'),
+          settings    = {
+            action: '{% url "login:edit_user" "img" row.id %}', // upload url
+            allow : '*.*',
+            param: 'img',
+            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+            loadstart: function() {
+              bar.css('width', '0%').text('0%');
+              progressbar.removeClass('hidden');
+            },
+            progress: function(percent) {
+              percent = Math.ceil(percent);
+              bar.css('width', percent+'%').text(percent+'%');
+            },
+            allcomplete: function(response) {
+              bar.css('width', '100%').text('100%');
+              setTimeout(function(){
+                progressbar.addClass('hidden');
+              }, 750);
+              // Upload Completed
+              //alert(response);
+
+              // Обновление ссылок
+              var r = JSON.parse(response);
+              update_links(r);
+            }
+          };
+        var select = new $.upload.select($('#upload-select-files'), settings),
+        drop   = new $.upload.drop($('#upload-drop-files'), settings);
+      {% endif %}
     });
   </script>
 {% endblock %}

@@ -7,17 +7,17 @@ from django import template
 from django.conf import settings
 from django.core.cache import cache
 
+from apps.main_functions.catcher import defiz_phone
+
 register = template.Library()
 
-#################################################
-# Ставим дефизы для телефона
-#################################################
-@register.filter(name="defizize")
+@register.filter(name = 'defizize')
 def defizize(item):
-  new_phone = defiz_phone(item)
-  if new_phone:
-    item = new_phone
-  return item
+    """Ставим дефизы для телефона"""
+    new_phone = defiz_phone(item)
+    if new_phone:
+        item = new_phone
+    return item
 
 #################################################
 # Убираем из текста все кавычки и спец символы

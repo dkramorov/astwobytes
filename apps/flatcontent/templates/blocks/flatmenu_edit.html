@@ -1,0 +1,244 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
+<link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<!-- START row-->
+<div class="row">
+  <div class="col-sm-12">
+    <!-- START panel-->
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <input type="hidden" name="state" value="1" />
+        <input type="hidden" name="container" value="{{ container.id }}" />
+
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Название</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Название" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Меню</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Меню" class="form-control" name="link" value="{% if row.container %}{{ row.container.name }}{% else %}{{ container.name }}{% endif %}" autocomplete="off" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Описание</label>
+            <div class="col-lg-10">
+              <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Ссылка</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Ссылка" class="form-control" name="link" value="{% if row.link %}{{ row.link }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="blank" {% if row.blank %} checked{% endif %} autocomplete="off">
+                  <span class="fa fa-check"></span> Открывать ссылку в новом окне
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Иконка</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Иконка" class="form-control" name="icon" value="{% if row.icon %}{{ row.icon }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Title</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Title" class="form-control" name="title" value="{% if row.title %}{{ row.title }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Description</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Description" class="form-control" name="link" value="{% if row.description %}{{ row.description }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Keywords</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Keywords" class="form-control" name="keywords" value="{% if row.keywords %}{{ row.keywords }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Тег</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Изображение</label>
+            <div class="col-lg-10">
+              <img src="{{ row.thumb }}" class="img-responsive" id="preview_img">
+            </div>
+          </div>
+
+          {% if row %}
+          <fieldset>
+            <div class="form-group">
+              <label class="col-sm-2 control-label"><small>Загрузка изображения</small></label>
+              <div class="col-sm-10">
+                <div id="upload-drop-files" class="box-placeholder text-center">
+                  <p>
+                    <em class="fa fa-cloud-upload fa-2x"></em>
+                  </p>Перетащите файл сюда или
+                  <div class="btn-link form-file">выберите файл для загрузки
+                    <input id="upload-select-files" type="file" name="path">
+                  </div>
+                </div>
+                <div id="progressbar-files" class="progress hidden">
+                  <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
+                </div>
+                <input type="text" placeholder="Загрузить по ссылке" class="form-control" name="grab_img_by_url" value="" autocomplete="off">
+              </div>
+            </div>
+          </fieldset>
+          {% endif %}
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Позиция</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Позиция" class="form-control" name="position" value="{% if row.position %}{{ row.position }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="is_active" {% if row.is_active or not row %} checked{% endif %} autocomplete="off">
+                  <span class="fa fa-check"></span> Включен
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <div class="col-lg-6 col-sm-6 padding-tb5">
+            <button type="submit" class="btn btn-labeled btn-success">
+              <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
+            </button>
+          </div>
+          <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+            <a class="btn btn-labeled btn-danger" href="{{ root_url }}">
+              <span class="btn-label"><i class="fa fa-times"></i></span>Вернуться
+            </a>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </form>
+    </div>
+    <!-- END panel-->
+  </div>
+</div>
+<!-- END row-->
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/redactor/jquery.browser.js"></script>
+  <script src="/static/redactor/redactor.js"></script>
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+          // Обновление ссылок
+          update_links(r);
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+      $("#description_redactor").redactor({
+        //air: true,
+      });
+
+      function update_links(r){
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      {% if row %}
+        var progressbar = $('#progressbar-files'),
+          bar         = progressbar.find('.progress-bar-files'),
+          settings    = {
+            action: '{% url "flatcontent:edit_container" ftype "img" row.id %}', // upload url
+            allow : '*.*',
+            param: 'img',
+            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+            loadstart: function() {
+              bar.css('width', '0%').text('0%');
+              progressbar.removeClass('hidden');
+            },
+            progress: function(percent) {
+              percent = Math.ceil(percent);
+              bar.css('width', percent+'%').text(percent+'%');
+            },
+            allcomplete: function(response) {
+              bar.css('width', '100%').text('100%');
+              setTimeout(function(){
+                progressbar.addClass('hidden');
+              }, 750);
+              // Upload Completed
+              //alert(response);
+
+              // Обновление ссылок
+              var r = JSON.parse(response);
+              update_links(r);
+            }
+          };
+        var select = new $.upload.select($('#upload-select-files'), settings),
+        drop   = new $.upload.drop($('#upload-drop-files'), settings);
+      {% endif %}
+    });
+  </script>
+{% endblock %}

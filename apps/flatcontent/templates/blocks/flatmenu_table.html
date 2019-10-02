@@ -1,0 +1,195 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+
+  var pathFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var data = cell.getRow().getData();
+    var value = cell.getValue();
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      result += " <a class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
+    }
+    result += "</div>";
+    return result;
+  };
+
+  var linkFormatter = function(cell, formatterParams, onRendered){
+    var value = cell.getValue();
+    var pk = cell.getData()['id'];
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      result += " <a class='btn' target='_blank' href='{{ root_url }}" + pk + "/'>" + value + "</a> ";
+    }
+    result += "</div>";
+    return result;
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+/*
+      {
+        formatter: "responsiveCollapse",
+        width: 30,
+        minWidth: 30,
+        align: "center",
+        resizable: false,
+        headerSort: false,
+      },
+*/
+      {
+        rowHandle:true,
+        formatter:"handle",
+        headerSort:false,
+        frozen:true,
+        width:30,
+        minWidth:30
+      },
+      {
+        title: "ID",
+        field: "id",
+        sorter: "number",
+        align: "center",
+        headerFilterPlaceholder: "ID",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 80,
+      },
+      {
+        title: "Название",
+        field: "name",
+        headerFilterPlaceholder: "Название",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Меню",
+        field: "container",
+        headerFilterPlaceholder: "Меню",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Title",
+        field: "title",
+        headerFilterPlaceholder: "Title",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Description",
+        field: "description",
+        headerFilterPlaceholder: "Description",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Keywords",
+        field: "keywords",
+        headerFilterPlaceholder: "Keywords",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Ссылка",
+        field: "link",
+        headerFilterPlaceholder: "Ссылка",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: linkFormatter,
+        minWidth: 150,
+      },
+      {
+        title: "Новое окно",
+        field: "blank",
+        editor: "select",
+        headerFilterPlaceholder: "Новое окно",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        formatter: booleanFormatter,
+        width: 110,
+      },
+      {
+        title: "Иконка",
+        field: "icon",
+        headerFilterPlaceholder: "Иконка",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Изображение",
+        field: "img",
+        headerSort: false,
+        formatter: imgFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Тег",
+        field: "tag",
+        headerFilterPlaceholder: "Тег",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Включен",
+        field: "is_active",
+        editor: "select",
+        headerFilterPlaceholder: "Включен",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        formatter: booleanFormatter,
+        width: 110,
+      },
+      {
+        title: "Позиция",
+        field: "position",
+        sorter: "number",
+        align: "center",
+        headerFilterPlaceholder: "Позиция",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 90,
+      },
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsFormatter,
+        width: 100,
+      },
+    ],
+  });
+});
+</script>
+{% endblock %}

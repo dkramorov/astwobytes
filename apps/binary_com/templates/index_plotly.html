@@ -1,0 +1,563 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<link media="all" rel="stylesheet" href='{% static "css/custom_bootstrap.min.css" %}' />
+
+<script type="text/javascript" src='{% static "js/jquery-3.3.1.min.js" %}'></script>
+<script src='{% static "js/plotly.min.js" %}'></script>
+
+<script type='text/javascript'>
+// ---------------------------------------------------
+// SMA: Простое скользящее среднее
+// Это тоже самое, что и среднее арифметическое
+// points = все точки (median prices)
+// cur_position - текущая позиция (последняя?)
+// diff - за сколько временных интервалов рассчитываем
+// ---------------------------------------------------
+function sma(points, cur_position, diff){
+  var result = 0;
+  // --------------------------
+  // diff вычитаем 1 т/к у него
+  // нет нулевого индекса
+  // --------------------------
+  var count = cur_position - (diff-1);
+  if(count < 0){
+    return null;
+  }
+  // --------------------------
+  // Нужно считать включительно
+  // последний пункт
+  // --------------------------
+  var i = cur_position
+  while(i >= count){
+    result += parseFloat(points[i]);
+    i -= 1;
+  }
+  result = result/diff;
+  return result
+}
+//################################################
+// Стандартное отклонение (standard deviation)
+// points = все точки (median prices)
+// cur_position - текущая позиция (последняя?)
+// diff - за сколько временных интервалов рассчитываем
+//################################################
+// Пример нахождения стандартного отклонения
+// от 10 до 70 с шагом 10
+//  10   20,  30, 40, 50, 60, 70
+//  40   40,  40, 40, 40, 40, 40 - находим среднее
+// -30, -20, -10, 0,  10, 20, 30 - находим разницу
+// между значением и средним 10-40, 20-40...
+// возводим разницу в квадрат -30*-30 = 900
+// 900, 400, 100, 0, 100, 400, 900
+// суммируем квадраты 2800(900+900+400+400+100+100)
+// делим на кол-во элементов выборки минус 1
+// 2800/(7-1) = 467
+// Вычислаем квадратный корень sqrt(467) = 21,6
+//################################################
+// diff вычитаем 1 т/к у него нет нулевого индекса
+//################################################
+function std_dev(points, cur_position, diff){
+  var result = 0;
+  var count = cur_position - (diff-1);
+
+  if(count < 0){
+    return null;
+  }
+  // -------
+  // Среднее
+  // -------
+  var middle = sma(points, cur_position, diff);
+  // ----------------------------------------
+  // Находим разницы между позицией и средним
+  // Сразу возводим их в квадрат
+  // ----------------------------------------
+  var diffs = Array();
+  var i = cur_position;
+  while(i >= count){
+    cur_diff = points[i] - middle;
+    diffs.push(Math.pow(cur_diff, 2));
+    i -= 1;
+  }
+  // -------------------------
+  // Суммируем квадраты разниц
+  // -------------------------
+  var squares_summ = 0;
+  for(var j=0; j<diffs.length; j++){
+    squares_summ += diffs[j];
+  }
+  // -----------------------------------------
+  // Делим на кол-во элементов выборки минус 1
+  // -----------------------------------------
+  var square = squares_summ / (diff-1);
+  // ---------------------------
+  // Вычисляем квадратный корень
+  // ---------------------------
+  result = Math.sqrt(square);
+  return result;
+}
+
+//################################################
+// Bollinger Bands
+// ML = sma(points, cur_position, diff)
+// TL(top_line) = ML(middle_line) + D * std_dev
+// BL(bottom_line) = ML(middle_line) - D * std_dev
+//################################################
+// D = число стандартных отклонений
+// diff вычитаем 1 т/к у него нет нулевого индекса
+//################################################
+function bollinger_bands(points, cur_position, diff, D){
+  var result = Array();
+  var count = cur_position - (diff-1);
+
+  if(count < 0){
+    return [null, null, null];
+  }
+
+  var ml = sma(points, cur_position, diff);
+  var standard_deviation = std_dev(points, cur_position, diff);
+  var tl = ml + D * standard_deviation;
+  var bl = ml - D * standard_deviation;
+  result = [tl, ml, bl];
+  return result;
+}
+
+function log(func, msg){
+  console.log(func, "=>", msg);
+}
+var ws_token = "S2CdZcfFPZ6Q0A2"
+var authorized = false;
+var ws = null;
+var active_symbols = null;
+var subscribed_tick_ids = Array(); // по каким контрактам подписаны на тики
+var ticks_data = {};
+// ---------
+// Константы
+// ---------
+var MAX_TICKS = 1000;
+var BOLLINGER_BANDS_STEPS = 20;
+var STANDARD_DEVIATIONS = 2;
+
+// -------------
+// Инициализация
+// -------------
+function init_websocket(){
+  var ws_instance = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089&l=RU');
+  ws_instance.onopen = function(evt) {
+    log("ws_instance.onopen", "ws opened");
+    ws = ws_instance;
+  };
+  ws_instance.onmessage = function(msg) {
+    var data = JSON.parse(msg.data);
+    switch(data.msg_type){
+      case 'ping':
+        return;
+      case 'authorize':
+        authorized = data.authorize;
+        show_account();
+        return;
+      case 'forget':
+        log("ws_instance.onmessage", "forget subscribe");
+        return;
+      case 'active_symbols':
+        active_symbols = data.active_symbols;
+        show_active_symbols();
+        break;
+      case 'tick':
+        save_new_tick(data.tick);
+        check_subscribed_ticks(data.tick.symbol, data.subscription.id);
+        //break;
+        return;
+      case 'history':
+        save_new_ticks(data.echo_req.ticks_history, data.history);
+      default:
+        break;
+    }
+    log("ws_instance.onmessage", data);
+  };
+}
+// -----------------------------------
+// Запоминаем полученные тики в потоке
+// -----------------------------------
+function save_new_tick(tick){
+  if(!(tick.symbol in ticks_data)){
+    ticks_data[tick.symbol] = Array();
+  }
+  // -----------------
+  // timestamp to date
+  // -----------------
+  var date = new Date();
+  date.setTime(tick.epoch*1000);
+
+  ticks_data[tick.symbol].push([date, parseFloat(tick.quote)]);
+  if(ticks_data[tick.symbol].length > MAX_TICKS){
+    ticks_data[tick.symbol].shift();
+  }
+}
+// -------------------------------------
+// Запоминаем полученные тики по истории
+// -------------------------------------
+function save_new_ticks(symbol, history){
+  // ---------------
+  // Обнуляем массив
+  // ---------------
+  ticks_data[symbol] = Array();
+  // ---------------------
+  // Подготавливаем массив
+  // ---------------------
+  for(var i=0; i<history.prices.length; i++){
+    var tick = {
+      symbol: symbol,
+      quote: history.prices[i],
+      epoch: history.times[i],
+    };
+    save_new_tick(tick);
+  }
+  // -----------------
+  // Создаем диаграмму
+  // -----------------
+  if($("#chart_" + tick.symbol).length < 1){
+    create_chart(tick.symbol);
+  }
+}
+// ----------------------------------
+// Если приходят какие то тики,
+// то добавляем айди потоков в массив
+// ----------------------------------
+function check_subscribed_ticks(symbol, id){
+  for(var i=0; i<subscribed_tick_ids.length; i++){
+    if(subscribed_tick_ids[i][0] === symbol && subscribed_tick_ids[i][1] === id){
+      return;
+    }
+  }
+  subscribed_tick_ids.push([symbol, id]);
+  // ------------------------------------------
+  // Запрашиваем историю по тикам для контракта
+  // ------------------------------------------
+  get_ticks_history(symbol);
+}
+// ----------------------------
+// Запрашиваем историю по тикам
+// ----------------------------
+function get_ticks_history(symbol){
+  send({
+    "ticks_history": symbol,
+    "end": "latest",
+    "start": 1,
+    "style": "ticks",
+    "adjust_start_time": 1,
+    "count": MAX_TICKS,
+  })
+}
+// ---------------------------------
+// Показываем информацию об аккаунте
+// ---------------------------------
+function show_account(){
+  $("#authorized").html(`
+    <p>Баланс: ${authorized.balance}</p>
+    <p>email: ${authorized.email}</p>
+    <p>is_virtual: ${authorized.is_virtual}</p>
+    <p>scopes: ${authorized.scopes.join(", ")}</p>
+  `);
+}
+// ---------------------------------
+// Сгруппировать возможные контракты
+// Вывести возможные контракты
+// ---------------------------------
+function show_active_symbols(){
+  var result = {};
+  var container = $("#active_symbols");
+  for(var i=0; i<active_symbols.length; i++){
+    var active_symbol = active_symbols[i];
+    // ------
+    // Маркет
+    // ------
+    var market = active_symbol.market;
+    var market_container = container.find("#market_" + market);
+    if((market_container).length < 1){
+      container.append($(
+        `<div class='market' id='market_${market}'>
+          <h2>${active_symbol.market_display_name}</h2>
+        </div>`)
+      );
+    }
+    // ---------
+    // Субмаркет
+    // ---------
+    var submarket = active_symbol.submarket;
+    market_container = container.find("#market_" + market);
+    var submarket_container = market_container.find("#submarket_" + submarket);
+    if((submarket_container).length < 1){
+      market_container.append($(
+        `<div class='submarket' id='submarket_${submarket}'>
+          <h3>${active_symbol.submarket_display_name}</h3>
+        </div>`)
+      );
+    }
+    // ------
+    // Индекс
+    // ------
+    var symbol = active_symbol.symbol;
+    submarket_container = market_container.find("#submarket_" + submarket);
+    var symbol_container = submarket_container.find("#symbol_" + symbol);
+    if((symbol_container).length < 1){
+      submarket_container.append($(
+        `<div class='symbol' id='symbol_${symbol}'>
+          <label for='symbol_${symbol}_checkbox'>
+            <input type='checkbox' name='symbol_${symbol}' class='checkbox_symbol' id='symbol_${symbol}_checkbox' data-symbol='${symbol}' onchange='subscribe_ticks_stream()' >
+            ${active_symbol.display_name}
+          </label>
+        </div>`)
+      );
+    }
+  }
+  return result;
+}
+// ----------
+// Пингуем ws
+// ----------
+function ping(){
+  if(ws !== null){
+    if(active_symbols === null){
+      get_active_symbols();
+      return;
+    }
+    if(!authorized){
+      authorize();
+      return;
+    }
+    send({ping: 1});
+  }
+}
+// -----------
+// Авторизация
+// -----------
+function authorize(){
+  send({
+    "authorize": ws_token,
+  });
+}
+
+function send(msg){
+  ws.send(JSON.stringify(msg)); // {ticks:'R_100'}
+}
+// -----------------------------------------
+// Проверить все тиковые потоки и на нужные
+// подписаться (где стоит галка), а от
+// ненужных - отписаться
+// -----------------------------------------
+function subscribe_ticks_stream(){
+  $(".symbol .checkbox_symbol").each(function(){
+    var symbol = $(this).attr("data-symbol");
+    var subscribe = 0;
+    if($(this).prop("checked")){
+      // ------------------------------------
+      // Не подписываемся, если уже подписаны
+      // ------------------------------------
+      var already_subscribed = false;
+      for(var i=0; i<subscribed_tick_ids.length; i++){
+        if(subscribed_tick_ids[i][0] === symbol){
+          already_subscribed = true;
+        }
+      }
+      if(!already_subscribed){
+        log("subscribe_ticks_stream", "RUN=>" + symbol);
+        send({
+          ticks: symbol,
+          subscribe: 1,
+        });
+      }
+    }else{
+      for(var i=0; i<subscribed_tick_ids.length; i++){
+        if(subscribed_tick_ids[i][0] === symbol){
+          send({
+            "forget": subscribed_tick_ids[i][1],
+          });
+          subscribed_tick_ids.splice(i, 1);
+          break;
+        }
+      }
+    }
+  });
+}
+// ----------------------------
+// Получаем возможные контракты
+// ----------------------------
+function get_active_symbols(){
+  send({
+    active_symbols: "brief",
+    product_type: "basic",
+  });
+}
+
+// -----------------
+// Создаем диаграмму
+// -----------------
+function create_chart(symbol){
+  $("#charts").append($(`<div id="chart_${symbol}"></div>`));
+  var time = new Date();
+  var data = [{
+    x: [],
+    y: [],
+    mode: 'lines',
+    line: {color: '#80CAF6'},
+    name: symbol, // 0
+  },{
+    x: [],
+    y: [],
+    mode: 'lines',
+    line: {color: '#DF56F1'},
+    name: "sma", // 1
+  },{
+    x: [],
+    y: [],
+    mode: 'lines',
+    line: {color: '#999999'},
+    name: "bollinger_top", // 2
+  },{
+    x: [],
+    y: [],
+    mode: 'lines',
+    line: {color: '#999999'},
+    name: "bollinger_middle", // 3
+  },{
+    x: [],
+    y: [],
+    mode: 'lines',
+    line: {color: '#999999'},
+    name: "bollinger_bottom", // 4
+  }];
+
+  var prices = Array();
+  for(var i=0; i<ticks_data[symbol].length; i++){
+    prices.push(ticks_data[symbol][i][1]);
+  }
+
+  var tick = null;
+  for(var i=0; i<ticks_data[symbol].length; i++){
+    tick = ticks_data[symbol][i];
+    data[0].x.push(tick[0]);
+    data[0].y.push(tick[1]);
+    data[1].x.push(tick[0]);
+    data[1].y.push(sma(prices, i, 5));
+    // -------------------
+    // Линии болленджера
+    // top, middle, bottom
+    // -------------------
+    var bb = bollinger_bands(prices, i, BOLLINGER_BANDS_STEPS, STANDARD_DEVIATIONS);
+    data[2].x.push(tick[0]);
+    data[3].x.push(tick[0]);
+    data[4].x.push(tick[0]);
+    data[2].y.push(bb[0]);
+    data[3].y.push(bb[1]);
+    data[4].y.push(bb[2]);
+  }
+
+  Plotly.plot('chart_' + symbol, data);
+
+  var interval = setInterval(function() {
+
+    var update = {
+      x:  [[]],
+      y: [[]],
+    };
+    var update_sma = {
+      x:  [[]],
+      y: [[]],
+    };
+    var update_bollinger_top = {
+      x:  [[]],
+      y: [[]],
+    };
+    var update_bollinger_middle = {
+      x:  [[]],
+      y: [[]],
+    };
+    var update_bollinger_bottom = {
+      x:  [[]],
+      y: [[]],
+    };
+    var cur_tick = null;
+
+    var prices = Array();
+    for(var i=0; i<ticks_data[symbol].length; i++){
+      prices.push(ticks_data[symbol][i][1]);
+    }
+
+    for(var i=0; i<ticks_data[symbol].length; i++){
+      cur_tick = ticks_data[symbol][i];
+      if(cur_tick[0] > tick[0]){
+        tick = cur_tick;
+        update.x[0].push(tick[0]);
+        update.y[0].push(tick[1]);
+        update_sma.x[0].push(tick[0]);
+        update_sma.y[0].push(sma(prices, i, 5));
+        // -------------------
+        // Линии болленджера
+        // top, middle, bottom
+        // -------------------
+        var bb = bollinger_bands(prices, i, BOLLINGER_BANDS_STEPS, STANDARD_DEVIATIONS);
+        update_bollinger_top.x[0].push(tick[0]);
+        update_bollinger_middle.x[0].push(tick[0]);
+        update_bollinger_bottom.x[0].push(tick[0]);
+        update_bollinger_top.y[0].push(bb[0]);
+        update_bollinger_middle.y[0].push(bb[1]);
+        update_bollinger_bottom.y[0].push(bb[2]);
+      }
+    }
+    Plotly.extendTraces('chart_' + symbol, update, [0]);
+    Plotly.extendTraces('chart_' + symbol, update_sma, [1]);
+    Plotly.extendTraces('chart_' + symbol, update_bollinger_top, [2]);
+    Plotly.extendTraces('chart_' + symbol, update_bollinger_middle, [3]);
+    Plotly.extendTraces('chart_' + symbol, update_bollinger_bottom, [4]);
+    //if(cnt === 100) clearInterval(interval);
+  }, 1000);
+}
+
+// ----------------------------
+// Браузер загрузил все ресурсы
+// ----------------------------
+window.onload = function(){
+  init_websocket();
+  setInterval(function(){
+    ping();
+  }, 1000);
+}
+// ---------------------------------------
+// Браузер загрузил HTML и построил дерево
+// ---------------------------------------
+document.addEventListener('DOMContentLoaded', dom_loaded);
+function dom_loaded(){
+}
+// ----------------
+// Уход со страницы
+// ----------------
+window.onbeforeunload = function() {
+  //return "Данные не сохранены. Точно перейти?";
+};
+</script>
+<style type="text/css">
+  .clear{
+    clear:both;
+    width:100%;
+  }
+</style>
+
+</head>
+<body class="custom_bootstrap">
+<div id="authorized"></div>
+<div id="active_symbols"></div>
+
+<div id="charts"></div>
+
+
+<!--
+https://plot.ly/javascript/streaming/
+
+https://github.com/plotly/documentation/tree/source-design-merge/_posts/plotly_js/streaming/
+-->
+</body>
+</html>

@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+
+    columns:[
+      {
+        title: "ID",
+        field: "id",
+        sorter: "number",
+        align: "center",
+        headerFilterPlaceholder: "ID",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 80,
+      },
+      {
+        title: "Название",
+        field: "name",
+        headerFilterPlaceholder: "Название",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsFormatter,
+        width: 100,
+      },
+    ],
+  });
+});
+</script>
+{% endblock %}

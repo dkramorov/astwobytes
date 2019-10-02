@@ -2,8 +2,11 @@
 from django.conf import settings
 from django.db.models import Q
 
-def tabulator_filters_and_sorters(request):
-    """Приводим фильтры и сортировку из request к нужному виду"""
+def tabulator_filters_and_sorters(request, custom_position_field: str = None):
+    """Приводим фильтры и сортировку из request к нужному виду
+       custom_position_field для своего поля сортировки, например,
+       user => customuser OneToOneRelation и тогда
+       custom_position_field = customuser__position"""
     result = {'filters': [], 'sorters': [], 'params': {}}
     rvars = None
 
@@ -17,7 +20,12 @@ def tabulator_filters_and_sorters(request):
     rfilters = [rfilter for rfilter in rvars if (rfilter.startswith('filters[') and '[field]' in rfilter)]
     rsorters = [rsorter for rsorter in rvars if (rsorter.startswith('sorters[') and '[field]' in rsorter)]
     for rfilter in rfilters:
-        key = rvars[rfilter]
+        key = rvars[rfilter].replace('.', '__')
+        # ----------------------------
+        # Переопределяем поле position
+        # ----------------------------
+        if key == 'position' and custom_position_field:
+            key = custom_position_field
         value = rvars[rfilter.replace('[field]', '[value]')]
         sort_type = rvars[rfilter.replace('[field]', '[type]')]
         result['params'][key] = value
@@ -46,7 +54,12 @@ def tabulator_filters_and_sorters(request):
         result['filters'].append(item)
 
     for rsorter in rsorters:
-        key = rvars[rsorter]
+        key = rvars[rsorter].replace('.', '__')
+        # ----------------------------
+        # Переопределяем поле position
+        # ----------------------------
+        if key == 'position' and custom_position_field:
+            key = custom_position_field
         value = rvars[rsorter.replace('[field]', '[dir]')]
         if not value in ('asc', 'desc'):
             continue

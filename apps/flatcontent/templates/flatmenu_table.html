@@ -33,9 +33,10 @@ $(document).ready(function(){
 
   var linkFormatter = function(cell, formatterParams, onRendered){
     var value = cell.getValue();
+    var pk = cell.getData()['id'];
     var result = "<div class='padding-rl5 text-center'>";
     if(value){
-      result += " <a class='btn' target='_blank' href='" + value + "'>" + value + "</a> ";
+      result += " <a class='btn' target='_blank' href='{{ root_url }}" + pk + "/'>" + value + "</a> ";
     }
     result += "</div>";
     return result;
@@ -78,6 +79,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Название",
         headerFilter: "input",
         headerFilterFunc: "like",
+        formatter: linkFormatter,
         minWidth: 150,
       },
       {

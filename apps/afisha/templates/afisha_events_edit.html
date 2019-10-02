@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<h3>{{ singular_obj }}<br /><small>{{ action_create }} {{ rp_singular_obj }}</small></h3>
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
 <!-- START row-->
@@ -203,11 +203,11 @@
         e.preventDefault();
       });
 
-      $('#rgenre_select2').select2({
-        placeholder: 'Выберите рубрику жанра',
+      $('#html_msg_select2').select2({
+        placeholder: 'Выберите html-шаблон для отправки',
         width: '100%',
         ajax: {
-          url: "{% url 'afisha:search_genres' %}",
+          {% comment %}url: "{% url 'afisha:search_genres' %}",{% endcomment %}
           cache: false,
           dataType: 'json',
         }

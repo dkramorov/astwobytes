@@ -1,0 +1,27 @@
+{% if perms.spamcha.view_spam_tables %}
+<li{% ifequal menu 'spamcha' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="">
+    <em class="fa fa-envelope"></em>
+    <div class="label label-primary pull-right">4</div>
+    <span class="item-text">Email-рассылка</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'afisha' %} in{% endifequal %}">
+    <li{% ifequal submenu 'spam_tables' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_spam_tables' %}">
+        <span class="item-text">Рассылки</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'email_accounts' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_email_accounts' %}">
+        <span class="item-text">Email-аккаунты</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'black_list' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_black_list' %}">
+        <span class="item-text">Черный список</span>
+      </a>
+    </li>
+  </ul>
+  <!-- END SubMenu item-->
+</li>
+{% endif %}

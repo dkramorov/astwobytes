@@ -2,7 +2,7 @@
   <ol class="breadcrumb">
     <li><a href="{% url 'login:welcome' %}">Главная</a></li>
     {% for crumb in breadcrumbs %}
-      {% if forloop.last %}
+      {% if forloop.last or not crumb.link %}
         <li class="active">{{ crumb.name }}</li>
       {% else %}
         <li><a href="{{ crumb.link }}">{{ crumb.name }}</a></li>

@@ -127,13 +127,12 @@ def edit_file(request, action:str, row_id:int = None, *args, **kwargs):
             else:
                 context['error'] = 'Недостаточно прав'
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         pass_fields = ('path', 'mime')
         mh.files_add('path')
         mh.post_vars(pass_fields=pass_fields)
 
         if action == 'create' or (action == 'edit' and row):
-            analogs = None
             if action == 'create':
                 if mh.permissions['create']:
                     mh.row = mh.model()
@@ -151,7 +150,7 @@ def edit_file(request, action:str, row_id:int = None, *args, **kwargs):
         # Нужно обновить ссылку на файл, если ее нету
         # Если есть файл, нужно обновить mimetype
         # -------------------------------------------
-        if action == 'img' and request.FILES:
+        elif action == 'img' and request.FILES:
             mh.uploads()
             if request.FILES.get('path') and row.path:
                 mime = mimetypes.MimeTypes()

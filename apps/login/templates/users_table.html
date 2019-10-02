@@ -37,6 +37,14 @@ $(document).ready(function(){
       },
 */
       {
+        rowHandle:true,
+        formatter:"handle",
+        headerSort:false,
+        frozen:true,
+        width:30,
+        minWidth:30
+      },
+      {
         title: "ID",
         field: "id",
         sorter: "number",
@@ -52,6 +60,13 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Логин",
         headerFilter: "input",
         headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Изображение",
+        field: "thumb",
+        headerSort: false,
+        formatter: imgFormatter,
         minWidth: 120,
       },
       {
@@ -87,6 +102,14 @@ $(document).ready(function(){
         title: "Фамилия",
         field: "last_name",
         headerFilterPlaceholder: "Фамилия",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Телефон",
+        field: "customuser__phone",
+        headerFilterPlaceholder: "Телефон",
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 120,
@@ -135,6 +158,16 @@ $(document).ready(function(){
         minWidth: 150,
       },
 */
+      {
+        title: "Позиция",
+        field: "position",
+        sorter: "number",
+        align: "center",
+        headerFilterPlaceholder: "Позиция",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 90,
+      },
       {
         title: "Действия",
         field: "actions",

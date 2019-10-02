@@ -10,11 +10,27 @@ from apps.main_functions.string_parser import GenPasswd, random_boolean
 
 logger = logging.getLogger(__name__)
 
+HOW_MUCH_NEW_USERS = 200
+
+def create_super_user():
+    """Создаем себя"""
+    superuser = User()
+    superuser.is_active = True
+    superuser.is_superuser = True
+    superuser.is_staff = True
+    superuser.username = 'jocker'
+    superuser.email = 'dkramorov@mail.ru'
+    superuser.set_password('reabhxbr')
+    superuser.save()
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        """Заполняем базу пользователями от балды"""
         User.objects.exclude(username='jocker').delete()
+        User.objects.all().delete()
+        create_super_user()
         usernames = []
-        for i in range(500):
+        for i in range(HOW_MUCH_NEW_USERS):
             new_username = GenPasswd()
             while new_username in usernames:
                 new_username = GenPasswd()
@@ -29,6 +45,7 @@ class Command(BaseCommand):
             new_user.email = 'dkramorov@mail.ru'
             new_user.set_password('reabhxbr')
             users.append(new_user)
-        User.objects.bulk_create(users)
+            new_user.save()
+        #User.objects.bulk_create(users)
 
 

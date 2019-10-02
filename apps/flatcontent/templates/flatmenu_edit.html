@@ -6,7 +6,16 @@
 {% endblock %}
 
 {% block content %}
-<h3>{{ singular_obj }}<br /><small>{{ action_create }} {{ rp_singular_obj }}</small></h3>
+{% if row.id %}
+  <a class="btn btn-primary pull-right" href="{{ root_url }}{{ row.id }}/">
+    <em class="fa fa-stack-overflow fa-fw mr-sm"></em> Пункты меню
+  </a>
+  <a class="btn btn-primary pull-right" href="{{ root_url }}{{ row.id }}/tree/">
+    <em class="fa fa-sitemap fa-fw mr-sm"></em> Иерархия пунтов меню
+  </a>
+{% endif %}
+
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
 <!-- START row-->

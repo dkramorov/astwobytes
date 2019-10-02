@@ -23,6 +23,7 @@ initialSort:[
 ],
 
 movableRows: {% if rows.0.position %}true{% else %}false{% endif %},
+//movableRows: true,
 rowMoved:function(row){
   var status = 'danger'; // success, warning, info, danger
   var table = row.getTable();

@@ -22,7 +22,7 @@ def get_ftype(ftype):
             return item[0]
     return None
 
-def update_mh_vars(ftype, mh_vars):
+def update_containers_vars(ftype, mh_vars):
     if ftype == 'flatmenu':
         mh_vars.update({
             'singular_obj': 'Меню',
@@ -88,7 +88,20 @@ def update_mh_vars(ftype, mh_vars):
         })
     mh_vars.update({
         'template_prefix': '%s_' % (ftype, ),
-         'submenu': ftype,
+        'submenu': ftype,
+    })
+
+def update_blocks_vars(ftype, mh_vars):
+    if ftype == 'flatmenu':
+        mh_vars.update({
+            'singular_obj': 'Пункт меню',
+            'plural_obj': 'Пункты меню',
+            'rp_singular_obj': 'Пункта меню',
+            'rp_plural_obj': 'Пунктов меню',
+        })
+    mh_vars.update({
+        'template_prefix': 'blocks/%s_' % (ftype, ),
+        'submenu': ftype,
     })
 
 class Containers(Standard):
