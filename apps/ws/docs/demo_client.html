@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>WebSocket demo</title>
+<style type="text/css">
+#chat_table, #chat_table td{
+  border: 1px solid #ccc;
+}
+</style>
+</head>
+<body>
+    <table id="chat_table">
+        <tr>
+            <td><ul id="chat_messages"></ul></td>
+            <td><ul id="chat_users"></ul></td>
+        </tr>
+    </table>
+
+<script type="text/javascript">
+var ws = new WebSocket("ws://127.0.0.1:8888/");
+//var ws = new WebSocket("wss://207.154.244.145:8888/");
+
+// Токен формируется на сервер и присылается в авторизации
+var TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbiI6IjEyMyJ9.rjmXAmnNZqM9IF_yMoGxXzkp1ehdnrWWGhTPUPNZ_AA'; // {'token': '123'}
+// Логин пользователя
+var USER = '123';
+
+function log_msg(text){
+    // Пишем сообщение в документ
+    var messages = document.getElementById('chat_messages'),
+        message = document.createElement('li'),
+        content = document.createTextNode(text);
+    message.appendChild(content);
+    messages.appendChild(message);
+}
+function update_users_list(users_list){
+    // Перезаполняем подключенных польователей
+    var chat_users = document.getElementById('chat_users');
+    while (chat_users.firstChild) {
+        chat_users.removeChild(chat_users.firstChild);
+    }
+    for(i=0; i<users_list.length; i++){
+        var chat_user = document.createElement('li'),
+            content = document.createTextNode(users_list[i]);
+        chat_user.appendChild(content);
+        chat_users.appendChild(chat_user);
+    }
+}
+
+function send_msg(json){
+    // Отправка сообщения через вебсокет
+    // с авторизацией (токен + логин)
+    json['token'] = TOKEN;
+    json['user'] = USER;
+    ws.send(JSON.stringify(json));
+}
+ws.onopen = function() {
+    log_msg('Соединение установлено');
+    send_msg({'action': 'auth'});
+};
+ws.onclose = function(event) {
+    if (event.wasClean) {
+        log_msg('Соединение закрыто');
+    } else {
+        log_msg('Обрыв соединения');
+    }
+    log_msg('Код: ' + event.code + ' причина: ' + event.reason);
+};
+ws.onerror = function(error) {
+    log_msg(error.message);
+};
+ws.onmessage = function (event) {
+    log_msg(event.data);
+    var json = JSON.parse(event.data);
+    var action = json['action'];
+    switch (action) {
+        case 'users_list':
+            update_users_list(json[action]);
+            break;
+        default:
+            break;
+    }
+};
+setInterval(function(){
+    //send_msg({'action': 'ping'});
+    //ws.send('123');
+    //console.log("---send---");
+}, 2000);
+
+</script>
+</body>
+</html>

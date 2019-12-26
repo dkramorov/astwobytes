@@ -1,0 +1,400 @@
+<div class="layout">
+  <!-- Start of ws_navigator -->
+  <div class="ws_navigator">
+    <div class="container">
+      <div class="inside">
+        <div class="nav nav-tab menu">
+          <button class="btn">
+            <img class="avatar-xl" src="/static/img/ups.png">
+          </button>
+          <a href="#members" data-toggle="tab" class="material-icons"><i class="fa fa-user"></i></a>
+          <a href="#discussions" data-toggle="tab" class="active material-icons"><i class="fa fa-comment-o"></i></a>
+          <a href="#notifications" data-toggle="tab" class="f-grow1 material-icons"><i class="fa fa-bell-o"></i></a>
+          <a href="#settings" data-toggle="tab" class="material-icons"><i class="fa fa-cog"></i></a>
+{% comment %}<!--
+          <button class="btn power material-icons"><i class="fa fa-power-off"></i></button>
+-->{% endcomment %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End of ws_nagigator -->
+  <!-- Start of ws_lefty -->
+  <div class="ws_lefty" id="ws_lefty">
+    <div class="container">
+      <div class="col-md-12">
+        <div class="tab-content">
+          <!-- Start of Contacts -->
+          <div class="tab-pane fade" id="members">
+            <div class="search">
+              <form class="form-inline position-relative">
+                <input type="search" class="form-control" id="people" placeholder="Поиск пользователей...">
+                <button type="button" class="btn btn-link loop">
+                  <i class="fa fa-search material-icons"></i>
+                </button>
+              </form>
+              <button class="btn create" data-toggle="modal" data-target="#exampleModalCenter">
+                <i class="fa fa-plus material-icons"></i>
+              </button>
+            </div>
+
+            <div class="contacts">
+              <h1>Контакты</h1>
+              <div class="list-group" id="contacts" role="tablist">
+                <a href="#" class="online contact" data-toggle="list">
+                  <img class="avatar-md" src="/static/img/ups.png">
+                  <div class="status">
+                    <i class="fa fa-circle online material-icons"></i>
+                  </div>
+                  <div class="data">
+                    <h5>Админ Админов</h5>
+                    <p>Програмист</p>
+                  </div>
+                  <div class="person-add">
+                    <i class="fa fa-user material-icons"></i>
+                  </div>
+                </a>
+                <a href="#" class="offline contact" data-toggle="list">
+                  <img class="avatar-md" src="/static/img/ups.png">
+                  <div class="status">
+                    <i class="fa fa-circle offline material-icons"></i>
+                  </div>
+                  <div class="data">
+                    <h5>Агент Агентов</h5>
+                    <p>Агент</p>
+                  </div>
+                  <div class="person-add">
+                    <i class="fa fa-user material-icons"></i>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- End of Contacts -->
+          <!-- Start of Discussions -->
+          <div id="discussions" class="tab-pane fade in active">
+            <div class="search">
+              <form class="form-inline position-relative">
+                <input type="search" class="form-control" id="conversations" placeholder="Поиск бесед...">
+                <button type="button" class="btn btn-link loop">
+                  <i class="fa fa-search material-icons"></i>
+                </button>
+              </form>
+              <button class="btn create material-icons" data-toggle="modal" data-target="#startnewchat">
+                <i class="fa fa-pencil"></i>
+              </button>
+            </div>
+
+            <div class="discussions">
+              <h1>Беседы</h1>
+              <div class="list-group" id="chats" role="tablist">
+                <a href="#list-chat" class="single">
+                  <img class="avatar-md" src="/static/img/ups.png">
+                  <div class="status">
+                    <i class="fa fa-circle online material-icons"></i>
+                  </div>
+                  <div class="new bg-yellow">
+                    <span>+2</span>
+                  </div>
+                  <div class="data">
+                    <h5>Имя человека</h5>
+                    <span>12/12/2019</span>
+                    <p>1234567891011121314...</p>
+                  </div>
+                </a>
+                <a href="#list-empty" class="single">
+                  <img class="avatar-md" src="/static/img/ups.png">
+                  <div class="status">
+                    <i class="fa fa-circle offline material-icons"></i>
+                  </div>
+                  <div class="new bg-pink">
+                    <span>+10</span>
+                  </div>
+                  <div class="data">
+                    <h5>Имя человека</h5>
+                    <span>12/12/2019</span>
+                    <p>Как можно улучшить показ сообщений в чате?</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- End of Discussions -->
+          <!-- Start of Notifications -->
+          <div id="notifications" class="tab-pane fade">
+            <div class="search">
+              <form class="form-inline position-relative">
+                <input type="search" class="form-control" id="notice" placeholder="Поиск задач...">
+                <button type="button" class="btn btn-link loop"><i class="fa fa-search material-icons filter-list"></i></button>
+              </form>
+            </div>
+            <div class="notifications">
+              <h1>Задачи</h1>
+              <div class="list-group" id="alerts" role="tablist">
+                <a href="#" class="notification">
+                  <img class="avatar-md" src="/static/img/ups.png">
+                  <div class="status">
+                    <i class="fa fa-circle online material-icons"></i>
+                  </div>
+                  <div class="data">
+                    <p>Сделать на 1000000 продаж</p>
+                    <span>Окт 17, 2019</span>
+                  </div>
+                </a>
+                <a href="#" class="notification">
+                  <img class="avatar-md" src="/static/img/ups.png">
+                  <div class="status">
+                    <i class="fa fa-circle offline material-icons"></i>
+                  </div>
+                  <div class="data">
+                    <p>Запустить чат</p>
+                    <span>Июл 19, 2019</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- End of Notifications -->
+          {% include "demo/demo_chat/ws_chat_tab_settings.html" %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End of ws_lefty -->
+
+  <div class="ws_chat_window">
+    <div class="tab-content" id="nav-tabContent">
+      <!-- Start of Babble -->
+      <div class="babble tab-pane fade in active show" id="list-chat" role="tabpanel" aria-labelledby="list-chat-list">
+        <!-- Start of Chat -->
+        <div class="chat" id="chat1">
+          <div class="top">
+
+            <div class="col-md-12">
+              <div class="inside">
+                <a href="#">
+                  <img class="avatar-md" src="/static/img/ups.png">
+                </a>
+                <div class="status">
+                  <i class="fa fa-circle material-icons online"></i>
+                </div>
+                <div class="data">
+                  <h5><a href="#">Имя человека</a></h5>
+                  <span>Онлайн</span>
+                </div>
+                <button class="btn connect d-md-block d-none" name="1">
+                  <i class="fa fa-phone material-icons md-30"></i>
+                </button>
+                <button class="btn connect d-md-block d-none" name="1">
+                  <i class="fa fa-video-camera material-icons md-36"></i>
+                </button>
+                <button class="btn d-md-block d-none">
+                  <i class="fa fa-info-circle material-icons md-30"></i>
+                </button>
+                <div class="dropdown">
+                  <button class="btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-ellipsis-v material-icons md-30"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right">
+                    <button class="dropdown-item connect" name="1">
+                      <i class="fa fa-phone material-icons"></i>Голосовой вызов
+                    </button>
+                    <button class="dropdown-item connect" name="1">
+                      <i class="fa fa-video-camera material-icons"></i>Видео вызов
+                    </button>
+                    <hr>
+                    <button class="dropdown-item">
+                      <i class="fa fa-trash material-icons"></i>Очистить историю
+                    </button>
+{% comment %}<!--
+                    <button class="dropdown-item">
+                      <i class="material-icons">block</i>Block Contact
+                    </button>
+                    <button class="dropdown-item">
+                      <i class="material-icons">delete</i>Delete Contact
+                    </button>
+-->{% endcomment %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div class="content" id="content">
+            <div class="col-md-12">
+              <div class="date">
+                <hr>
+                <span>Вчера</span>
+                <hr>
+              </div>
+              <div class="message">
+                <img class="avatar-md" src="/static/img/ups.png">
+                <div class="text-main">
+                  <div class="text-group">
+                    <div class="text">
+                      <p>Проверочное сообщение, прием, прием, прием</p>
+                    </div>
+                  </div>
+                  <span>09:46</span>
+                </div>
+              </div>
+              <div class="message me">
+                <div class="text-main">
+                  <div class="text-group me">
+                    <div class="text me">
+                      <p>Сообщение дошло</p>
+                    </div>
+                  </div>
+                  <span>11:32</span>
+                </div>
+              </div>
+              <div class="message">
+                <img class="avatar-md" src="/static/img/ups.png">
+                <div class="text-main">
+                  <div class="text-group">
+                    <div class="text">
+                      <p>Отлично, считаем проверку успешной, теперь можно начинать пользоваться чатом в промышленных масштабах</p>
+                    </div>
+                  </div>
+                  <span>02:56</span>
+                </div>
+              </div>
+              <div class="message me">
+                <div class="text-main">
+                  <div class="text-group me">
+                    <div class="text me">
+                      <p>Принято!</p>
+                    </div>
+                  </div>
+                  <div class="text-group me">
+                    <div class="text me">
+                      <p>Мы уже пользуемся, теперь надо проверить час с несколькими людьми или широковещательное сообщение</p>
+                    </div>
+                  </div>
+                  <span>10:21</span>
+                </div>
+              </div>
+              <div class="message">
+                <img class="avatar-md" src="/static/img/ups.png">
+                <div class="text-main">
+                  <div class="text-group">
+                    <div class="text">
+                      <p>Это хорошая идея, как будут отправляться файлы?</p>
+                    </div>
+                  </div>
+                  <span>11:07</span>
+                </div>
+              </div>
+              <div class="date">
+                <hr>
+                <span>Сегодня</span>
+                <hr>
+              </div>
+              <div class="message me">
+                <div class="text-main">
+                  <div class="text-group me">
+                    <div class="text me">
+                      <p>Покажи отправку файлов</p>
+                    </div>
+                  </div>
+                  <span>10:21</span>
+                </div>
+              </div>
+              <div class="message">
+                <img class="avatar-md" src="/static/img/ups.png">
+                <div class="text-main">
+                  <div class="text-group">
+                    <div class="text">
+                      <div class="attachment">
+                        <button class="btn attach">
+                          <i class="fa fa-file material-icons md-18"></i>
+                        </button>
+                        <div class="file">
+                          <h5><a href="#">doc.pdf</a></h5>
+                          <span>24kb</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span>11:07</span>
+                </div>
+              </div>
+              <div class="message me">
+                <div class="text-main">
+                  <div class="text-group me">
+                    <div class="text me">
+                      <p>Если сообщение прочитано - галочка!</p>
+                    </div>
+                  </div>
+                  <span><i class="fa fa-check material-icons"></i>10:21</span>
+                </div>
+              </div>
+              <div class="message">
+                <img class="avatar-md" src="/static/img/ups.png">
+                <div class="text-main">
+                  <div class="text-group">
+                    <div class="text typing">
+                      <div class="wave">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="bottom">
+              <form class="position-relative w-100">
+                <textarea class="form-control" placeholder="Ваше сообщение..." rows="1"></textarea>
+                <button class="btn emoticons"><i class="fa fa-smile-o material-icons"></i></button>
+                <button type="submit" class="btn send"><i class="fa fa-location-arrow material-icons"></i></button>
+              </form>
+              <label>
+                <input type="file">
+                <span class="btn attach d-sm-block d-none">
+                  <i class="fa fa-file material-icons"></i>
+                </span>
+              </label>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div class="clearfix"></div>
+
+        </div>
+        <!-- End of Chat -->
+        <div class="clearfix"></div>
+        <!-- Start of Call -->
+        <div class="call" id="call1">
+          <div class="content">
+            <div class="container">
+              <div class="col-md-12">
+                <div class="inside">
+                  <div class="participant">
+                    <img class="avatar-xxl" src="misc/avatar-female-5.jpg" alt="avatar">
+                    <span>Connecting</span>
+                  </div>
+                  <div class="options">
+                    <button class="btn option"><i class="material-icons md-30">mic</i></button>
+                    <button class="btn option"><i class="material-icons md-30">videocam</i></button>
+                    <button class="btn option call-end"><i class="material-icons md-30">call_end</i></button>
+                    <button class="btn option"><i class="material-icons md-30">person_add</i></button>
+                    <button class="btn option"><i class="material-icons md-30">volume_up</i></button>
+                  </div>
+                  <button class="btn back" name="1"><i class="material-icons md-24">chat</i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End of Call -->
+      </div>
+      <!-- End of Babble - may be MANY-->
+    </div>
+  </div>
+</div>
+

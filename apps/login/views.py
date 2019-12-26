@@ -3,7 +3,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
+#from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
@@ -33,6 +34,37 @@ users_vars = {
     'edit_urla': 'edit_user',
     'model': User,
 }
+
+@login_required
+def api(request, action: str = 'users'):
+    """Апи-метод для получения всех данных"""
+    mh_vars = users_vars.copy()
+    #if action == 'users':
+    #    mh_vars = users_vars.copy()
+
+    mh = create_model_helper(mh_vars, request, CUR_APP)
+    # Принудительные права на просмотр
+    #mh.permissions['view'] = True
+    mh.select_related_add('customuser')
+    context = mh.context
+
+    rows = mh.standard_show()
+
+    result = []
+    for row in rows:
+        item = object_fields(row, pass_fields=('password', ))
+        item['folder'] = row.customuser.get_folder()
+        item['thumb'] = row.customuser.thumb()
+        item['name'] = str(row.customuser)
+        item['phone'] = row.customuser.phone
+        result.append(item)
+
+    result = {'data': result,
+              'last_page': mh.raw_paginator['total_pages'],
+              'total_records': mh.raw_paginator['total_records'],
+              'cur_page': mh.raw_paginator['cur_page'],
+              'by': mh.raw_paginator['by'], }
+    return JsonResponse(result, safe=False)
 
 def welcome(request, *args, **kwargs):
     """Страничка входа в админку - авторизация или приветствие"""
@@ -89,14 +121,17 @@ def show_users(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-    # ------------------------
-    # Для включения сортировки
-    # ------------------------
-    if rows:
-        rows[0].position = True
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
+        # ------------------------
+        # Для включения сортировки
+        # ------------------------
+        if rows:
+            rows[0].position = True
+
         result = []
         for row in rows:
             item = object_fields(row, pass_fields=('password', ))
@@ -175,6 +210,14 @@ def edit_user(request, action: str, row_id: int = None, *args, **kwargs):
 
     elif request.method == 'POST':
         pass_fields = ('password', )
+
+        # ---------------------------------------
+        # Исключение, когда редактируешь сам себя
+        # ---------------------------------------
+        if action == 'edit' and not mh.permissions['edit']:
+            mh.permissions['edit'] = True
+            pass_fields = ('password', 'is_active', 'is_staff', 'is_superuser', 'position', )
+
         mh.post_vars(pass_fields=pass_fields)
 
         if action == 'create' or (action == 'edit' and row):
@@ -226,6 +269,55 @@ def edit_user(request, action: str, row_id: int = None, *args, **kwargs):
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+@login_required
+def user_perms(request, row_id: int):
+    """Права пользователя"""
+    mh_vars = users_vars.copy()
+
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'perms')
+    context = mh.context
+    mh.select_related_add('customuser')
+
+    row = mh.get_row(row_id)
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+    mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
+                          kwargs={'action': 'edit', 'row_id': mh.row.id})
+    # ----
+    # POST
+    # ----
+    if request.method == 'POST':
+        result = {}
+        if request.user.has_perm('auth.change_user'):
+            result['success'] = 'Права обновлены'
+            #row.user_permissions.clear()
+            perm_list = []
+            perms_arr = request.POST.getlist('perm')
+            if perms_arr:
+                perm_list = Permission.objects.filter(pk__in=perms_arr)
+            row.user_permissions.set(perm_list)
+        else:
+            result['error'] = 'Недостаточно прав'
+        return JsonResponse(result, safe=False)
+
+    mh.breadcrumbs_add({
+        'link': mh.url_edit,
+        'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+    })
+    edit_perms_link = reverse('%s:%s' % (CUR_APP, 'user_perms'), kwargs={'row_id': mh.row.id})
+    mh.breadcrumbs_add({
+        'link': edit_perms_link,
+        'name': '%s %s' % ('Права', mh.rp_singular_obj),
+    })
+    context['url_edit'] = edit_perms_link
+    context['row'] = mh.row
+
+    user_perms = row.user_permissions.values_list('id', flat=True)
+    context['permissions'] = prepare_perm_list(user_perms)
+
+    template = '%sperms.html' % (mh.template_prefix, )
     return render(request, template, context)
 
 @login_required
@@ -293,7 +385,7 @@ def search_users(request, *args, **kwargs):
 groups_vars = {
     'singular_obj': 'Группа',
     'plural_obj': 'Группы',
-    'rp_singular_obj': 'группу',
+    'rp_singular_obj': 'группы',
     'rp_plural_obj': 'групп',
     'template_prefix': 'groups_',
     'action_create': 'Создание',
@@ -323,9 +415,11 @@ def show_groups(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)
@@ -415,6 +509,117 @@ def edit_group(request, action: str, row_id: int = None, *args, **kwargs):
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
 
+
+@login_required
+def group_perms(request, row_id: int):
+    """Права группы пользователей"""
+    mh_vars = groups_vars.copy()
+
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'perms')
+    context = mh.context
+
+    row = mh.get_row(row_id)
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+    mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
+                          kwargs={'action': 'edit', 'row_id': mh.row.id})
+    # ----
+    # POST
+    # ----
+    if request.method == 'POST':
+        result = {}
+        if request.user.has_perm('auth.change_group'):
+            result['success'] = 'Права обновлены'
+            #row.permissions.clear()
+            perm_list = []
+            perms_arr = request.POST.getlist('perm')
+            if perms_arr:
+                perm_list = Permission.objects.filter(pk__in=perms_arr)
+            row.permissions.set(perm_list)
+        else:
+            result['error'] = 'Недостаточно прав'
+        return JsonResponse(result, safe=False)
+
+    mh.breadcrumbs_add({
+        'link': mh.url_edit,
+        'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+    })
+    edit_perms_link = reverse('%s:%s' % (CUR_APP, 'group_perms'), kwargs={'row_id': mh.row.id})
+    mh.breadcrumbs_add({
+        'link': edit_perms_link,
+        'name': '%s %s' % ('Права', mh.rp_singular_obj),
+    })
+    context['url_edit'] = edit_perms_link
+    context['row'] = mh.row
+
+    group_perms = row.permissions.values_list('id', flat=True)
+    context['permissions'] = prepare_perm_list(group_perms)
+
+    mh.template_prefix = users_vars['template_prefix']
+    template = '%sperms.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+
+def prepare_perm_list(cur_perms):
+    """Подготовить список всех разрешений,
+       проставить имеющиеся разрешения для пользователя/группы
+       permissions = """
+    perms = {}
+    pass_perms = ('content type', 'session', 'custom user', 'permission')
+    permissions = Permission.objects.select_related('content_type').all()
+    for perm in permissions:
+        if not perm.content_type.id in perms:
+            perms[perm.content_type.id] = {'content_type': perm.content_type, 'perms': []}
+        perms[perm.content_type.id]['perms'].append(perm)
+
+    perm_list = [
+        {
+            'id': perms[perm]['content_type'].id,
+            'name': perms[perm]['content_type'].name,
+            'perms': perms[perm]['perms'],
+        } for perm in sorted(perms.keys())
+          if not perms[perm]['content_type'].name in pass_perms]
+    for perm in perm_list:
+        if perm['name'] == 'group':
+            perm['name'] = 'Админка - Группы пользователей'
+        elif perm['name'] == 'user':
+            perm['name'] = 'Админка - Пользователи'
+        perms = []
+        for item in perm['perms']:
+            if item.codename.startswith('add_'):
+                perms.append({
+                    'name': 'Добавление',
+                    'code': 'create',
+                    'id': item.id,
+                    'access': item.id in cur_perms,
+                })
+            elif item.codename.startswith('change_'):
+                perms.append({
+                    'name': 'Изменение',
+                    'code': 'edit',
+                    'id': item.id,
+                    'access': item.id in cur_perms,
+                })
+            elif item.codename.startswith('delete_'):
+                perms.append({
+                    'name': 'Удаление',
+                    'code': 'drop',
+                    'id': item.id,
+                    'access': item.id in cur_perms,
+                })
+            elif item.codename.startswith('view_'):
+                perms.append({
+                    'name': 'Просмотр',
+                    'code': 'view',
+                    # просто, чтобы в шаблоне знать как права называются
+                    'codename': item.codename,
+                    'id': item.id,
+                    'access': item.id in cur_perms,
+                })
+        perm['perms'] = perms
+    perm_list.sort(key=lambda x:x['name'])
+    return perm_list
+
 @login_required
 def demo(request, action='panels'):
     """Демонстрация возможностей дизайна админки"""
@@ -442,6 +647,7 @@ def demo(request, action='panels'):
         'extended_forms': 'demo/demo_extended_forms.html',
 
         'calendar': 'demo/demo_calendar.html',
+        'chat': 'demo/demo_chat.html',
     }
     context = {}
     context['menu'] = 'demo'

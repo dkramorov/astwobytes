@@ -30,12 +30,19 @@ class Config(models.Model):
     value = models.CharField(max_length = 255,
                              blank = True, null = True,
                              db_index = True)
+    class Meta:
+        verbose_name = 'Админка - Настрока'
+        verbose_name_plural = 'Админка - Настройки'
 
 class Tasks(models.Model):
     """Задачи для call_command"""
     command = models.TextField()
     start = models.DateTimeField(auto_now_add=True)
     description = models.CharField(blank=True, null=True, max_length=255)
+
+    class Meta:
+        verbose_name = 'Админка - Задача'
+        verbose_name_plural = 'Админка - Задачи'
 
     def save(self, *args, **kwargs):
         analog = Tasks.objects.filter(command=self.command).first()

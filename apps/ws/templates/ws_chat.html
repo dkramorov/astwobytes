@@ -1,0 +1,82 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/chat/swipe.min.css" type="text/css" rel="stylesheet">
+<style type="text/css">
+.main-content{
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.wrapper > section > footer{
+  display:none !important;
+}
+.ws_chat_window pre{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  background-color: transparent;
+  white-space: pre-wrap;
+  word-break: unset;
+  word-wrap: unset;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!--<h3>{{ singular_obj }}</h3>-->
+{% include "core/breadcrumbs.html" %}
+
+{% include "ws_chat_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+{% include "ws_chat_modals.html" %}
+<script type="text/javascript" src="/static/chat/ui.js"></script>
+<script type="text/javascript" src="/static/chat/scripts.js"></script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var ws = new WebSocket("{{ ws_server }}");
+    var TOKEN = '{{ token }}'; // {'token': 'hash'}
+    var USER = '{{ request.user.username }}';
+    var contacts_container = $('#contacts');
+    var conversations_container = $('#discussions');
+    var chats_container = $('#list-chat');
+    var search_input = $('#people');
+    var search_input_conversations = $('#conversations');
+    var login_api = '{% url "login:api" "users" %}';
+    var messages_api = '{% url "ws:messages_api" %}';
+    var ws_chat = new WSChatClass(ws, TOKEN, USER, login_api, messages_api,
+                                  chats_container, contacts_container, conversations_container,
+                                  search_input, search_input_conversations);
+    // DEBUG:
+    window.ws_chat = ws_chat;
+
+    // По плану:
+    // если пользователя нет, но должен быть в группе, то, возможно, его создали недавно - надо перезагрузить страничку
+    // изменение группы должно вызывать динамическое изменение группы у всех участников
+    // последнее сообщение не видно, когда группа добавляется без перезагрузки странички
+    // пересортировывать список бесед по последним
+    // маркировать сообщения в группе прочитанными
+    // в группе писать имя пользователя / выводить аватарку
+    // если логин числом то совпадает с ид группы - путаница
+    // в процессе получения контактов и бесед мы получили сообщение беседы, создалась беседа, а затем прилетит ведь с базы еще беседа
+
+    $('.ws_navigator .nav-tab a').click(function(){
+        $('.ws_navigator .nav-tab a.active').removeClass('active');
+        $(this).addClass('active');
+    });
+    $('#members form').submit(function(){
+        return false;
+    });
+    $('#discussions form').submit(function(){
+        return false;
+    });
+});
+
+</script>
+{% endblock %}

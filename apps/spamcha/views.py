@@ -92,9 +92,11 @@ def show_spam_tables(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)
@@ -269,9 +271,11 @@ def show_spam_rows(request, spam_table_id: int, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)
@@ -449,9 +453,11 @@ def show_email_accounts(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)
@@ -605,9 +611,11 @@ def show_black_list(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)

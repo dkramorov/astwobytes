@@ -6,6 +6,20 @@ import sys
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'conf.settings')
+
+    # На хостинге:
+    #path = "/home/a/a223223/binary_com/public_html"
+    # -------------------------------
+    # append project.path to sys.path
+    # -------------------------------
+    #if not path in sys.path:
+    #    sys.path.append(path)
+    #sys.path.insert(0, '%s/env/lib/python3.4/site-packages' % path)
+    # -----------------
+    # USAGE:
+    # python3 manage.py
+    # -----------------
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

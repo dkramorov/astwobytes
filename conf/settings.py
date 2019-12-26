@@ -26,7 +26,7 @@ SECRET_KEY = '=3+k48o8@y*j1@sd(@_se4-@o7%l1id-=r7-iv#nbi!h2ho+^8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', cast=bool, default=True)
-DEBUG = env('TEMPLATE_DEBUG', cast=bool, default=True)
+TEMPLATE_DEBUG = env('TEMPLATE_DEBUG', cast=bool, default=True)
 
 ALLOWED_HOSTS = [
     '*',
@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'apps.flatcontent',
     'apps.spamcha',
     'apps.binary_com',
+    'apps.ws',
+    'apps.vallom_tasks',
 ]
 
 MIDDLEWARE = [
@@ -117,18 +119,10 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
 
@@ -146,6 +140,11 @@ USE_L10N = False
 
 LOGIN_REDIRECT_URL = '/admin/login/welcome/'
 LOGIN_URL = '/admin/login/'
+
+AUTHENTICATION_BACKENDS = (
+    'apps.login.backend.MyBackend',
+    #'django.contrib.auth.backends.ModelBackend',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -235,3 +234,5 @@ TELEGRAM_ENABLED = env('TELEGRAM_ENABLED', cast=bool, default=False)
 # Проверить все настройки
 # -----------------------
 # $ python manage.py diffsettings --all
+WS_SERVER = env('WS_SERVER', default='ws://127.0.0.1:8888/')
+WS_SECRET = env('WS_SECRET', default='bugogashenki')

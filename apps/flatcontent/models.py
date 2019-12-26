@@ -113,6 +113,10 @@ class Containers(Standard):
     tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     template_position = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
+    class Meta:
+        verbose_name = 'Стат.контент - Контейнеры'
+        verbose_name_plural = 'Стат.контент - Контейнеры'
+
     def delete(self, *args, **kwargs):
         children = self.blocks_set.all()
         for child in children:
@@ -140,6 +144,10 @@ class Blocks(Standard):
     title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     description = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     keywords = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Стат.контент - Блоки'
+        verbose_name_plural = 'Стат.контент - Блоки'
 
     def save(self, *args, **kwargs):
         if self.state == 4 and not self.link and self.name:
@@ -270,6 +278,10 @@ class LinkContainer(Standard):
        Ссылка на стр. может быть ссылкой на контейнер"""
     block = models.ForeignKey(Blocks, on_delete=models.CASCADE)
     container = models.ForeignKey(Containers, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Стат.контент - Линковка меню к контейнерам'
+        verbose_name_plural = 'Стат.контент - Линковка меню к контейнерам'
 
 #class SiteMap(models.Model):
 #    """Карта сайта

@@ -15,6 +15,10 @@ class Rubrics(Standard):
     def __unicode__(self):
         return u"{}".format(self.name)
 
+    class Meta:
+        verbose_name = 'Афиша - Рубрикатор мест'
+        verbose_name_plural = 'Афиша - Рубрикатор мест'
+
 class RGenres(Standard):
     """Рубрикатор жанров"""
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
@@ -28,6 +32,10 @@ class RGenres(Standard):
 
     def __unicode__(self):
         return u"{}".format(self.name)
+
+    class Meta:
+        verbose_name = 'Афиша - Жанры'
+        verbose_name_plural = 'Афиша - Жанры'
 
 class REvents(Standard):
     """События"""
@@ -47,6 +55,10 @@ class REvents(Standard):
     def __unicode__(self):
         return u"{}".format(self.name)
 
+    class Meta:
+        verbose_name = 'Афиша - События'
+        verbose_name_plural = 'Афиша - События'
+
 class Places(Standard):
     """Места (кинотеатры)"""
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
@@ -61,6 +73,10 @@ class Places(Standard):
     #branch = models.ForeignKey(Branches, blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Привязка к филиалу")
     rubric = models.ForeignKey(Rubrics, blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Привязка к рубрике")
 
+    class Meta:
+        verbose_name = 'Афиша - Места'
+        verbose_name_plural = 'Афиша - Места'
+
 class RSeances(Standard):
     """В каких местах, когда происходит событие"""
     place = models.ForeignKey(Places, blank=True, null=True, on_delete=models.SET_NULL,)
@@ -68,3 +84,7 @@ class RSeances(Standard):
     date = models.DateField(blank=True, null=True, db_index=True)
     hours = models.IntegerField(blank=True, null=True, db_index=True)
     minutes = models.IntegerField(blank=True, null=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Афиша - Сеансы'
+        verbose_name_plural = 'Афиша - Сеансы'

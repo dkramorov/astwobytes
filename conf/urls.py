@@ -39,7 +39,9 @@ urlpatterns = [
     re_path(r'^spamcha/', include('apps.spamcha.urls')),
     # binary.com
     re_path(r'^binary_com/', include('apps.binary_com.urls')),
-
+    # websocket
+    re_path(r'^ws/', include('apps.ws.urls')),
+    # статика
     re_path(r'^', include('apps.files.urls_static'))
 ]
 

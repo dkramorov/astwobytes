@@ -1,0 +1,75 @@
+<!-- Start of Create Chat -->
+<div class="modal fade" id="startnewchat" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="requests">
+      <div class="title">
+        <h1>Новый чат</h1>
+        <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+          <i class="fa fa-times material-icons"></i>
+        </button>
+      </div>
+      <div class="content">
+        <form id="new_chat_form" conversation_id='0'>
+          <div class="form-group">
+            <label for="participant">Участники:</label>
+            <select name="participant" id="participant_select2" style="width:100%;" multiple="multiple" required>
+            </select>
+<!--
+            <input type="text" class="form-control" id="participant" placeholder="Добавить участника..." required>
+            <div class="user" id="recipient">
+              <img class="avatar-sm" src="/static/img/ups.png">
+              <h5>Имя пользователя</h5>
+              <button class="btn"><i class="fa fa-times material-icons"></i></button>
+            </div>
+-->
+          </div>
+          <div class="form-group">
+            <label for="topic">Название чата:</label>
+            <input type="text" class="form-control" id="new_chat_topic" placeholder="Название чата" required>
+          </div>
+<!--
+          <div class="form-group">
+            <label for="message">Описание:</label>
+            <textarea class="text-control" id="new_chat_msg" placeholder="Сообщение-приглашение..."></textarea>
+          </div>
+-->
+          <button type="submit" class="btn button w-100">Создать новый чат</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Create Chat -->
+
+<!-- Start of Add Friends -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="requests">
+      <div class="title">
+        <h1>Добавить собеседника</h1>
+        <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+          <i class="fa fa-times material-icons"></i>
+        </button>
+      </div>
+      <div class="content">
+        <form>
+          <div class="form-group">
+            <label for="user">Логин пользователя:</label>
+            <input type="text" class="form-control" id="user" placeholder="Добавить собеседника..." required>
+            <div class="user" id="contact">
+              <img class="avatar-sm" src="/static/img/ups.png">
+              <h5>Имя пользователя</h5>
+              <button class="btn"><i class="fa fa-times material-icons"></i></button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="welcome">Сообщение:</label>
+            <textarea class="text-control" id="welcome" placeholder="Сообщение-приглашение...">Привет, я хочу добавить вас в контакт-лист</textarea>
+          </div>
+          <button type="submit" class="btn button w-100">Отправить запрос</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Add Friends -->

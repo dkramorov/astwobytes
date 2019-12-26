@@ -1,0 +1,6 @@
+{% if perms.flatcontent.add_containers %}
+  <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_create }}">
+    <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+  </a>
+{% endif %}
+

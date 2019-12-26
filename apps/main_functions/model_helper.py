@@ -376,14 +376,24 @@ class ModelHelper:
            filters = Q(name__isnull=True)|Q(name="")
            only_query просто вернуть запрос с фильтрами"""
         result = []
-        types = object_fields_types(self.model())
-        query = self.model.objects.all()
+
         # --------------------------
         # Если прав нету на просмотр
         # - ну тогда "пасется" пусть
         # --------------------------
         if not self.permissions['view']:
-            query = query.filter(pk=0)
+            if only_query:
+                return self.model.objects.none()
+            paginator, records = myPaginator(0, self.q_string['page'], self.q_string['by'])
+            self.raw_paginator = paginator
+            self.context['raw_paginator'] = self.raw_paginator
+            self.paginator = navigator(paginator, self.q_string, self.paginator_template)
+            self.context['paginator'] = self.paginator
+            self.context['rows'] = result
+            return result
+
+        types = object_fields_types(self.model())
+        query = self.model.objects.all()
 
         if self.select_related:
             query = query.select_related(*self.select_related)

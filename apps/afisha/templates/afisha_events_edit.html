@@ -203,11 +203,11 @@
         e.preventDefault();
       });
 
-      $('#html_msg_select2').select2({
-        placeholder: 'Выберите html-шаблон для отправки',
+      $('#rgenre_select2').select2({
+        placeholder: 'Выберите рубрику жанра',
         width: '100%',
         ajax: {
-          {% comment %}url: "{% url 'afisha:search_genres' %}",{% endcomment %}
+          url: "{% url 'afisha:search_genres' %}",
           cache: false,
           dataType: 'json',
         }

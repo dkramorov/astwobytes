@@ -81,9 +81,11 @@ def show_rubrics(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)
@@ -217,9 +219,11 @@ def show_genres(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)
@@ -354,9 +358,11 @@ def show_events(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)
@@ -503,9 +509,11 @@ def show_places(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)
@@ -644,9 +652,11 @@ def show_seances(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)

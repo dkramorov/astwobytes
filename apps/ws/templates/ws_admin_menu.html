@@ -1,0 +1,8 @@
+{% if perms.ws.view_messages %}
+<li{% ifequal menu 'ws' %} class="active"{% endifequal %}>
+  <a href="{% url 'ws:show_chat' %}">
+    <em class="fa fa-comments-o"></em>
+    <span class="item-text">Чат</span>
+  </a>
+</li>
+{% endif %}

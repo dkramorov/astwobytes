@@ -1,0 +1,5 @@
+[client]
+database = spamcha
+user = root
+password = 'reabhxbr'
+default-character-set = utf8

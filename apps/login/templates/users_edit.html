@@ -4,6 +4,12 @@
 {% endblock %}
 
 {% block content %}
+{% if row.id %}
+  <a class="btn btn-primary pull-right" href="{% url 'login:user_perms' row.id %}">
+    <em class="fa fa-key fa-fw mr-sm"></em> Права пользователя
+  </a>
+{% endif %}
+
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}

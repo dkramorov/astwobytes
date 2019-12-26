@@ -197,7 +197,7 @@
               {
                   title: 'All Day Event',
                   start: new Date(y, m, 1),
-                  backgroundColor: '#f56954', //red 
+                  backgroundColor: '#f56954', //red
                   borderColor: '#f56954' //red
               },
               {
@@ -332,132 +332,6 @@
 }(jQuery, window, document));
 
 /**=========================================================
- * Module: datepicker,js
- * DateTime Picker init
- =========================================================*/
-
-(function($, window, document){
-  'use strict';
-
-  $(function(){
-
-    if ( ! $.fn.dataTable ) return;
-
-    //
-    // Zero configuration
-    //
-
-    $('#datatable1').dataTable({
-        'paging':   true,  // Table pagination
-        'ordering': true,  // Column ordering
-        'info':     true,  // Bottom left status text
-        // Text translation options
-        // Note the required keywords between underscores (e.g _MENU_)
-        oLanguage: {
-            sSearch:      'Search all columns:',
-            sLengthMenu:  '_MENU_ records per page',
-            info:         'Showing page _PAGE_ of _PAGES_',
-            zeroRecords:  'Nothing found - sorry',
-            infoEmpty:    'No records available',
-            infoFiltered: '(filtered from _MAX_ total records)'
-        }
-    });
-
-
-    //
-    // Filtering by Columns
-    //
-
-    var dtInstance2 = $('#datatable2').dataTable({
-        'paging':   true,  // Table pagination
-        'ordering': true,  // Column ordering
-        'info':     true,  // Bottom left status text
-        // Text translation options
-        // Note the required keywords between underscores (e.g _MENU_)
-        oLanguage: {
-            sSearch:      'Search all columns:',
-            sLengthMenu:  '_MENU_ records per page',
-            info:         'Showing page _PAGE_ of _PAGES_',
-            zeroRecords:  'Nothing found - sorry',
-            infoEmpty:    'No records available',
-            infoFiltered: '(filtered from _MAX_ total records)'
-        }
-    });
-    var inputSearchClass = 'datatable_input_col_search';
-    var columnInputs = $('tfoot .'+inputSearchClass);
-
-    // On input keyup trigger filtering
-    columnInputs
-      .keyup(function () {
-          dtInstance2.fnFilter(this.value, columnInputs.index(this));
-      });
-
-
-    //
-    // Column Visibilty Extension
-    //
-
-    $('#datatable3').dataTable({
-        'paging':   true,  // Table pagination
-        'ordering': true,  // Column ordering 
-        'info':     true,  // Bottom left status text
-        // Text translation options
-        // Note the required keywords between underscores (e.g _MENU_)
-        oLanguage: {
-            sSearch:      'Search all columns:',
-            sLengthMenu:  '_MENU_ records per page',
-            info:         'Showing page _PAGE_ of _PAGES_',
-            zeroRecords:  'Nothing found - sorry',
-            infoEmpty:    'No records available',
-            infoFiltered: '(filtered from _MAX_ total records)'
-        },
-        sDom:      'C<"clear">lfrtip',
-        colVis: {
-            order: 'alfa',
-            'buttonText': 'Show/Hide Columns'
-        }
-    });
-
-
-  });
-
-}(jQuery, window, document));
-
-/**=========================================================
- * Module: datepicker,js
- * DateTime Picker init
- =========================================================*/
-
-(function($, window, document){
-  'use strict';
-
-  var Selector = '.datetimepicker';
-
-  $(Selector).each(function() {
-
-    var $this = $(this),
-        options = $this.data(); // allow to set options via data-* attributes
-    $this.datetimepicker($.extend(
-      options,
-      { // support for FontAwesome icons
-        icons: {
-            time:   'fa fa-clock-o',
-            date:   'fa fa-calendar',
-            up:     'fa fa-arrow-up',
-            down:   'fa fa-arrow-down'
-        }
-      }));
-
-    // Force a dropdown hide when click out of the input
-    $(document).on('click', function(){
-      $this.data('DateTimePicker').hide();
-    });
-
-  });
-
-}(jQuery, window, document));
-
-/**=========================================================
  * Module: jquery.maskedinput.js
  =========================================================*/
 (function($, window, document){
@@ -560,298 +434,6 @@
 }(jQuery, window, document));
 
 /**=========================================================
- * Module: flot-chart.js
- * Initializes the flot chart plugin and attaches the
- * plugin to elements according to its type
- =========================================================*/
-
-(function($, window, document){
-  'use strict';
-
-  /**
-   * Global object to load data for charts using ajax 
-   * Request the chart data from the server via post
-   * Expects a response in JSON format to init the plugin
-   * Usage
-   *   chart = new floatChart('#id', 'server/chart-data.php')
-   *   ...
-   *   chart.requestData(options);
-   *
-   * @param  Chart element placeholder or selector
-   * @param  Url to get the data via post. Response in JSON format
-   */
-  window.FlotChart = function (element, url) {
-    // Properties
-    this.element = $(element);
-    this.url = url;
-
-    // Public method
-    this.requestData = function (option, method, callback) {
-      var self = this;
-      // support params (option), (option, method, callback) or (option, callback)
-      callback = (method && $.isFunction(method)) ? method : callback;
-      method = (method && typeof method == 'string') ? method : 'POST';
-
-      self.option = option; // save options
-
-      $.ajax({
-          url:      self.url,
-          cache:    false,
-          type:     method,
-          dataType: 'json'
-      }).done(function (data) {
-          $.plot( self.element, data, option );
-          if(callback) callback();
-
-      });
-
-      return this; // chain-ability
-
-    };
-
-    // Listen to refresh events
-    this.listen = function() {
-      var self = this,
-          chartPanel = this.element.parents('.panel').eq(0);
-      // attach custom event
-      chartPanel.on('panel-refresh', function(event, panel) {
-        // request data and remove spinner when done
-        self.requestData(self.option, function(){
-          panel.removeSpinner();
-        });
-
-      });
-
-      return this; // chain-ability
-    };
-
-  };
-
-  //
-  // Start of Demo Script
-  // 
-  $(function () {
-
-    // Bar chart
-    (function () {
-        var Selector = '.chart-bar';
-        $(Selector).each(function() {
-            var source = $(this).data('source') || $.error('Bar: No source defined.');
-            var chart = new FlotChart(this, source),
-                //panel = $(Selector).parents('.panel'),
-                option = {
-                    series: {
-                        bars: {
-                            align: 'center',
-                            lineWidth: 0,
-                            show: true,
-                            barWidth: 0.6,
-                            fill: 0.9
-                        }
-                    },
-                    grid: {
-                        borderColor: '#eee',
-                        borderWidth: 1,
-                        hoverable: true,
-                        backgroundColor: '#fcfcfc'
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: '%x : %y'
-                    },
-                    xaxis: {
-                        tickColor: '#fcfcfc',
-                        mode: 'categories'
-                    },
-                    yaxis: {
-                        tickColor: '#eee'
-                    },
-                    shadowSize: 0
-                };
-            // Send Request
-            chart.requestData(option);
-        });
-
-    })();
-    // Bar Stacked chart
-    (function () {
-        var Selector = '.chart-bar-stacked';
-        $(Selector).each(function() {
-            var source = $(this).data('source') || $.error('Bar Stacked: No source defined.');
-            var chart = new FlotChart(this, source),
-                option = {
-                    series: {
-                        stack: true,
-                        bars: {
-                            align: 'center',
-                            lineWidth: 0,
-                            show: true,
-                            barWidth: 0.6,
-                            fill: 0.9
-                        }
-                    },
-                    grid: {
-                        borderColor: '#eee',
-                        borderWidth: 1,
-                        hoverable: true,
-                        backgroundColor: '#fcfcfc'
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: '%x : %y'
-                    },
-                    xaxis: {
-                        tickColor: '#fcfcfc',
-                        mode: 'categories'
-                    },
-                    yaxis: {
-                        tickColor: '#eee'
-                    },
-                    shadowSize: 0
-                };
-            // Send Request
-            chart.requestData(option);
-        });
-    })();
-    // Area chart
-    (function () {
-        var Selector = '.chart-area';
-        $(Selector).each(function() {
-            var source = $(this).data('source') || $.error('Area: No source defined.');
-            var chart = new FlotChart(this, source),
-                option = {
-                    series: {
-                        lines: {
-                            show: true,
-                            fill: 0.8
-                        },
-                        points: {
-                            show: true,
-                            radius: 4
-                        }
-                    },
-                    grid: {
-                        borderColor: '#eee',
-                        borderWidth: 1,
-                        hoverable: true,
-                        backgroundColor: '#fcfcfc'
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: '%x : %y'
-                    },
-                    xaxis: {
-                        tickColor: '#fcfcfc',
-                        mode: 'categories'
-                    },
-                    yaxis: {
-                        tickColor: '#eee',
-                        tickFormatter: function (v) {
-                            return v + ' visitors';
-                        }
-                    },
-                    shadowSize: 0
-                };
-            // Send Request and Listen for refresh events
-            chart.requestData(option).listen();
-
-        });
-    })();
-    // Line chart
-    (function () {
-        var Selector = '.chart-line';
-        $(Selector).each(function() {
-            var source = $(this).data('source') || $.error('Line: No source defined.');
-            var chart = new FlotChart(this, source),
-                option = {
-                    series: {
-                        lines: {
-                            show: true,
-                            fill: 0.01
-                        },
-                        points: {
-                            show: true,
-                            radius: 4
-                        }
-                    },
-                    grid: {
-                        borderColor: '#eee',
-                        borderWidth: 1,
-                        hoverable: true,
-                        backgroundColor: '#fcfcfc'
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: '%x : %y'
-                    },
-                    xaxis: {
-                        tickColor: '#eee',
-                        mode: 'categories'
-                    },
-                    yaxis: {
-                        tickColor: '#eee'
-                    },
-                    shadowSize: 0
-                };
-            // Send Request
-            chart.requestData(option);
-        });
-    })();
-    // Pïe
-    (function () {
-        var Selector = '.chart-pie';
-        $(Selector).each(function() {
-            var source = $(this).data('source') || $.error('Pie: No source defined.');
-            var chart = new FlotChart(this, source),
-                option = {
-                    series: {
-                        pie: {
-                            show: true,
-                            innerRadius: 0,
-                            label: {
-                                show: true,
-                                radius: 0.8,
-                                formatter: function (label, series) {
-                                    return '<div class="flot-pie-label">' +
-                                    //label + ' : ' +
-                                    Math.round(series.percent) +
-                                    '%</div>';
-                                },
-                                background: {
-                                    opacity: 0.8,
-                                    color: '#222'
-                                }
-                            }
-                        }
-                    }
-                };
-            // Send Request
-            chart.requestData(option);
-        });
-    })();
-    // Donut
-    (function () {
-        var Selector = '.chart-donut';
-        $(Selector).each(function() {
-            var source = $(this).data('source') || $.error('Donut: No source defined.');
-            var chart = new FlotChart(this, source),
-                option = {
-                    series: {
-                        pie: {
-                            show: true,
-                            innerRadius: 0.5 // This makes the donut shape
-                        }
-                    }
-                };
-            // Send Request
-            chart.requestData(option);
-        });
-    })();
-  });
-
-}(jQuery, window, document));
-
-/**=========================================================
  * Module: form-wizard.js
  * Handles form wizard plugin and validation
  * [data-toggle="wizard"] to activate wizard plugin
@@ -891,621 +473,8 @@
 
   });
 
-
 }(jQuery, window, document));
 
-/**=========================================================
- * Module: gmap.js
- * Init Google Map plugin
- =========================================================*/
-
-(function($, window, document){
-  'use strict';
-
-  // -------------------------
-  // Map Style definition
-  // -------------------------
-
-  // Custom core styles
-  // Get more styles from http://snazzymaps.com/style/29/light-monochrome
-  // - Just replace and assign to 'MapStyles' the new style array
-  var MapStyles = [{featureType:'water',stylers:[{visibility:'on'},{color:'#bdd1f9'}]},{featureType:'all',elementType:'labels.text.fill',stylers:[{color:'#334165'}]},{featureType:'landscape',stylers:[{color:'#e9ebf1'}]},{featureType:'road.highway',elementType:'geometry',stylers:[{color:'#c5c6c6'}]},{featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#fff'}]},{featureType:'road.local',elementType:'geometry',stylers:[{color:'#fff'}]},{featureType:'transit',elementType:'geometry',stylers:[{color:'#d8dbe0'}]},{featureType:'poi',elementType:'geometry',stylers:[{color:'#cfd5e0'}]},{featureType:'administrative',stylers:[{visibility:'on'},{lightness:33}]},{featureType:'poi.park',elementType:'labels',stylers:[{visibility:'on'},{lightness:20}]},{featureType:'road',stylers:[{color:'#d8dbe0',lightness:20}]}];
-
-
-  // -------------------------
-  // Custom Script
-  // -------------------------
-
-  var mapSelector = '[data-toggle="gmap"]';
-  var gMapRefs = [];
-
-  if($.fn.gMap) {
-    // Init all gmap visibles in the page
-    $(mapSelector).each(function(){
-        // do not init maps in modal
-        if( ! $(this).parents('.modal').length )
-          initGmap(this);
-
-    }); //each
-
-    // attach gmap initialization when modal opens
-    $('.modal').each(function() {
-      var $this = $(this),
-          mapsInModal = $this.find(mapSelector);
-      if ( mapsInModal.length ) {
-
-        $this.on('shown.bs.modal', function (e) {
-          mapsInModal.each(function(){
-              initGmap(this);
-          }); //each
-        });
-
-      } // if
-
-    });
-  }
-  // Center Map marker on resolution change
-  $(window).resize(function() {
-
-      if(gMapRefs && gMapRefs.length) {
-          for( var r in gMapRefs) {
-            var mapRef = gMapRefs[r];
-            var currMapCenter = mapRef.getCenter();
-            if(mapRef && currMapCenter) {
-                google.maps.event.trigger(mapRef, 'resize');
-                mapRef.setCenter(currMapCenter);
-            }
-          }
-      }
-  });
-
-  function initGmap(element){
-    var $this     = $(element),
-        addresses = $this.data('address') && $this.data('address').split(';'),
-        titles    = $this.data('title') && $this.data('title').split(';'),
-        zoom      = $this.data('zoom') || 14,
-        maptype   = $this.data('maptype') || 'ROADMAP', // or 'TERRAIN'
-        markers   = [];
-
-    if(addresses) {
-      for(var a in addresses)  {
-          if(typeof addresses[a] == 'string') {
-              markers.push({
-                  address:  addresses[a],
-                  html:     (titles && titles[a]) || '',
-                  popup:    true   /* Always popup */
-                });
-          }
-      }
-
-      var options = {
-          controls: {
-                 panControl:         true,
-                 zoomControl:        true,
-                 mapTypeControl:     true,
-                 scaleControl:       true,
-                 streetViewControl:  true,
-                 overviewMapControl: true
-             },
-          scrollwheel: false,
-          maptype: maptype,
-          markers: markers,
-          zoom: zoom
-          // More options https://github.com/marioestrada/jQuery-gMap
-      };
-
-      var gMap = $this.gMap(options);
-
-      var ref = gMap.data('gMap.reference');
-      // save in the map references list
-      gMapRefs.push(ref);
-
-      // set the styles
-      if($this.data('styled') !== undefined) {
-        ref.setOptions({
-          styles: MapStyles
-        });
-
-      }
-    }
-
-}
-
-}(jQuery, window, document));
-
-/**=========================================================
- * Module: load-css.js
- * Request and load into the current page a css file
- =========================================================*/
-
-(function($, window, document){
-  'use strict';
-
-  var Selector = '[data-toggle="load-css"]',
-      storageKeyName = 'autoloadCSS';
-
-  restoreStylesheet();
-  $(document)
-    .ready(function() {
-    })
-    .on('click', Selector, function (e) {
-      e.preventDefault();
-      var uri = $(this).data('uri');
-
-      createStylesheet(uri);
-
-  });
-
-  // Creates a link element and injects the stylesheet href
-  function createStylesheet(uri) {
-    var link;
-    if(uri) {
-      link = createLink();
-      if(link) {
-        injectStylesheet(link, uri);
-      }
-      else {
-        $.error('Error creating new stylsheet link element.');
-      }
-    }
-    else {
-      $.error('No stylesheet location defined.');
-    }
-  }
-
-  function createLink() {
-    var linkId = 'autoloaded-stylesheet',
-        link = $('#'+linkId);
-
-    if( ! link.length ) {
-      var newLink = $('<link rel="stylesheet">').attr('id', linkId);
-      $('head').append(newLink);
-      link = $('#'+linkId);
-    }
-    return link;
-  }
-
-  function injectStylesheet(element, uri) {
-    var v = '?id='+Math.round(Math.random()*10000); // forces to jump cache
-    if(element.length) {
-      element.attr('href', uri + v);
-    }
-    saveStylesheet(uri);
-  }
-
-  // Save the loaded stylesheet link
-  function saveStylesheet(uri) {
-    store.set(storageKeyName, uri);
-  }
-  // Restores the stylesheet 
-  function restoreStylesheet() {
-    var uri = store.get(storageKeyName);
-    if(uri) {
-      createStylesheet(uri);
-    }
-  }
-
-}(jQuery, window, document));
-
-/**=========================================================
- * Module: markdownarea.js
- * Markdown Editor from UIKit adapted for Bootstrap Layout
- * Requires uikit core - codemirror - marked
- * @author: geedmo (http://geedmo.com)
- =========================================================*/
-
-(function($, window, document){
-    'use strict';
-
-    var Markdownarea = function(element, options){
-
-        var $element = $(element);
-
-        if($element.data("markdownarea")) return;
-
-        this.element = $element;
-        this.options = $.extend({}, Markdownarea.defaults, options);
-
-        this.marked     = this.options.marked || marked;
-        this.CodeMirror = this.options.CodeMirror || CodeMirror;
-
-        this.marked.setOptions({
-          gfm           : true,
-          tables        : true,
-          breaks        : true,
-          pedantic      : true,
-          sanitize      : false,
-          smartLists    : true,
-          smartypants   : false,
-          langPrefix    : 'lang-'
-        });
-
-        this.init();
-
-        this.element.data("markdownarea", this);
-    };
-
-    $.extend(Markdownarea.prototype, {
-
-        init: function(){
-
-            var $this = this, tpl = Markdownarea.template;
-
-            tpl = tpl.replace(/\{\:lblPreview\}/g, this.options.lblPreview);
-            tpl = tpl.replace(/\{\:lblCodeview\}/g, this.options.lblCodeview);
-
-            this.markdownarea = $(tpl);
-            this.content      = this.markdownarea.find(".uk-markdownarea-content");
-            this.toolbar      = this.markdownarea.find(".uk-markdownarea-toolbar");
-            this.preview      = this.markdownarea.find(".uk-markdownarea-preview").children().eq(0);
-            this.code         = this.markdownarea.find(".uk-markdownarea-code");
-
-            this.element.before(this.markdownarea).appendTo(this.code);
-
-            this.editor = this.CodeMirror.fromTextArea(this.element[0], this.options.codemirror);
-
-            this.editor.markdownarea = this;
-
-            this.editor.on("change", (function(){
-                var render = function(){
-
-                    var value   = $this.editor.getValue();
-
-                    $this.currentvalue  = String(value);
-
-                    $this.element.trigger("markdownarea-before", [$this]);
-
-                    $this.applyPlugins();
-
-                    $this.marked($this.currentvalue, function (err, markdown) {
-
-                      if (err) throw err;
-
-                      $this.preview.html(markdown);
-                      $this.element.val($this.editor.getValue()).trigger("markdownarea-update", [$this]);
-                    });
-                };
-                render();
-                return $.Utils.debounce(render, 150);
-            })());
-
-            this.code.find(".CodeMirror").css("height", this.options.height);
-
-            this._buildtoolbar();
-            this.fit();
-
-            $(window).on("resize", $.Utils.debounce(function(){
-                $this.fit();
-            }, 200));
-
-
-            var previewContainer = $this.preview.parent(),
-                codeContent      = this.code.find('.CodeMirror-sizer'),
-                codeScroll       = this.code.find('.CodeMirror-scroll').on('scroll',$.Utils.debounce(function() {
-
-                    if($this.markdownarea.attr("data-mode")=="tab") return;
-
-                    // calc position
-                    var codeHeight       = codeContent.height()   - codeScroll.height(),
-                        previewHeight    = previewContainer[0].scrollHeight - previewContainer.height(),
-                        ratio            = previewHeight / codeHeight,
-                        previewPostition = codeScroll.scrollTop() * ratio;
-
-                    // apply new scroll
-                    previewContainer.scrollTop(previewPostition);
-            }, 10));
-
-            this.markdownarea.on("click", ".uk-markdown-button-markdown, .uk-markdown-button-preview", function(e){
-
-                e.preventDefault();
-
-                if($this.markdownarea.attr("data-mode")=="tab") {
-
-                    $this.markdownarea.find(".uk-markdown-button-markdown, .uk-markdown-button-preview").removeClass("uk-active").filter(this).addClass("uk-active");
-
-                    $this.activetab = $(this).hasClass("uk-markdown-button-markdown") ? "code":"preview";
-                    $this.markdownarea.attr("data-active-tab", $this.activetab);
-                }
-            });
-
-            this.preview.parent().css("height", this.code.height());
-        },
-
-        applyPlugins: function(){
-
-            var $this   = this,
-                plugins = Object.keys(Markdownarea.plugins),
-                plgs    = Markdownarea.plugins;
-
-            this.markers = {};
-
-            if(plugins.length) {
-
-                var lines = this.currentvalue.split("\n");
-
-                plugins.forEach(function(name){
-                    this.markers[name] = [];
-                }, this);
-
-                for(var line=0,max=lines.length;line<max;line++) {
-
-                    (function(line){
-                        plugins.forEach(function(name){
-
-                            var i = 0;
-
-                            lines[line] = lines[line].replace(plgs[name].identifier, function(){
-
-                                var replacement =  plgs[name].cb({
-                                    "area" : $this,
-                                    "found": arguments,
-                                    "line" : line,
-                                    "pos"  : i++,
-                                    "uid"  : [name, line, i, (new Date().getTime())+"RAND"+(Math.ceil(Math.random() *100000))].join('-'),
-                                    "replace": function(strwith){
-                                        var src   = this.area.editor.getLine(this.line),
-                                            start = src.indexOf(this.found[0]);
-                                            end   = start + this.found[0].length;
-
-                                        this.area.editor.replaceRange(strwith, {"line": this.line, "ch":start}, {"line": this.line, "ch":end} );
-                                    }
-                                });
-
-                                return replacement;
-                            });
-                        });
-                    }(line));
-                }
-
-                this.currentvalue = lines.join("\n");
-
-            }
-        },
-
-        _buildtoolbar: function(){
-
-            if(!(this.options.toolbar && this.options.toolbar.length)) return;
-
-            var $this = this, bar = [];
-
-            this.options.toolbar.forEach(function(cmd){
-                if(Markdownarea.commands[cmd]) {
-
-                   var title = Markdownarea.commands[cmd].title ? Markdownarea.commands[cmd].title : cmd;
-
-                   bar.push('<li><a data-markdownarea-cmd="'+cmd+'" title="'+title+'" data-toggle="tooltip">'+Markdownarea.commands[cmd].label+'</a></li>');
-
-                   if(Markdownarea.commands[cmd].shortcut) {
-                       $this.registerShortcut(Markdownarea.commands[cmd].shortcut, Markdownarea.commands[cmd].action);
-                   }
-                }
-            });
-
-            this.toolbar.html(bar.join("\n"));
-
-            this.markdownarea.on("click", "a[data-markdownarea-cmd]", function(){
-                var cmd = $(this).data("markdownareaCmd");
-
-                if(cmd && Markdownarea.commands[cmd] && (!$this.activetab || $this.activetab=="code" || cmd=="fullscreen")) {
-                    Markdownarea.commands[cmd].action.apply($this, [$this.editor]);
-                }
-
-            });
-        },
-
-        fit: function() {
-
-            var mode = this.options.mode;
-
-            if(mode=="split" && this.markdownarea.width() < this.options.maxsplitsize) {
-                mode = "tab";
-            }
-
-            if(mode=="tab") {
-
-                if(!this.activetab) {
-                    this.activetab = "code";
-                    this.markdownarea.attr("data-active-tab", this.activetab);
-                }
-
-                this.markdownarea.find(".uk-markdown-button-markdown, .uk-markdown-button-preview").removeClass("uk-active")
-                                 .filter(this.activetab=="code" ? '.uk-markdown-button-markdown':'.uk-markdown-button-preview').addClass("uk-active");
-
-            }
-
-            this.editor.refresh();
-            this.preview.parent().css("height", this.code.height());
-
-            this.markdownarea.attr("data-mode", mode);
-        },
-
-        registerShortcut: function(combination, callback){
-
-            var $this = this;
-
-            combination = $.isArray(combination) ? combination : [combination];
-
-            for(var i=0,max=combination.length;i < max;i++) {
-                var map = {};
-
-                map[combination[i]] = function(){
-                    callback.apply($this, [$this.editor]);
-                };
-
-                $this.editor.addKeyMap(map);
-            }
-        },
-
-        getMode: function(){
-            var pos = this.editor.getDoc().getCursor();
-
-            return this.editor.getTokenAt(pos).state.base.htmlState ? 'html':'markdown';
-        }
-    });
-
-    //jQuery plugin
-
-    $.fn.markdownarea = function(options){
-
-        return this.each(function(){
-
-            var ele = $(this);
-
-            if(!ele.data("markdownarea")) {
-                var obj = new Markdownarea(ele, options);
-            }
-        });
-    };
-
-    var baseReplacer = function(replace, editor){
-        var text     = editor.getSelection(),
-            markdown = replace.replace('$1', text);
-
-        editor.replaceSelection(markdown, 'end');
-    };
-
-    Markdownarea.commands = {
-        "fullscreen": {
-            "title"  : 'Fullscreen',
-            "label"  : '<i class="fa fa-expand"></i>',
-            "action" : function(editor){
-
-                editor.markdownarea.markdownarea.toggleClass("uk-markdownarea-fullscreen");
-
-                // dont use uk- to avoid rules declaration
-                $('html').toggleClass("markdownarea-fullscreen");
-                $('html, body').scrollTop(0);
-
-                var wrap = editor.getWrapperElement();
-
-                if(editor.markdownarea.markdownarea.hasClass("uk-markdownarea-fullscreen")) {
-
-                    editor.state.fullScreenRestore = {scrollTop: window.pageYOffset, scrollLeft: window.pageXOffset, width: wrap.style.width, height: wrap.style.height};
-                    wrap.style.width  = "";
-                    wrap.style.height = editor.markdownarea.content.height()+"px";
-                    document.documentElement.style.overflow = "hidden";
-
-                } else {
-
-                    document.documentElement.style.overflow = "";
-                    var info = editor.state.fullScreenRestore;
-                    wrap.style.width = info.width; wrap.style.height = info.height;
-                    window.scrollTo(info.scrollLeft, info.scrollTop);
-                }
-
-                editor.refresh();
-                editor.markdownarea.preview.parent().css("height", editor.markdownarea.code.height());
-            }
-        },
-
-        "bold" : {
-            "title"  : "Bold",
-            "label"  : '<i class="fa fa-bold"></i>',
-            "shortcut": ['Ctrl-B', 'Cmd-B'],
-            "action" : function(editor){
-                baseReplacer(this.getMode() == 'html' ? "<strong>$1</strong>":"**$1**", editor);
-            }
-        },
-        "italic" : {
-            "title"  : "Italic",
-            "label"  : '<i class="fa fa-italic"></i>',
-            "action" : function(editor){
-                baseReplacer(this.getMode() == 'html' ? "<em>$1</em>":"*$1*", editor);
-            }
-        },
-        "strike" : {
-            "title"  : "Strikethrough",
-            "label"  : '<i class="fa fa-strikethrough"></i>',
-            "action" : function(editor){
-                baseReplacer(this.getMode() == 'html' ? "<del>$1</del>":"~~$1~~", editor);
-            }
-        },
-        "blockquote" : {
-            "title"  : "Blockquote",
-            "label"  : '<i class="fa fa-quote-right"></i>',
-            "action" : function(editor){
-                baseReplacer(this.getMode() == 'html' ? "<blockquote><p>$1</p></blockquote>":"> $1", editor);
-            }
-        },
-        "link" : {
-            "title"  : "Link",
-            "label"  : '<i class="fa fa-link"></i>',
-            "action" : function(editor){
-                baseReplacer(this.getMode() == 'html' ? '<a href="http://">$1</a>':"[$1](http://)", editor);
-            }
-        },
-        "picture" : {
-            "title"  : "Picture",
-            "label"  : '<i class="fa fa-picture-o"></i>',
-            "action" : function(editor){
-                baseReplacer(this.getMode() == 'html' ? '<img src="http://" alt="$1">':"![$1](http://)", editor);
-            }
-        },
-        "listUl" : {
-            "title"  : "Unordered List",
-            "label"  : '<i class="fa fa-list-ul"></i>',
-            "action" : function(editor){
-                if(this.getMode() == 'markdown') baseReplacer("* $1", editor);
-            }
-        },
-        "listOl" : {
-            "title"  : "Ordered List",
-            "label"  : '<i class="fa fa-list-ol"></i>',
-            "action" : function(editor){
-                if(this.getMode() == 'markdown') baseReplacer("1. $1", editor);
-            }
-        }
-    };
-
-    Markdownarea.defaults = {
-        "mode"         : "split",
-        "height"       : 500,
-        "maxsplitsize" : 1000,
-        "codemirror"   : { mode: 'gfm', tabMode: 'indent', tabindex: "2", lineWrapping: true, dragDrop: false, autoCloseTags: true, matchTags: true },
-        "toolbar"      : [ "bold", "italic", "strike", "link", "picture", "blockquote", "listUl", "listOl" ],
-        "lblPreview"   : "Preview",
-        "lblCodeview"  : "Markdown"
-    };
-
-    Markdownarea.template = '<div class="uk-markdownarea uk-clearfix" data-mode="split">' +
-                                '<div class="uk-markdownarea-navbar">' +
-                                    '<ul class="uk-markdownarea-navbar-nav uk-markdownarea-toolbar"></ul>' +
-                                    '<div class="uk-markdownarea-navbar-flip">' +
-                                        '<ul class="uk-markdownarea-navbar-nav">' +
-                                            '<li class="uk-markdown-button-markdown"><a>{:lblCodeview}</a></li>' +
-                                            '<li class="uk-markdown-button-preview"><a>{:lblPreview}</a></li>' +
-                                            '<li><a data-markdownarea-cmd="fullscreen" data-toggle="tooltip" title="Zen Mode"><i class="fa fa-expand"></i></a></li>' +
-                                        '</ul>' +
-                                    '</div>' +
-                                '</div>' +
-                                '<div class="uk-markdownarea-content">' +
-                                    '<div class="uk-markdownarea-code"></div>' +
-                                    '<div class="uk-markdownarea-preview"><div></div></div>' +
-                                '</div>' +
-                            '</div>';
-
-    Markdownarea.plugins   = {};
-    Markdownarea.addPlugin = function(name, identifier, callback) {
-        Markdownarea.plugins[name] = {"identifier":identifier, "cb":callback};
-    };
-
-    $.fn["markdownarea"] = Markdownarea;
-
-    // init code
-    $(function() {
-
-        $("textarea[data-uk-markdownarea]").each(function() {
-            var area = $(this), obj;
-
-            if (!area.data("markdownarea")) {
-                obj = new Markdownarea(area, $.Utils.options(area.attr("data-uk-markdownarea")));
-            }
-        });
-    });
-
-    return Markdownarea;
-
-}(jQuery, window, document));
 
 /**=========================================================
  * Module: navbar-search.js
@@ -1595,7 +564,6 @@
 
       if(!message)
         $.error('Notify: No message specified');
-     
       $.notify(message, options || {});
   }
 
@@ -1979,14 +947,13 @@
  *
  * Requires animo.js
  =========================================================*/
- 
+
 (function($, window, document){
   'use strict';
 
   var Selector = '[data-toggle="play-animation"]';
 
   $(function() {
-    
     var $scroller = $(window).add('body, .wrapper');
 
     // Parse animations params and attach trigger to scroll
@@ -1995,9 +962,8 @@
           offset    = $this.data('offset'),
           delay     = $this.data('delay')     || 100, // milliseconds
           animation = $this.data('play')      || 'bounce';
-      
+
       if(typeof offset !== 'undefined') {
-        
         // test if the element starts visible
         testAnimation($this);
         // test on scroll
@@ -2036,7 +1002,6 @@
       if(target && target) {
         target.animo( { animation: animation } );
       }
-      
     });
 
   });
@@ -2085,9 +1050,7 @@
   });
 
   function savePortletOrder(event, ui) {
-    
     var data = store.get(storageKeyName);
-    
     if(!data) { data = {}; }
 
     data[this.id] = $(this).sortable('toArray');
@@ -2095,23 +1058,19 @@
     if(data) {
       store.set(storageKeyName, data);
     }
-    
     // save portlet size to avoid jumps
     saveListSize.apply(this);
   }
 
   function loadPortletOrder() {
-    
     var data = store.get(storageKeyName);
 
     if(data) {
-      
       var porletId = this.id,
           panels   = data[porletId];
 
       if(panels) {
         var portlet = $('#'+porletId);
-        
         $.each(panels, function(index, value) {
            $('#'+value).appendTo(portlet);
         });
@@ -2156,7 +1115,6 @@
     $(document)
       .on('click', collapseSelector, function (e) {
           e.preventDefault();
-          
           if ($(window).width() > phone_mq &&
               $body.hasClass(toggledClass)) return;
 
@@ -2189,43 +1147,6 @@
 }(jQuery, window, document));
 
 /**=========================================================
- * Module: sparkline.js
- * SparkLines Mini Charts
- =========================================================*/
-
-(function($, window, document){
-  'use strict';
-
-  var Selector = '.inlinesparkline';
-
-  // Match color with css values to style charts
-  var colors = {
-        primary:         '#5fb5cb',
-        success:         '#27ae60',
-        info:            '#22bfe8',
-        warning:         '#ffc61d',
-        danger:          '#f6504d'
-    };
-
-  // Inline sparklines take their values from the contents of the tag 
-  $(Selector).each(function() {
-
-      var $this = $(this);
-      var data = $this.data();
-
-        if(data.barColor && colors[data.barColor])
-          data.barColor = colors[data.barColor];
-
-      var options = data;
-      options.type = data.type || 'bar'; // default chart is bar
-
-      $(this).sparkline('html', options);
-
-  });
-
-}(jQuery, window, document));
-
-/**=========================================================
  * Module: table-checkall.js
  * Tables check all checkbox
  =========================================================*/
@@ -2243,14 +1164,12 @@
     // Make sure to affect only the correct checkbox column
     table.find('tbody > tr > td:nth-child('+index+') input[type="checkbox"]')
       .prop('checked', checkbox[0].checked);
-
   });
-
 }(jQuery, window, document));
 
 /**=========================================================
  * Module: toggle-state.js
- * Toggle a classname from the BODY. Useful to change a state that 
+ * Toggle a classname from the BODY. Useful to change a state that
  * affects globally the entire layout or more than one item
  * Targeted elements must have [data-toggle="CLASS-NAME-TO-TOGGLE"]
  * Optionally save and restore state [data-persists="true"]
@@ -2311,11 +1230,10 @@
 
     store.set(storageKeyName, data);
   }
-  
+
   // Load the state string and restore the classlist
   function restoreState($elem) {
     var data = store.get(storageKeyName);
-    
     // nothing to restore
     if(!data) return;
     $elem.addClass(data);
@@ -2692,13 +1610,12 @@
 
 /**=========================================================
  * Module: utils.js
- * jQuery Utility functions library 
+ * jQuery Utility functions library
  * adapted from the core of UIKit
  =========================================================*/
 
 (function($, window, doc){
     'use strict';
-    
     var $html = $("html"), $win = $(window);
 
     $.support.transition = (function() {
@@ -2854,114 +1771,6 @@
 
     // add touch identifier class
     $html.addClass($.support.touch ? "touch" : "no-touch");
-
-}(jQuery, window, document));
-/**=========================================================
- * Module: vmaps,js
- * jVector Maps support
- =========================================================*/
-
-(function($, window, document){
-  'use strict';
-
-  var Selector = '[data-toggle="vector-map"]',
-      defaultColors = {
-          markerColor:  '#5194cb',      // the marker points
-          bgColor:      '#fafafa',      // the background
-          scaleColors:  ['#5a5e6a'],    // the color of the region in the serie
-          regionFill:   '#818590'       // the base region color
-      };
-
-  $(Selector).each(function() {
-
-    var $this       = $(this),
-        options     = {
-          markerColor:  $this.data('markerColor')  || defaultColors.markerColor,
-          bgColor:      $this.data('bgColor')      || defaultColors.bgColor,
-          scale:        $this.data('scale')        || 1,
-          scaleColors:  $this.data('scaleColors')  || defaultColors.scaleColors,
-          regionFill:   $this.data('regionFill')   || '#818590'
-        };
-
-    var seriesData = {
-      'CA': 11100,   // Canada
-      'DE': 2510,    // Germany
-      'FR': 3710,    // France
-      'AU': 5710,    // Australia
-      'GB': 8310,    // Great Britain
-      'RU': 9310,    // Russia
-      'BR': 6610,    // Brazil
-      'IN': 7810,    // India
-      'CN': 4310,    // China
-      'US': 839,     // USA
-      'SA': 410      // Saudi Arabia
-    };
-    var markersData = [
-      { latLng:[41.90, 12.45],  name:'Vatican City'          },
-      { latLng:[43.73, 7.41],   name:'Monaco'                },
-      { latLng:[-0.52, 166.93], name:'Nauru'                 },
-      { latLng:[-8.51, 179.21], name:'Tuvalu'                },
-      { latLng:[7.11,171.06],   name:'Marshall Islands'      },
-      { latLng:[17.3,-62.73],   name:'Saint Kitts and Nevis' },
-      { latLng:[3.2,73.22],     name:'Maldives'              },
-      { latLng:[35.88,14.5],    name:'Malta'                 },
-      { latLng:[41.0,-71.06],   name:'New England'           },
-      { latLng:[12.05,-61.75],  name:'Grenada'               },
-      { latLng:[13.16,-59.55],  name:'Barbados'              },
-      { latLng:[17.11,-61.85],  name:'Antigua and Barbuda'   },
-      { latLng:[-4.61,55.45],   name:'Seychelles'            },
-      { latLng:[7.35,134.46],   name:'Palau'                 },
-      { latLng:[42.5,1.51],     name:'Andorra'               }
-    ];
-
-    initVectorMap( $this , options, seriesData, markersData);
-  });
-
-  function  initVectorMap($element, opts, series, markers) {
-    $element.vectorMap({
-      map:             'world_mill_en',
-      backgroundColor: opts.bgColor,
-      zoomMin:         2,
-      zoomMax:         8,
-      zoomOnScroll:    false,
-      regionStyle: {
-        initial: {
-          'fill':           defaultColors.regionFill,
-          'fill-opacity':   1,
-          'stroke':         'none',
-          'stroke-width':   1.5,
-          'stroke-opacity': 1
-        },
-        hover: {
-          'fill-opacity': 0.8
-        },
-        selected: {
-          fill: 'blue'
-        },
-        selectedHover: {
-        }
-      },
-      focusOn:{ x:0.4, y:0.6, scale: opts.scale},
-      markerStyle: {
-        initial: {
-          fill: opts.markerColor,
-          stroke: opts.markerColor
-        }
-      },
-      onRegionLabelShow: function(e, el, code) {
-        if ( series && series[code] )
-          el.html(el.html() + ': ' + series[code] + ' visitors');
-      },
-      markers: markers,
-      series: {
-          regions: [{
-              values: series,
-              scale: opts.scaleColors,
-              normalizeFunction: 'polynomial'
-          }]
-      },
-    });
-  }
 
 }(jQuery, window, document));
 

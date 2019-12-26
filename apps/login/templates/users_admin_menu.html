@@ -125,6 +125,11 @@
         <span class="item-text">Спинеры</span>
       </a>
     </li>
+    <li{% ifequal submenu "chat" %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='chat' %}">
+        <span class="item-text">Чат</span>
+      </a>
+    </li>
   </ul>
   <!-- END SubMenu item-->
 </li>

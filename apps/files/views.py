@@ -77,9 +77,11 @@ def show_files(request, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
-    rows = mh.standard_show()
-
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
     if request.is_ajax():
+        rows = mh.standard_show()
         result = []
         for row in rows:
             item = object_fields(row)

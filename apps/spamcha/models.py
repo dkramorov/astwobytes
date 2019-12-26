@@ -9,12 +9,20 @@ class EmailBlackList(Standard):
     email = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     reason = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
+    class Meta:
+        verbose_name = 'Рассылка - Черный список'
+        verbose_name_plural = 'Рассылка - Черный список'
+
 class EmailAccount(Standard):
     """Наши аккаунты, с которых мы хотим осуществлять рассылку"""
     email = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     passwd = models.CharField(max_length=255, blank=True, null=True)
     smtp_server = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     smtp_port = models.IntegerField(blank=True, null=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Рассылка - Аккаунты'
+        verbose_name_plural = 'Рассылка - Аккаунты'
 
     def send_email(self, msg, recipient: str = 'dk@223-223.ru'):
         """Отправка email сообщения
@@ -49,6 +57,10 @@ class SpamTable(Standard):
     # Заголовки для емайлов
     reply_to = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Адрес для ответа')
 
+    class Meta:
+        verbose_name = 'Рассылка - Таблицы рассылки'
+        verbose_name_plural = 'Рассылка - Таблицы рассылки'
+
     def get_text_msg(self, msg_type: str = 'plain'):
        """Сформировать текстовое сообщение для отправки"""
        from email.mime.text import MIMEText
@@ -72,3 +84,6 @@ class SpamRow(Standard):
     spam_table = models.ForeignKey(SpamTable, blank=True, null=True, on_delete=models.CASCADE)
     sender = models.ForeignKey(EmailAccount, blank=True, null=True, on_delete=models.SET_NULL)
 
+    class Meta:
+        verbose_name = 'Рассылка - Записи в таблицах рассылок'
+        verbose_name_plural = 'Рассылка - Записи в таблицах рассылок'

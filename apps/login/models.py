@@ -7,6 +7,7 @@ from apps.main_functions.string_parser import kill_quotes
 from apps.main_functions.models import Standard
 
 def create_default_user():
+    """Демо-функция для создания пользователя по умолчанию"""
     if User.objects.filter(username='jocker').first():
         return
     user = User.objects.create_user('jocker', 'dkramorov@mail.ru', 'cnfylfhnysq')
@@ -25,6 +26,16 @@ class customUser(Standard):
         if self.phone:
             self.phone = kill_quotes(self.phone, 'int')
         super(customUser, self).save(*args, **kwargs)
+
+    def __str__(self):
+        name = self.user.username
+        if self.user.last_name or self.user.first_name:
+            name = ''
+        if self.user.last_name:
+            name += self.user.last_name + ' '
+        if self.user.first_name:
+            name += self.user.first_name + ' '
+        return name.strip()
 
     @staticmethod
     def get_name(user: User) -> str:

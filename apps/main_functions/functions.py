@@ -184,7 +184,7 @@ def recursive_fill(queryset, result, parents=''):
             next_parents = '%s_%s' % (item.parents, item.id)
             recursive_fill(queryset, result[len(result)-1].sub, next_parents)
 
-def sort_voca(queryset):
+def sort_voca(queryset, reverse: bool = False):
     """Сортировка списка после рекурсивного заполнения по position
        sort in place ut.sort(key=lambda x: x.count, reverse=True)
        sort in new list newlist = sorted(ut, key=lambda x: x.count, reverse=True)
@@ -195,7 +195,7 @@ def sort_voca(queryset):
     for item in queryset:
         if item.sub:
             item.sub = sort_voca(item.sub)
-    result = sorted(queryset, key=lambda x:x.position, reverse=False)
+    result = sorted(queryset, key=lambda x:x.position, reverse=reverse)
     return result
 
 def fill_parents(obj_array, model):

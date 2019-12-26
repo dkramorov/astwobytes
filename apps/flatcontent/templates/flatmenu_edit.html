@@ -1,119 +1,332 @@
 {% extends "core/base.html" %}
 
 {% block extrahead %}
-<link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
-<link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
+{% if is_tree %}
+  <link rel="stylesheet" href="/static/jstree/themes/default/style.min.css" />
+  <style type="text/css">
+    .jstree-default-contextmenu{
+        z-index: 12;
+    }
+  </style>
+{% else %}
+  <link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
+  <link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
+{% endif %}
 {% endblock %}
 
 {% block content %}
 {% if row.id %}
-  <a class="btn btn-primary pull-right" href="{{ root_url }}{{ row.id }}/">
+  <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ root_url }}{{ row.id }}/">
     <em class="fa fa-stack-overflow fa-fw mr-sm"></em> Пункты меню
   </a>
-  <a class="btn btn-primary pull-right" href="{{ root_url }}{{ row.id }}/tree/">
-    <em class="fa fa-sitemap fa-fw mr-sm"></em> Иерархия пунтов меню
-  </a>
+  {% if is_tree %}
+    <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_edit }}">
+      <em class="fa fa-edit fa-fw mr-sm"></em> {{ action_edit }} {{ singular_obj }}
+    </a>
+  {% else %}
+    <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_tree }}">
+      <em class="fa fa-sitemap fa-fw mr-sm"></em> Иерархия пунтов меню
+    </a>
+  {% endif %}
 {% endif %}
 
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
-<!-- START row-->
 <div class="row">
   <div class="col-sm-12">
-    <!-- START panel-->
-    <div class="panel panel-default">
-      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
-        <input type="hidden" name="state" value="{{ ftype_state }}" />
-        <div class="panel-heading">{{ singular_obj }}</div>
-        <div class="panel-body">
-          {% csrf_token %}
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Название</label>
-            <div class="col-lg-10">
-              <input type="text" placeholder="Название" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Описание</label>
-            <div class="col-lg-10">
-              <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Тег</label>
-            <div class="col-lg-10">
-              <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Изображение</label>
-            <div class="col-lg-10">
-              <img src="{{ row.thumb }}" class="img-responsive" id="preview_img">
-            </div>
-          </div>
-
-          {% if row %}
-          <fieldset>
+    {% if is_tree %}
+      <div id="flat_tree"></div>
+    {% else %}
+      <div class="panel panel-default">
+        <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+          <input type="hidden" name="state" value="{{ ftype_state }}" />
+          <div class="panel-heading">{{ singular_obj }}</div>
+          <div class="panel-body">
+            {% csrf_token %}
             <div class="form-group">
-              <label class="col-sm-2 control-label"><small>Загрузка изображения</small></label>
-              <div class="col-sm-10">
-                <div id="upload-drop-files" class="box-placeholder text-center">
-                  <p>
-                    <em class="fa fa-cloud-upload fa-2x"></em>
-                  </p>Перетащите файл сюда или
-                  <div class="btn-link form-file">выберите файл для загрузки
-                    <input id="upload-select-files" type="file" name="path">
+              <label class="col-lg-2 control-label">Название</label>
+              <div class="col-lg-10">
+                <input type="text" placeholder="Название" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label">Описание</label>
+              <div class="col-lg-10">
+                <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label">Тег</label>
+              <div class="col-lg-10">
+                <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
+              </div>
+            </div>
+              <div class="form-group">
+              <label class="col-lg-2 control-label">Изображение</label>
+              <div class="col-lg-10">
+                <img src="{{ row.thumb }}" class="img-responsive" id="preview_img">
+              </div>
+            </div>
+            {% if row %}
+              <fieldset>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label"><small>Загрузка изображения</small></label>
+                  <div class="col-sm-10">
+                    <div id="upload-drop-files" class="box-placeholder text-center">
+                      <p>
+                        <em class="fa fa-cloud-upload fa-2x"></em>
+                      </p>Перетащите файл сюда или
+                      <div class="btn-link form-file">выберите файл для загрузки
+                        <input id="upload-select-files" type="file" name="path">
+                      </div>
+                    </div>
+                    <div id="progressbar-files" class="progress hidden">
+                      <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
+                    </div>
+                    <input type="text" placeholder="Загрузить по ссылке" class="form-control" name="grab_img_by_url" value="" autocomplete="off">
                   </div>
                 </div>
-                <div id="progressbar-files" class="progress hidden">
-                  <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
+              </fieldset>
+            {% endif %}
+            <div class="form-group">
+              <label class="col-lg-2 control-label">Позиция</label>
+              <div class="col-lg-10">
+                <input type="text" placeholder="Позиция" class="form-control" name="position" value="{% if row.position %}{{ row.position }}{% endif %}" autocomplete="off">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-lg-offset-2 col-lg-10">
+                <div class="checkbox c-checkbox">
+                  <label>
+                    <input type="checkbox" value="1" name="is_active" {% if row.is_active or not row %} checked{% endif %} autocomplete="off">
+                    <span class="fa fa-check"></span> Включен
+                  </label>
                 </div>
-                <input type="text" placeholder="Загрузить по ссылке" class="form-control" name="grab_img_by_url" value="" autocomplete="off">
-              </div>
-            </div>
-          </fieldset>
-          {% endif %}
-
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Позиция</label>
-            <div class="col-lg-10">
-              <input type="text" placeholder="Позиция" class="form-control" name="position" value="{% if row.position %}{{ row.position }}{% endif %}" autocomplete="off">
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-lg-offset-2 col-lg-10">
-              <div class="checkbox c-checkbox">
-                <label>
-                  <input type="checkbox" value="1" name="is_active" {% if row.is_active or not row %} checked{% endif %} autocomplete="off">
-                  <span class="fa fa-check"></span> Включен
-                </label>
               </div>
             </div>
           </div>
-        </div>
-        <div class="panel-footer">
-          <div class="col-lg-6 col-sm-6 padding-tb5">
-            <button type="submit" class="btn btn-labeled btn-success">
-              <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
-            </button>
+          <div class="panel-footer">
+            <div class="col-lg-6 col-sm-6 padding-tb5">
+              <button type="submit" class="btn btn-labeled btn-success">
+                <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
+              </button>
+            </div>
+            <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+              <a class="btn btn-labeled btn-danger" href="{{ root_url }}">
+                <span class="btn-label"><i class="fa fa-times"></i></span>Вернуться
+              </a>
+            </div>
+            <div class="clearfix"></div>
           </div>
-          <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
-            <a class="btn btn-labeled btn-danger" href="{{ root_url }}">
-              <span class="btn-label"><i class="fa fa-times"></i></span>Вернуться
-            </a>
-          </div>
-          <div class="clearfix"></div>
-        </div>
-      </form>
-    </div>
-    <!-- END panel-->
+        </form>
+      </div>
+    {% endif %}
   </div>
 </div>
-<!-- END row-->
 {% endblock %}
 
 {% block extrascripts %}
+{% if is_tree %}
+<script src="/static/jstree/jstree.min.js"></script>
+<script type="text/javascript">
+function get_parent(data){
+  // Получение родительской рубрики
+  var parent_id = data.node.parent;
+  //var parent = flat_tree.jstree(true).get_node(data.node.parent);
+
+  if(parent_id.indexOf("container_") >= 0){
+    parent_id = 0;
+  }
+  return parent_id;
+}
+$(document).ready(function(){
+  var root_url = '{% url "flatcontent:tree_co" %}';
+  var flat_tree = $("#flat_tree");
+  $.jstree.defaults.search.ajax = true;
+
+  flat_tree.jstree({
+    "plugins": ["search", "wholerow", "dnd", "contextmenu"],
+    "core" : {
+      "check_callback" : true,
+      "data" : {
+        "url" : root_url + "?container_id={{ row.id }}&operation=get_children",
+      },
+      "check_callback": function(operation, node, node_parent, node_position, more){
+        // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node', 'copy_node' or 'edit'
+        // DEMO: return operation === 'rename_node' ? true : false;
+        if(operation === "move_node"){
+          if(node_parent.parent === null){
+            return false;
+          }
+        }
+      }
+    },
+    "contextmenu": {
+      "items": function($node) {
+        var tree = flat_tree.jstree(true);
+        return {
+          "Create": {
+            "separator_before": false,
+            "separator_after": false,
+            "label": "{{ action_create }} {{ rp_singular_obj }}",
+            "action": function (obj) {
+              $node = tree.create_node($node);
+              tree.edit($node);
+            }
+          },
+          "Rename": {
+            "separator_before": false,
+            "separator_after": false,
+            "label": "{{ action_edit }} {{ rp_singular_obj }}",
+            "action": function (obj) {
+              tree.edit($node);
+            }
+          },
+          "Remove": {
+            "separator_before": false,
+            "separator_after": false,
+            "label": "{{ action_drop }} {{ rp_singular_obj }}",
+            "action": function (obj) {
+              tree.delete_node($node);
+              var parent = flat_tree.jstree(true).get_node($node.parent);
+              var description = "<strong>Удаление в рубрике \"" + parent.text + "\": </strong><br />";
+              description += "<strong>\"" + $node.text + "\"</strong>";
+            }
+          }
+        };
+      }
+    }
+  })
+  .bind("loaded.jstree", function(e, data) {
+    //console.log("loaded");
+  })
+  .on("rename_node.jstree", function (e, data) {
+    if(data.old === data.text){
+        return;
+    }
+
+    var node_id = data.node.id;
+    var parent_id = get_parent(data);
+    $.ajax({
+      type: "GET",
+      url: root_url,
+      data: "container_id={{ row.id }}&operation=rename_node&node_id=" + node_id + "&parent_id=" + parent_id + "&name=" + data.text,
+    }).done(function(r) {
+      // renamed
+      flat_tree.jstree(true).set_id(data.node, r.id);
+    });
+  })
+  .on("delete_node.jstree", function (e, data) {
+    var node_id = data.node.id;
+    var parent_id = get_parent(data);
+    $.ajax({
+      type: "GET",
+      url: root_url,
+      data: "container_id={{ row.id }}&operation=drop_node&node_id=" + node_id + "&parent_id=" + parent_id,
+    }).done(function(r) {
+      // dropped
+    });
+  })
+  .on("move_node.jstree", function(e, data){
+    if(data.parent === data.old_parent){
+      if(data.position === data.old_position){
+        return;
+      }
+    }
+
+    var node_id = data.node.id;
+    var parent_id = get_parent(data);
+    $.ajax({
+      type: "GET",
+      url: root_url,
+      data: "container_id={{ row.id }}&operation=move_node&node_id=" + node_id + "&parent_id=" + parent_id + "&position=" + data.position,
+    }).done(function(r) {
+      // moved
+    });
+  })
+
+
+
+  .on("changed.jstree", function (e, data) {
+    console.log(data);
+    if(!data.node){
+      return;
+    }
+    var container = $("#rubricator_props");
+    container.find(".rubric_title").html("\"" + data.node.text + "\" #" + data.node.id);
+    container.find(".rubric_id").val(data.node.id);
+    // --------------
+    // Ссылка рубрики
+    // --------------
+    var rubric_link = container.find(".rubric_link");
+    rubric_link.val("");
+
+    if(data.node.data){
+      if(data.node.data.link){
+        rubric_link.val(data.node.data.link);
+      }
+    }
+  });
+
+  // --------------------------
+  // Сохранение свойств рубрики
+  // --------------------------
+  $("#save_props").click(function(){
+    var container = $("#rubricator_props");
+    var rubric_id = container.find(".rubric_id").val();
+    if(rubric_id === ""){
+      alert("Рубрика не выбрана");
+      return;
+    }
+
+    var rubric = $("#jstree_div").jstree(true).get_node(rubric_id);
+    if(!rubric){
+      alert("Рубрика не найдена");
+      return;
+    }
+
+    var rubric_name = container.find(".rubric_title").html();
+    var rubric_link = container.find(".rubric_link");
+    // ----------------------
+    // Находим старую ссылку,
+    // чтобы сравнить с новой
+    // ----------------------
+    var old_link = "";
+    if(rubric.data){
+      if(rubric.data.link){
+        old_link = rubric.data.link;
+      }
+    }
+    var new_link = rubric_link.val()
+
+    //console.log(rubric);
+    // ------------------------------
+    // Сначала сравниваем,
+    // чтобы лишний раз не писать лог
+    // ------------------------------
+    if(old_link === new_link){
+      alert("Свойства не изменились");
+      return;
+    }
+    rubric.data = {
+      "link": new_link,
+    }
+    var description = "<strong>Изменение свойств рубрики " + rubric_name + "</strong>";
+    description += "<p>" + old_link + " => " + new_link + "</p>";
+  });
+
+
+
+
+
+});
+
+function clear_search(){
+  $("#rubrics_tree").jstree("clear_search");
+}
+</script>
+{% else %}
   <script src="/static/redactor/jquery.browser.js"></script>
   <script src="/static/redactor/redactor.js"></script>
   <script src="/static/admin/js/parsley.min.js"></script>
@@ -202,4 +415,5 @@
       {% endif %}
     });
   </script>
+{% endif %}
 {% endblock %}
