@@ -5,7 +5,10 @@ from django.conf import settings
 from apps.main_functions.models import Standard
 from apps.main_functions.string_parser import translit
 
-def get_ftype(ftype):
+def get_ftype(ftype, by_id: bool = False):
+    """Получение типа контейнера
+       :param ftype: число или тег контейнера
+       :param by_id: если ищем контейнер по числу"""
     state_choices = (
         (1, 'flatmenu'),
         (2, 'flatmain'), # Контент для всех страничек
@@ -17,6 +20,11 @@ def get_ftype(ftype):
         (99, 'flattemplates'), # шаблоны специфические для сайта
         (100, 'flattemplates'), # шаблоны конструктора
     )
+    if by_id:
+        for item in state_choices:
+            if item[0] == ftype:
+                return item[1]
+
     for item in state_choices:
         if item[1] == ftype:
             return item[0]
@@ -133,7 +141,7 @@ class Blocks(Standard):
         (4, "Ссылка/Меню"),
     )
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    description = models.TextField(blank=True, null=True)
+    html = models.TextField(blank=True, null=True)
     link = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     container = models.ForeignKey(Containers, blank=True, null=True, on_delete=models.CASCADE)

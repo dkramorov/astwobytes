@@ -38,24 +38,9 @@ $(document).ready(function(){
     {% include "core/tabulator_table_params.html" %}
 
     columns:[
-      {
-        title: "ID",
-        field: "id",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "ID",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 80,
-      },
-      {
-        title: "Название",
-        field: "name",
-        headerFilterPlaceholder: "Название",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 120,
-      },
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {% include "core/tabulator_cell/name.html" %}
       {
         title: "Действия",
         field: "actions",

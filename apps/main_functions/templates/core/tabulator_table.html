@@ -55,11 +55,12 @@ var booleanFormatter = function(cell, formatterParams, onRendered){
 var imgFormatter = function(cell, formatterParams, onRendered){
   var value = cell.getValue();
   var data = cell.getData();
-  var result = "<div style='height:150px;'>";
+  var result = "";
   if(value){
+    result += "<div style='height:150px;'>";
     result += "<img src='" + data.thumb + "' />";
+    result += "</div>";
   }
-  result += "</div>";
   return result;
 };
 

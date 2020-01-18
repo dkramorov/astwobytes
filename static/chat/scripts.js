@@ -29,6 +29,7 @@ class WSChatClass{
         this.login_api = login_api; // Апи по пользователям
         this.messages_api = messages_api; // Апи по сообщениям
         this.page_get_contact_list = 0;
+        this.mmr_interval = 4000; // mark messages read interval
         // Статусы сообщений
         this.STATUS_DANGER = 'danger';
         this.STATUS_WARNING = 'warning';
@@ -57,8 +58,9 @@ class WSChatClass{
         // Вспомогательные классы
         this.Message = new WSMessage();
         this.Chat = new WSChat();
-        this.Conversations = new WSConversations(this);
-        this.Contacts = new WSContacts(this);
+        this.Conversation = new WSConversation(this);
+        this.Contact = new WSContact(this);
+        this.Notification = new WSNotification();
         // -----------------
         // События вебсокета
         // -----------------
@@ -130,6 +132,7 @@ class WSChatClass{
                               'type': this.STATUS_WARNING}, true);
                 break;
             case 'to_user':
+                this.Notification.notifyMe(msg['from'], msg['msg']);
                 this.add_msg({'text': msg['msg'],
                               'date': msg['date'],
                               'time': msg['time'],
@@ -138,6 +141,7 @@ class WSChatClass{
                               'type': this.STATUS_I}, true);
                 break;
             case 'to_group':
+                this.Notification.notifyMe('Сообщение в группу', msg['msg']);
                 this.add_group_msg({'text': msg['msg'],
                                     'date': msg['date'],
                                     'time': msg['time'],
@@ -148,8 +152,8 @@ class WSChatClass{
                                     'type': this.STATUS_I}, true);
                 break;
             case 'auth':
-                this.Contacts.activate_search(); // Поиск по контактам
-                this.Conversations.search_conversations(); // Поиск по беседам
+                this.Contact.activate_search(); // Поиск по контактам
+                this.Conversation.search_conversations(); // Поиск по беседам
                 this.get_conversations(); // Получаем беседы
                 this.get_contact_list(); // Получаем список контактов
             default:
@@ -325,7 +329,7 @@ class WSChatClass{
     // ------------------------------
     add_conversation_helper(username, new_messages, name,
                             time, date, text, avatar, is_first){
-        var new_conversation_block = this.Conversations.new_conversation(username, new_messages, name, time, date, text, avatar, is_first);
+        var new_conversation_block = this.Conversation.new_conversation(username, new_messages, name, time, date, text, avatar, is_first);
         // В случае, если беседа новая, надо ее вставить сверху
         if(is_first !== undefined){
             $('#' + this.pk_conversations +' #chats').prepend(new_conversation_block);
@@ -354,6 +358,10 @@ class WSChatClass{
             }else{
                 $('#chat_' + group_id).removeClass('hidden');
                 self.autoscroll(group_id);
+                var conversation = self.get_conversation(group_id);
+                setTimeout(function(){
+                    self.mark_messages_read(group_id, conversation.updated, true);
+                }, self.mmr_interval);
             }
         });
     }
@@ -377,12 +385,14 @@ class WSChatClass{
                 self.create_chat(username);
             }else{
                 $('#chat_' + username).removeClass('hidden');
-                self.update_conversation_status(username);
                 self.autoscroll(username);
+                var conversation = self.get_conversation(username);
+                setTimeout(function(){
+                    self.mark_messages_read(username, conversation.updated, false);
+                }, self.mmr_interval);
             }
         });
     }
-
 
     // --------------------------------------
     // Добавление пользователя в контакт лист
@@ -407,7 +417,7 @@ class WSChatClass{
         if(username == this.user){
             return;
         }
-        var new_user = this.Contacts.new_contact(username, avatar, name, email);
+        var new_user = this.Contact.new_contact(username, avatar, name, email);
         this.contacts_container.append($(new_user));
         var self = this;
         $('#contact_' + username).click(function(){
@@ -416,8 +426,11 @@ class WSChatClass{
                 self.create_chat(username);
             }else{
                 $('#chat_' + username).removeClass('hidden');
-                self.update_conversation_status(username);
                 self.autoscroll(username);
+                var conversation = self.get_conversation(username);
+                setTimeout(function(){
+                    self.mark_messages_read(username, conversation.updated, false);
+                }, self.mmr_interval);
             }
         });
     }
@@ -538,12 +551,12 @@ class WSChatClass{
                 if(scroll){
                     this.add_conversation_if_not_exist(msg.to_user, msg, false);
                     this.autoscroll(msg.to_user);
-                    this.update_conversation_info(msg.to_user, msg.time, msg, false);
+                    this.update_conversation_info(msg.to_user, msg, false);
                 }
             }else{
                 if(scroll){
                     this.add_conversation_if_not_exist(msg.user, msg, true);
-                    this.update_conversation_info(msg.user, msg.time, msg, true);
+                    this.update_conversation_info(msg.user, msg, true);
                 }
                 // Если чата нихера нету еще,
                 // то пишем в историю, когда чат
@@ -579,12 +592,12 @@ class WSChatClass{
             if(scroll){
                 this.add_group_conversation_if_not_exist(msg.group_id, msg, false);
                 this.autoscroll(msg.group_id);
-                this.update_conversation_info(msg.group_id, msg.time, msg, false);
+                this.update_conversation_info(msg.group_id, msg, false);
             }
         }else{
             if(scroll){
                 this.add_group_conversation_if_not_exist(msg.group_id, msg, true);
-                this.update_conversation_info(msg.group_id, msg.time, msg, true);
+                this.update_conversation_info(msg.group_id, msg, true);
             }
             // Если чата нихера нету еще,
             // то пишем в историю, когда чат
@@ -603,10 +616,11 @@ class WSChatClass{
     }
 
 
-    // ----------------------------
+    // -------------------------------------
     // Обновляем время/текст беседы
-    // ----------------------------
-    update_conversation_info(username, now_time, msg, is_incoming){
+    // Обновление количества новых сообщений
+    // -------------------------------------
+    update_conversation_info(username, msg, is_incoming){
         var conversation;
         var is_group = msg.is_group === undefined ? false : true;
         // Помечаем все сообщения как прочитанные
@@ -630,22 +644,24 @@ class WSChatClass{
                 }
                 // Вхоядщее сообщение
                 if(is_incoming){
+                    var new_messages_container = $('#conversation_' + username + ' .new');
                     // Сообщение считаем прочитанным
                     var cur_chat = $('#chat_' + username);
                     if(cur_chat.length > 0){
                         if(!cur_chat.hasClass('hidden')){
                             var self = this;
                             setTimeout(function(){
-                                self.mark_messages_read(username, msg.updated);
-                            }, 5000);
-                            break;
+                                self.mark_messages_read(username, msg.updated, is_group);
+                            }, self.mmr_interval);
+                        }else{
+                            this.CONVERSATIONS[i]['new_messages'] += 1;
+                            this.CONVERSATIONS[i]['updated'] = msg.updated;
+                            new_messages_container.removeClass('hidden');
+                            new_messages_container.find('span').html(this.CONVERSATIONS[i]['new_messages']);
                         }
-                    }
-                    // Если мы не видим чат - помечаем,
-                    // что сообщение новое пришло
-                    this.CONVERSATIONS[i]['new_messages'] += 1;
-                    if(conversation['filled']){
-                        var new_messages_container = $('#conversation_' + username + ' .new');
+                    }else{
+                        this.CONVERSATIONS[i]['new_messages'] += 1;
+                        this.CONVERSATIONS[i]['updated'] = msg.updated;
                         new_messages_container.removeClass('hidden');
                         new_messages_container.find('span').html(this.CONVERSATIONS[i]['new_messages']);
                     }
@@ -749,7 +765,6 @@ class WSChatClass{
     }
 
 
-
     // --------------------------
     // Загрузка истории сообщений
     // по групповому чату
@@ -795,6 +810,7 @@ class WSChatClass{
         });
     }
 
+
     // -----------------------
     // Вспомогательная функция
     // Добавление чата в DOM
@@ -805,6 +821,7 @@ class WSChatClass{
         var new_chat = this.Chat.new_chat(username, avatar, status_class, status_str, name);
         $('#' + this.pk_chats).append($(new_chat));
     }
+
 
     // ----------------------------
     // Добавление чата на страничку
@@ -845,7 +862,7 @@ class WSChatClass{
         this.create_chat_helper(group_id, group.group_name, avatar);
 
         this.load_group_history(group_id);
-/*
+/* МОГУТ ЛИ БЫТЬ У НАС в ОЧЕРЕДИ сообщения по групповым беседам?
         if(this.QUEUED_LIST[username] !== undefined){
             var scroll = false;
             var list_len = this.QUEUED_LIST[username].length;
@@ -904,46 +921,13 @@ class WSChatClass{
                 self.drop_chat(username, is_group);
             }
         });
-        this.update_conversation_status(username);
-    }
-
-
-    // ----------------------------------------
-    // Обновление количества новых сообщений,
-    // отправляем событие, что сообщения теперь
-    // прочитаны пользователем
-    // ----------------------------------------
-    update_conversation_status(username){
-        var conversation;
-        // Помечаем все сообщения как прочитанные
-        for(var i=0; i<this.CONVERSATIONS.length; i++){
-            conversation = this.CONVERSATIONS[i];
-            // Групповые статусы пока пропускаем
-            if(conversation['is_group'] !== undefined){
-                continue;
-            }
-            if(conversation['user'] !== undefined && conversation['user']['username'] == username){
-
-                if(conversation['filled']){
-                    var new_messages_container = $('#conversation_' + username + ' .new');
-                    new_messages_container.addClass('hidden');
-                }
-                if(conversation['new_messages'] > 0){
-                    this.CONVERSATIONS[i]['new_messages'] = 0;
-                    // Отправляем на сервер информацию,
-                    // что пользователь прочитал все
-                    this.mark_messages_read(username, conversation['updated']);
-                }
-                break;
-            }
-        }
     }
 
 
     // ---------------------------------------------
     // Помечаем сообщения на сервере как прочитанные
     // ---------------------------------------------
-    mark_messages_read(username, updated){
+    mark_messages_read(username, updated, is_group){
         var self = this;
         this.ajaxSetup();
         $.ajax({
@@ -956,13 +940,34 @@ class WSChatClass{
                 'token': self.token,
                 'is_encoded': true,
                 'msg': {
+                    'is_group': is_group,
                     'with_user': username,
                     'action': 'mark_messages_read',
                     'updated': updated,
                 },
             }),
             success : function (r) {
-                //console.log(r);
+                var conversation;
+                var new_messages_container = $('#conversation_' + username + ' .new');
+                if(is_group){
+                    conversation = self.get_conversation(username);
+                    conversation['new_messages'] = 0;
+                    new_messages_container.addClass('hidden');
+                    new_messages_container.find('span').html(conversation['new_messages']);
+                }else{
+                    for(var i=0; i<self.CONVERSATIONS.length; i++){
+                        conversation = self.CONVERSATIONS[i];
+                        if(conversation['filled'] === undefined){
+                            continue;
+                        }
+                        if(conversation['user']['username'] === username){
+                            self.CONVERSATIONS[i]['new_messages'] = 0;
+                            new_messages_container.addClass('hidden');
+                            new_messages_container.find('span').html(self.CONVERSATIONS[i]['new_messages']);
+                            break;
+                        }
+                    }
+                }
             }
         });
     }
@@ -1108,20 +1113,23 @@ class WSChatClass{
         });
     }
 
-
     // -------------------------------------
     // Поиск нужной беседы в нашем хранилище
     // -------------------------------------
-    get_conversation(group_id){
-        var group;
+    get_conversation(from){
         var conversation;
         for(var i=0; i<this.CONVERSATIONS.length; i++){
             conversation = this.CONVERSATIONS[i];
-            if(conversation['is_group'] === undefined){
-                continue
-            }
-            if(conversation['from_user'] == group_id){
-                return this.CONVERSATIONS[i];
+            if(conversation['is_group'] !== undefined){
+                if(conversation['from_user'] == from){
+                    return this.CONVERSATIONS[i];
+                }
+            }else{
+                if(conversation['user'] !== undefined){
+                    if(conversation['user']['username'] == from){
+                        return this.CONVERSATIONS[i];
+                    }
+                }
             }
         }
         return undefined;

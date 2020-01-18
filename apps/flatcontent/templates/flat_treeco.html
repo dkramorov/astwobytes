@@ -1,0 +1,236 @@
+<script src="/static/jstree/jstree.min.js"></script>
+<script type="text/javascript">
+function get_parent(data){
+  // Получение родительской рубрики
+  var parent_id = data.node.parent;
+  //var parent = flat_tree.jstree(true).get_node(data.node.parent);
+
+  if(parent_id.indexOf("container_") >= 0){
+    parent_id = 0;
+  }
+  return parent_id;
+}
+$(document).ready(function(){
+  $("#html_redactor").redactor({
+    //air: true,
+  });
+  var root_url = '{% url "flatcontent:tree_co" %}';
+  var flat_tree = $("#flat_tree");
+  //$.jstree.defaults.search.ajax = true;
+
+  $("#current_edit_form").submit(function(e) {
+    var $form = $(this);
+    if($form.attr('action') === ''){
+        return false;
+    }
+    var msg = 'Произошла ошибка, обновите страничку';
+    var status = 'danger'; // success, warning, info, danger
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: $form.serialize()
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      // Обновление ссылок
+      update_links(r);
+      // Переименование узла при необходимости
+      var node = flat_tree.jstree(true).get_node(r['row'].id, true);
+      flat_tree.jstree('set_text', node, r['row']['name']);
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    });
+    //отмена действия по умолчанию для кнопки submit
+    e.preventDefault();
+  });
+
+  flat_tree.jstree({
+    "plugins": ["search", "wholerow", "dnd", "contextmenu"],
+    "core" : {
+      "check_callback" : true,
+      "data" : {
+        "cache": false,
+        "url" : root_url + "?container_id={{ row.id }}&operation=get_children",
+        "worker": false,
+      },
+      "check_callback": function(operation, node, node_parent, node_position, more){
+        // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node', 'copy_node' or 'edit'
+        // DEMO: return operation === 'rename_node' ? true : false;
+        if(operation === "move_node"){
+          if(node_parent.parent === null){
+            return false;
+          }
+        }
+        return true;
+      }
+    },
+    "search": {
+      "show_only_matches": false,
+      "case_sensitive": false,
+/*
+      ajax: {
+        "url": root_url + "?container_id={{ row.id }}&operation=search",
+        "type": "get",
+        "data": function (str) {
+          return { "str": str };
+        }
+      }
+*/
+    },
+    "contextmenu": {
+      "items": function($node) {
+        var tree = flat_tree.jstree(true);
+        return {
+          "Create": {
+            "separator_before": false,
+            "separator_after": false,
+            "label": "{{ action_create }} {{ rp_singular_obj }}",
+            "action": function (obj) {
+              $node = tree.create_node($node);
+              tree.edit($node);
+            }
+          },
+          "Rename": {
+            "separator_before": false,
+            "separator_after": false,
+            "label": "{{ action_edit }} {{ rp_singular_obj }}",
+            "action": function (obj) {
+              tree.edit($node);
+            }
+          },
+          "Remove": {
+            "separator_before": false,
+            "separator_after": false,
+            "label": "{{ action_drop }} {{ rp_singular_obj }}",
+            "action": function (obj) {
+              tree.delete_node($node);
+              var parent = flat_tree.jstree(true).get_node($node.parent);
+              var description = "<strong>Удаление в рубрике \"" + parent.text + "\": </strong><br />";
+              description += "<strong>\"" + $node.text + "\"</strong>";
+            }
+          }
+        };
+      }
+    }
+  })
+  .bind("loaded.jstree", function(e, data) {
+    //console.log("--- jstree loaded ---");
+    flat_tree.jstree('open_all');
+  })
+  .on("rename_node.jstree", function (e, data) {
+    if(data.old === data.text){
+        return;
+    }
+    var node_id = data.node.id;
+    var parent_id = get_parent(data);
+    $.ajax({
+      type: "GET",
+      url: root_url,
+      data: "container_id={{ row.id }}&operation=rename_node&node_id=" + node_id + "&parent_id=" + parent_id + "&name=" + data.text,
+    }).done(function(r) {
+      // renamed
+      flat_tree.jstree(true).set_id(data.node, r.id);
+    });
+  })
+  .on("delete_node.jstree", function (e, data) {
+    var node_id = data.node.id;
+    var parent_id = get_parent(data);
+    $.ajax({
+      type: "GET",
+      url: root_url,
+      data: "container_id={{ row.id }}&operation=drop_node&node_id=" + node_id + "&parent_id=" + parent_id,
+    }).done(function(r) {
+      // dropped
+    });
+  })
+  .on("move_node.jstree", function(e, data){
+    if(data.parent === data.old_parent){
+      if(data.position === data.old_position){
+        return;
+      }
+    }
+    var node_id = data.node.id;
+    var parent_id = get_parent(data);
+    $.ajax({
+      type: "GET",
+      url: root_url,
+      data: "container_id={{ row.id }}&operation=move_node&node_id=" + node_id + "&parent_id=" + parent_id + "&position=" + data.position,
+    }).done(function(r) {
+      // moved
+    });
+  })
+  .on("dblclick.jstree", function (event) {
+    // double click
+  })
+  .on("changed.jstree", function (e, data) {
+    if(!data.node){
+      return;
+    }
+    // Если уже этот узел выбран,
+    // то не надо перезапрашивать с сервера
+    var node_id = data.node.id;
+    var container = $("#current_edit_form");
+    var prev_node_id = container.attr("prev_node_id");
+    if(prev_node_id === node_id){
+      return;
+    }
+    container.attr("prev_node_id", node_id);
+
+    container.parent().addClass("hidden");
+    $.ajax({
+      type: "GET",
+      url: root_url,
+      data: "container_id={{ row.id }}&operation=select_node&node_id=" + node_id,
+    }).success(function(r) {
+      var row = r['row'];
+      container.parent().removeClass("hidden");
+      container.find('input[name="name"]').val(row['name']);
+      if(row['html'] !== null){
+        container.find('#html_redactor').setCode(row['html']);
+      }else{
+        container.find('#html_redactor').setCode('');
+      }
+      container.find('input[name="link"]').val(row['link']);
+      var checked = 'checked' ? row['blank'] : '';
+      container.find('input[name="blank"]').prop('checked', checked);
+      container.find('input[name="icon"]').val(row['icon']);
+      container.find('input[name="title"]').val(row['title']);
+      container.find('input[name="description"]').val(row['description']);
+      container.find('input[name="keywords"]').val(row['keywords']);
+      container.find('input[name="tag"]').val(row['tag']);
+      container.find('input[name="position"]').val(row['position']);
+      update_links(r);
+      $("#current_edit_form").attr("action", row['url_edit']);
+    });
+  });
+  var searching = false;
+  $("#flat_tree_search").keyup(function () {
+    if (!searching) {
+      searching = true;
+      setTimeout(function () {
+        flat_tree.jstree("clear_search");
+        searching = false;
+        var v = $("#flat_tree_search").val();
+        flat_tree.jstree(true).search(v);
+      }, 500);
+    }
+  });
+});
+
+function clear_search(){
+  $("#rubrics_tree").jstree("clear_search");
+}
+</script>

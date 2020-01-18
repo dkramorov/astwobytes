@@ -1,0 +1,171 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% if is_tree %}
+  <link rel="stylesheet" href="/static/jstree/themes/default/style.min.css" />
+  <style type="text/css">
+    .jstree-default-contextmenu{
+        z-index: 12;
+    }
+  </style>
+{% endif %}
+<!-- В любом случае грузим редактор,
+     т/к на is_tree он используется
+     для редактирования рубрик -->
+<link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
+<link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
+{% endblock %}
+
+{% block content %}
+{% if row.id %}
+  {% if is_tree %}
+    <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_edit }}">
+      <em class="fa fa-edit fa-fw mr-sm"></em> {{ action_edit }} {{ singular_obj }}
+    </a>
+  {% else %}
+    <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_tree }}">
+      <em class="fa fa-sitemap fa-fw mr-sm"></em> Иерархия {{ rp_plural_obj }}
+    </a>
+  {% endif %}
+  <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ root_url }}{{ row.id }}/">
+    <em class="fa fa-stack-overflow fa-fw mr-sm"></em> {{ plural_obj }}
+  </a>
+{% endif %}
+
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    {% if is_tree %}
+      <div class="row">
+        <div class="col-md-4">
+          <div>
+            <input class="form-control" type="text" id="flat_tree_search" placeholder="Поиск" />
+          </div>
+          <div id="flat_tree"></div>
+        </div>
+        <div class="col-md-8">
+          <!-- Панель для динамического редактирования блоков -->
+          {% block flattree %}
+            {% include "blocks/flatmenu_edit_form.html" %}
+          {% endblock %}
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    {% else %}
+      <!-- Основная форма редактирования контейнера -->
+      {% include "flatcontent_edit_form.html" %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% if is_tree %}
+  {% include "flat_treeco.html" %}
+{% endif %}
+<!-- В любом случае оставляем логику,
+     т/к на is_tree она используется
+     для редактирования рубрик -->
+<script src="/static/redactor/jquery.browser.js"></script>
+<script src="/static/redactor/redactor.js"></script>
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#current_edit_form").parsley();
+    $("#description_redactor").redactor({
+      //air: true,
+    });
+    /* Заменится только обработчик события отправки формы для is_tree */
+    var upload_url = '{% url "flatcontent:edit_container" ftype "img" row.id %}';
+    {% if is_tree %}
+      upload_url = '';
+      $("#current_edit_form").attr('action', '').parent().addClass('hidden');
+    {% else %}
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+          // Обновление ссылок
+          update_links(r);
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+    {% endif %}
+
+    {% if row %}
+      /* Для is_tree row => это будет контейнер для каждой рубрики,
+         нас это устраивает т/к рубрика тоже уже существует */
+      var progressbar = $('#progressbar-files'),
+        bar         = progressbar.find('.progress-bar-files'),
+        settings    = {
+          action: upload_url, // upload url
+          allow : '*.*',
+          param: 'img',
+          params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+          // Предотвращаем загрузку при пустой ссылке для загрузки
+          before: function() {
+            if(settings.action === ''){
+              return false;
+            }
+          },
+          loadstart: function() {
+            bar.css('width', '0%').text('0%');
+            progressbar.removeClass('hidden');
+          },
+          progress: function(percent) {
+            percent = Math.ceil(percent);
+            bar.css('width', percent+'%').text(percent+'%');
+          },
+          allcomplete: function(response) {
+            bar.css('width', '100%').text('100%');
+            setTimeout(function(){
+              progressbar.addClass('hidden');
+            }, 750);
+            // Upload Completed
+            //alert(response);
+            // Обновление ссылок
+            var r = JSON.parse(response);
+            update_links(r);
+          }
+        };
+      var select = new $.upload.select($('#upload-select-files'), settings),
+      drop   = new $.upload.drop($('#upload-drop-files'), settings);
+    {% endif %}
+  });
+  function update_links(r){
+    var thumb = r['row']['thumb'];
+    if(thumb === ''){
+      thumb = '/static/img/empty.png';
+    }
+    $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+  }
+</script>
+{% endblock %}

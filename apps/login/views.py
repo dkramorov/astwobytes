@@ -77,7 +77,7 @@ def welcome(request, *args, **kwargs):
 def login_view(request, *args, **kwargs):
     """Страничка авторизации"""
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username = request.POST.get('username', '').strip()
         passwd = request.POST.get('passwd')
         if username and passwd:
             user = authenticate(request, username=username, password=passwd)

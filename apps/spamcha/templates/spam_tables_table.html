@@ -51,33 +51,9 @@ $(document).ready(function(){
         headerSort: false,
       },
 */
-      {
-        rowHandle:true,
-        formatter:"handle",
-        headerSort:false,
-        frozen:true,
-        width:30,
-        minWidth:30
-      },
-      {
-        title: "ID",
-        field: "id",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "ID",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 80,
-      },
-      {
-        title: "Название",
-        field: "name",
-        headerFilterPlaceholder: "Название",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: linkFormatter,
-        minWidth: 150,
-      },
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {% include "core/tabulator_cell/name.html" %}
       {
         title: "Тег",
         field: "tag",
@@ -94,13 +70,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         minWidth: 150,
       },
-      {
-        title: "Изображение",
-        field: "img",
-        headerSort: false,
-        formatter: imgFormatter,
-        minWidth: 120,
-      },
+      {% include "core/tabulator_cell/image.html" %}
       {
         title: "HTML-шаблон",
         field: "html_mgs",
@@ -108,36 +78,9 @@ $(document).ready(function(){
         formatter: htmlFormatter,
         minWidth: 120,
       },
-      {
-        title: "Включен",
-        field: "is_active",
-        editor: "select",
-        headerFilterPlaceholder: "Включен",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: {"": "Без фильтра", true: "Да", false: "Нет"},
-        },
-        formatter: booleanFormatter,
-        width: 110,
-      },
-      {
-        title: "Позиция",
-        field: "position",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "Позиция",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 90,
-      },
-      {
-        title: "Действия",
-        field: "actions",
-        headerSort: false,
-        formatter: actionsFormatter,
-        width: 100,
-      },
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+      {% include "core/tabulator_cell/actions.html" %}
     ],
   });
 });

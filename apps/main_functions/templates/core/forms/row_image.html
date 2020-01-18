@@ -1,0 +1,29 @@
+<div class="form-group">
+    <label class="col-lg-2 control-label">Изображение</label>
+    <div class="col-lg-10">
+        <img src="{{ row.thumb }}" class="img-responsive" id="preview_img">
+    </div>
+</div>
+
+{% if row %}
+    <fieldset>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><small>Загрузка изображения</small></label>
+            <div class="col-sm-10">
+                <div id="upload-drop-files" class="box-placeholder text-center">
+                    <p>
+                        <em class="fa fa-cloud-upload fa-2x"></em>
+                    </p>
+                    Перетащите файл сюда или
+                    <div class="btn-link form-file">выберите файл для загрузки
+                        <input id="upload-select-files" type="file" name="path">
+                    </div>
+                </div>
+                <div id="progressbar-files" class="progress hidden">
+                    <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
+                </div>
+                <input type="text" placeholder="Загрузить по ссылке" class="form-control" name="grab_img_by_url" value="" autocomplete="off">
+            </div>
+        </div>
+    </fieldset>
+{% endif %}

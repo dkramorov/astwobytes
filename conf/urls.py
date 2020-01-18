@@ -41,6 +41,12 @@ urlpatterns = [
     re_path(r'^binary_com/', include('apps.binary_com.urls')),
     # websocket
     re_path(r'^ws/', include('apps.ws.urls')),
+    # main_functions
+    re_path(r'^', include('apps.main_functions.urls')),
+    # Переводы
+    re_path(r'^', include('apps.languages.urls')),
+    # Сайт
+    re_path(r'^', include('apps.site.main.urls')),
     # статика
     re_path(r'^', include('apps.files.urls_static'))
 ]

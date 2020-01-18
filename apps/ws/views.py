@@ -162,7 +162,7 @@ def get_user_conversations(user_id: int = 0) -> dict:
     # Получение последних непрочитанных сообщений
     # по беседам тет-а-тет
     # -------------------------------------------
-    messages = Messages.objects.filter(to_user=user_id, from_user__in=conversations, state__isnull=True, group__isnull=True).values('from_user', 'created', 'text').annotate(mcount=Count('from_user'))
+    messages = Messages.objects.filter(to_user=user_id, from_user__in=conversations, state__isnull=True).values('from_user', ).annotate(mcount=Count('from_user'), created=Max('created'))
     for item in conversations:
         conversation = {
             'to_user': user_id,
@@ -174,13 +174,11 @@ def get_user_conversations(user_id: int = 0) -> dict:
             if message['from_user'] == item:
                 conversation['new_messages'] = message['mcount']
                 t = date_to_timestamp(message['created'])
-                if t > conversation['updated']:
-                    conversation['updated'] = t
-                    conversation['date'] = message['created'].strftime('%d-%m-%Y')
-                    conversation['time'] = message['created'].strftime('%H:%M')
-                    conversation['text'] = message['text']
-                    if len(conversation['text']) > SHORT_MSG_LEN:
-                        conversation['text'] = conversation['text'][:SHORT_MSG_LEN] + '...'
+                conversation['updated'] = t
+                conversation['date'] = message['created'].strftime('%d-%m-%Y')
+                conversation['time'] = message['created'].strftime('%H:%M')
+                conversation['created'] = message['created']
+
         result.append(conversation)
     # -------------------------------------------
     # Новые сообщения мы взяли, теперь надо взять
@@ -196,8 +194,6 @@ def get_user_conversations(user_id: int = 0) -> dict:
     messages = Messages.objects.filter(cond).filter(group__isnull=True).values('from_user', 'to_user').annotate(Max('created'))
 
     for conversation in result:
-        if conversation['new_messages'] > 0:
-            continue
         for message in messages:
             if (message['to_user'] == conversation['to_user'] and message['from_user'] == conversation['from_user']) or (message['to_user'] == conversation['from_user'] and message['from_user'] == conversation['to_user']):
                 t = date_to_timestamp(message['created__max'])
@@ -211,14 +207,10 @@ def get_user_conversations(user_id: int = 0) -> dict:
     # ---------------------------
     cond = Q()
     for conversation in result:
-        if conversation['new_messages'] > 0:
-            continue
         cond.add(Q(from_user=conversation['from_user'], to_user=conversation['to_user'], created=conversation['created']), Q.OR)
         cond.add(Q(to_user=conversation['from_user'], from_user=conversation['to_user'], created=conversation['created']), Q.OR)
     messages = Messages.objects.filter(cond).values('from_user', 'to_user', 'created', 'text')
     for conversation in result:
-        if conversation['new_messages'] > 0:
-            continue
         for message in messages:
             if conversation['created'] == message['created']:
                 if (conversation['from_user'] == message['from_user'] \
@@ -475,14 +467,21 @@ def messages_api(request):
                                        last_pk=msg.get('last_pk'))
             elif action == 'get_conversations':
                 result = get_conversations(request, user_id=from_user.id)
+            # Отметить сообщения прочитанными
             elif action == 'mark_messages_read':
-                with_user = User.objects.filter(username=msg.get('with_user')).values_list('id', flat=True).first()
-                if with_user:
-                    updated = msg.get('updated')
-                    updated = int(updated) + 1
-                    updated = timestamp_to_date(updated)
-
-                    Messages.objects.filter(from_user=with_user, to_user=from_user.id, created__lt=updated).update(state=1)
+                is_group = msg.get('is_group')
+                with_user = msg.get('with_user')
+                updated = msg.get('updated')
+                updated = int(updated) + 1
+                updated = timestamp_to_date(updated)
+                if is_group:
+                    in_group = Conversations.objects.filter(user_id=from_user.id, group=with_user).first()
+                    if in_group:
+                        Messages.objects.filter(group=with_user, created__lt=updated).update(state=1)
+                else:
+                    with_user = User.objects.filter(username=with_user).values_list('id', flat=True).first()
+                    if with_user:
+                        Messages.objects.filter(from_user=with_user, to_user=from_user.id, created__lt=updated).update(state=1)
             # Создание новой беседы
             elif action == 'new_conversation':
                 name = msg.get('name', '').strip()
@@ -551,3 +550,55 @@ def messages_api(request):
             elif action == 'get_group':
                 result = get_group(request, user_id=from_user.id, group_id=msg.get('group_id'))
     return JsonResponse(result, safe=False)
+
+
+def fast_chat_new_messages(user_id: int, exclude_list: list) -> list:
+    """Находим все непрочитанные сообщения пользователя и возвращаем их
+       :param user_id: ИД пользователя
+       :exclude_list: список сообщений, которые надо исключить"""
+    excluded = [item for item in exclude_list.split(',') if item.isdigit()]
+    # Сообщение может прилететь в группу
+    user_groups = Conversations.objects.filter(user_id=user_id).values_list('group', flat=True)
+    new_messages = Messages.objects.filter(Q(to_user=user_id)|Q(group__in=user_groups)).filter(state__isnull=True).exclude(pk__in=excluded).exclude(group__in=user_groups, from_user=user_id)
+    users = User.objects.filter(pk__in=[msg.from_user for msg in new_messages]).values('id', 'username', 'first_name', 'last_name', 'email')
+    ids_users = {
+        user['id']: {
+            'user': user,
+            'messages': [],
+        } for user in users
+    }
+    for msg in new_messages:
+        new_msg = {
+            'id': msg.id,
+            'sort': date_to_timestamp(msg.created),
+            'date': msg.created.strftime('%d-%m-%Y'),
+            'time': msg.created.strftime('%H:%M'),
+            'text': msg.text,
+        }
+        ids_users[msg.from_user]['messages'].append(new_msg)
+    result = [{
+        'user': user['user'],
+        'messages': sorted(user['messages'], key=lambda x: x['sort']),
+    } for user in ids_users.values() if user['messages']]
+    return result
+
+@login_required
+@csrf_exempt
+def fast_chat(request):
+    """Аякс запросы по чату вне странички чата"""
+    result = {}
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'get_new_messages':
+            exclude_list = request.POST.get('exclude', '')
+            result = fast_chat_new_messages(request.user.id, exclude_list)
+        elif action == 'mark_messages_read':
+            user_id = request.user.id
+            ids_list = request.POST.get('ids', '')
+            ids = [item for item in ids_list.split(',') if item.isdigit()]
+            if ids:
+                # Сообщение может прилететь в группу
+                user_groups = Conversations.objects.filter(user_id=user_id).values_list('group', flat=True)
+                Messages.objects.filter(pk__in=ids).filter(Q(to_user=user_id)|Q(group__in=user_groups)).update(state=1)
+    return JsonResponse(result, safe=False)
+

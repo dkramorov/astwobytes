@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import mimetypes
 from django.db import models
 
 from apps.main_functions.models import Standard
@@ -13,4 +14,15 @@ class Files(Standard):
     class Meta:
         verbose_name = 'Стат.контет - Файлы'
         verbose_name_plural = 'Стат.контент - Файлы'
+
+    def save(self, *args, **kwargs):
+        super(Files, self).save(*args, **kwargs)
+        path = '%s/%s' % (self.get_folder(), self.path)
+        mime = mimetypes.MimeTypes()
+        mime_type = mime.guess_type(path)
+        if not mime_type:
+            mime_type = 'application/force-download'
+        else:
+            mime_type = mime_type[0]
+        Files.objects.filter(pk=self.id).update(mime=mime_type)
 

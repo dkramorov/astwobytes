@@ -108,7 +108,6 @@ def object_fields(row, pass_fields:tuple = (), only_fields:tuple = ()):
     default_values = object_default_values(row)
     ftypes = object_fields_types(row)
     for field in row.__class__._meta.fields:
-
         if pass_fields and field.name in pass_fields:
             continue
         elif only_fields and not field.name in only_fields:

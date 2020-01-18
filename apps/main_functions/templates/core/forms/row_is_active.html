@@ -1,0 +1,10 @@
+<div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+        <div class="checkbox c-checkbox">
+            <label>
+                <input type="checkbox" value="1" name="is_active" {% if row.is_active or not row %} checked{% endif %} autocomplete="off">
+                <span class="fa fa-check"></span> Включен
+            </label>
+        </div>
+    </div>
+</div>

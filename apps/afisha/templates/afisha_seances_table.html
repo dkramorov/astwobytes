@@ -33,24 +33,8 @@ $(document).ready(function(){
         headerSort: false,
       },
 */
-      {
-        rowHandle:true,
-        formatter:"handle",
-        headerSort:false,
-        frozen:true,
-        width:30,
-        minWidth:30
-      },
-      {
-        title: "ID",
-        field: "id",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "ID",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 80,
-      },
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
       {
         title: "Место",
         field: "place__name",
@@ -91,23 +75,8 @@ $(document).ready(function(){
         headerFilterFunc: "=",
         width: 100,
       },
-      {
-        title: "Позиция",
-        field: "position",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "Позиция",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 90,
-      },
-      {
-        title: "Действия",
-        field: "actions",
-        headerSort: false,
-        formatter: actionsFormatter,
-        width: 100,
-      },
+      {% include "core/tabulator_cell/position.html" %}
+      {% include "core/tabulator_cell/actions.html" %}
     ],
   });
   $(".tabulator-headers .tabulator-col").each(function(){

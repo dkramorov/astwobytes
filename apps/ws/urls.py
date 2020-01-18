@@ -9,4 +9,5 @@ urlpatterns = [
     # Получение/сохранение сообщений с ws
     path('messages/api/', views.messages_api, name='messages_api'),
     path('admin/', views.show_chat, name='show_chat'),
+    path('fast_chat/', views.fast_chat, name='fast_chat'),
 ]

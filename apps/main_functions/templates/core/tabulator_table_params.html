@@ -9,6 +9,12 @@ ajaxFiltering: true, //send filter data to the server instead of processing loca
 ajaxSorting: true,
 
 history:true, //record table history
+// TREE
+dataTree:true,
+dataTreeStartExpanded:true,
+dataTreeCollapseElement:"<i class='fa fa-minus-square'></i>",
+dataTreeExpandElement:"<i class='fa fa-plus-square'></i>",
+dataTreeChildIndent:15, //indent child rows by 15 px
 
 ajaxResponse:function(url, params, response){
   $("#main-table-footer .start").text(1);
@@ -27,8 +33,7 @@ initialSort:[
   {column: "position", dir:"asc"},
 ],
 
-movableRows: {% if rows.0.position %}true{% else %}false{% endif %},
-//movableRows: true,
+movableRows: window.disableMovableRows ? false : true,
 rowMoved:function(row){
   var status = 'danger'; // success, warning, info, danger
   var table = row.getTable();

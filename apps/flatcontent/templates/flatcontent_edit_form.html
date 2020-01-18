@@ -1,0 +1,26 @@
+<div class="panel panel-default">
+  <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+    <input type="hidden" name="state" value="{{ ftype_state }}" />
+    <div class="panel-heading">{{ singular_obj }}</div>
+    <div class="panel-body">
+      {% csrf_token %}
+      {% include "core/forms/row_name.html" %}
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Описание</label>
+        <div class="col-lg-10">
+          <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Тег</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+      {% include "core/forms/row_image.html" %}
+      {% include "core/forms/row_position.html" %}
+      {% include "core/forms/row_is_active.html" %}
+    </div>
+    {% include "core/forms/footer_buttons.html" %}
+  </form>
+</div>

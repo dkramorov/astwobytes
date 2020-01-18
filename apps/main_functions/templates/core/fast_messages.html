@@ -1,15 +1,20 @@
-<a class="dropdown-toggle" data-play="fadeIn" data-toggle="dropdown" href="#">
+{% comment %}<!--
+Приложение ws - чат
+-->{% endcomment %}
+<script type="text/javascript" src="/static/chat/fast_chat.js"></script>
+<div class="hidden" id="fast_chat_form_action" data-url='{% url "ws:fast_chat" %}' data-chat-url='{% url "ws:show_chat" %}' data-helper="Если у нас data-chat-url совпадает с адресом, где мы находимся сейчас, то нужно только 1 раз запросить новые сообщения"></div>
+
+<a class="dropdown-toggle" data-play="fadeIn" data-toggle="dropdown" href="#" id="fast_chat_uread_messages_counter">
   <em class="fa fa-envelope-o"></em>
-  <div class="label label-danger">21</div>
+  <div class="label label-danger">0</div>
 </a>
-<!-- START Dropdown menu-->
-<ul class="dropdown-menu">
-  <li class="dropdown-menu-header">You have 5 new messages</li>
+
+<ul class="dropdown-menu" id="fast_chat_unread_messages">
+  <li class="dropdown-menu-header">Нет новых сообщений</li>
   <li>
     <div class="scroll-viewport">
-      <!-- START list group-->
       <div class="list-group scroll-content">
-        <!-- START list group item-->
+        {% comment %}<!--
         <a class="list-group-item" href="#">
           <div class="media">
             <div class="pull-left">
@@ -27,8 +32,7 @@
             </div>
           </div>
         </a>
-        <!-- END list group item-->
-        <!-- START list group item-->
+
         <a class="list-group-item" href="#">
           <div class="media">
             <div class="pull-left">
@@ -46,8 +50,8 @@
             </div>
           </div>
         </a>
-        <!-- END list group item-->
-        <!-- START list group item-->
+
+
         <a class="list-group-item" href="#">
           <div class="media">
             <div class="pull-left">
@@ -65,8 +69,7 @@
             </div>
           </div>
         </a>
-        <!-- END list group item-->
-        <!-- START list group item-->
+
         <a class="list-group-item" href="#">
           <div class="media">
             <div class="pull-left">
@@ -84,8 +87,7 @@
             </div>
           </div>
         </a>
-        <!-- END list group item-->
-        <!-- START list group item-->
+
         <a class="list-group-item" href="#">
           <div class="media">
             <div class="pull-left">
@@ -103,17 +105,16 @@
             </div>
           </div>
         </a>
-        <!-- END list group item-->
+        -->{% endcomment %}
       </div>
-      <!-- END list group-->
     </div>
   </li>
-  <!-- START dropdown footer-->
-  <li class="p">
+
+  <li class="p hidden mark_all_read">
     <a class="text-center" href="#">
-      <small class="text-primary">READ ALL</small>
+      <small class="text-primary">Отметить все прочитанными</small>
     </a>
   </li>
-  <!-- END dropdown footer-->
+
 </ul>
-<!-- END Dropdown menu-->
+

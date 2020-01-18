@@ -54,7 +54,7 @@ class Tasks(models.Model):
 class Standard(models.Model):
     """Абстрактная модель
        Стандартная модель"""
-    img = models.CharField(max_length=255, blank=True, null=True)
+    img = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     updated = models.DateTimeField(auto_now=True, db_index=True)
     position = models.IntegerField(blank=True, null=True, db_index=True)

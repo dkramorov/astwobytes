@@ -1,0 +1,86 @@
+<div class="panel panel-default">
+  <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+    <input type="hidden" name="state" value="1" />
+    <input type="hidden" name="container" value="{{ container.id }}" />
+
+    <div class="panel-heading">{{ singular_obj }}</div>
+    <div class="panel-body">
+      {% csrf_token %}
+      {% include "core/forms/row_name.html" %}
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Меню</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Меню" class="form-control" name="container_name" value="{% if row.container %}{{ row.container.name }}{% else %}{{ container.name }}{% endif %}" autocomplete="off" readonly>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Содержимое (html)</label>
+        <div class="col-lg-10">
+          <textarea class="form-control" name="html" id="html_redactor">{% if row.html %}{{ row.html }}{% endif %}</textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Ссылка</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Ссылка" class="form-control" name="link" value="{% if row.link %}{{ row.link }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-lg-offset-2 col-lg-10">
+          <div class="checkbox c-checkbox">
+            <label>
+              <input type="checkbox" value="1" name="blank" {% if row.blank %} checked{% endif %} autocomplete="off">
+              <span class="fa fa-check"></span> Открывать ссылку в новом окне
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Иконка</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Иконка" class="form-control" name="icon" value="{% if row.icon %}{{ row.icon }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Title</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Title" class="form-control" name="title" value="{% if row.title %}{{ row.title }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Description</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Description" class="form-control" name="description" value="{% if row.description %}{{ row.description }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Keywords</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Keywords" class="form-control" name="keywords" value="{% if row.keywords %}{{ row.keywords }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Тег</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+
+      {% include "core/forms/row_image.html" %}
+      {% include "core/forms/row_position.html" %}
+      {% include "core/forms/row_is_active.html" %}
+    </div>
+    {% if is_tree %}
+      <div class="panel-footer">
+        <div class="col-12 text-right padding-tb5">
+          <button type="submit" class="btn btn-labeled btn-success">
+            <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
+          </button>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    {% else %}
+      {% include "core/forms/footer_buttons.html" %}
+    {% endif %}
+  </form>
+</div>

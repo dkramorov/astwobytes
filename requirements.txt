@@ -17,4 +17,4 @@ websockets==8.0.2 # if errors happens read next:
 #sudo add-apt-repository ppa:deadsnakes/ppa
 #sudo apt-get update
 #sudo apt-get install python3.6 python3.6-dev
-
+plotly==4.4.1

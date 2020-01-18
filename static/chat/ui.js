@@ -108,6 +108,12 @@ class WSChat{
         <button class="btn emoticons"><i class="fa fa-smile-o material-icons"></i></button>
         <button type="submit" class="btn send"><i class="fa fa-location-arrow material-icons"></i></button>
       </form>
+      <label>
+        <input type="file">
+        <span class="btn attach d-sm-block d-none">
+          <i class="fa fa-file material-icons"></i>
+        </span>
+      </label>
     </div>
     <div class="clearfix"></div>
   </div>
@@ -119,7 +125,7 @@ class WSChat{
 // --------------------------
 // Класс для работы с беседой
 // --------------------------
-class WSConversations{
+class WSConversation{
     constructor(parent) {
         console.log('--- WSConversation initialization ---');
         this.parent = parent;
@@ -193,7 +199,7 @@ class WSConversations{
 // -----------------------------
 // Класс для работы с контактами
 // -----------------------------
-class WSContacts{
+class WSContact{
     constructor(parent) {
         console.log('--- WSContacts initialization ---');
         this.parent = parent;
@@ -247,5 +253,42 @@ class WSContacts{
                 }
             });
         });
+    }
+}
+
+// ------------------------------
+// Класс для работы с опвещениями
+// Браузерные пуш-уведомления
+// ------------------------------
+class WSNotification{
+    // https://developer.mozilla.org/en-US/docs/Web/API/notification#Browser_compatibility
+    constructor() {
+        // Оповещения
+        this.with_notify = true;
+        this.max_len = 35;
+    }
+    notifyMe(title, text) {
+        if(!this.with_notify){
+            return;
+        }
+        if(text.length > this.max_len){
+            text = text.substr(0, this.max_len) + '...';
+        }
+        var options = {
+            body: text,
+        }
+        if (Notification.permission === "granted") {
+            var notification = new Notification(title, options);
+            return;
+        }else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(function (permission) {
+                if (permission === "granted") {
+                    var notification = new Notification(title, options);
+                    return;
+                }
+            });
+        }
+        // Не беспокоим повторно
+        this.with_notify = false;
     }
 }

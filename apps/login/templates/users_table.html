@@ -11,7 +11,6 @@
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
-{% include "core/breadcrumbs.html" %}
 {% include "core/tabulator_table.html" %}
 {% endblock %}
 
@@ -48,24 +47,8 @@ $(document).ready(function(){
         headerSort: false,
       },
 */
-      {
-        rowHandle:true,
-        formatter:"handle",
-        headerSort:false,
-        frozen:true,
-        width:30,
-        minWidth:30
-      },
-      {
-        title: "ID",
-        field: "id",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "ID",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 80,
-      },
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
       {
         title: "Логин",
         field: "username",
@@ -147,19 +130,7 @@ $(document).ready(function(){
         formatter: booleanFormatter,
         width: 110,
       },
-      {
-        title: "Включен",
-        field: "is_active",
-        editor: "select",
-        headerFilterPlaceholder: "Включен?",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams:{
-          values:{"":"Без фильтра", true:"Да", false:"Нет"}
-        },
-        formatter: booleanFormatter,
-        width: 110,
-      },
+      {% include "core/tabulator_cell/is_active.html" %}
 /*
       {
         title: "Создан",
@@ -170,16 +141,7 @@ $(document).ready(function(){
         minWidth: 150,
       },
 */
-      {
-        title: "Позиция",
-        field: "position",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "Позиция",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 90,
-      },
+      {% include "core/tabulator_cell/position.html" %}
       {
         title: "Действия",
         field: "actions",

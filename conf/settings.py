@@ -10,13 +10,43 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+# -----------------------
+# Проверить все настройки
+# -----------------------
+# $ python manage.py diffsettings --all
+
 import os
 from envparse import env
 env.read_envfile()
 
+# ------------------
+# Мультиязычный сайт
+# ------------------
+IS_DOMAINS = False
+MAIN_DOMAIN = env('MAIN_DOMAIN')
+DOMAINS = [] # Можно из базы дополнить
+# В env можно положить список поддоменов через запятую,
+# например, SUBDOMAINS = "rus:Русская версия,eng:Английская версия"
+SUBDOMAINS = env('SUBDOMAINS', default='')
+if MAIN_DOMAIN and SUBDOMAINS:
+    DOMAINS = [
+        {'pk': None, 'domain': MAIN_DOMAIN, 'name': 'Основной сайт'},
+        {'pk': None, 'domain': 'rus.%s' % (MAIN_DOMAIN, ), 'name': 'Основной сайт'},
+    ]
+    sub_domains = []
+    for i, item in enumerate(SUBDOMAINS.split(',')):
+        sub_domain, name = item.split(':')
+        sub_domains.append({
+            'pk': i,
+            'domain': '%s.%s' % (sub_domain.strip(), MAIN_DOMAIN),
+            'name': name.strip(),
+        })
+    DOMAINS += sub_domains
+    #print('[DOMAINS]: %s' % (DOMAINS, ))
+    IS_DOMAINS = True
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -35,7 +65,6 @@ ALLOWED_HOSTS = [
 ]
 
 # Application definition
-
 INSTALLED_APPS = [
     #'django.contrib.admin',
     'django.contrib.auth',
@@ -52,8 +81,12 @@ INSTALLED_APPS = [
     'apps.spamcha',
     'apps.binary_com',
     'apps.ws',
-    'apps.vallom_tasks',
+    'apps.upload_tasks',
+    'apps.languages',
+    # Сайт
+    'apps.site',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -163,7 +196,7 @@ LOG_LEVEL = env('LOG_LEVEL', default='INFO')
 
 def skip_static_requests(record):
     """Фильтр для запросов на статику"""
-    if record.args[0].startswith('GET /static/'):
+    if record.args[0].startswith('GET /static/') or record.args[0].startswith('GET /media/'):
         return False
     return True
 
@@ -230,9 +263,14 @@ TELEGRAM_PROXY = env('TELEGRAM_PROXY', default='')
 TELEGRAM_CHAT_ID = env('TELEGRAM_CHAT_ID', default=0)
 TELEGRAM_ENABLED = env('TELEGRAM_ENABLED', cast=bool, default=False)
 
-# -----------------------
-# Проверить все настройки
-# -----------------------
-# $ python manage.py diffsettings --all
+# --------------
+# Websocket chat
+# --------------
 WS_SERVER = env('WS_SERVER', default='ws://127.0.0.1:8888/')
 WS_SECRET = env('WS_SECRET', default='bugogashenki')
+
+# -------------------
+# Freeswitch settings
+# -------------------
+FREESWITCH_URI = env('FREESWITCH_URI')
+

@@ -16,48 +16,17 @@
         <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Название</label>
-            <div class="col-lg-10">
-              <input type="text" placeholder="Название" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
-            </div>
-          </div>
+          {% include "core/forms/row_name.html" %}
           <div class="form-group">
             <label class="col-lg-2 control-label">Тег</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Позиция</label>
-            <div class="col-lg-10">
-              <input type="text" placeholder="Позиция" class="form-control" name="position" value="{% if row.position %}{{ row.position }}{% endif %}" autocomplete="off">
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-lg-offset-2 col-lg-10">
-              <div class="checkbox c-checkbox">
-                <label>
-                  <input type="checkbox" value="1" name="is_active" {% if row.is_active or not row %} checked{% endif %} autocomplete="off">
-                  <span class="fa fa-check"></span> Включена
-                </label>
-              </div>
-            </div>
-          </div>
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
         </div>
-        <div class="panel-footer">
-          <div class="col-lg-6 col-sm-6 padding-tb5">
-            <button type="submit" class="btn btn-labeled btn-success">
-              <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
-            </button>
-          </div>
-          <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
-            <a class="btn btn-labeled btn-danger" href="{{ root_url }}">
-              <span class="btn-label"><i class="fa fa-times"></i></span>Вернуться
-            </a>
-          </div>
-          <div class="clearfix"></div>
-        </div>
+        {% include "core/forms/footer_buttons.html" %}
       </form>
     </div>
     <!-- END panel-->
