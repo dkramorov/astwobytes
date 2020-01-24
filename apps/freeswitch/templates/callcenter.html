@@ -1,0 +1,452 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h3>{{ plural_obj }}<br /><small>{{ action_create }} {{ rp_plural_obj }}</small></h3>
+{% include "core/breadcrumbs.html" %}
+
+
+
+<!-- UA Control Form -->
+<div id="ua">
+  <button id="ua-status"><i class="icon-navicon"></i></button>
+  <!--<button id="ua-register"><i class="icon-off"></i>Register</button>-->
+  <input type="checkbox" value="1" id="ua_register" />
+  <form id="new-session-form" action="">
+    <label style="display:none;">Enable Video<input type="checkbox" id="ua-video"/></label>
+    <label><input type="text" id="ua-uri" value="" size="11"/></label>
+    <button type="submit" id="ua-invite-submit" /><i class="icon-phone"></i></button>
+  </form>
+  <span id="status_debug_msg"></span>
+</div>
+
+
+<ul id="session-list"></ul>
+<!-- Templates to clone Sessions and Messages -->
+<ul id="templates">
+  <li id="session-template" class="template session">
+    <strong class="display-name" style="display:none;"></strong> <span class="uri"></span>
+    <button class="green">Green</button>
+    <button class="red">Red</button>
+    <input type="text" class="gray_transfer" value="" style="display:none;"/>
+    <button class="gray">=></button>
+
+    <div style="display:none;"><!-- Оператору не нужен DTMF -->
+    <form class="dtmf" action="" style="display:none;">
+      <label><input type="text" maxlength="4" /></label>
+      <input type="submit" value="DTMF" />
+    </form>
+    </div>
+
+    <video autoplay style="display:none;">Video Disabled or Unavailable</video>
+    <ul class="messages" style="display:none;"></ul>
+    <form class="message-form" action="" style="display:none;">
+      <input type="text" placeholder="Type to send a message"/><input type="submit" value="Send" />
+    </form>
+    <!-- end invisible -->
+  </li>
+</ul>
+
+
+<script type="text/javascript">
+  var ext;
+  var empty_current_call = {"uuid":"", "dest":"", "cid_num":""};
+  var current_call = empty_current_call;
+
+  // -----------------------
+  // OVERRIDE ua.js function
+  // -----------------------
+  function extension_is(context, number){
+    console.log("CONTEXT " + context);
+    /* Контекст приходит с org_наш_номер
+    Нужно переадресовать в этом случае на 9сой
+    redirector решит дальше уже на какую страничку
+    отправить пользователя
+    */
+    current_context = context;
+    return 1;
+  }
+  // -----------------------
+  // OVERRIDE ua.js function
+  // -----------------------
+  function call_is(){
+    if(current_context.indexOf("org_") > -1){
+      $("#goto_site_9soi").attr("data-url", "https://rus.9soi.com/redirector/?callredirects="+current_context);
+      $("iframe#iframe_content").get(0).contentWindow.location = $("#goto_site_9soi").attr("data-url");
+      current_url = $("#goto_site_9soi").attr("data-url");
+    }else{
+      if(current_url.indexOf("9soi.com") > -1){
+        $("iframe#iframe_content").get(0).contentWindow.location = "https://223-223.ru";
+      }
+      current_url = "https://223-223.ru";
+    }
+    current_call = empty_current_call;
+    // Даем задержку перед заданием uuid
+    // чтобы бридж был с правильным uuid
+    setTimeout(function(){
+      $.ajax({
+        url: "/oper/freeswitch/",
+        type: "GET",
+        //dataType: "json",
+        data: "action=get_calls",
+        success: function(response) {
+          console.log("[GET CALLS RESPONSE]:", response);
+          if(response['call']){
+            current_call = response['call'];
+          }
+        }
+      });
+    }, 5000);
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="col-md-6">
+
+<div class="panel panel-primary">
+  <div class="panel-heading portlet-handler">Звонок из браузера
+    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть панель" class="pull-right">
+      <em class="fa fa-minus"></em>
+    </a>
+  </div>
+  <div class="panel-body">
+    <div class="keypad">
+      <input type="text" value="{% if phone %}{{ phone }}{% else %}83952505000{% endif %}" id="phone_number" class="phone" autocomplete="off" />
+      <span title="Клавиатура" class="keypad-toggle-link">
+        <i class="fa fa-th"></i>
+      </span>
+      <div class="digits{% comment %} visible{% endcomment %}">
+        <table class="digits">
+          <tbody>
+            <tr>
+              <td class="js-call_phone_btn"><span>1</span></td>
+              <td class="js-call_phone_btn"><span>2</span></td>
+              <td class="js-call_phone_btn"><span>3</span></td>
+            </tr>
+            <tr>
+              <td class="js-call_phone_btn"><span>4</span></td>
+              <td class="js-call_phone_btn"><span>5</span></td>
+              <td class="js-call_phone_btn"><span>6</span></td>
+            </tr>
+            <tr>
+              <td class="js-call_phone_btn"><span>7</span></td>
+              <td class="js-call_phone_btn"><span>8</span></td>
+              <td class="js-call_phone_btn"><span>9</span></td>
+            </tr>
+            <tr>
+              <td class="js-call_phone_btn"><span>*</span></td>
+              <td class="js-call_phone_btn"><span>0</span></td>
+              <td class="js-call_phone_btn"><span>#</span></td>
+            </tr>
+            <tr class="actions-row">
+              <td class="clear_phone"><span>C</span></td>
+              <td><input type="text" id="ext_dial" value="" /></td>
+              <td>
+                <span class="ext_dial_button"><i class="fa fa-plus-circle"></i><br />Донабор</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-footer">
+    <div class="call_buttons">
+      <button class="action primary btn make_call"><i class="fa fa-phone"></i> Позвонить</button>
+      <button class="action primary btn hangup"><i class="fa fa-phone"></i> Завершить</button> <span class="call_timer"></span>
+      <label id="call_error"></label>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div style="display:none;">
+  <form id="config-form" action="">
+    <input type="text" name="displayName" value="{{ request.user.username }}" />
+    <input type="text" name="uri" value="{{ request.user.username }}@{{ freeswitch_domain }}" />
+    <input type="text" name="authorizationUser" value="{{ request.user.username }}" />
+    <input type="password" name="password" value="cnfylfhnysq" />
+    <input type="text" name="wsServers" value="{{ freeswitch_wss }}" />
+  </form>
+  <div id="ua">
+    <div id="ua-status">Disconnected</div>
+  </div>
+  <ul id="session-list"></ul>
+  <ul id="templates">
+    <li id="session-template" class="template session">
+      <video autoplay>Video Disabled or Unavailable</video>
+    </li>
+  </ul>
+</div>
+<audio id="ringtone" loop src="/static/call_from_site/sounds/ringtone2.wav"></audio>
+<audio id="ringbacktone" loop src="/static/call_from_site/sounds/ringbacktone.wav"></audio>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  window.sip_config = {
+    traceSip: false,
+    register: true,
+    userAgentString: '{{ request.user.username }}@{{ request.META.HTTP_HOST }}',
+    //stunServers: ['stun:91.185.46.56:3478'],
+  }
+</script>
+<script type="text/javascript" src="/static/call_from_site/js/sip-0.7.8.js"></script>
+
+
+<script type="text/javascript" src="/static/call_from_site/js/ua2new.js"></script>
+
+
+<script type="text/javascript" src="/static/call_from_site/js/DetectRTC.js"></script>
+
+<script type="text/javascript">
+  function connected_to_server(){
+    $(".make_call").show();
+  }
+
+  var is_webrtc_supported = false;
+  DetectRTC.load(function(){
+    is_webrtc_supported = DetectRTC.isWebRTCSupported;
+
+    if(is_webrtc_supported){
+
+      connect_to_server(connected_to_server);
+/*
+      set_call_controls($(".make_call"), $(".hangup"), $(".call_timer"));
+
+      $(".make_call").click(function(){
+        $("#ext_dial").val("");
+        make_call($("#phone_number").val());
+      });
+
+      $(".hangup").click(function(){
+        hangup_call();
+      });
+      $(".keypad-toggle-link").click(function(){
+        $("div.digits").toggleClass("visible");
+        $(this).toggleClass("active");
+      });
+
+      $(".js-call_phone_btn").click(function(){
+        var key = $(this).find("span").html();
+        console.log("key pressed "+key);
+        if(active_session){
+          var dtmf_value = $("#ext_dial").val();
+          $("#ext_dial").val(dtmf_value + key);
+        }else{
+          var phone = $("#phone_number").val();
+          $("#phone_number").val(phone + key);
+        }
+      });
+      $(".clear_phone").click(function(){
+        if(active_session){
+          $("#ext_dial").val("");
+        }else{
+          $("#phone_number").val("");
+        }
+      });
+      $(".ext_dial_button").click(function(){
+        var dtmf = $("#ext_dial").val();
+        $(".dtmf input[type=\"text\"]").val(dtmf);
+        console.log("sending dtmf "+dtmf);
+        send_dtmf(dtmf);
+        $("#ext_dial").val("");
+      });
+*/
+    }
+  });
+
+  $(document).ready(function(){
+    $("input[type='text'].phone").mask("8(9999) 999-999");
+  });
+
+  function show_error(error){
+    $("#call_error").html(error);
+    $("#call_error").show();
+    setTimeout(function(){
+      $("#call_error").hide();
+    }, 2500);
+  }
+
+</script>
+{% endblock %}
+
+{% block extrahead %}
+<style type="text/css">
+  .call_buttons{
+    text-align:center;
+  }
+  div.keypad{
+    position:relative;
+  }
+  .keypad-toggle-link {
+    font-size:24px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    height: 40px;
+    width: 40px;
+    line-height:46px;
+    color:#999;
+    cursor: pointer;
+  }
+  .keypad-toggle-link.active{
+    color:#ffa800;
+  }
+
+  div.digits{
+    display:none;
+  }
+  div.digits.visible{
+    display:block;
+  }
+  button.action.btn{
+    display:none;
+    margin: 20px auto;
+    background: #c93939;
+    color: #ffffff;
+    text-decoration: none;
+    font-size:20px;
+  }
+  p.green{
+    color: #7ac060;
+    font-size:1.2em;
+    font-weight:bold;
+    line-height:1.4em;
+  }
+  button.action.btn.recall{
+    background: #7ac060;
+    display:inline-block;
+  }
+
+  button.action.btn:hover{
+    background: -webkit-gradient(linear, left top, left bottom, from(#ff4a4a), to(#992727));
+    background: -moz-linear-gradient(top, #ff4a4a, #992727);
+    background: linear-gradient(to bottom, #ff4a4a, #992727);
+    -webkit-box-shadow: #ff5959 0px 0px 20px 0px;
+    -moz-box-shadow: #ff5959 0px 0px 20px 0px;
+    box-shadow: #ff5959 0px 0px 20px 0px;
+    text-shadow: #591717 1px 1px 1px;
+  }
+
+  button.action.btn.make_call{
+    background: #7ac060;
+  }
+  button.action.btn.make_call:hover, button.action.btn.recall:hover{
+    display:inline;
+    background: #8ddb4f;
+    background: -webkit-gradient(linear, left top, left bottom, from(#8ddb4f), to(#568530));
+    background: -moz-linear-gradient(top, #8ddb4f, #568530);
+    background: linear-gradient(to bottom, #8ddb4f, #568530);
+    -webkit-box-shadow: #94e453 0px 0px 20px 0px;
+    -moz-box-shadow: #94e453 0px 0px 20px 0px;
+    box-shadow: #94e453 0px 0px 20px 0px;
+    text-shadow: #3e5f23 1px 1px 1px;
+  }
+  table.digits{
+    width:100%;
+    border-right:1px solid #dae1ec;
+    border-bottom:1px solid #dae1ec;
+  }
+  table.digits td>span{
+    height:45px;
+    line-height:45px;
+  }
+  table.digits td{
+    width:33%;
+    border-top:1px solid #dae1ec;
+    border-left:1px solid #dae1ec;
+    padding:0;
+    background-color:#f8f9fb;
+    cursor:pointer;
+    -webkit-transition:all .2s ease 0s;
+    -moz-transition:all .2s ease 0s;
+    -o-transition:all .2s ease 0s;
+    transition:all .2s ease 0s;
+    font-size:25px;
+    color:#0060c4;
+    text-align:center;
+  }
+  .ext_dial_button{
+    font-size:13px;
+    width:100%;
+    height:100%;
+    display:block;
+    margin:0;
+    padding:0;
+  }
+  table.digits td span.ext_dial_button{
+    padding-top:8px;
+    line-height:15px;
+  }
+  #ext_dial{
+    margin:1px 0 0 0;
+  }
+input[type="text"], input[type="password"], input[type="url"], input[type="tel"], input[type="search"], input[type="number"], input[type="datetime"], input[type="email"], select, textarea, body .action.primary, .login-container .block-content, .vacancy-container .block-content, .contact-container .block-content, .password-strength-meter, .password-strength-meter:before, .messages .message {
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+input, textarea, select {
+    border: 1px solid #dfdfdf;
+    font-size: 16px;
+    padding: 10px 15px;
+    width: 100%;
+    margin: 0 0 20px 0;
+    max-width: 100%;
+    resize: none;
+}
+.action.primary {
+    background-image: none;
+    background: #333;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: normal;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+.phone_make_call{
+  margin:10px 20px 0 0;
+  float:left;
+}
+#session-list{
+  width:500px;
+  float:left;
+  height:54px;
+  overflow:hidden;
+}
+.session{
+  padding-left:10px;
+  padding-right:10px;
+}
+#new-session-form{
+  float:left;
+}
+#status_debug_msg{
+  padding: 3px 10px;
+  max-width:300px;
+  color:#fff;
+  float:right;
+  display:block;
+  line-height:14px;
+}
+</style>
+{% endblock %}

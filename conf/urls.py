@@ -47,6 +47,8 @@ urlpatterns = [
     re_path(r'^', include('apps.languages.urls')),
     # Сайт
     re_path(r'^', include('apps.site.main.urls')),
+    # FREESWITCH
+    re_path(r'^freeswitch/', include('apps.freeswitch.urls')),
     # статика
     re_path(r'^', include('apps.files.urls_static'))
 ]

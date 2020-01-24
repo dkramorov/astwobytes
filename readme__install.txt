@@ -1,4 +1,44 @@
 #################################################
+# Сборка плагина для uwsgi
+#################################################
+apt-get install uwsgi-plugin-python3
+
+plugins = python3
+
+в /usr/lib/uwsgi/plugins и посмотри какие плагины есть по типу python3_plugin.so python_plugin.so
+
+если нет нужного установить
+
+sudo apt install uwsgi-plugin-python3
+sudo apt install uwsgi-plugin-python
+
+если нет нужного - собрать
+
+$ sudo apt install \
+python3.6 python3.6-dev uwsgi uwsgi-src uuid-dev libcap-dev libpcre3-dev libssl-dev
+$ cd ~
+$ export PYTHON=python3.6
+$ uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python36"
+$ sudo mv python36_plugin.so /usr/lib/uwsgi/plugins/python36_plugin.so
+$ sudo chmod 644 /usr/lib/uwsgi/plugins/python36_plugin.so
+
+$ uwsgi --plugin python36 -s :0
+...
+Python version: 3.6.0b2 (default, ...) [GCC 6.2.0 ...]
+
+[uwsgi]
+  processes = 1
+  master = true
+  plugins = python36
+  chdir = /home/jocker/sites/astwobytes_spamcha
+  #env = DJANGO_SETTINGS_MODULE=conf.settings
+  #module = django.core.handlers.wsgi:WSGIHandler()
+  harakiri = 40
+  wsgi-file = /home/jocker/sites/astwobytes_spamcha/conf/wsgi.py
+  pythonpath = /home/jocker/sites/astwobytes_spamcha/env/lib/python3.6/site-packages
+  buffer-size = 8192
+
+#################################################
 # Локально
 #################################################
 $ virtualenv -p python3 env
@@ -18,7 +58,11 @@ $ python3 -m pip install --user -r requirements.txt # все зайдет как
 
 или просто $ python3 -m pip install --user requests
 
-
+#################################################
+# База данных
+#################################################
+CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 'mypass';
+GRANT ALL ON db1.* TO 'jeffrey'@'localhost';
 
 В связи с ограничениями почтовых функций Вашего аккаунта (обращение 3466206), изменения вносимые в панели управления в задачи cron не применяются, но сами задачи выполняются.
 Вы можете внести изменения вручную. Для этого необходимо подключится по ssh https://timeweb.com/ru/help/pages/viewpage.action?pageId=4358354
@@ -46,7 +90,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ /index\.wsgi/$1 [QSA,PT,L]
 
 # ---------------
-# Файл indes.wsgi
+# Файл index.wsgi
 # ---------------
 import os, sys
 path = "/home/a/a223223/test_site/public_html"

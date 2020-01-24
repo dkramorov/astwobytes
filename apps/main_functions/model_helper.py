@@ -155,7 +155,7 @@ class ModelHelper:
 
             self.permissions = {
                 # add_ instead create_
-                'create': user.has_perm('%s.create_%s' % (self.app_label, self.model_name)),
+                'create': user.has_perm('%s.add_%s' % (self.app_label, self.model_name)),
                 'edit': user.has_perm('%s.change_%s' % (self.app_label, self.model_name)),
                 'drop': user.has_perm('%s.delete_%s' % (self.app_label, self.model_name)),
                 'view': user.has_perm('%s.view_%s' % (self.app_label, self.model_name)),
@@ -601,8 +601,11 @@ def create_model_helper(mh_vars, request, CUR_APP:str, action:str = None, revers
         mh.context.update(reverse_params)
 
     mh_vars['root_url'] = reverse('%s:%s' % (CUR_APP, mh_vars['show_urla']), kwargs=reverse_params)
-    reverse_params['action'] = 'create'
-    mh_vars['url_create'] = reverse('%s:%s' % (CUR_APP, mh_vars['create_urla']), kwargs=reverse_params)
+    # Опционально ссылка для создания объекта
+    if 'create_urla' in mh_vars:
+        reverse_params['action'] = 'create'
+        mh_vars['url_create'] = reverse('%s:%s' % (CUR_APP, mh_vars['create_urla']), kwargs=reverse_params)
+
     mh_vars['action'] = action
     mh.context['permissions'] = mh.permissions
     for k, v in mh_vars.items():

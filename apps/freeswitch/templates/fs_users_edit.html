@@ -1,0 +1,112 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<!-- START row-->
+<div class="row">
+  <div class="col-sm-12">
+    <!-- START panel-->
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Пользователь</label>
+            <div class="col-lg-10">
+              <select id="user_select2" autocomplete="off" name="user" data-parsley-required>
+                {% if row.user %}<option value="{{ row.user.id }}" selected>{{ row.user.username }}</option>{% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Пароль</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Пароль" class="form-control" name="passwd" value="{% if row.passwd %}{{ row.passwd }}{% endif %}" autocomplete="off" id="form-field-passwd">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Контекст</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Контекст" class="form-control" name="context" value="{% if row.context %}{{ row.context }}{% endif %}" autocomplete="off" id="form-field-passwd">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Caller ID</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Caller ID" class="form-control" name="cid" value="{% if row.cid %}{{ row.cid }}{% endif %}" autocomplete="off" id="form-field-cid">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Группа</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Группа" class="form-control" name="callgroup" value="{% if row.callgroup %}{{ row.callgroup }}{% endif %}" autocomplete="off" id="form-field-callgroup">
+            </div>
+          </div>
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+    <!-- END panel-->
+  </div>
+</div>
+<!-- END row-->
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+      $('#user_select2').select2({
+        placeholder: 'Выберите пользователя',
+        width: '100%',
+        ajax: {
+          url: "{% url 'login:search_users' %}",
+          cache: false,
+          dataType: 'json',
+        }
+      });
+    });
+  </script>
+{% endblock %}

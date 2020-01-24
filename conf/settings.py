@@ -85,6 +85,8 @@ INSTALLED_APPS = [
     'apps.languages',
     # Сайт
     'apps.site',
+    # Freeswitch
+    'apps.freeswitch',
 ]
 
 
@@ -266,11 +268,14 @@ TELEGRAM_ENABLED = env('TELEGRAM_ENABLED', cast=bool, default=False)
 # --------------
 # Websocket chat
 # --------------
+WS_CHAT = env('WS_CHAT', cast=bool, default=True)
 WS_SERVER = env('WS_SERVER', default='ws://127.0.0.1:8888/')
 WS_SECRET = env('WS_SECRET', default='bugogashenki')
 
 # -------------------
 # Freeswitch settings
 # -------------------
+FREESWITCH_DOMAIN = env('FREESWITCH_DOMAIN')
 FREESWITCH_URI = env('FREESWITCH_URI')
+FREESWITCH_WSS = env('FREESWITCH_WSS')
 

@@ -1,7 +1,12 @@
+{% load mtags %}
 {% comment %}<!--
 Приложение ws - чат
 -->{% endcomment %}
-<script type="text/javascript" src="/static/chat/fast_chat.js"></script>
+{% settings_value 'WS_CHAT' as ws_chat_enabled %}
+{% if ws_chat_enabled %}
+  <script type="text/javascript" src="/static/chat/fast_chat.js"></script>
+{% endif %}
+
 <div class="hidden" id="fast_chat_form_action" data-url='{% url "ws:fast_chat" %}' data-chat-url='{% url "ws:show_chat" %}' data-helper="Если у нас data-chat-url совпадает с адресом, где мы находимся сейчас, то нужно только 1 раз запросить новые сообщения"></div>
 
 <a class="dropdown-toggle" data-play="fadeIn" data-toggle="dropdown" href="#" id="fast_chat_uread_messages_counter">

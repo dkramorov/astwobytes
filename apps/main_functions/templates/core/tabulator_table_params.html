@@ -5,7 +5,7 @@ ajaxURL: "{{ root_url }}",
 ajaxProgressiveLoad: "scroll",
 //ajaxProgressiveLoadScrollMargin: 200,
 //ajaxProgressiveLoadDelay: 100,
-ajaxFiltering: true, //send filter data to the server instead of processing locally
+ajaxFiltering: true,
 ajaxSorting: true,
 
 history:true, //record table history
@@ -25,12 +25,18 @@ ajaxResponse:function(url, params, response){
 },
 
 initialHeaderFilter: [
-  {% for k, v in fas.items %}
+  {% for k, v in fas.filters.items %}
     {field: "{{ k }}", value: "{{ v }}"},
   {% endfor %}
 ],
 initialSort:[
-  {column: "position", dir:"asc"},
+  {% if fas.sorters %}
+    {% for k, v in fas.sorters.items %}
+      {column: "{{ k }}", dir: "{{ v }}"},
+    {% endfor %}
+  {% else %}
+    {column: "position", dir:"asc"},
+  {% endif %}
 ],
 
 movableRows: window.disableMovableRows ? false : true,

@@ -7,7 +7,7 @@ def tabulator_filters_and_sorters(request, custom_position_field: str = None):
        custom_position_field для своего поля сортировки, например,
        user => customuser OneToOneRelation и тогда
        custom_position_field = customuser__position"""
-    result = {'filters': [], 'sorters': [], 'params': {}}
+    result = {'filters': [], 'sorters': [], 'params': {'filters': {}, 'sorters': {}}}
     rvars = None
 
     if request.method == "GET":
@@ -28,7 +28,7 @@ def tabulator_filters_and_sorters(request, custom_position_field: str = None):
             key = custom_position_field
         value = rvars[rfilter.replace('[field]', '[value]')]
         sort_type = rvars[rfilter.replace('[field]', '[type]')]
-        result['params'][key] = value
+        result['params']['filters'][key] = value
         # -------------------
         # Поправка на boolean
         # -------------------
@@ -67,6 +67,7 @@ def tabulator_filters_and_sorters(request, custom_position_field: str = None):
         if value == 'desc':
             item = '-%s' % (key, )
         result['sorters'].append(item)
+        result['params']['sorters'][key] = value
     return result
 
 

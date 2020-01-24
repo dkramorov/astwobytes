@@ -1,0 +1,169 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+window.disableMovableRows = true;
+$(document).ready(function(){
+  var recordFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var data = cell.getRow().getData();
+    var value = cell.getValue();
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      var record = "/media/" + data['context'] + "/" + data['folder'] + "/" + data['dest'] + "_" + value + ".wav";
+      result += "<audio controls>";
+      result += "<source src='" + record + "' type='audio/wav'>Нет поддержки аудио";
+      result += "</audio><br />";
+    }
+    result += "</div>";
+    return result;
+  };
+  var linkFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var data = cell.getRow().getData();
+    var value = cell.getValue();
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      var record = "/media/" + data['context'] + "/" + data['folder'] + "/" + data['dest'] + "_" + data['uuid'] + ".wav";
+      result += "<a target='_blank' href='" + record + "'>" + value + "</a>";
+    }
+    result += "</div>";
+    return result;
+  };
+
+
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Кто звонит",
+        field: "cid",
+        headerFilterPlaceholder: "Кто звонит",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Назначение",
+        field: "dest",
+        headerFilterPlaceholder: "Назначение",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: linkFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Запись",
+        field: "uuid",
+        headerFilterPlaceholder: "Запись",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: recordFormatter,
+        minWidth: 300,
+      },
+      {
+        title: "Ид компании",
+        field: "client_id",
+        headerFilterPlaceholder: "Ид компании",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 80,
+      },
+      {
+        title: "Название компании",
+        field: "client_name",
+        headerFilterPlaceholder: "Название компании",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Контекст",
+        field: "context",
+        headerFilterPlaceholder: "Контекст",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 80,
+      },
+      {
+        title: "Когда",
+        field: "created",
+        headerFilterPlaceholder: "Когда",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Время",
+        field: "duration",
+        headerFilterPlaceholder: "Время",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 60,
+      },
+      {
+        title: "Биллинг",
+        field: "billing",
+        headerFilterPlaceholder: "Биллинг",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 60,
+      },
+      {
+        title: "Статус",
+        field: "state",
+        headerFilterPlaceholder: "Статус",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 60,
+      },
+      {
+        title: "IP",
+        field: "ip",
+        headerFilterPlaceholder: "IP",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 60,
+      },
+      {
+        title: "UA",
+        field: "user_agent",
+        headerFilterPlaceholder: "UA",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 60,
+      },
+      {
+        title: "Ид пользователя",
+        field: "personal_user_id",
+        headerFilterPlaceholder: "Ид компании",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 60,
+      },
+      {
+        title: "Пользователь",
+        field: "personal_user_name",
+        headerFilterPlaceholder: "Пользователь",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 80,
+      },
+    ],
+  });
+});
+</script>
+{% endblock %}

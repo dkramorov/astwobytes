@@ -11,6 +11,13 @@ from apps.main_functions.catcher import defiz_phone
 
 register = template.Library()
 
+@register.simple_tag
+def settings_value(name):
+    """Получение переменной из settings.py
+       USAGE: {% settings_value "LANGUAGE_CODE" %}
+    """
+    return getattr(settings, name, '')
+
 @register.filter(name = 'defizize')
 def defizize(item):
     """Ставим дефизы для телефона"""

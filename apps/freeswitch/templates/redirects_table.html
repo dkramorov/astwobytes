@@ -19,28 +19,6 @@
 var main_table = null;
 $(document).ready(function(){
 
-  var pathFormatter = function(cell, formatterParams, onRendered){
-    //console.log(cell.getRow().getData());
-    var data = cell.getRow().getData();
-    var value = cell.getValue();
-    var result = "<div class='padding-rl5 text-center'>";
-    if(value){
-      result += " <a class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
-    }
-    result += "</div>";
-    return result;
-  };
-
-  var linkFormatter = function(cell, formatterParams, onRendered){
-    var value = cell.getValue();
-    var result = "<div class='padding-rl5 text-center'>";
-    if(value){
-      result += " <a class='btn' target='_blank' href='" + value + "'>" + value + "</a> ";
-    }
-    result += "</div>";
-    return result;
-  };
-
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -56,40 +34,53 @@ $(document).ready(function(){
 */
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
-      {% include "core/tabulator_cell/name.html" %}
       {
-        title: "Ссылка",
-        field: "link",
-        headerFilterPlaceholder: "Ссылка",
+        title: "Наш телефон",
+        field: "phone",
+        headerFilterPlaceholder: "Наш телефон",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: linkFormatter,
+        minWidth: 150,
+      },
+      {
+        title: "Назначение",
+        field: "dest",
+        headerFilterPlaceholder: "Назначение",
+        headerFilter: "input",
+        headerFilterFunc: "like",
         minWidth: 150,
       },
       {
         title: "Описание",
-        field: "desc",
+        field: "description",
         headerFilterPlaceholder: "Описание",
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 150,
       },
       {
-        title: "Mime-тип",
-        field: "mime",
-        headerFilterPlaceholder: "Mime-тип",
+        title: "Шлюз",
+        field: "gw",
+        headerFilterPlaceholder: "Шлюз",
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 60,
       },
       {
-        title: "Путь",
-        field: "path",
-        headerFilterPlaceholder: "Путь",
+        title: "Цена",
+        field: "price",
+        headerFilterPlaceholder: "Цена",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: pathFormatter,
-        minWidth: 120,
+        minWidth: 60,
+      },
+      {
+        title: "Кол-во секунд",
+        field: "price_unit",
+        headerFilterPlaceholder: "Кол-во секунд",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 60,
       },
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}

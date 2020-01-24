@@ -24,7 +24,7 @@
 
   <div class="panel-body container-fluid">
     <div class="row row-lg">
-      <div class="col-sm-6">
+      <div class="col-sm-5">
         <div class="example-wrap">
           <h4>1. Внесите свои данные</h4>
           <div class="example">
@@ -47,19 +47,19 @@
               <div class="form-group form-material row">
                 <label class="control-label col-sm-4">Вес, кг</label>
                 <div class="col-sm-8">
-                  <input type="number" class="form-control" id="inputBasicWeight" name="inputWeight" placeholder="Вес, кг" autocomplete="off" step="0.01"/>
+                  <input type="number" class="form-control" id="inputBasicWeight" name="inputWeight" placeholder="Вес, кг" autocomplete="off" step="0.01" value="70"/>
                 </div>
               </div>
               <div class="form-group form-material row">
                 <label class="control-label col-sm-4">Рост, см</label>
                 <div class="col-sm-8">
-                  <input type="number" class="form-control" id="inputBasicHeight" name="inputHeight" placeholder="Рост, см" autocomplete="off" step="1" />
+                  <input type="number" class="form-control" id="inputBasicHeight" name="inputHeight" placeholder="Рост, см" autocomplete="off" step="1" value="174" />
                 </div>
               </div>
               <div class="form-group form-material row">
                 <label class="control-label col-sm-4">Возраст, лет</label>
                 <div class="col-sm-8">
-                  <input type="number" class="form-control" id="inputBasicAge" name="inputAge" placeholder="Возраст, лет" autocomplete="off" step="1" />
+                  <input type="number" class="form-control" id="inputBasicAge" name="inputAge" placeholder="Возраст, лет" autocomplete="off" step="1" value="24" />
                 </div>
               </div>
             </form>
@@ -68,13 +68,13 @@
         <div class="example-wrap">
           <h4>2. Определите коэффициент физической активности для точной нормы калорий вам необходимо</h4>
           <div class="example">
-            <form autocomplete="off" class="form-horizontal">
+            <form autocomplete="off" class="form-horizontal" id="inputK">
               <div class="form-group form-material row">
                 <label class="control-label col-sm-4">1.25</label>
                 <div class="col-sm-8">
                   <div>
                     <div class="radio-custom radio-default radio-inline">
-                      <input type="radio" id="inputK1_25" name="inputK" />
+                      <input type="radio" id="inputK1_25" name="inputK" checked value='1.25' />
                       <label for="inputK1_25">нет активности (офисная/сидячая работа, езда на транспорте) либо прогулки не менее часа, зарядка, ходьба на дорожке, бассейн 1 раз в неделю, йога 1-2 раза в неделю, или другая 1 тренировка в неделю</label>
                     </div>
                   </div>
@@ -85,7 +85,7 @@
                 <div class="col-sm-8">
                   <div>
                     <div class="radio-custom radio-default radio-inline">
-                      <input type="radio" id="inputK1_3" name="inputK" />
+                      <input type="radio" id="inputK1_3" name="inputK" value='1.3' />
                       <label for="inputK1_3">2-3 тренировки в неделю низкой интенсивности  (танцы, пилатес, домашние тренировки, бассейн)</label>
                     </div>
                   </div>
@@ -96,7 +96,7 @@
                 <div class="col-sm-8">
                   <div>
                     <div class="radio-custom radio-default radio-inline">
-                      <input type="radio" id="inputK1_35" name="inputK" />
+                      <input type="radio" id="inputK1_35" name="inputK" value='1.35' />
                       <label for="inputK1_35">2-3 тренировки в неделю средней интенсивности, фитнес, силовые, групповые интенсивные</label>
                     </div>
                   </div>
@@ -107,7 +107,7 @@
                 <div class="col-sm-8">
                   <div>
                     <div class="radio-custom radio-default radio-inline">
-                      <input type="radio" id="inputK1_375" name="inputK" />
+                      <input type="radio" id="inputK1_375" name="inputK" value='1.375' />
                       <label for="inputK1_375">стабильно интенсивные от 3-х тренировок (50 мин) в неделю/силовые/фитнес </label>
                     </div>
                   </div>
@@ -118,7 +118,7 @@
                 <div class="col-sm-8">
                   <div>
                     <div class="radio-custom radio-default radio-inline">
-                      <input type="radio" id="inputK1_4" name="inputK" />
+                      <input type="radio" id="inputK1_4" name="inputK" value='1.4' />
                       <label for="inputK1_4">4-5 тренировки в неделю высокой интенсивности</label>
                     </div>
                   </div>
@@ -129,20 +129,17 @@
                 <div class="col-sm-8">
                   <div>
                     <div class="radio-custom radio-default radio-inline">
-                      <input type="radio" id="inputK1_45" name="inputK" />
+                      <input type="radio" id="inputK1_45" name="inputK" value='1.45' />
                       <label for="inputK1_45">5 и более интенсивных тренировок в неделю</label>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="form-group form-material">
-                <button type="button" class="btn btn-primary">Sign Up</button>
-              </div>
             </form>
           </div>
         </div>
       </div>
-      <div class="col-sm-6">
+      <div class="col-sm-7">
         <div class="example-wrap">
           <h4>ВАШ ИНДЕКС МАССЫ ТЕЛА (ИМТ)</h4>
           <div class="example">
@@ -156,7 +153,258 @@
             </form>
           </div>
         </div>
+        <div class="example-wrap">
+          <h4>Ваша норма калорий:</h4>
+          <div class="example">
+            <form autocomplete="off" class="form-horizontal">
+              <div class="form-group form-material row">
+                <div class="col-sm-8">
+                  <label class="control-label">Ваш базовый метаболизм (основной обмен) минимальная норма</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label" id="base_metabolism">0</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label">ККал</label>
+                </div>
+              </div>
+              <div class="form-group form-material row">
+                <div class="col-sm-8">
+                  <label class="control-label">Ваша норма калорий для поддержания веса (не набирать и не худеть)</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label" id="do_not_change_norm">0</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label">ККал</label>
+                </div>
+              </div>
+              <div class="form-group form-material row">
+                <div class="col-sm-8">
+                  <label class="control-label">Дефицит калорий 20% (для похудения)</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label" id="deficit20">0</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label">ККал</label>
+                </div>
+              </div>
+              <div class="form-group form-material row">
+                <div class="col-sm-8">
+                  <label class="control-label">Дефицит калорий 15% (для похудения)</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label" id="deficit15">0</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label">ККал</label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="example-wrap">
+          <h4>Чтобы вы активно худели, вам необходимо питаться:</h4>
+          <div class="example">
+            <form autocomplete="off" class="form-horizontal">
+              <div class="form-group form-material row">
+                <div class="col-sm-8">
+                  <label class="control-label">от</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label" id="eat_from">0</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label">ККал</label>
+                </div>
+              </div>
+              <div class="form-group form-material row">
+                <div class="col-sm-8">
+                  <label class="control-label">до</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label" id="eat_to">0</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label">ККал</label>
+                </div>
+              </div>
+              <div class="form-group form-material row">
+                <div class="col-sm-8">
+                  <label class="control-label">НО! В дни ПМС, КД или в те дни, когда чувствуете голод, то питаться можно ДО<br />это тоже будет похудение, но медленное и комфортное</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label" id="eat_lazy_to">0</label>
+                </div>
+                <div class="col-sm-2">
+                  <label class="control-label">ККал</label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="example-wrap">
+          <h4>Ваши нормы белков, жиров и углеводов</h4>
+          <div class="example">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th></th><th>ОТ</th><th>ДО</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>БЕЛКИ</td>
+                  <td id="proteins_from">0</td>
+                  <td id="proteins_to">0</td>
+                </tr>
+                <tr>
+                  <td>ЖИРЫ</td>
+                  <td id="fats_from">0</td>
+                  <td id="fats_to">0</td>
+                </tr>
+                <tr>
+                  <td>УГЛЕВОДЫ</td>
+                  <td id="carbohydrates_from">0</td>
+                  <td id="carbohydrates_to">0</td>
+                </tr>
+                <tr>
+                  <td>САХАР</td>
+                  <td id="sugar_from">21</td>
+                  <td id="sugar_to">30</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
+
+      <div class="clearfix"></div>
+      <div class="col-sm-12">
+        <h4>
+          Ниже ваша табличка с нормами сделайте скриншот и отправьте куратору!
+          <br /> Спасибо, за то, что сделали свой расчет сами.
+          <br /> ЛЕГКОГО ПОХУДЕНИЯ!
+        </h4>
+
+        <table class="table">
+          <tbody>
+            <tr>
+              <td>Мой ВЕС</td>
+              <td id="my_weight">0</td>
+              <td>кг</td>
+            </tr>
+            <tr>
+              <td>Мой РОСТ</td>
+              <td id="my_height">0</td>
+              <td>см</td>
+            </tr>
+            <tr>
+              <td>Мой ВОЗРАСТ</td>
+              <td id="my_age">0</td>
+              <td>лет</td>
+            </tr>
+            <tr>
+              <td>Моя активность</td>
+              <td id="my_activity">0</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Мой индекс массы тела</td>
+              <td id="my_imt">0</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Я пользуюсь понижающим коэффициентом</td>
+              <td id="my_lk">0</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Мой БАЗОВЫЙ метаболизм</td>
+              <td id="my_base_metabolism">0</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Моя норма калорий для поддержания веса</td>
+              <td id="my_calories_norm">0</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Я буду худеть ОТ</td>
+              <td id="my_kkal_from">0</td>
+              <td>ккал в сутки</td>
+            </tr>
+            <tr>
+              <td>Я буду худеть ДО</td>
+              <td id="my_kkal_to">0</td>
+              <td>ккал в сутки</td>
+            </tr>
+            <tr>
+              <td>НО!В дни ПМС, КД или в те дни, когда я буду чувствовать голод, то питаться можно ДО</td>
+              <td id="my_kkal_lazy_to">0</td>
+              <td>ккал в сутки</td>
+            </tr>
+            <tr>
+              <td>Кушать белков</td>
+              <td id="my_proteins_from">0</td>
+              <td id="my_proteins_to"></td>
+            </tr>
+            <tr>
+              <td>Кушать жиров</td>
+              <td id="my_fats_from">0</td>
+              <td id="my_fats_to"></td>
+            </tr>
+            <tr>
+              <td>Кушать углеводов</td>
+              <td id="my_carbohydrates_from">0</td>
+              <td id="my_carbohydrates_to"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="clearfix"></div>
+      <div class="col-sm-12">
+        <h4>
+          ВНИМАНИЕ! табличка не учитывает ГВ!<br />
+          Если вы на ГВ, то прибавьте к своим нормам дополнительное кол-во калорий и бжу!
+          <br />(см табличку ниже)
+        </h4>
+
+        <table class="table">
+          <tbody>
+            <tr>
+              <td>0-3 мес</td>
+              <td>450-500 ккал/б-40/ж-20/у-40</td>
+            </tr>
+            <tr>
+              <td>3-6 мес</td>
+              <td>350-450 ккал/б-35/ж-15/у-30</td>
+            </tr>
+            <tr>
+              <td>6-9 мес</td>
+              <td>250-350 ккал/б-25/ж-10/у-20</td>
+            </tr>
+            <tr>
+              <td>9-12 мес</td>
+              <td>100-250 кал/б-20/ж-5/у-15</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Важно</p>
+        <ul>
+          <li>✓Приемы пищи можно менять местами. По голоду и ощущениям.</li>
+          <li>✓Время примов пищи не важно! Можно есть даже на ночь (легкие белки - рыба, морепродукты и овощи)</li>
+          <li>✓Не забывать пить водичку ПО ЖАЖДЕ! Минимум 1 литр ЧИСТОЙ воды</li>
+          <li>✓В дни тренировок рацион можно дополнять перекусами! Перед тренировокой кушайте углеводы</li>
+          <li>✓В рацион можно добавлять в любом количестве зелень и листья салатов. Так будет сытнее</li>
+          <li>✓В рацион  можно добавлять чай (до 4-х чашек) и кофе без сахара и молока (до 2-х чашек)</li>
+          <li>✓Обязательно сократить алкоголь до 250 мл слабоалкогольных напитков (пиво или вино) не чаще, чем 1 раз в 3-4 недели!</li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </div>
@@ -344,13 +592,12 @@ var imt_states = [
 ];
 // Дполнительный понижающий коэффициент
 var lk = [
-  [26,   0.0],  // ИМТ меньше 26
-  [30,   0.05], // ИМТ меньше 30
-  [35,   0.1],  // ИМТ меньше 35
-  [0.15, 40],   // ИМТ меньше 40
-  [0.2,  1000], // ИМТ от 40
-]
-
+  [0,   0.0],  // ИМТ меньше 26
+  [26,   0.05], // ИМТ меньше 30
+  [30,   0.1],  // ИМТ меньше 35
+  [35,   0.15], // ИМТ меньше 40
+  [40,   0.2,], // ИМТ от 40
+];
 
 // тест на количество полей (не стоят ли запятые вместо точек)
 for(var i=0; i<diet_table.length; i++){
@@ -363,6 +610,10 @@ function calc_imt(){
   var weight = parseFloat($("#inputBasicWeight").val());
   var height = parseFloat($("#inputBasicHeight").val());
   var imt =  weight / Math.pow(height * 0.01, 2);
+  if(isNaN(imt)){
+    $("#imt_state").html('Введите вес и рост');
+    return;
+  }
   $("#imt").html(imt.toFixed(2));
   var state = '';
   for(var i=0; i<imt_states.length; i++){
@@ -371,15 +622,103 @@ function calc_imt(){
     }
   }
   $("#imt_state").html(state);
+
+  // Результирующая табличка
+  $("#my_weight").html(weight);
+  $("#my_height").html(height);
+  $("#my_imt").html(imt.toFixed(2));
 }
 
+function get_lk(){
+  // Получение понижающего коэффициента
+  var cur_lk = 0;
+  var imt = parseFloat($("#imt").html());
+  for(var i=0; i<lk.length; i++){
+    if(lk[i][0] <= imt){
+      cur_lk = lk[i][1];
+    }
+  }
+  return cur_lk;
+}
+
+function get_calories_strategy(){
+  // Получить базовый метаболизм, минимальная норма
+  // Получить норму калорий для поддержания веса
+  // Дефицит калорий 20% (для похудения)
+  // Дефицит калорий 15% (для похудения)
+
+  var weight = parseFloat($("#inputBasicWeight").val());
+  var height = parseFloat($("#inputBasicHeight").val());
+  var age = parseInt($("#inputBasicAge").val());
+  var activity = parseFloat($('#inputK input[name=inputK]:checked').val());
+  var lk = get_lk();
+
+  // Получить базовый метаболизм, минимальная норма
+  var part1 = 655 + 9.6 * weight + 1.8 * height - 4.7 * age;
+  var base_metabolism = Math.round(part1 - part1 * lk);
+  $("#base_metabolism").html(base_metabolism);
+
+  // Получить норму калорий для поддержания веса
+  var calories_norm = Math.round(base_metabolism * activity);
+  $("#do_not_change_norm").html(calories_norm);
+
+  // Дефицит калорий 20% (для похудения)
+  var deficit20 = Math.round(calories_norm - calories_norm * 0.2);
+  $("#deficit20").html(deficit20);
+  $("#eat_from").html(deficit20);
+
+  // Дефицит калорий 15% (для похудения)
+  var deficit15 = Math.round(calories_norm - calories_norm * 0.15);
+  $("#deficit15").html(deficit15);
+  $("#eat_to").html(deficit15);
+
+  var deficit10 = Math.round(calories_norm - calories_norm * 0.1);
+  $("#eat_lazy_to").html(deficit10);
+
+  // Рассчитать питательные элементы: белки/жиры/углеводы/сахар
+  var proteins_from = deficit20 * 0.25 / 4;
+  var proteins_to = deficit10 * 0.3 / 4;
+  $("#proteins_from").html(proteins_from.toFixed(2));
+  $("#proteins_to").html(proteins_to.toFixed(2));
+  var fats_from = deficit20 * 0.3 / 9;
+  var fats_to = deficit10 * 0.35 / 9;
+  $("#fats_from").html(fats_from.toFixed(2));
+  $("#fats_to").html(fats_to.toFixed(2));
+  var carbohydrates_from = deficit20 * 0.35 / 4;
+  var carbohydrates_to = deficit10 * 0.4 / 4;
+  $("#carbohydrates_from").html(carbohydrates_from.toFixed(2));
+  $("#carbohydrates_to").html(carbohydrates_to.toFixed(2));
+
+  // Результирующая табличка
+  $("#my_age").html(age);
+  $("#my_activity").html(activity);
+  $("#my_lk").html(lk);
+  $("#my_base_metabolism").html(base_metabolism);
+  $("#my_calories_norm").html(calories_norm);
+  $("#my_kkal_from").html(deficit20);
+  $("#my_kkal_to").html(deficit15);
+  $("#my_kkal_lazy_to").html(deficit10);
+  $("#my_proteins_from").html(proteins_from.toFixed(2));
+  $("#my_proteins_to").html(proteins_to.toFixed(2));
+  $("#my_fats_from").html(fats_from.toFixed(2));
+  $("#my_fats_to").html(fats_to.toFixed(2));
+  $("#my_carbohydrates_from").html(carbohydrates_from.toFixed(2));
+  $("#my_carbohydrates_to").html(carbohydrates_to.toFixed(2));
+}
+
+function main_calculator(){
+  // Вспомогательная функция для вызова всей калькуляции
+  calc_imt();
+  get_calories_strategy();
+}
 
 $(document).ready(function($){
   $("input").each(function(){
     $(this).change(function(){
-      calc_imt();
+      main_calculator();
     });
   });
+  main_calculator();
 }(jQuery));
 
 </script>
