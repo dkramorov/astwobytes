@@ -1,0 +1,47 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h3>{{ plural_obj }}<br /><small>{{ action_create }} {{ rp_plural_obj }}</small></h3>
+{% include "core/breadcrumbs.html" %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">Настройки</div>
+  <div class="panel-body">
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Интервал обновления (сек)</label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Интервал обновления" class="form-control" id="update_interval" value="5">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-md-6">
+          <div class="checkbox c-checkbox c-checkbox-rounded">
+            <label for="kind_of_user_all">
+              <input type="radio" name="kind_of_user" id="kind_of_user_all">
+              <span class="fa fa-check"></span>Все
+            </label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="checkbox c-checkbox c-checkbox-rounded">
+            <label for="kind_of_user_reged">
+              <input type="radio" name="kind_of_user" checked="" id="kind_of_user_reged">
+              <span class="fa fa-check"></span>Зарегистрированные
+            </label>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    
+  });
+</script>
+{% endblock %}

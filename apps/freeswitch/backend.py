@@ -25,87 +25,111 @@ class FreeswitchBackend(object):
         self.uri = uri
         self.server = xmlrpc.client.ServerProxy(uri)
 
-    def _parse_callcenter(self, apiresult):
-        """Parse output of mod_callcenter's api output"""
-        data = []
-        lines = apiresult.splitlines()
-        if lines:
-          keys = lines[0].strip().split('|')
-          for line in lines[1:]:
-            fields = line.split('|')
-            if len(fields) != len(keys):
-              continue
-            entry = {}
-            for i in range(0, len(keys)):
-              entry[keys[i]] = fields[i]
-            data.append(entry)
-        return data
+    def agent_set_status(self, agent: str, status: int):
+        """Задать статус агенту в коллцентре"""
+        statuses = {
+            1:"'Logged Out'",
+            2:"'Available'",
+            3:"'Available (On Demand)'",
+            4:"'On Break'",
+        }
+        if not status in statuses:
+            logger.info('[BAD STATUS]: %s, choose one of %s' % (status, statuses))
+            return
+        cmd = 'agent set status %s %s' % (agent, statuses[status])
+        return self.server.freeswitch.api('callcenter_config', cmd)
 
-    def _parse_xml(self, apiresult):
-        data = []
-        for row in XML(apiresult):
-          data.append(dict([(e.tag, e.text) for e in row]))
-          return data
+    def agent_set_state(self, agent: str, state: int):
+        """Задать состояние агенту в коллцентре"""
+        states = {
+            1:"'Idle'",
+            2:"'Waiting'",
+            3:"'Receiving'",
+            4:"'In a queue call'",
+        }
+        if not state in states:
+            logger.info('[BAD STATE]: %s, choose one of %s' % (status, states))
+            return
+        cmd = 'agent set state %s %s' % (agent, states[state])
+        return self.server.freeswitch.api('callcenter_config', cmd)
 
-    def _get_user_data(self, extension, data):
-        presence_id = self.server.freeswitch.api('user_data', '%s@%s %s' % (extension, self.domain, data))
-        if presence_id:
-            return presence_id
-        return None
+    def get_agent_list(self):
+        """Вернуть всех агентов колцентра
+           "response": [{
+               "busy_delay_time": "0",
+               "calls_answered": "0",
+               "contact": "[leg_timeout=5, rtp_secure_media=true]sofia/local/jocker%${domain_name}",
+               "external_calls_count": "0",
+               "instance_id": "single_box",
+               "last_bridge_end": "1579842354",
+               "last_bridge_start": "1579842237",
+               "last_offered_call": "1579842233",
+               "last_status_change": "1579848446",
+               "max_no_answer": "3",
+               "name": "jocker",
+               "no_answer_count": "0",
+               "no_answer_delay_time": "0",
+               "ready_time": "1579837621",
+               "reject_delay_time": "0",
+               "state": "Idle",
+               "status": "Logged Out",
+               "talk_time": "0",
+               "type": "callback",
+               "uuid": "",
+               "wrap_up_time": "5"
+           }, ...]
+        """
+        agent_list = self.json_api({
+            'command': 'callcenter_config',
+            'format': 'pretty',
+            'data': {
+                'arguments': 'agent list'
+            }
+        })
+        return {agent['name']: agent for agent in agent_list['response']}
 
-    def get_agents(self):
-        # Get list of all defined agents
-        output = self.server.freeswitch.api('callcenter_config', 'agent list')
-        agent_list = self._parse_callcenter(output)
-        agents = dict([(agent['name'], agent) for agent in agent_list])
-
-        # Get tiers and update agent info
-        output = self.server.freeswitch.api('callcenter_config', 'tier list')
-        tiers = self._parse_callcenter(output)
-        for tier in tiers:
-            agent = agents.get(tier['agent'])
-            if not agent:
-                continue
-            if not agent.get('queues'):
-                agent['queues'] = []
-            agent['queues'].append({'queue': tier['queue'], 'level': tier['level'], 'position': tier['position']})
-
-        presence_table = {}
-        # Get extension, real name and presence ID of logged in agents
-        for agtid, agent in agents.items():
-            print("++++", agent)
-            if agent['contact']:
-                contact = agent['contact'].split('/')
-                if contact[0].endswith('loopback'):
-                    agent['extension'] = contact[1]
-                    if contact[1] and contact[1][0] not in ('0', '9'):
-                        realname = self._get_user_data(contact[1], 'var effective_caller_id_name')
-                        if realname:
-                            agent['realname'] = realname
-                        presence_id = self._get_user_data(contact[1], 'var presence_id')
-                        if presence_id:
-                            agent['presence_id'] = presence_id
-                            presence_table[presence_id] = agent
-        print("++++", presence_table)
-        # Get currently active channels
-        output = self.server.freeswitch.api('show', 'channels as xml')
-        channels = self._parse_xml(output) or []
-        # Update presence state from active channels
-        for channel in channels:
-          if channel['presence_id'] in presence_table:
-            presence_table[channel['presence_id']]['callstate'] = channel['callstate']
-            presence_table[channel['presence_id']]['direction'] = 'caller' if channel['direction'] == 'inbound' else 'callee'
-        return agents
+    def get_tier_list(self):
+        """Вернуть всех tiers (ярусы) колцентра
+           "response": [{
+               "agent": "jocker",
+               "level": "1",
+               "position": "1",
+               "queue": "cifrus",
+               "state": "Ready"
+           }, ...]
+        """
+        tier_list = self.json_api({
+            'command': 'callcenter_config',
+            'format': 'pretty',
+            'data': {
+                'arguments': 'tier list'
+            }
+        })
+        return {tier['agent']: tier for tier in tier_list['response']}
 
     def get_queues(self):
-        output = self.server.freeswitch.api('callcenter_config', 'queue list')
-        queues = dict([(queue['name'], queue) for queue in self._parse_callcenter(output)])
-        for queue in queues:
-          output = self._parse_callcenter(self.server.freeswitch.api('callcenter_config', 'queue list members %s' % queue))
-          output.sort(key=lambda m: m['system_epoch'])
-          queues[queue]['members'] = output
-          queues[queue]['waiting_count'] = len([x for x in output if x['state'] == 'Waiting'])
-        return queues
+        """Получить список очередей колцентра"""
+        queue_list = self.json_api({
+            'command': 'callcenter_config',
+            'format': 'pretty',
+            'data': {
+                'arguments': 'queue list'
+            }
+        })
+        return {queue['name']: queue for queue in queue_list['response']}
+
+    def json_api(self, json_obj):
+        """Апи json для freeswitch
+           https://freeswitch.org/confluence/display/FREESWITCH/mod_callcenter
+           :param json_obj: объект json, например,
+           {
+               "command": "callcenter_config",
+               "format": "pretty",
+               "data": {"arguments":"agent list"}
+           }
+        """
+        result = self.server.freeswitch.api('json', json.dumps(json_obj))
+        return json.loads(result)
 
     def do_json_request(self, cmd: str, show: str = 'show'):
         """Выполнить JSON запрос к свичу, предположительно по команде show

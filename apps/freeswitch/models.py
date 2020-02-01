@@ -23,6 +23,23 @@ CDR_VARS = ('cid', 'cid_name', 'dest', 'context',
             'read_codec', 'write_codec',
             'ip', 'user_agent', )
 
+class PhonesWhiteList(Standard):
+    """Белый список телефонов для АТС,
+       на которые пропускаем звонки по динамическому диалплану"""
+    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    desc = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    phone = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    tag = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Важный идентификатор, например, id компании')
+    def save(self, *args, **kwargs):
+        phone = kill_quotes(self.phone, 'int')
+        if phone.startswith('7'):
+            phone = '8%s' % (phone[1:], )
+        super(PhonesWhiteList, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'Freeswitch - Белый список телефонов'
+        verbose_name_plural = 'Freeswtich - Белый список телефонов'
+
 class FSUser(Standard):
     """Пользователи FreeSwitch"""
     FOLDER = 'fs_users'
@@ -31,6 +48,10 @@ class FSUser(Standard):
     context = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     cid = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     callgroup = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Freeswitch - Пользователь'
+        verbose_name_plural = 'Freeswtich - Польозватели'
 
     def drop_extension(self):
         """Удаление файла в случае удаления записи или отключения"""

@@ -2,11 +2,16 @@
 <li{% ifequal menu 'freeswitch' %} class="active"{% endifequal %}>
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-phone"></em>
-    <div class="label label-primary pull-right">5</div>
+    <div class="label label-primary pull-right">7</div>
     <span class="item-text">Вирт. АТС</span>
   </a>
   <!-- START SubMenu item-->
   <ul class="nav collapse{% ifequal menu 'freeswitch' %} in{% endifequal %}">
+    <li{% ifequal submenu 'monitoring' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:monitoring' %}">
+        <span class="item-text">Мониторинг звонков</span>
+      </a>
+    </li>
     <li{% ifequal submenu 'fs_users' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:show_users' %}">
         <span class="item-text">Пользователи АТС</span>
@@ -30,6 +35,11 @@
     <li{% ifequal submenu 'callcenter' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:callcenter' %}">
         <span class="item-text">Коллцентр</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'phones_white_list' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:show_phones_white_list' %}">
+        <span class="item-text">Белый список телефонов</span>
       </a>
     </li>
   </ul>
