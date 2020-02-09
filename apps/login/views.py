@@ -126,12 +126,6 @@ def show_users(request, *args, **kwargs):
     # -----------------------------
     if request.is_ajax():
         rows = mh.standard_show()
-        # ------------------------
-        # Для включения сортировки
-        # ------------------------
-        if rows:
-            rows[0].position = True
-
         result = []
         for row in rows:
             item = object_fields(row, pass_fields=('password', ))

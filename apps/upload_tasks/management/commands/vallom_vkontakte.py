@@ -33,22 +33,22 @@ class Command(BaseCommand):
         group_1 = 81179930
         group_2 = 120157851
 
-        vk = VK(group_id = group_2)
-        print(json_pretty_print(vk.get_categories()))
-        return
-
-        img_path = 'images/dashboard-header.jpg'
-        extra_images = ['images/poster.jpg', 'placeholder02.jpg', 'placeholder01.jpg']
+        vk = VK(group_id = group_1)
+        #print(json_pretty_print(vk.get_categories()))
+        #return
         category_id = 404
 
         # Например,
-        print(vk.drop_product(4553191))
-        #print(vk.new_product(img_path, extra_images,
-        #            category_id, 0.3, 0.6,
-        #            'Супер товар', 'Только сегодня такое выгодное предложение',
-        #            False))
-        print(vk.edit_product(4008148, extra_images[0], extra_images,
-                              category_id, 0.6, 0.9,
-                              'Супер товар2', 'Только сегодня такое выгодное предложение2',
-                              False))
+        img_path = 'images/dashboard-header.jpg'
+        extra_images = ['images/poster.jpg', 'placeholder02.jpg', 'placeholder01.jpg']
+        print(vk.drop_product(4605552))
+        return
+        print(vk.new_product(img_path, extra_images,
+                    category_id, 0.3, 0.6,
+                    'Супер товар', 'Только сегодня такое выгодное предложение',
+                    False))
+        #print(vk.edit_product(4008148, extra_images[0], extra_images,
+        #                      category_id, 0.6, 0.9,
+        #                      'Супер товар2', 'Только сегодня такое выгодное предложение2',
+        #                      False))
 

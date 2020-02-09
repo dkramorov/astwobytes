@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
+import datetime
 
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 
 from apps.main_functions.string_parser import kill_quotes
-from apps.main_functions.date_time import str_to_date
+from apps.main_functions.date_time import str_to_date, date_plus_days
 from apps.main_functions.files import (ListDir, isForD,
     full_path, check_path,
     make_folder, open_file, drop_file)
@@ -22,6 +23,11 @@ CDR_VARS = ('cid', 'cid_name', 'dest', 'context',
             'uuid', 'bleg_uuid', 'account',
             'read_codec', 'write_codec',
             'ip', 'user_agent', )
+
+class PersonalUsers(Standard):
+    """Зарегистрированные пользователи на сайте"""
+    username = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    userid = models.IntegerField(blank=True, null=True, db_index=True)
 
 class PhonesWhiteList(Standard):
     """Белый список телефонов для АТС,
@@ -216,9 +222,8 @@ class CdrCsv(models.Model):
         verbose_name = 'Freeswitch - Звонок'
         verbose_name_plural = 'Freeswtich - Звонки'
 
-def parse_log_line(db, line: list):
+def parse_log_line(line: list):
     """Анализ линии из логов записей звонков
-       :param db: класс для работы с удаленной базой
        :param line: линия для парсинга"""
     line_array = line.split('","')
     line_array_len = len(line_array)
@@ -238,9 +243,14 @@ def parse_log_line(db, line: list):
         if not value:
             value = None
 
-        if key == 'personal_user_id':
+        if key == 'user_agent':
             if value and '@' in value:
                 value = value.split('@')[0]
+                if value.isdigit():
+                    puser = PersonalUsers.objects.filter(userid=value).first()
+                    if puser:
+                        cur_cdr['personal_user_id'] = puser.userid
+                        cur_cdr['personal_user_name'] = puser.username
             else:
                 value = None
         # ------------------
@@ -271,18 +281,24 @@ def parse_log_line(db, line: list):
         new_cdr = analogs[0]
 
     for key, value in cur_cdr.items():
+        if key == 'dest':
+            if '%' in value:
+                value = value.split('%')[0]
+            elif value:
+                if value.isdigit():
+                    if len(value) == 6:
+                        value = '83952%s' % (value, )
+                    elif len(value) == 10:
+                        value = '8%s' % (value, )
+                    if len(value) == 11:
+                        value = '8%s' % (value[1:], )
         setattr(new_cdr, key, value)
 
-    if not new_cdr.client_id:
-        # ----------------------------
-        # Определяем нахер че за фирма
-        # ----------------------------
-        company = db.get_company_by_phone(new_cdr.dest)
-        if company:
-            new_cdr.client_id = company['id']
-            new_cdr.client_name = company['name']
+    search_by_phone = PhonesWhiteList.objects.filter(tag__isnull=False, phone=new_cdr.dest).first()
+    if search_by_phone:
+        new_cdr.client_id = search_by_phone.tag
+        new_cdr.client_name = search_by_phone.name
     new_cdr.save()
-
 
 def analyze_logs():
     """Анализируем cdr_csv папку для записи звонков
@@ -293,12 +309,13 @@ def analyze_logs():
        Перезапуск модуля reload mod_cdr_csv
        Освободить файл логов cdr_csv rotate
     """
-    db = RemoteDB()
     FreeswitchBackend(settings.FREESWITCH_URI).cdr_csv_rotate() # перезагрузжаем логи
     path = 'cdr-csv' # На папку должна быть символическая ссылка в media
     content = ListDir(path)
     if not content:
         assert False
+    now = datetime.datetime.today()
+    old_date = date_plus_days(now, hours=-10)
     for item in content:
         # Мы уже rotate на лог сделали - основной не парсим
         if item == 'Master.csv' or not '.csv.' in item:
@@ -310,6 +327,10 @@ def analyze_logs():
             with open_file(cur_path) as f:
                 lines = f.readlines()
         for line in lines:
-            parse_log_line(db, line.decode('utf-8'))
-        logger.info('Dropping %s' % (cur_path, ))
-        drop_file(cur_path)
+            parse_log_line(line.decode('utf-8'))
+        search_date = item.split('.')[-1]
+        cur_item_date = '%s %s' % (search_date[:10], search_date[11:].replace('-', ':'))
+        date = str_to_date(cur_item_date)
+        if date < old_date:
+            logger.info('Dropping %s' % (cur_path, ))
+            drop_file(cur_path)

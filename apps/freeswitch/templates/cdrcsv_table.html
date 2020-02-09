@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 
 {% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -11,6 +12,8 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+
 <script type="text/javascript">
 var main_table = null;
 window.disableMovableRows = true;
@@ -41,8 +44,6 @@ $(document).ready(function(){
     result += "</div>";
     return result;
   };
-
-
 
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
@@ -103,7 +104,7 @@ $(document).ready(function(){
         field: "created",
         headerFilterPlaceholder: "Когда",
         headerFilter: "input",
-        headerFilterFunc: "like",
+        headerFilterFunc: "regex",
         minWidth: 150,
       },
       {
@@ -164,6 +165,25 @@ $(document).ready(function(){
       },
     ],
   });
+
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "created"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          if(d.length > 1){
+            calendar.hide();
+          }
+          //console.log(fd, d, calendar);
+        },
+        //position: "left top",
+        todayButton: new Date(),
+        //timepicker: true,
+        range: true,
+        multipleDatesSeparator: ' - ',
+      });
+    }
+  });
+
 });
 </script>
 {% endblock %}

@@ -1,4 +1,5 @@
 #-*- coding:utf-8 -*-
+import time
 import json
 import logging
 import datetime
@@ -82,10 +83,16 @@ class VK:
         }
         self.required_params(params)
         r = self.s.get('%s%s' % (self.API_URL, method), params=params)
-        return r.json()['response']['upload_url']
+        resp = r.json()
+        if 'error' in resp:
+            logger.error(resp)
+            return None
+        return resp['response']['upload_url']
 
     def upload_img(self, is_main, path):
         """Загрузка изображения на сервер"""
+        if check_path(path):
+            return None
         upload_img_url = self.get_upload_img_url(is_main)
         files = {
             'file': open_file(path, 'rb')
@@ -107,7 +114,11 @@ class VK:
          }
         self.required_params(params)
         r = self.s.get('%s%s' % (self.API_URL, method), params=params)
-        return r.json()['response'] # Массив
+        resp = r.json()
+        if 'error' in resp:
+            logger.error(resp)
+            return None
+        return resp['response'] # Массив
 
     def drop_product(self, item_id: int):
         """Удаление товара
@@ -142,10 +153,11 @@ class VK:
         extra_images = []
         if images:
             for image in images:
+                time.sleep(1)
                 extra_imga = self.upload_img(False, image)
                 if extra_imga:
                     extra_images.append(extra_imga[0]['id'])
-        return extra_images
+        return extra_images[:4] # photo_ids should not contain more than 4 elements
 
 
     def new_product(self, img: str, images: list = None,
@@ -165,6 +177,10 @@ class VK:
         method = 'market.add'
         imga = self.upload_img(True, img)
         extra_images = self.upload_extra_images(images)
+
+        # description should be at least 10 letters length
+        if len(product_description) < 10:
+            product_description = product_name
 
         params = {
             'owner_id': -self.group_id,

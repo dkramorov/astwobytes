@@ -7,7 +7,7 @@ from . import views
 app_name = 'freeswitch'
 urlpatterns = [
     # получение по апи всех данных (т/к не секретно)
-    url('^(?P<action>redirects)/api/$', views.api, name='api'),
+    url('^(?P<action>redirects|phones_white_list)/api/$', views.api, name='api'),
     # переадресации
     path('admin/redirects/', views.show_redirects, name='show_redirects'),
     url('^admin/redirects/(?P<action>create)/$', views.edit_redirect, name='create_redirect'),
@@ -29,4 +29,5 @@ urlpatterns = [
     url('^admin/phones_white_list/(?P<action>create)/$', views.edit_phones_white_list, name='create_phones_white_list'),
     url('^admin/phones_white_list/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_phones_white_list, name='edit_phones_white_list'),
     path('admin/phones_white_list/positions/', views.phones_white_list_positions, name='phones_white_list_positions'),
+    path('is_phone_in_white_list/', views.is_phone_in_white_list, name='is_phone_in_white_list'),
 ]

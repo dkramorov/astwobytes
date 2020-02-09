@@ -222,7 +222,7 @@ class RemoteDB:
                 dest = dest.replace("oper_", "")
 
         if not len(dest) == 11:
-            logger.error('phone len is not 11 digit line %s' % (line, ))
+            logger.error('phone len is not 11 digit line %s' % (dest, ))
             return
         cond = "("
         cond += " digits=%s OR" % dest # весь номер

@@ -36,8 +36,8 @@ redirects_vars = {
 def api(request, action: str = 'redirects'):
     """Апи-метод для получения всех данных"""
     mh_vars = redirects_vars.copy()
-    #if action == 'files':
-    #    mh_vars = files_vars.copy()
+    if action == 'phones_white_list':
+        mh_vars = phones_white_list_vars.copy()
 
     mh = create_model_helper(mh_vars, request, CUR_APP)
     # Принудительные права на просмотр
@@ -194,6 +194,9 @@ def show_cdrcsv(request, *args, **kwargs):
     # Фильтрация и сортировка
     # -----------------------
     filters_and_sorters = tabulator_filters_and_sorters(request)
+    if not filters_and_sorters['sorters']:
+        filters_and_sorters['params']['sorters']['created'] = 'desc'
+
     for rfilter in filters_and_sorters['filters']:
         mh.filter_add(rfilter)
     for rsorter in filters_and_sorters['sorters']:
@@ -585,4 +588,15 @@ def phones_white_list_positions(request, *args, **kwargs):
     mh_vars = phones_white_list_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
     result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def is_phone_in_white_list(request):
+    """Апи-метод, чтобы узнать,
+       находится ли телефон в белом списке
+       для динамического диалплана"""
+    result = {}
+    phone = request.GET.get('phone')
+    analog = PhonesWhiteList.objects.filter(phone=phone).first()
+    if analog:
+        result['success'] = True
     return JsonResponse(result, safe=False)
