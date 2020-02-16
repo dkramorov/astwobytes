@@ -14,34 +14,191 @@
           <input type="text" placeholder="Интервал обновления" class="form-control" id="update_interval" value="5">
         </div>
       </div>
-
-      <div class="form-group">
-        <div class="col-md-6">
-          <div class="checkbox c-checkbox c-checkbox-rounded">
-            <label for="kind_of_user_all">
-              <input type="radio" name="kind_of_user" id="kind_of_user_all">
-              <span class="fa fa-check"></span>Все
-            </label>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="checkbox c-checkbox c-checkbox-rounded">
-            <label for="kind_of_user_reged">
-              <input type="radio" name="kind_of_user" checked="" id="kind_of_user_reged">
-              <span class="fa fa-check"></span>Зарегистрированные
-            </label>
-          </div>
-        </div>
-      </div>
     </form>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">Пользователи</div>
+  <div class="panel-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Логин</th>
+          <th>IP</th>
+          <th>Направление</th>
+          <th>Звонок</th>
+        </tr>
+      </thead>
+      <tbody id="fs_users">
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">Звонки</div>
+  <div class="panel-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Звонок</th>
+          <th>Состояние</th>
+          <th>Добавлен</th>
+        </tr>
+      </thead>
+      <tbody id="fs_calls">
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">Каналы</div>
+  <div class="panel-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Канал</th>
+          <th>Состояние</th>
+          <th>Добавлен</th>
+          <th>Действие</th>
+        </tr>
+      </thead>
+      <tbody id="fs_channels">
+      </tbody>
+    </table>
   </div>
 </div>
 {% endblock %}
 
 {% block extrascripts %}
 <script type="text/javascript">
+  var interval = 1000;
+  function monitoring(){
+    setTimeout(function(){
+      check_interval = parseInt($("#update_interval").val());
+      if(!isNaN(check_interval) && check_interval >= 1){
+        interval = check_interval * 1000;
+        console.log(interval);
+      }
+      $.ajax({
+        async : true,
+        type: "POST",
+        data: {csrfmiddlewaretoken: getCookie('csrftoken'), 'action': 'monitoring'},
+        url: "{% url 'freeswitch:monitoring' %}",
+        success: function(r) {
+          var html;
+          var login;
+          var pk;
+          var channel;
+          var call;
+          $("#fs_users").html("");
+          $("#fs_channels").html("");
+          $("#fs_calls").html("");
+          for(login in r['registrations']){
+            ip = r['registrations'][login];
+            html = "";
+            html += "<tr>";
+            html += "<td>" + login + "</td>";
+            html += "<td>" + ip + "</td>";
+            html += "<td id='channels_" + login + "'></td>";
+            html += "<td id='calls_" + login + "'></td>";
+            html += "</tr>";
+            $("#fs_users").append($(html));
+          }
+          for(var i=0; i<r['channels'].length; i++){
+            channel = r['channels'][i];
+            if(channel['b_dest'] !== undefined){
+              analyze_channel(channel, 'b_');
+            }else{
+              analyze_channel(channel, '');
+            }
+          }
+          for(var i=0; i<r['calls'].length; i++){
+            call = r['calls'][i];
+            if(call['b_dest'] !== undefined){
+              analyze_call(call, 'b_');
+            }else{
+              analyze_call(call, '');
+            }
+          }
+          drop_channels_listener();
+        },
+        complete: function () {
+          monitoring();
+        }
+      });
+    }, interval);
+  }
+  function analyze_channel(channel, b){
+    pk = channel[b + 'dest'];
+    if(channel[b + 'dest'].indexOf('%') > -1){
+      pk = channel[b + 'dest'].split('%')[0];
+    }
+    html = "<p id='" + channel['uuid'] + "'>";
+    html += channel[b + 'cid_num'];
+    html += "</p>";
+    $("#channels_" + pk).append($(html));
+
+    html = "<tr><td>";
+    html += channel[b + 'direction'] + ": ";
+    html += channel[b + 'dest'] + ", ";
+    html += channel[b + 'cid_num'] + " => ";
+    html += channel[b + 'name'] + ", ";
+    html += "(" + channel['state'] + ")";
+    html += "</td>"
+    html += "<td>" + channel['callstate'] + "</td>";
+    html += "<td>" + channel['created'] + "</td>";
+    html += "<td><a href='javascript:void(0);' class='drop_channel' data-id='" + channel['uuid'] + "'>Удалить канал</a></td>";
+    html += "</tr>";
+    $("#fs_channels").append($(html));
+  }
+  function analyze_call(call, b){
+    pk = call[b + 'dest'];
+    if(call[b + 'dest'].indexOf('%') > -1){
+      pk = call[b + 'dest'].split('%')[0];
+    }
+    html = "<p id='" + call['uuid'] + "'>";
+    html += call[b + 'cid_num'];
+    html += "</p>";
+    $("#calls_" + pk).append($(html));
+
+    html = "<tr><td>";
+    html += call[b + 'direction'] + ": ";
+    html += call[b + 'dest'] + ", ";
+    html += call[b + 'cid_num'] + " => ";
+    html += call[b + 'name'] + ", ";
+    html += "(" + call['state'] + ")";
+    html += "</td>"
+    html += "<td>" + call['callstate'] + "</td>";
+    html += "<td>" + call['created'] + "</td>";
+    html += "</tr>";
+    $("#fs_calls").append($(html));
+  }
+  function drop_channels_listener(){
+    $(".drop_channel").each(function(){
+      var uuid = $(this).attr('data-id');
+      $(this).click(function(){
+        drop_channel(uuid);
+      });
+    });
+  }
+  function drop_channel(uuid){
+    if(confirm('Вы действительно хотите удалить канал?')){
+      $.ajax({
+        async : true,
+        type: "POST",
+        data: {
+          csrfmiddlewaretoken: getCookie('csrftoken'),
+          'action': 'drop_channel',
+          'uuid': uuid,
+        },
+        url: "{% url 'freeswitch:monitoring' %}",
+        success: function(r) {
+        }
+      });
+    }
+  }
   $(document).ready(function(){
-    
+    monitoring();
   });
 </script>
 {% endblock %}

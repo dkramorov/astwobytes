@@ -38,9 +38,13 @@ class Command(BaseCommand):
         logger.info('file received')
         bulk_save(rows)
 
-@transaction.atomic
+@transaction.atomic # через транзакцию
 def bulk_save(rows):
     z = 0
+    # Избавляемся от удаленных пользователей
+    active_users = [row[0] for row in rows]
+    PersonalUsers.objects.all().exclude(userid__in=active_users).delete()
+
     if rows:
         for row in rows:
             z += 1

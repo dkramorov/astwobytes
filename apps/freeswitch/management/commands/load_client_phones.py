@@ -31,14 +31,18 @@ class Command(BaseCommand):
         if is_running:
             logger.error('Already running %s' % (is_running, ))
             exit()
-        r = requests.get('%s/media/phone_numbers.json' % (crm_host, ), timeout=5)
+        r = requests.get('%s/media/phone_numbers.json' % (settings.CRM_HOST, ), timeout=5)
         rows = r.json()
         logger.info('file received')
         bulk_save(rows)
 
-@transaction.atomic
+@transaction.atomic # через транзакцию
 def bulk_save(rows):
     z = 0
+    # Избавляемся от удаленных телефонов
+    active_phones = [row[0] for row in rows]
+    PhonesWhiteList.objects.all().exclude(phone__in=active_phones).delete()
+
     if rows:
         for row in rows:
             z += 1
@@ -47,7 +51,6 @@ def bulk_save(rows):
                 analog = PhonesWhiteList(phone=row[0])
             if not analog.tag == row[1] or not analog.name == row[2]:
                 analog.tag = row[1]
-                analog.desc = 'Получено из базы 223-223.ru'
                 analog.name = row[2]
                 analog.save()
 

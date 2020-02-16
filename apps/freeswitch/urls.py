@@ -24,10 +24,17 @@ urlpatterns = [
     url('^admin/(?P<action>create)/$', views.edit_user, name='create_user'),
     url('^admin/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_user, name='edit_user'),
     path('admin/positions/', views.users_positions, name='users_positions'),
-    # белый список телефонов, на которые можно звонить по динамическому диалплану
+    # телефоны из CRM на них можно звонить по динамическому диалплану
     path('admin/phones_white_list/', views.show_phones_white_list, name='show_phones_white_list'),
     url('^admin/phones_white_list/(?P<action>create)/$', views.edit_phones_white_list, name='create_phones_white_list'),
     url('^admin/phones_white_list/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_phones_white_list, name='edit_phones_white_list'),
     path('admin/phones_white_list/positions/', views.phones_white_list_positions, name='phones_white_list_positions'),
+    # пользователи из CRM, привязанным к FSUser можно звонить по динамическому диалплану
+    path('admin/personal_users/', views.show_personal_users, name='show_personal_users'),
+    url('^admin/personal_users/(?P<action>create)/$', views.edit_personal_user, name='create_personal_user'),
+    url('^admin/personal_users/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_personal_user, name='edit_personal_user'),
+    path('admin/personal_users/positions/', views.personal_users_positions, name='personal_users_positions'),
+    path('personal_users/search/', views.search_personal_users, name='search_personal_users'),
+    # api для проверки возможности звонка по динамическому диалплану
     path('is_phone_in_white_list/', views.is_phone_in_white_list, name='is_phone_in_white_list'),
 ]

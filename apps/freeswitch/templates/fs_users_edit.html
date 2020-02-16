@@ -20,32 +20,41 @@
             <label class="col-lg-2 control-label">Пользователь</label>
             <div class="col-lg-10">
               <select id="user_select2" autocomplete="off" name="user" data-parsley-required>
-                {% if row.user %}<option value="{{ row.user.id }}" selected>{{ row.user.username }}</option>{% endif %}
+                {% if row.user %}<option value="{{ row.user.id }}" selected>{{ row.user.username }} ({{ row.user.id }})</option>{% endif %}
               </select>
             </div>
           </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">Пароль</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Пароль" class="form-control" name="passwd" value="{% if row.passwd %}{{ row.passwd }}{% endif %}" autocomplete="off" id="form-field-passwd">
+              <input type="text" placeholder="Пароль" class="form-control" name="passwd" value="{% if row.passwd %}{{ row.passwd }}{% endif %}" autocomplete="off" id="form-field-passwd" data-parsley-required>
             </div>
           </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">Контекст</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Контекст" class="form-control" name="context" value="{% if row.context %}{{ row.context }}{% endif %}" autocomplete="off" id="form-field-passwd">
+              <input type="text" placeholder="Контекст" class="form-control" name="context" value="{% if row.context %}{{ row.context }}{% endif %}" autocomplete="off" id="form-field-passwd" data-parsley-required>
             </div>
           </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">Caller ID</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Caller ID" class="form-control" name="cid" value="{% if row.cid %}{{ row.cid }}{% endif %}" autocomplete="off" id="form-field-cid">
+              <input type="text" placeholder="Caller ID" class="form-control phone" name="cid" value="{% if row.cid %}{{ row.cid }}{% endif %}" autocomplete="off" id="form-field-cid" data-parsley-required>
             </div>
           </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">Группа</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Группа" class="form-control" name="callgroup" value="{% if row.callgroup %}{{ row.callgroup }}{% endif %}" autocomplete="off" id="form-field-callgroup">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Пользователь сайта</label>
+            <div class="col-lg-10">
+              <select id="personal_user_select2" autocomplete="off" name="personal_user">
+                <option value=""></option>
+                {% if row.user %}<option value="{{ row.personal_user.id }}" selected>{{ row.personal_user.username }} ({{ row.personal_user.userid }})</option>{% endif %}
+              </select>
             </div>
           </div>
           {% include "core/forms/row_position.html" %}
@@ -103,6 +112,15 @@
         width: '100%',
         ajax: {
           url: "{% url 'login:search_users' %}",
+          cache: false,
+          dataType: 'json',
+        }
+      });
+      $('#personal_user_select2').select2({
+        placeholder: 'Выберите пользователя сайта',
+        width: '100%',
+        ajax: {
+          url: "{% url 'freeswitch:search_personal_users' %}",
           cache: false,
           dataType: 'json',
         }

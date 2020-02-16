@@ -6,6 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from apps.main_functions.files import check_path, full_path, file_size
 from apps.main_functions.functions import object_fields
@@ -189,5 +190,12 @@ def ReturnFile(request, link):
                 response['Content-Length'] = file_size(path)
                 response['Content-Disposition'] = 'inline; filename=%s' % (path, )
                 return response
+    elif link == '/favicon.ico':
+        path = '%s/img/favicon.ico' % settings.STATIC_ROOT.rstrip('/')
+        with open(path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='image/x-icon')
+            response['Content-Length'] = file_size(path)
+            response['Content-Disposition'] = 'inline; filename=%s' % (path, )
+            return response
     return redirect("/")
 

@@ -17,6 +17,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from envparse import env
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 env.read_envfile()
 
 # ------------------
@@ -64,6 +68,15 @@ ALLOWED_HOSTS = [
     #'.example.com.',  # Also allow FQDN and subdomains
 ]
 
+
+
+
+
+# CUSTOM_APPS_START
+CUSTOM_APPS = [
+]
+# CUSTOM_APPS_END
+
 # Application definition
 INSTALLED_APPS = [
     #'django.contrib.admin',
@@ -87,7 +100,8 @@ INSTALLED_APPS = [
     'apps.site',
     # Freeswitch
     'apps.freeswitch',
-]
+    'apps.demonology',
+] + CUSTOM_APPS
 
 
 MIDDLEWARE = [
@@ -279,3 +293,17 @@ FREESWITCH_DOMAIN = env('FREESWITCH_DOMAIN')
 FREESWITCH_URI = env('FREESWITCH_URI')
 FREESWITCH_WSS = env('FREESWITCH_WSS')
 
+# ------
+# CRM DB
+# ------
+CRM_HOST = env('CRM_HOST')
+
+SENTRY_DSN = env('SENTRY_DSN')
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True
+    )

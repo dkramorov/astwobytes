@@ -126,10 +126,16 @@ $(document).ready(function(){
       {
         title: "Статус",
         field: "state",
+        editor: "select",
         headerFilterPlaceholder: "Статус",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+            {% autoescape off %}
+            values: {"": "Без фильтра", {% for sip_code in sip_codes %}"{{ sip_code }}": "{{ sip_code }}", {% endfor %} },
+            {% endautoescape %}
+        },
+        width: 90,
       },
       {
         title: "IP",

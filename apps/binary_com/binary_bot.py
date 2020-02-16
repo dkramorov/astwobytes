@@ -7,6 +7,7 @@ import datetime
 import websockets
 import json
 import ssl
+import sys
 import requests
 import redis
 import random
@@ -30,6 +31,11 @@ WITH_REDIS = env('WITH_REDIS', default=False)
 
 rediska = redis.StrictRedis()
 
+BOT_TOKEN = env('BOT_TOKEN', default='S2CdZcfFPZ6Q0A2')
+logger.info('Arguments: %s: %s', len(sys.argv), sys.argv)
+if len(sys.argv) > 1:
+    BOT_TOKEN = sys.argv[1]
+
 def json_pretty_print(json_obj):
     """Вывести json в человеческом виде"""
     return json.dumps(json_obj, sort_keys=True, indent=2, separators=(',', ': '), ensure_ascii=False)
@@ -42,8 +48,8 @@ class StateMachine:
         self.balance_subscribed = False
         self.in_deal = False
         self.symbols_showed = False
-        self.strategy = 'random'
-        #self.strategy = 'bollinger'
+        #self.strategy = 'random'
+        self.strategy = 'bollinger'
 
         self.account = {}
         self.balance = {}
@@ -69,7 +75,7 @@ class StateMachine:
         self.deals_data = []
         self.bollinger_bands_steps = 20
         self.standard_deviations = 2
-        self.token = 'S2CdZcfFPZ6Q0A2'
+        self.token = BOT_TOKEN
 
     def auth(self):
         """Авторизация"""
@@ -271,6 +277,10 @@ async def consumer_handler(websocket, state_machine):
         action = data['msg_type']
         if action == 'authorize':
             # Авторизация
+            # Если кривой токен - завершаем работу
+            if 'error' in data:
+                logger.info(data['error'])
+                exit()
             state_machine.account = data[action]
         elif action == 'history':
             # Сохраняем полученную историю тиков

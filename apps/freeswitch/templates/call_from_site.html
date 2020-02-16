@@ -91,7 +91,7 @@
 <script type="text/javascript">
   window.sip_config = {
     traceSip: false,
-    register: true,
+    register: false,
     userAgentString: '{{ request.user.username }}@{{ request.META.HTTP_HOST }}',
     //stunServers: ['stun:91.185.46.56:3478'],
   }
@@ -103,8 +103,10 @@
 <script type="text/javascript" src="/static/call_from_site/js/DetectRTC.js"></script>
 
 <script type="text/javascript">
+  var is_connected2freeswitch = false;
   function connected_to_server(){
-    $(".make_call").show();
+    //$(".make_call").show();
+    is_connected2freeswitch = true;
   }
 
   var is_webrtc_supported = false;
@@ -112,11 +114,13 @@
     is_webrtc_supported = DetectRTC.isWebRTCSupported;
 
     if(is_webrtc_supported){
-
-      connect_to_server(connected_to_server);
+      //connect_to_server(connected_to_server);
       set_call_controls($(".make_call"), $(".hangup"), $(".call_timer"));
-
+      $(".make_call").show();
       $(".make_call").click(function(){
+        if(!is_connected2freeswitch){
+          connect_to_server(connected_to_server);
+        }
         $("#ext_dial").val("");
         make_call($("#phone_number").val());
       });

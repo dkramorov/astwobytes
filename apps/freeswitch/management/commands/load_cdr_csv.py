@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from apps.main_functions.fortasks import search_process
-from apps.freeswitch.models import analyze_logs
+from apps.freeswitch.services import analyze_logs
 
 logger = logging.getLogger(__name__)
 

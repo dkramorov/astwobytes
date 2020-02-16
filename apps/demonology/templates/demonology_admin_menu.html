@@ -1,0 +1,8 @@
+{% if perms.demonology.view_daemon %}
+<li{% ifequal menu 'demonology' %} class="active"{% endifequal %}>
+  <a href="{% url 'demonology:show_daemon' %}">
+    <em class="fa fa-github-alt"></em>
+    <span class="item-text">Демоны</span>
+  </a>
+</li>
+{% endif %}

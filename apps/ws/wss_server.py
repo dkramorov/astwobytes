@@ -38,6 +38,15 @@ API_URL = env('API_URL', default='http://localhost:8000') # Для сохран�
 #                     user=env('DB_USER', default='root'),
 #                     passwd=env('DB_PASSWD', default=''), )
 
+#import sys
+#logger.info('Arguments: %s: %s', len(sys.argv), sys.argv)
+#if len(sys.argv) > 1:
+#    PORT = int(sys.argv[1])
+#    if PORT <= 1024 or PORT >= 65536:
+#        logger.info('PORT must be in range 1024-65536')
+#        exit()
+
+
 SECRET = env('SECRET', default='se')
 HOST = env('HOST', default='127.0.0.1')
 PORT = env('PORT', cast=int, default=8888)

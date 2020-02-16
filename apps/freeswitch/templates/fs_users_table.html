@@ -7,6 +7,9 @@
 <a class="btn btn-primary pull-right" href="{{ url_create }}">
   <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
 </a>
+<a class="btn btn-primary pull-right mb-sm mr-sm" href="">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> Обновить пользователей с АТС
+</a>
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
@@ -52,7 +55,7 @@ $(document).ready(function(){
       },
       {
         title: "Caller ID",
-        field: "сшв",
+        field: "cid",
         headerFilterPlaceholder: "Caller ID",
         headerFilter: "input",
         headerFilterFunc: "like",
@@ -65,6 +68,14 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 60,
+      },
+      {
+        title: "Пользователь сайта",
+        field: "personal_user__username",
+        headerFilterPlaceholder: "Пользователь сайта",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
       },
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}

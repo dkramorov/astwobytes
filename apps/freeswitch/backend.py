@@ -149,7 +149,7 @@ class FreeswitchBackend(object):
 
     def kill_channel(self, uuid):
         """Убить канал"""
-        self.server.freeswitch.api('uuid_kill', uuid)
+        return self.server.freeswitch.api('uuid_kill', uuid)
 
     def reloadxml(self):
         """Перезагрузить конфигрурацию диалплана"""

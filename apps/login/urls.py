@@ -28,4 +28,6 @@ urlpatterns = [
     url('^groups/perms/(?P<row_id>[0-9]{1,11})/$', views.group_perms, name='group_perms'),
     # Демо-странички
     url('^demo/(?P<action>[a-z_]{1,20})/$', views.demo, name='demo'),
+    # Проверка сентряка
+    path('check_sentry/', views.check_sentry, name='check_sentry'),
 ]

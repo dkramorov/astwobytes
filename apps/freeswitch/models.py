@@ -14,46 +14,55 @@ from apps.main_functions.files import (ListDir, isForD,
     make_folder, open_file, drop_file)
 from apps.main_functions.models import Standard
 
-from .backend import FreeswitchBackend, RemoteDB
-
-logger = logging.getLogger('simple')
-CDR_VARS = ('cid', 'cid_name', 'dest', 'context',
-            'created', 'answered', 'ended',
-            'duration', 'billing', 'state',
-            'uuid', 'bleg_uuid', 'account',
-            'read_codec', 'write_codec',
-            'ip', 'user_agent', )
+from .backend import FreeswitchBackend
 
 class PersonalUsers(Standard):
-    """Зарегистрированные пользователи на сайте"""
+    """Зарегистрированные пользователи на сайте
+       используем для привязки к звонкам,
+       Такого пользователя можно привязать к FSUser,
+       тогда можно будет разрешить ему звонить на любые номера,
+       посредством динамического диалплана, который проверяется
+       через /freeswitch/is_user_in_white_list/?user_id=134@223-223.ru
+       Загружается через CRM_HOST в настройках - не редактируется
+    """
     username = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     userid = models.IntegerField(blank=True, null=True, db_index=True)
 
+    class Meta:
+        verbose_name = 'Freeswitch - Пользователи сайта'
+        verbose_name_plural = 'Freeswtich - Пользователи сайта'
+
 class PhonesWhiteList(Standard):
     """Белый список телефонов для АТС,
-       на которые пропускаем звонки по динамическому диалплану"""
+       на которые пропускаем звонки
+       посредством динамического диалплана, который проверяется
+       через /freeswitch/is_user_in_white_list/?phone=89148959223
+       Загружается через CRM_HOST в настройках - не редактируется
+    """
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    desc = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     phone = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     tag = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Важный идентификатор, например, id компании')
     def save(self, *args, **kwargs):
         phone = kill_quotes(self.phone, 'int')
         if phone.startswith('7'):
             phone = '8%s' % (phone[1:], )
+        self.phone = phone
         super(PhonesWhiteList, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name = 'Freeswitch - Белый список телефонов'
-        verbose_name_plural = 'Freeswtich - Белый список телефонов'
+        verbose_name = 'Freeswitch - Телефоны CRM'
+        verbose_name_plural = 'Freeswtich - Телефоны CRM'
 
 class FSUser(Standard):
     """Пользователи FreeSwitch"""
     FOLDER = 'fs_users'
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_fs_user')
     passwd = models.CharField(max_length=255, blank=True, null=True)
     context = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     cid = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     callgroup = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    # Привязка пользователя с сайта
+    personal_user = models.OneToOneField(PersonalUsers, blank=True, null=True, on_delete=models.SET_NULL, related_name='personal_fs_user')
 
     class Meta:
         verbose_name = 'Freeswitch - Пользователь'
@@ -64,16 +73,21 @@ class FSUser(Standard):
         fname = '%s/fs_user_%s.xml' % (self.FOLDER, self.id)
         if not check_path(fname):
             drop_file(fname)
-        #FreeswitchBackend(settings.FREESWITCH_URI).reloadxml()
+        FreeswitchBackend(settings.FREESWITCH_URI).reloadxml()
 
     def delete(self, *args, **kwargs):
         self.drop_extension()
         super(FSUser, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
+        cid = kill_quotes(self.cid, 'int')
+        if cid.startswith('7'):
+            cid = '8%s' % (cid[1:], )
+        self.cid = cid
         super(FSUser, self).save(*args, **kwargs)
-        if not self.is_active:
+        if not self.is_active or not self.user or not self.passwd or not self.context or not self.cid:
             self.drop_extension()
+            return
         extension = """
 <include>
   <user id="{}">
@@ -105,7 +119,7 @@ class FSUser(Standard):
             make_folder(self.FOLDER)
         with open(fname, 'w+') as f:
             f.write(extension)
-        #FreeswitchBackend(settings.FREESWITCH_URI).reloadxml()
+        FreeswitchBackend(settings.FREESWITCH_URI).reloadxml()
 
 class Redirects(Standard):
     """Переадресации - у нас есть номера, мы можем
@@ -221,116 +235,3 @@ class CdrCsv(models.Model):
     class Meta:
         verbose_name = 'Freeswitch - Звонок'
         verbose_name_plural = 'Freeswtich - Звонки'
-
-def parse_log_line(line: list):
-    """Анализ линии из логов записей звонков
-       :param line: линия для парсинга"""
-    line_array = line.split('","')
-    line_array_len = len(line_array)
-    if not line_array_len in (15, 16, 17):
-        logger.error('line length not in 15,16,17: %s' % (line, ))
-        return
-    cur_cdr = {}
-    for i in range(line_array_len):
-        line_array[i] = kill_quotes(line_array[i], 'quotes')
-        line_array[i] = line_array[i].replace('\n', '').strip()
-
-        key = CDR_VARS[i]
-        value = line_array[i]
-
-        if key in ('created', 'answered', 'ended'):
-            value = str_to_date(value)
-        if not value:
-            value = None
-
-        if key == 'user_agent':
-            if value and '@' in value:
-                value = value.split('@')[0]
-                if value.isdigit():
-                    puser = PersonalUsers.objects.filter(userid=value).first()
-                    if puser:
-                        cur_cdr['personal_user_id'] = puser.userid
-                        cur_cdr['personal_user_name'] = puser.username
-            else:
-                value = None
-        # ------------------
-        # Убиваем нуль-байты
-        # ------------------
-        if isinstance(value, str):
-            value = value.replace('\x00', '')
-        cur_cdr[key] = value
-
-    if not cur_cdr['uuid']:
-        logger.error('uuid not in line %s' % (line, ))
-        return
-
-    if 'cid' in cur_cdr:
-        if cur_cdr['cid']:
-            cur_cdr['cid'] = cur_cdr['cid']
-    # -----------------------------------
-    # Пропускаем звонки, которые заходили
-    # на оператора и не были приняты им
-    # -----------------------------------
-    if cur_cdr['state'] in ("ALLOTTED_TIMEOUT", ): # "ORIGINATOR_CANCEL" пока фиксируем
-        return
-
-    analogs = CdrCsv.objects.filter(uuid=cur_cdr['uuid'], created=cur_cdr['created'])
-    if not analogs:
-        new_cdr = CdrCsv()
-    else:
-        new_cdr = analogs[0]
-
-    for key, value in cur_cdr.items():
-        if key == 'dest':
-            if '%' in value:
-                value = value.split('%')[0]
-            elif value:
-                if value.isdigit():
-                    if len(value) == 6:
-                        value = '83952%s' % (value, )
-                    elif len(value) == 10:
-                        value = '8%s' % (value, )
-                    if len(value) == 11:
-                        value = '8%s' % (value[1:], )
-        setattr(new_cdr, key, value)
-
-    search_by_phone = PhonesWhiteList.objects.filter(tag__isnull=False, phone=new_cdr.dest).first()
-    if search_by_phone:
-        new_cdr.client_id = search_by_phone.tag
-        new_cdr.client_name = search_by_phone.name
-    new_cdr.save()
-
-def analyze_logs():
-    """Анализируем cdr_csv папку для записи звонков
-       Конфиг
-       autoload_configs/cdr_csv.conf.xml
-       добавляем ..., "${remote_media_ip}"
-       добавляем ..., "${network_addr}"
-       Перезапуск модуля reload mod_cdr_csv
-       Освободить файл логов cdr_csv rotate
-    """
-    FreeswitchBackend(settings.FREESWITCH_URI).cdr_csv_rotate() # перезагрузжаем логи
-    path = 'cdr-csv' # На папку должна быть символическая ссылка в media
-    content = ListDir(path)
-    if not content:
-        assert False
-    now = datetime.datetime.today()
-    old_date = date_plus_days(now, hours=-10)
-    for item in content:
-        # Мы уже rotate на лог сделали - основной не парсим
-        if item == 'Master.csv' or not '.csv.' in item:
-            logger.info('Passing %s' % (item, ))
-            continue
-        lines = []
-        cur_path = os.path.join(path, item)
-        if isForD(cur_path) == 'file':
-            with open_file(cur_path) as f:
-                lines = f.readlines()
-        for line in lines:
-            parse_log_line(line.decode('utf-8'))
-        search_date = item.split('.')[-1]
-        cur_item_date = '%s %s' % (search_date[:10], search_date[11:].replace('-', ':'))
-        date = str_to_date(cur_item_date)
-        if date < old_date:
-            logger.info('Dropping %s' % (cur_path, ))
-            drop_file(cur_path)

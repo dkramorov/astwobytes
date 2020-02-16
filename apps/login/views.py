@@ -358,22 +358,18 @@ def users_positions(request, *args, **kwargs):
 def search_users(request, *args, **kwargs):
     """Поиск пользователей"""
     result = {'results': []}
-
     mh = ModelHelper(User, request)
     mh_vars = users_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
-
     mh.search_fields = ('first_name', 'last_name', 'username', 'customuser__phone')
     rows = mh.standard_show()
-
     for row in rows:
         result['results'].append({'text': '%s' % (row, ), 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:
         result['pagination'] = {'more': True}
-
     return JsonResponse(result, safe=False)
 
 groups_vars = {
@@ -650,3 +646,7 @@ def demo(request, action='panels'):
     template = demos.get(action, demos['dashboard'])
 
     return render(request, template, context)
+
+def check_sentry(request):
+    """Просто проверка, что сентри работает - пЁхаем туда ошибку"""
+    division_by_zero = 1 / 0
