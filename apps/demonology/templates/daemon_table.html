@@ -17,18 +17,34 @@
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
-$(document).ready(function(){
 
-  var pathFormatter = function(cell, formatterParams, onRendered){
-    //console.log(cell.getRow().getData());
-    var data = cell.getRow().getData();
-    var value = cell.getValue();
-    var result = "<div class='padding-rl5 text-center'>";
-    if(value){
-      result += " <a class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
+// Обработка кнопок для управления демонами
+// после загрузки таблицы
+window.tabulator_render_completed = function(){
+  $(".get_daemon_status").each(function(){
+    if($(this).hasClass("touched")){
+      return;
     }
-    result += "</div>";
-    return result;
+    $(this).addClass("touched");
+    $(".get_daemon_status").click(function(){
+      return false;
+    });
+  });
+}
+
+$(document).ready(function(){
+  var actionsDaemonsFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var rowIndex = row.getIndex();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+    actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+
+    actions += " <a class='get_daemon_status btn-xs btn btn-primary pull-left ml' href='{{ root_url }}status/" + pk + "/'><i class='fa fa-eye'></i></a> ";
+
+    actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    actions += "</div>";
+    return actions;
   };
 
   main_table = new Tabulator("#main-table", {
@@ -66,9 +82,18 @@ $(document).ready(function(){
       /*{% include "core/tabulator_cell/image.html" %}*/
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}
-      {% include "core/tabulator_cell/actions.html" %}
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsDaemonsFormatter,
+        width: 120,
+      },
     ],
   });
+
+
+
 });
 </script>
 {% endblock %}

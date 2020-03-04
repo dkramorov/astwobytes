@@ -289,16 +289,16 @@ WS_SECRET = env('WS_SECRET', default='bugogashenki')
 # -------------------
 # Freeswitch settings
 # -------------------
-FREESWITCH_DOMAIN = env('FREESWITCH_DOMAIN')
-FREESWITCH_URI = env('FREESWITCH_URI')
-FREESWITCH_WSS = env('FREESWITCH_WSS')
+FREESWITCH_DOMAIN = env('FREESWITCH_DOMAIN', default='')
+FREESWITCH_URI = env('FREESWITCH_URI', default='')
+FREESWITCH_WSS = env('FREESWITCH_WSS', default='')
 
 # ------
 # CRM DB
 # ------
-CRM_HOST = env('CRM_HOST')
+CRM_HOST = env('CRM_HOST', default='')
 
-SENTRY_DSN = env('SENTRY_DSN')
+SENTRY_DSN = env('SENTRY_DSN', default='')
 if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,

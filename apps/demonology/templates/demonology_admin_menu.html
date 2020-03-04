@@ -1,8 +1,22 @@
 {% if perms.demonology.view_daemon %}
 <li{% ifequal menu 'demonology' %} class="active"{% endifequal %}>
-  <a href="{% url 'demonology:show_daemon' %}">
+  <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-github-alt"></em>
+    <div class="label label-primary pull-right">2</div>
     <span class="item-text">Демоны</span>
   </a>
+  <!-- START SubMenu item-->
+  <ul class="nav collapse{% ifequal menu 'demonology' %} in{% endifequal %}">
+    <li{% ifequal submenu 'daemons' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'demonology:show_daemon' %}">
+        <span class="item-text">Демоны</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'schedule' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'demonology:show_schedule' %}">
+        <span class="item-text">Расписания для демонов</span>
+      </a>
+    </li>
+  </ul>
 </li>
 {% endif %}

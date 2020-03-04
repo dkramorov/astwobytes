@@ -8,99 +8,60 @@
 {% endblock %}
 
 {% block content %}
-<h3>Full Calendar
-   <br>
-   <small>Drag and Drop events and tasks</small>
-</h3>
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
 <!-- START row-->
 <div class="row">
-   <div class="col-md-3">
-      <!-- START panel-->
-      <div class="panel panel-default">
-         <div class="panel-heading">
-            <h4 class="panel-title">Draggable Events</h4>
-         </div>
-         <!-- Default external events list-->
-         <div class="external-events-trash">
-            <div class="panel-body">
-               <div class="external-events">
-                  <div class="bg-green">Lunch</div>
-                  <div class="bg-danger">Go home</div>
-                  <div class="bg-info">Do homework</div>
-                  <div class="bg-warning">Work on UI design</div>
-                  <div class="bg-inverse">Sleep tight</div>
-               </div>
-               <p>
-                  <span class="checkbox c-checkbox">
-                     <label>
-                        <input id="remove-after-drop" type="checkbox">
-                        <span class="fa fa-check"></span>Remove after Drop</label>
-                  </span>
-               </p>
+  <div class="col-sm-12">
+    <!-- START panel-->
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          {% include "core/forms/row_name.html" %}
+
+          <!-- Календарь таблица -->
+          <div class="row">
+            <div class="col-md-12">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">События</h4>
+                </div>
+                <div class="external-events-trash">
+                  <div class="panel-body">
+                    <div class="external-events">
+                      <div class="bg-green">Событие 1</div>
+                      <div class="bg-danger">Событие 2</div>
+                      <div class="bg-info">Событие 3</div>
+                      <div class="bg-warning">Событие 4</div>
+                      <div class="bg-inverse">Событие 5</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-         </div>
-      </div>
-      <!-- END panel-->
-      <!-- START panel-->
-      <div class="panel panel-default">
-         <div class="panel-heading">
-            <h3 class="panel-title">Create Event</h3>
-         </div>
-         <div class="panel-body">
-            <div class="input-group mb">
-               <input type="text" placeholder="Event name..." class="form-control external-event-name">
-               <div class="input-group-btn">
-                  <button type="button" class="btn btn-default external-event-add-btn">Add</button>
-               </div>
+            <div class="col-md-12">
+              <div class="panel">
+                <div class="panel-body">
+                  <div id="calendar"></div>
+                </div>
+              </div>
             </div>
-            <p class="text-muted">
-               <small>Choose a Color</small>
-            </p>
-            <ul class="list-inline external-event-color-selector">
-               <li class="p0">
-                  <a href="#" class="point point-danger point-xl selected"></a>
-               </li>
-               <li class="p0">
-                  <a href="#" class="point point-primary point-xl"></a>
-               </li>
-               <li class="p0">
-                  <a href="#" class="point point-info point-xl"></a>
-               </li>
-               <li class="p0">
-                  <a href="#" class="point point-success point-xl"></a>
-               </li>
-               <li class="p0">
-                  <a href="#" class="point point-warning point-xl"></a>
-               </li>
-               <li class="p0">
-                  <a href="#" class="point point-green point-xl"></a>
-               </li>
-               <li class="p0">
-                  <a href="#" class="point point-pink point-xl"></a>
-               </li>
-               <li class="p0">
-                  <a href="#" class="point point-inverse point-xl"></a>
-               </li>
-               <li class="p0">
-                  <a href="#" class="point point-purple point-xl"></a>
-               </li>
-            </ul>
-         </div>
-      </div>
-      <!-- END panel-->
-   </div>
-   <div class="col-md-9">
-      <!-- START panel-->
-      <div class="panel">
-         <div class="panel-body">
-            <!-- START calendar-->
-            <div id="calendar"></div>
-            <!-- END calendar-->
-         </div>
-      </div>
-      <!-- END panel-->
-   </div>
+          </div>
+          <div class="clearfix"></div>
+          <!--{% include "core/forms/row_image.html" %}-->
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+    <!-- END panel-->
+  </div>
 </div>
+<!-- END row-->
 {% endblock %}
 
 {% block extrascripts %}
@@ -110,22 +71,30 @@
   <script src="/static/fullcalendar/moment-with-langs.min.js"></script>
   <!-- FulCalendar-->
   <script src="/static/fullcalendar/fullcalendar.min.js"></script>
+  <script src="/static/fullcalendar/ru.js"></script>
 
-<script type="text/javascript">
-/**=========================================================
- * Module: calendar-ui.js
- * This script handle the calendar demo with draggable
- * events and events creations
- =========================================================*/
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
 
-(function($, window, document){
-  'use strict';
-
-  if(!$.fn.fullCalendar) return;
 
   // global shared var to know what we are dragging
   var draggingEvent = null;
 
+
+  // Получение событие с сервера для календаря
+  function get_events(){
+    $.ajax({
+      url: 'add_events.php',
+      data: 'title='+ title+'&start='+ start2 +'&end='+ end2,
+      type: "POST",
+      success: function(json) {
+        $( "#getReason" ).modal('hide');
+        $('#mydiv').hide();
+        $('body').removeClass('blockMask');
+        $('#calendar').fullCalendar('refetchEvents');
+      }
+    });
+  }
 
   /**
    * ExternalEvent object
@@ -160,11 +129,12 @@
    * @param  EventObject [events] An object with the event list to load when the calendar displays
    */
   function initCalendar(calElement, events) {
-
       // check to remove elements from the list
       var removeAfterDrop = $('#remove-after-drop');
 
       calElement.fullCalendar({
+          height: 'auto',
+          locale: 'ru',
           header: {
               left:   'prev,next today',
               center: 'title',
@@ -175,13 +145,13 @@
               next:    ' fa fa-caret-right'
           },
           buttonText: {
-              today: 'today',
-              month: 'month',
-              week:  'week',
-              day:   'day'
+              today: 'сегодня',
+              month: 'месяц',
+              week:  'неделя',
+              day:   'день'
           },
           editable: true,
-          droppable: true, // this allows things to be dropped onto the calendar 
+          droppable: true, // this allows things to be dropped onto the calendar
           drop: function(date, allDay) { // this function is called when something is dropped
 
               var $this = $(this),
@@ -201,7 +171,7 @@
               clonedEventObject.borderColor = $this.css('border-color');
 
               // render the event on the calendar
-              // the last `true` argument determines if the event "sticks" 
+              // the last `true` argument determines if the event "sticks"
               // (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
               calElement.fullCalendar('renderEvent', clonedEventObject, true);
               // if necessary remove the element from the list
@@ -309,27 +279,27 @@
 
     return  [
               {
-                  title: 'All Day Event',
+                  title: 'Весь день',
                   start: new Date(y, m, 1),
                   backgroundColor: '#f56954', //red
                   borderColor: '#f56954' //red
               },
               {
-                  title: 'Long Event',
+                  title: 'Событие 1',
                   start: new Date(y, m, d - 5),
                   end: new Date(y, m, d - 2),
                   backgroundColor: '#f39c12', //yellow
                   borderColor: '#f39c12' //yellow
               },
               {
-                  title: 'Meeting',
+                  title: 'Событие 2',
                   start: new Date(y, m, d, 10, 30),
                   allDay: false,
                   backgroundColor: '#0073b7', //Blue
                   borderColor: '#0073b7' //Blue
               },
               {
-                  title: 'Lunch',
+                  title: 'Событие 3',
                   start: new Date(y, m, d, 12, 0),
                   end: new Date(y, m, d, 14, 0),
                   allDay: false,
@@ -337,7 +307,7 @@
                   borderColor: '#00c0ef' //Info (aqua)
               },
               {
-                  title: 'Birthday Party',
+                  title: 'Событие 4',
                   start: new Date(y, m, d + 1, 19, 0),
                   end: new Date(y, m, d + 1, 22, 30),
                   allDay: false,
@@ -345,7 +315,7 @@
                   borderColor: '#00a65a' //Success (green)
               },
               {
-                  title: 'Open Google',
+                  title: 'Событие 5',
                   start: new Date(y, m, 28),
                   end: new Date(y, m, 29),
                   url: 'http://google.com/',
@@ -355,21 +325,51 @@
           ];
   }
 
-  // When dom ready, init calendar and events
-  $(function() {
 
+    $(document).ready(function(){
       // The element that will display the calendar
       var calendar = $('#calendar');
-
       var demoEvents = createDemoEvents();
-
       initExternalEvents(calendar);
-
       initCalendar(calendar, demoEvents);
 
-  });
+
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
 
 
-}(jQuery, window, document));
-</script>
+    });
+  </script>
 {% endblock %}

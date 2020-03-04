@@ -64,7 +64,7 @@ Type=idle
 
 [Install]
 WantedBy=multi-user.target
-Alias=%s
+#Alias=%s # Алиас не должен быть таким же как имя сервсиа
 """ % (daemon_name, exec_script, pyenv, exec_script, port, daemon_name)
 
     daemon = '%s/%s' % (DAEMON_FOLDER, daemon_name)

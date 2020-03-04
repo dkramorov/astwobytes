@@ -24,6 +24,13 @@ ajaxResponse:function(url, params, response){
   return response;
 },
 
+renderComplete:function(){
+  // Функция, выполняющаяся после загрузки данных в таблицу
+  if(window.tabulator_render_completed !== undefined){
+    window.tabulator_render_completed();
+  }
+},
+
 initialHeaderFilter: [
   {% for k, v in fas.filters.items %}
     {field: "{{ k }}", value: "{{ v }}"},

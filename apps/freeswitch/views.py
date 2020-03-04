@@ -809,7 +809,7 @@ def is_phone_in_white_list(request):
                 cid = analog.personal_fs_user.cid
                 if cid:
                     if len(cid) == 11 and cid.startswith('8'):
-                        result['cid'] = cid
+                        result['cid'] = '7%s' % (cid[1:], )
     if not 'success' in result:
         analog = PhonesWhiteList.objects.filter(phone=phone).first()
         if analog:

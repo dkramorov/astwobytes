@@ -24,14 +24,14 @@ logger.setLevel(logging.DEBUG)
 from envparse import env
 env.read_envfile()
 
-TELEGRAM_PROXY = env('TELEGRAM_PROXY', default='http://10.10.9.1:3128')
+TELEGRAM_PROXY = env('TELEGRAM_PROXY', default='')
 TELEGRAM_TOKEN = env('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = env('TELEGRAM_CHAT_ID')
 WITH_REDIS = env('WITH_REDIS', default=False)
 
 rediska = redis.StrictRedis()
 
-BOT_TOKEN = env('BOT_TOKEN', default='S2CdZcfFPZ6Q0A2')
+BOT_TOKEN = env('BOT_TOKEN', default='')
 logger.info('Arguments: %s: %s', len(sys.argv), sys.argv)
 if len(sys.argv) > 1:
     BOT_TOKEN = sys.argv[1]
@@ -64,7 +64,7 @@ class StateMachine:
 
         self.max_loose = 5
         self.max_ticks = 100
-        self.max_timeout = 300
+        self.max_timeout = 1200
         self.symbol = 'R_50' # При смене контракта все надо обнулить (методом)
         self.min_bet = 0.35
 
@@ -235,7 +235,7 @@ class StateMachine:
                     else:
                         self.step = 1
                         self.loose_counter = 0
-                    msg = 'DEAL %s, profit %s, balance %s' % (deal.get('status'), profit, self.balance.get('balance'))
+                    msg = '%s %s, profit %s, balance %s' % (BOT_TOKEN, deal.get('status'), profit, self.balance.get('balance'))
                     logger.info(msg)
                     self.telegram.send_message(msg)
 
@@ -251,6 +251,7 @@ class StateMachine:
         if self.in_deal and self.deals_data:
             logger.info('[IN DEAL]: %s' % (json_pretty_print(self.deals_data.pop())))
         self.in_deal = False
+        self.last_updte = time.time()
         logger.info('[REFRESH STATE MACHINE]')
 
     def check_pulse(self):
@@ -301,6 +302,8 @@ async def consumer_handler(websocket, state_machine):
                 state_machine.deals_data.append(data[action])
             else:
                 logger.info(json_pretty_print(data))
+                if 'error' in data:
+                    self.in_deal = False
         elif action == 'proposal_open_contract':
             state_machine.follow_deal(data[action])
         elif action == 'balance':
@@ -309,7 +312,8 @@ async def consumer_handler(websocket, state_machine):
             else:
                 logger.info(json_pretty_print(data))
         elif action == 'active_symbols':
-            logger.info(json_pretty_print(data))
+            logger.info('received symbols')
+            #logger.info(json_pretty_print(data))
         else:
             logger.warning(data)
 
@@ -370,10 +374,11 @@ async def main_loop(state_machine):
         while True:
             # Проверка, что вебсокет еще не закрыл соединение
             if hasattr(websocket, 'close_code'):
-                logger.error('[ERROR]: websocket closed code %s, reason %s' % (websocket.close_code, websocket.close_reason))
-                state_machine.refresh()
-                time.sleep(5)
-                break
+                err = '[ERROR]:%s websocket closed code %s, reason %s' % (BOT_TOKEN, websocket.close_code, websocket.close_reason)
+                logger.error(err)
+                state_machine.telegram.send_message(err)
+                await websocket.close()
+                return
             await check_events(websocket, state_machine)
 
 async def handler():
@@ -381,6 +386,8 @@ async def handler():
     state_machine = StateMachine()
     while True:
         await main_loop(state_machine)
+        state_machine.refresh()
+        time.sleep(30)
 
 
 logger.info('[BOT STARTED]')

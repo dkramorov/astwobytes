@@ -7,6 +7,15 @@ from django.conf import settings
 from apps.main_functions.models import Standard
 from . services import create_daemon, drop_daemon
 
+class Schedule(Standard):
+    """Расписание с использованием календаря"""
+    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    timetable = models.TextField(blank=True, null=True, verbose_name='Таблица времени')
+
+    class Meta:
+        verbose_name = 'Сервисы - Расписание для демона'
+        verbose_name_plural = 'Сервисы - Расписания для демонов'
+
 class Daemon(Standard):
     """Создание скрипта для системного демона"""
     exec_choices = (
@@ -14,7 +23,7 @@ class Daemon(Standard):
     )
 
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    token = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    token = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Параметры для запуска: args')
     exec_path = models.CharField(choices=exec_choices, max_length=255, blank=True, null=True, db_index=True)
 
     class Meta:
