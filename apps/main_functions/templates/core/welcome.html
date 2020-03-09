@@ -1,0 +1,52 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="col-md-12">
+  <h2>Приятной работы, {{ request.user }}</h2>
+  <p>Что бы вы хотели сделать?</p>
+</div>
+
+<div class="col-md-4">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">Меню сайта</h3>
+        <p class="text-muted">Вы хотите добавить или изменить страничку на сайте</p>
+        <div>
+          <a href="{% url 'flatcontent:show_containers' 'flatmenu' %}" class="btn btn-success">Перейти к меню</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-4">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">Наполнение сайта</h3>
+        <p class="text-muted">Вы хотите добавить или изменить контент на сайте</p>
+        <div>
+          <a href="{% url 'flatcontent:show_containers' 'flatpages' %}" class="btn btn-success">Перейти к страничкам</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-4">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">Шаблоны контента</h3>
+        <p class="text-muted">Вы хотите посмотреть или изменить шаблоны инфоблоков</p>
+        <div>
+          <a href="{% url 'flatcontent:show_containers' 'flattemplates' %}" class="btn btn-success">Перейти к шаблонам</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

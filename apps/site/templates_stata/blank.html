@@ -1,0 +1,12 @@
+{% extends "skeleton.html" %}
+
+{% block content %}
+<h2>Страничка ошибки</h2>
+Во время выполнения операции произошли ошибки. Вернитесь <a class="simple_link" href="javascript:history.back()">назад</a>.
+{% if errors %}
+  <hr>
+  {% for error in errors %}
+    <h2>{{ error }}</h2>
+  {% endfor %}
+{% endif %}
+{% endblock %}

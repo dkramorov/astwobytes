@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import os
 import json
 
 from django.shortcuts import render
@@ -6,13 +7,13 @@ from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.conf import settings
 from django.core.cache import cache
 
-from apps.main_functions.files import check_path, full_path, file_size
+from apps.main_functions.files import check_path, full_path, file_size, make_folder, copy_file
 from apps.main_functions.functions import object_fields, recursive_fill, sort_voca
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import ModelHelper, create_model_helper
 from apps.main_functions.tabulator import tabulator_filters_and_sorters
 from apps.main_functions.atomic_operations import atomic_update, bulk_replace
 from apps.main_functions.crypto import serp_hash
@@ -23,6 +24,10 @@ from .models import (Containers,
                      get_ftype,
                      update_containers_vars,
                      update_blocks_vars, )
+
+is_prices = False
+if 'price' in settings.INSTALLED_APPS:
+    is_prices = True
 
 CUR_APP = 'flatcontent'
 containers_vars = {
@@ -41,6 +46,115 @@ containers_vars = {
     'edit_urla': 'edit_container',
     'model': Containers,
 }
+
+def clone_block(block, container, parents: str = None):
+    """Клонирование блоков в другой контейнер
+       Изменение pk, parents, img
+       :param block: клонируемый блок
+       :param container: контейнер получатель клонируемого блока
+       :param parents: вложенность
+    """
+    img = folder = None
+    if block.img:
+        folder = block.get_folder()
+        img = block.img
+
+    pk = block.id
+    block.id = None
+    block.container = container
+    block.parents = parents
+    block.save()
+    if img:
+        new_folder = block.get_folder()
+        make_folder(new_folder)
+        copy_file(os.path.join(folder, img), os.path.join(new_folder, img))
+    # ---------------------------------------------------
+    # Каждый блок проверяем на линковку к Товарам/Услугам
+    # ---------------------------------------------------
+    if is_prices:
+        if hasattr(container, 'container_prices'):
+            for price in container.container_prices:
+                if price.block_id == pk:
+                    PriceContainer.objects.create(container=container, block=block, position=price.position, price=price.price)
+    # -------------------------
+    # Спускаемся по вложенности
+    # -------------------------
+    if block.sub:
+        if parents:
+            parents += '_%s' % block.id
+        else:
+            parents = '_%s' % block.id
+        for item in block.sub:
+            clone_block(item, container, parents)
+    return block
+
+def fill_from_template(row):
+    """Заполнение контейнера данными из шаблона
+       Нужно делать только если создаем контейнер,
+       либо контейнер пустой и его сохранили
+       :param row: контейнер
+    """
+    template = Containers.objects.filter(tag=row.tag, state=99).exclude(pk=row.id).first()
+    if not template:
+        return
+    # --------------------------------------------------
+    # Если мы создаем и не заполнен name/description/img
+    # Заполняем контейнер как в шаблоне
+    # --------------------------------------------------
+    blocks = template.blocks_set.all()
+    # ----------------------------
+    # Записываем данные от шаблона
+    # ----------------------------
+    need_resave = False
+    fields = ('template_position', 'name', 'description')
+    for field in fields:
+        value = getattr(template, field)
+        if not getattr(row, field) and value:
+            setattr(row, field, value)
+            need_resave = True
+    if template.img:
+        new_folder = row.get_folder()
+        make_folder(new_folder)
+        copy_file(os.path.join(template.get_folder(), template.img), os.path.join(new_folder, template.img))
+        row.img = template.img
+        need_resave = True
+    if need_resave:
+        row.save()
+    # ----------------------------------------------
+    # Проверяем привязаны ли к шаблону Акции/Скидки
+    # Проверяем привязаны ли к шаблону Товары/Услуги
+    # ----------------------------------------------
+    if is_prices:
+        container_prices = []
+        disconts = Disconts.objects.filter(container=row)
+        if not disconts:
+            template_disconts = Disconts.objects.filter(container=template)
+            if template_disconts:
+                for discont in template_disconts:
+                    discont.id = 0
+                    discont.container = row
+                    discont.save()
+        # -----------------------------------------------
+        # Вытаскиваем все привязанные к контейнеру/блокам
+        # товары/услуги => в clone_block все заполним
+        # -----------------------------------------------
+        prices = PriceContainer.objects.select_related('price').filter(container=template).order_by('position')
+        for price in prices:
+            # ------------------------------
+            # Те, что НЕ привязаны к блокам,
+            # создаем для контейнера,
+            # остальное через clone_block
+            # ------------------------------
+            if not price.block_id:
+                PriceContainer.objects.create(container=row, price=price.price, position=price.position)
+            else:
+                container_prices.append(price)
+        row.container_prices = container_prices
+
+    result = []
+    recursive_fill(blocks, result)
+    for block in result:
+        clone_block(block, row)
 
 @login_required
 def show_containers(request, ftype: str, *args, **kwargs):
@@ -144,6 +258,34 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
                 'link': mh.url_edit,
                 'name': '%s %s' % ('Иерархия', mh.rp_singular_obj),
             })
+        elif action == 'show' and row:
+            # -------------------------------
+            # Просмотр шаблона/стат.странички
+            # -------------------------------
+            template_position = None
+            if row.template_position:
+                template_position = row.template_position
+
+            mcap = {'main': None, row.id: None}
+            page = Blocks()
+            # block_with_content нет, поэтому даже не присваиваем
+            context['q_string'] = {}
+            SearchLink(context['q_string'], request, mcap)
+            page.containers = mcap.values()
+            # ---------------------------------------------------
+            # page.is_template будет убирает в шаблонах элементы,
+            # которые мешают редактору правильно отобразить
+            # их редактирование - например, изображение в блоке,
+            # который before перекрывает его эффектом
+            # ---------------------------------------------------
+            page.is_template = 1
+            template = 'web/main_stat_template.html'
+            context.update({
+                'page': page,
+                'containers': page.containers,
+                'template_position': template_position,
+            })
+            return render(request, template, context)
 
     elif request.method == 'POST':
         pass_fields = ()
@@ -163,6 +305,16 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
+
+            # -----------------------------
+            # Заполнение данными из шаблона
+            # Пока только для flatpages
+            # -----------------------------
+            row = mh.row
+            children = row.blocks_set.all().aggregate(Count('id'))['id__count']
+            if (action == 'create' or not children) and row.tag and row.state in (3, ):
+                fill_from_template(row)
+
         # --------------------
         # Загрузка изображения
         # --------------------
@@ -184,6 +336,49 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
+
+def search_containers(request, *args, **kwargs):
+    """Поиск контейнеров"""
+    result = {'results': []}
+
+    mh = ModelHelper(Containers, request)
+
+    # Исключение из поиска определенных типов контейнеров
+    without_templates = request.GET.get('without_templates')
+    if without_templates:
+        mh.exclude_add(Q(state__in=(99, 100)))
+    without_menus = request.GET.get('without_menus')
+    if without_menus:
+        mh.exclude_add(Q(state=1))
+    without_main = request.GET.get('without_main')
+    if without_main:
+        mh.exclude_add(Q(state=2))
+    only_templates = request.GET.get('only_templates')
+    if only_templates:
+        mh.filter_add(Q(state__in=(99, 100)))
+
+    mh_vars = containers_vars.copy()
+    for k, v in mh_vars.items():
+        setattr(mh, k, v)
+
+    mh.search_fields = ('name', 'tag')
+    rows = mh.standard_show()
+
+    for row in rows:
+        name = '%s #%s' % (row.name, row.id)
+        if row.tag:
+            name += ' (%s)' % (row.tag, )
+        # При поиске по шаблону отдаем тег, а не id в поле id
+        if only_templates:
+            result['results'].append({'text': name, 'id': row.tag})
+        else:
+            result['results'].append({'text': name, 'id': row.id})
+    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
+        result['pagination'] = {'more': False}
+    else:
+        result['pagination'] = {'more': True}
+
+    return JsonResponse(result, safe=False)
 
 @login_required
 def containers_positions(request, ftype: str, *args, **kwargs):
@@ -295,7 +490,7 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
             item['thumb'] = row.thumb()
             item['imagine'] = row.imagine()
             item['folder'] = row.get_folder()
-            item['container_name'] = mh_containers.row.name
+            #item['container_name'] = mh_containers.row.name
             children = []
             recursive_fill(subrows, children, parents='_%s' % (row.id, ))
             if children:
@@ -304,7 +499,6 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
                 json_children(children, objs)
                 item['_children'] = objs
             result.append(item)
-
         if request.GET.get('page'):
             result = {'data': result,
                       'last_page': mh.raw_paginator['total_pages'],
@@ -320,11 +514,31 @@ def json_children(rows: list, result: list):
        в json структуру по всей вложенности"""
     for row in rows:
         obj = object_fields(row)
+        obj['actions'] = row.id
+        obj['thumb'] = row.thumb()
+        obj['imagine'] = row.imagine()
+        obj['folder'] = row.get_folder()
         if hasattr(row, 'sub'):
             if row.sub:
                 obj['_children'] = []
                 json_children(row.sub, obj['_children'])
         result.append(obj)
+
+def update_linkcontainer(request, container, row):
+    """Записываем линковки к пункту меню
+       :param request: HttpRequest
+       :param container: контейнер блока меню
+       :param row: блок меню к которому линкуем контейнеры
+    """
+    linkcontainer = [int(pk) for pk in request.POST.getlist('linkcontainer')]
+    if linkcontainer and container.state == 1:
+        containers = Containers.objects.filter(pk__in=linkcontainer)
+        ids_containers = {cont.id: cont for cont in containers}
+        LinkContainer.objects.filter(block=row).delete()
+        # Соблюдаем последовательность
+        for item in linkcontainer:
+            if item in ids_containers:
+                LinkContainer.objects.create(block=row, container=ids_containers[item])
 
 @login_required
 def edit_block(request, ftype: str, action: str, container_id: int, row_id: int = None, *args, **kwargs):
@@ -370,7 +584,6 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
     context = mh.context
     context['ftype_state'] = get_ftype(ftype)
     context['container'] = object_fields(mh_containers.row)
-    context['url_edit'] = mh_containers.url_edit
     context['url_tree'] = mh_containers.url_tree
 
     mh.filter_add({'container__id': mh_containers.row.id})
@@ -390,6 +603,7 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
                 'link': mh.url_edit,
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
+            context['containers'] = LinkContainer.objects.select_related('container').filter(block=row)
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -399,7 +613,7 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
                 context['error'] = 'Недостаточно прав'
 
     elif request.method == 'POST':
-        pass_fields = ()
+        pass_fields = ('parents', )
         mh.post_vars(pass_fields=pass_fields)
 
         if action == 'create' or (action == 'edit' and row):
@@ -416,6 +630,8 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
+            # Записываем линковки к пункту меню
+            update_linkcontainer(request, container, mh.row)
         # --------------------
         # Загрузка изображения
         # --------------------
@@ -428,6 +644,7 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
                                       'action': 'edit',
                                       'container_id': mh_containers.row.id,
                                       'row_id': mh.row.id})
+        context['url_edit'] = mh.url_edit
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
@@ -501,6 +718,16 @@ def tree_co(request):
                             'action': 'img',
                             'container_id': container.id,
                             'row_id': node.id})
+                # Линковки для пункта меню
+                if container.state == 1 and node.state == 4:
+                    result['linkcontainer'] = []
+                    linkcontainer = LinkContainer.objects.select_related('container').filter(block=node).order_by('position')
+                    for item in linkcontainer:
+                        result['linkcontainer'].append({
+                            'name': item.container.name,
+                            'id': item.container.id,
+                            'tag': item.container.tag,
+                        })
                 result = {'row': result}
         # Получить каталог
         elif operation == 'get_children' and mh.permissions['view']:
@@ -531,9 +758,15 @@ def tree_co(request):
                     parents_str = '_%s' % (parent.id, )
                     if parent.parents:
                         parents_str = '%s_%s' % (parent.parents, parent.id)
-                menu = Blocks(parents=parents_str, container=container)
+                state = 1
+                if container.state == 1: # menu
+                    state = 4
+                menu = Blocks(parents=parents_str,
+                              container=container, state=state)
             menu.name = node_name
             menu.save()
+            # Записываем линковки к пункту меню
+            update_linkcontainer(request, container, menu)
             result = {'success': True, 'id': menu.id}
         elif operation == 'drop_node' and mh.permissions['drop']:
             node_id = request.GET.get('node_id')
@@ -589,30 +822,40 @@ def tree_co(request):
 
     return JsonResponse(result, safe=False)
 
-def SearchLink(urla: str,
-               q_string: dict = None,
+def head_fill(block, q_string):
+    """Заполнение мета-тегов и заголовка в q_string"""
+    if not isinstance(block, Blocks):
+        return
+    if not block.state == 4:
+        return
+    for field in ('title', 'keywords', 'description'):
+        value = getattr(block, field)
+        if value:
+            q_string[field] = value
+
+def SearchLink(q_string: dict = None,
                request = None,
                mcap: dict = None,
                cache_time: int = 60):
     """Страница поиска неслужебных ссылок (статич.)
-        mcap - Main (tag) Content for All Pages
-        mcap должно на выходе содержать (("main", ))
-        mcap это замена get_containers(("main", ))
-        Можно передать в mcap список по умолчанию
-        выводимых контейнеров, затем в шаблоне
-        выводить их куда следует по одному через page
+       mcap - Main (tag) Content for All Pages
+       Можно передать в mcap список по умолчанию
+       выводимых контейнеров, затем в шаблоне
+       выводить их куда следует по одному через page
 
-        containers = { # это mcap
-            "social_sidebar":None,
-            "news_sidebar":None,
-            "subscribe":None,
-            "article_sidebar":None,
-        }"""
+       это mcap
+       containers = {
+           'social_sidebar': None,
+           'news_sidebar': None,
+           'subscribe': None,
+           'article_sidebar': None,
+       }
+    """
     is_static_path = False
     path_info = '/'
 
-    if not mcap:
-        mcap = {'main': None}
+    if not mcap and isinstance(mcap, dict):
+        mcap['main'] = None
 
     if request:
         path_info = request.META['PATH_INFO']
@@ -659,6 +902,25 @@ def SearchLink(urla: str,
     ids_containers = {}
 
     container_all_pages = Containers.objects.filter(tag__in=mcap.keys()).exclude(state__in=(99, 100))
+    blocks = []
+    # Пересоздадим mcap по полученным данным
+    # а то вдруг нету такого контейнера, который мы передали
+    new_mcap = {}
+    for item in container_all_pages:
+        if item.id in new_mcap:
+            new_mcap[item.id] = None
+        elif item.tag and item.tag in new_mcap:
+            new_mcap[item.tag] = None
+
+    # ------------------------------------------------------
+    # Корректировка запроса, если в mcap запросили айдишники
+    # это предпросмотр, выбираем только main + pk
+    # ------------------------------------------------------
+    intas = [digit for digit in mcap.keys() if isinstance(digit, int)] # long?
+    if intas:
+        container_all_pages = Containers.objects.filter(Q(tag='main')|Q(pk__in=intas))
+    else:
+        blocks = Blocks.objects.filter(link=path_info, state=4)
 
     for cap in container_all_pages:
         ids_containers[cap.id] = {
@@ -666,12 +928,9 @@ def SearchLink(urla: str,
             'blocks': [],
             'tags': {},
             'prices': [],
-            'forest': None,
             'position': cap.position,
         }
         all_containers.append(cap) # Для перевода
-
-    blocks = Blocks.objects.filter(link=path_info, state=4)
 
     # Найдем менюшку -
     # найдем привязанные контейнеры
@@ -684,28 +943,19 @@ def SearchLink(urla: str,
 
         all_blocks.append(block_with_content) # Для перевода
 
+    containers = []
     if block_with_content:
         containers = LinkContainer.objects.select_related('container').filter(block=block_with_content)
-        if containers:
-            for container in containers:
-                all_containers.append(container.container) # Для перевода
-                ids_containers[container.container.id] = {
-                    'container': container.container,
-                    'blocks': [],
-                    'tags': {},
-                    'prices': [],
-                    'forest': None,
-                    'position': container.position,
-                }
-
-    # ids_containers[container.container.id] = {
-    #     "container":container.container,
-    #     "blocks":[],
-    #     "tags":{},
-    #     "prices":[],
-    #     "forest":None,
-    #     "position":container.position,
-    # }
+    if containers:
+        for container in containers:
+            all_containers.append(container.container) # Для перевода
+            ids_containers[container.container.id] = {
+                'container': container.container,
+                'blocks': [],
+                'tags': {},
+                'prices': [],
+                'position': container.position,
+            }
     templar(ids_containers, mcap, block_with_content, all_containers, all_blocks, q_string, request)
 
     # -----
@@ -721,6 +971,67 @@ def SearchLink(urla: str,
                 cache.set(cache_var, d, cache_time)
     return block_with_content
 
+def blocks_contains_prices(ids_containers: dict, blocks: dict):
+    """Заполняем контейнеры с товарами/услугами"""
+    have_prices = []
+    blocks_prices = {}
+
+    if not ids_containers:
+        return
+
+    if not is_prices:
+        return
+
+    # Обрабатываем контейнеры с товарами
+    prices = PriceContainer.objects.select_related("price").filter(container__in=ids_containers.keys()).order_by("position")
+    ids_prices = {x.price.id: x.price for x in prices}
+
+    # Разные типы цен
+    get_costs_types(ids_prices)
+
+    # Находим скидки для всех товаров
+    shopper = None
+    if request:
+        shopper = request.session.get('shopper', None)
+    search_disconts_for_prices(ids_prices, shopper)
+
+    # Рейтинги товаров/услуг
+    if is_reviews:
+        get_objects_ratings(ids_prices, 'price.Products')
+
+    # Переводим товары/услуги
+    if settings.IS_DOMAINS and request:
+        ct_prices = ContentType.objects.get_for_model(Products)
+        get_translations(ids_prices.values(), ct_prices)
+        translate_rows(ids_prices.values(), request)
+
+    # Для сохранения сортировки идем по prices
+    for item in prices:
+        price = ids_prices[item.price.id]
+        if item.block_id:
+            if not item.block_id in blocks_prices:
+                blocks_prices[item.block_id] = []
+            blocks_prices[item.block_id].append(price)
+        else:
+            if item.container_id in ids_containers:
+                ids_containers[item.container_id]['prices'].append(price)
+            have_prices.append(item.container_id)
+
+    # Ищем скидки/акции по товарам/услугам
+    if have_prices:
+        disconts = Disconts.objects.filter(container__in=have_prices)
+        for discont in disconts:
+            # Добавлять надо к самому контейнеру
+            for key, value in ids_containers.items():
+                container_id = value['container'].id
+                if discont.container_id == container_id:
+                    value['container'].discont = discont
+                    break
+
+    for block in blocks:
+        if block.id in blocks_prices:
+            block.prices = blocks_prices[block.id]
+
 def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
             all_containers: list, all_blocks: list, q_string: dict,
             request=None, cache_time: int = 60):
@@ -731,181 +1042,48 @@ def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
            "blocks":[],
            "tags":{},
            "prices":[],
-           "forest":None,
            "position":container.position
        }"""
-    # Возможно, есть контейнеры с товарами/услугами
-    # Либо контейнеры с выводом рубрик
-    have_prices = []
-    blocks_prices = {}
-    have_cats = {}
 
-    if ids_containers:
-      blocks = Blocks.objects.filter(container__in=ids_containers.keys())
-      if is_prices:
-        # Обрабатываем нестандартные контейнеры
-        prices = PriceContainer.objects.select_related("price").filter(container__in=ids_containers.keys()).order_by("position")
-        ids_prices = {x.price.id:x.price for x in prices}
-        # Разные типы цен
-        get_costs_types(ids_prices)
-        # Находим скидки для всех товаров
-        shopper = None
-        if request:
-          shopper = request.session.get("shopper", None)
-        search_disconts_for_prices(ids_prices, shopper)
-        # Рейтинги товаров/услуг
-        if is_reviews:
-          get_objects_ratings(ids_prices, "price.Products")
-        # Переводим товары/услуги
-        if settings.IS_DOMAINS and request:
-          ct_prices = ContentType.objects.get_for_model(Products)
-          get_translations(ids_prices.values(), ct_prices)
-          translate_rows(ids_prices.values(), request)
+    blocks = Blocks.objects.filter(container__in=ids_containers.keys())
 
-        # Для сохранения сортировки идем по prices
-        for item in prices:
-          price = ids_prices[item.price.id]
+    blocks_contains_prices(ids_containers, blocks)
 
-          if item.block_id:
-            if not item.block_id in blocks_prices:
-              blocks_prices[item.block_id] = []
-            blocks_prices[item.block_id].append(price)
-          else:
-            if item.container_id in ids_containers:
-              ids_containers[item.container_id]['prices'].append(price)
-            have_prices.append(item.container_id)
-
-        # Ищем скидки/акции по товарам/услугам
-        if have_prices:
-          disconts = Disconts.objects.filter(container__in=have_prices)
-          for discont in disconts:
-            # Добавлять надо к самому контейнеру
-            for key, value in ids_containers.items():
-              container_id = value['container'].id
-              if discont.container_id == container_id:
-                value['container'].discont = discont
-                break
-
-      if is_trees:
-        # Обрабатываем нестандартные контейнеры
-        # Достаем только рубрики пришитые к контейнерам
-        # А через templatetags flatcats достанем
-        # все контейнеры, пришитые к рубрике
-        trees_containers = []
-        for key, value in ids_containers.items():
-          if value['container'].state == 7:
-            trees_containers.append(key)
-
-        forests = Forest.objects.all()
-        forests = forests.filter(Q(container__in=trees_containers))
-        forests = forests.filter(tol=1)
-        forests = forests.order_by("position")
-        for item in forests:
-          if not item.container_id in have_cats:
-            have_cats[item.container_id] = []
-          have_cats[item.container_id].append(item.cat_id)
-        # На каждый контейнер надо выдирать
-        # содержание рубрик с пагинацией
-        l_vars = {
-            "root_url":"/blog/",
-            "singular_obj":u"Статья",
-            "plural_obj":u"Статьи",
-            "breadcrumbs":[],
-            "template_prefix":"flatcontent_",
-            "paginator_template":"web/paginator.html",
-            "action_add":u"Добавить",
-            "action_edit":u"Исправить"
-        }
-        # Ищем содержимое (блоки) для контейнеров с рубриками
-        if have_cats:
-          # Достаем все встреченные рубрики
-          ids_rubrics = {}
-          for key, value in have_cats.items():
-            for cat_id in value:
-              ids_rubrics[cat_id] = None
-          rubrics = Catalogue.objects.filter(pk__in=ids_rubrics.keys())
-          for rubric in rubrics:
-            ids_rubrics[rubric.id] = rubric
-
-          forest_containers = {}
-          by_blocks = filter(lambda x:(x.tag == "by" and x.description), [y for y in blocks])
-          # Далее по каждому контейнеру!
-          # Достаем с постраничной навигацией
-          for key, value in ids_containers.items():
-            container_id = value['container'].id
-            # Если данный контейнер с прилепленными рубриками
-            if container_id in have_cats:
-              l = StandardAdmin(Forest, request)
-              for key in l_vars:
-                setattr(l, key, l_vars[key])
-              l.q_string_fill()
-              # Проверяем подблоки в контейнере,
-              # возможно, там есть указания о
-              # количестве записей на страничке и др
-              if by_blocks:
-                for by_block in by_blocks:
-                  if by_block.container_id == container_id:
-                    try:
-                      by = int(qqize(by_block.description))
-                    except ValueError:
-                      by = None
-                    if by:
-                      l.q_string['by'] = by
-                    break
-              l.select_related_add("container")
-              l.filter_add(Q(cat_id__in=have_cats[container_id]))
-              l.filter_add(Q(tol__isnull=True))
-              l.order_by_add("position")
-              rows = l.standard_show()
-              paginator = l.paginator
-              value['forest'] = {"rows":[], "paginator":paginator, "cats":[]}
-              for row in rows:
-                row.container.blocks = []
-                # Прилепляем рубрику к контейнеру
-                # Прикрепляем к лесу контейнеры
-                linked_cats = have_cats[container_id]
-                for cat in linked_cats:
-                  if cat in ids_rubrics:
-                    value['forest']['cats'].append(ids_rubrics[cat])
-                value['forest']['rows'].append(row.container)
-                forest_containers[row.container_id] = row.container
-          # Теперь надо выдрать блоки под контейнеры
-          trees_blocks = Blocks.objects.filter(container__in=forest_containers.keys()).order_by("position")
-          for block in trees_blocks:
-            forest_containers[block.container_id].blocks.append(block)
-
-      for block in blocks:
-        if block.id in blocks_prices:
-          block.prices = blocks_prices[block.id]
-
+    for block in blocks:
         ids_containers[block.container_id]['blocks'].append(block)
         all_blocks.append(block) # Для перевода
 
-      for key, value in ids_containers.items():
+    for key, value in ids_containers.items():
         menu_queryset = []
         recursive_fill(value['blocks'], menu_queryset)
         menus = sort_voca(menu_queryset)
         ids_containers[key]['blocks'] = menus
+
         # Добавляем словарь по тегу в каждый контейнер
         for item in value['blocks']:
-          if item.tag:
-            ids_containers[key]['tags'][item.tag] = item
+            if item.tag:
+                ids_containers[key]['tags'][item.tag] = item
 
         # MCAP (Main Content for All Pages)
-        if value['container'].tag == "main":
-          mcap['main'] = value
-      if block_with_content:
+        cur_tag = value['container'].tag
+        if cur_tag == 'main':
+            mcap[cur_tag] = value
+        else:
+            pk = value['container'].id
+            mcap[pk] = value
+
+    if block_with_content:
         block_with_content.containers = sorted(ids_containers.values(), key=lambda x: x['position']) #ids_containers.values()
 
     # Переводим блоки/контейнеры
     if settings.IS_DOMAINS and request:
-      ct_blocks = ContentType.objects.get_for_model(Blocks)
-      ct_containers = ContentType.objects.get_for_model(Containers)
-      get_translations(all_blocks, ct_blocks)
-      translate_rows(all_blocks, request)
-      get_translations(all_containers, ct_containers)
-      translate_rows(all_containers, request)
+        ct_blocks = ContentType.objects.get_for_model(Blocks)
+        ct_containers = ContentType.objects.get_for_model(Containers)
+        get_translations(all_blocks, ct_blocks)
+        translate_rows(all_blocks, request)
+        get_translations(all_containers, ct_containers)
+        translate_rows(all_containers, request)
 
     if block_with_content:
-      head_fill(block_with_content, q_string)
-    # Если надо работать через кэш
+        head_fill(block_with_content, q_string)
+

@@ -72,7 +72,7 @@ def welcome(request, *args, **kwargs):
         urla = reverse('%s:login_view' % (CUR_APP, ))
         return redirect(urla)
     context = {}
-    return render(request, 'core/base.html', context)
+    return render(request, 'core/welcome.html', context)
 
 def login_view(request, *args, **kwargs):
     """Страничка авторизации"""

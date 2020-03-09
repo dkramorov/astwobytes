@@ -26,8 +26,7 @@ def home(request):
         return JsonResponse(context, safe=False)
     template = 'web/main.html'
 
-    urla = reverse('%s:%s' % (CUR_APP, 'home'))
-    page = SearchLink(urla, q_string, request, containers)
+    page = SearchLink(q_string, request, containers)
     context['page'] = page
     context['containers'] = containers
 
@@ -50,8 +49,7 @@ def demo(request):
         return JsonResponse(context, safe=False)
     template = 'web/demo.html'
 
-    urla = reverse('%s:%s' % (CUR_APP, 'home'))
-    page = SearchLink(urla, q_string, request, containers)
+    page = SearchLink(q_string, request, containers)
     context['page'] = page
     context['containers'] = containers
 

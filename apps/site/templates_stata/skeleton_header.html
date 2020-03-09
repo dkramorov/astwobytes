@@ -1,14 +1,14 @@
 {% load mtags %}
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-<title>{% if q_string.title %}{{ q_string.title|textize }}{% endif %}</title>
+<title>{% if q_string.head_title %}{{ q_string.title|textize }}{% endif %}</title>
 <meta name="description" content="{% if q_string.description %}{{ q_string.description|textize }}{% endif %}" />
 {% if q_string.keywords %}<meta name="keywords" content="{{ q_string.keywords|textize }}" />{% endif %}
 
 {% if containers.main.tags.favicon.img %}
     <link rel="shortcut icon" href="{{ containers.main.tags.favicon.imagine }}" type="image/{% if '.png' in containers.main.tags.favicon.img %}png{% else %}jpeg{% endif %}"/>
 {% else %}
-    <link rel="shortcut icon" href="/media/favicons/favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="/media/img/favicon.ico" type="image/x-icon"/>
 {% endif %}
 
 {% if q_string.canonical and q_string.full_canonical %}
@@ -21,15 +21,15 @@
     <link rel="apple-touch-icon" sizes="57x57" href="{{ containers.main.tags.apple114.imagine }}" />
     <link rel="apple-touch-icon" sizes="114x114" href="{{ containers.main.tags.apple114.imagine }}" />
 {% else %}
-    <link rel="apple-touch-icon" sizes="57x57" href="/media/favicons/apple-touch-icon-114.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/media/favicons/apple-touch-icon-114.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/media/img/apple-touch-icon-114.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/media/img/apple-touch-icon-114.png" />
 {% endif %}
 
 {% if containers.main.tags.apple144.img %}
     <link rel="apple-touch-icon" sizes="72x72" href="{{ containers.main.tags.apple144.imagine }}" />
     <link rel="apple-touch-icon" sizes="144x144" href="{{ containers.main.tags.apple144.imagine }}" />
 {% else %}
-    <link rel="apple-touch-icon" sizes="72x72" href="/media/favicons/apple-touch-icon-144.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/media/favicons/apple-touch-icon-144.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/media/img/apple-touch-icon-144.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/media/img/apple-touch-icon-144.png" />
 {% endif %}
-<meta name="author" content="Kramorov Den (Jocker)" />
+<meta name="author" content="Kramorov Denis aka Jocker" />

@@ -196,6 +196,8 @@ def drop_folder(fname):
     path = os.path.join(DEFAULT_FOLDER, fname)
     if not path.startswith(DEFAULT_FOLDER):
         return 0
+    if path.endswith('media/') or path.endswith('media'):
+        assert False
     try:
         shutil.rmtree(path)
         return 1

@@ -7,10 +7,14 @@
 
 {% block content %}
 {% if row.id %}
+  <a class="btn btn-primary pull-right" href="{% url 'flatcontent:create_block' ftype container.id 'create' %}">
+    <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+  </a>
   <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_tree }}">
-    <em class="fa fa-sitemap fa-fw mr-sm"></em> Иерархия пунтов меню
+    <em class="fa fa-sitemap fa-fw mr-sm"></em> Режим иерархии
   </a>
 {% endif %}
+{% block extraactions %}{% endblock %}
 
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
@@ -28,11 +32,38 @@
   <script src="/static/redactor/jquery.browser.js"></script>
   <script src="/static/redactor/redactor.js"></script>
   <script src="/static/admin/js/parsley.min.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function(){
 
+  <!-- Drag and Drop sortable for select2 -->
+  <script src="/static/jquery-ui/jquery-ui.min.js"></script>
+
+  <script type="text/javascript">
+    function update_sorted_select2(container_id){
+      // Обновление скрытого поля input по multiple select
+      // чтобы соблюсти сортировку в multiple select
+      var sorted_options = Array();
+      var select2_selector = "#" + container_id + "_select2";
+      $(select2_selector).parent().find('li.select2-selection__choice').each(function(index) {
+        var title = $(this).attr('title');
+        $(select2_selector + " option").each(function(){
+          if($(this).text() === title){
+            sorted_options.push([$(this).val(), title]);
+          }
+        });
+      });
+      $(select2_selector).empty();
+      $(select2_selector).trigger("change");
+      for(var i=0; i<sorted_options.length; i++){
+        var item = sorted_options[i];
+        $(select2_selector).append($("<option value='" + item[0] + "' selected>" + item[1] + "</option>"));
+      }
+      $(select2_selector).trigger("change");
+    }
+    $(document).ready(function(){
       $("#current_edit_form").parsley();
       $("#current_edit_form").submit(function(e) {
+
+        update_sorted_select2("linkcontainer");
+
         var $form = $(this);
         var msg = 'Произошла ошибка, обновите страничку';
         var status = 'danger'; // success, warning, info, danger
@@ -56,7 +87,6 @@
           });
           // Обновление ссылок
           update_links(r);
-
         }).fail(function() {
           $.notify({
             message: msg,
@@ -68,11 +98,33 @@
         e.preventDefault();
       });
 
+      $('#linkcontainer_select2').select2({
+        placeholder: 'Какие странички привязать',
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'flatcontent:search_containers' %}",
+          data: "without_templates=1&without_menus=1&without_main=1",
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
+      // init sortable
+      $("ul.select2-selection__rendered").sortable({
+        containment: 'parent'
+      });
+
+
+
+
+
       $("#html_redactor").redactor({
         //air: true,
       });
 
       function update_links(r){
+        $("#field_link").val(r['row']['link']);
         var thumb = r['row']['thumb'];
         if(thumb === ''){
           thumb = '/static/img/empty.png';

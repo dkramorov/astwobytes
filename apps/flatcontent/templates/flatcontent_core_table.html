@@ -34,7 +34,7 @@ $(document).ready(function(){
     var pk = cell.getData()['id'];
     var result = "<div class='padding-rl5 text-center'>";
     if(value){
-      result += " <a class='btn' target='_blank' href='{{ root_url }}" + pk + "/'>" + value + "</a> ";
+      result += " <a class='btn' href='{{ root_url }}" + pk + "/'>" + value + "</a> ";
     }
     result += "</div>";
     return result;
@@ -46,6 +46,9 @@ $(document).ready(function(){
     var pk = cell.getValue();
     var actions = "<div class='padding-rl5'>";
     actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% if ftype == 'flatpages' or ftype == 'flattemplates' %}
+      actions += " <a class='btn-xs btn btn-info pull-left ml' target='_blank' href='{{ root_url }}show/" + pk + "/'><i class='fa fa-eye'></i></a>";
+    {% endif %}
     actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}tree/" + pk + "/'><i class='fa fa-sitemap'></i></a> ";
     actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
     actions += "</div>";
@@ -106,7 +109,7 @@ $(document).ready(function(){
         field: "actions",
         headerSort: false,
         formatter: actionsFlatFormatter,
-        width: 120,
+        width: {% if ftype == 'flatpages' or ftype == 'flattemplates' %}160{% else %}120{% endif %},
       },
     ],
   });

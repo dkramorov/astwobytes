@@ -20,7 +20,7 @@
 {% if row.id %}
   {% if is_tree %}
     <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_edit }}">
-      <em class="fa fa-edit fa-fw mr-sm"></em> {{ action_edit }} {{ singular_obj }}
+      <em class="fa fa-edit fa-fw mr-sm"></em> {{ action_edit }} {{ rp_singular_obj }}
     </a>
   {% else %}
     <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_tree }}">
@@ -28,9 +28,10 @@
     </a>
   {% endif %}
   <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ root_url }}{{ row.id }}/">
-    <em class="fa fa-stack-overflow fa-fw mr-sm"></em> {{ plural_obj }}
+    <em class="fa fa-stack-overflow fa-fw mr-sm"></em> Таблица блоков {{ rp_singular_obj }}
   </a>
 {% endif %}
+{% block extraactions %}{% endblock %}
 
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
@@ -47,15 +48,15 @@
         </div>
         <div class="col-md-8">
           <!-- Панель для динамического редактирования блоков -->
-          {% block flattree %}
-            {% include "blocks/flatmenu_edit_form.html" %}
-          {% endblock %}
+          {% block flattree %}{% endblock %}
         </div>
         <div class="clearfix"></div>
       </div>
     {% else %}
       <!-- Основная форма редактирования контейнера -->
-      {% include "flatcontent_edit_form.html" %}
+      {% block edit_form %}
+        {% include "flatcontent_edit_form.html" %}
+      {% endblock %}
     {% endif %}
   </div>
 </div>
@@ -71,16 +72,50 @@
 <script src="/static/redactor/jquery.browser.js"></script>
 <script src="/static/redactor/redactor.js"></script>
 <script src="/static/admin/js/parsley.min.js"></script>
+
+<!-- Drag and Drop sortable for select2 -->
+<script src="/static/jquery-ui/jquery-ui.min.js"></script>
+
 <script type="text/javascript">
+  {% if row %}
+    window.upload_url = '{% url "flatcontent:edit_container" ftype "img" row.id %}';
+  {% else %}
+    window.upload_url = '';
+  {% endif %}
+
+  function update_sorted_select2(container_id){
+    // Обновление скрытого поля input по multiple select
+    // чтобы соблюсти сортировку в multiple select
+    var sorted_options = Array();
+    var select2_selector = "#" + container_id + "_select2";
+    // Если нет такого элемента - то и не надо мучать жопу
+    if($(select2_selector).length < 1){
+      return;
+    }
+    $(select2_selector).parent().find('li.select2-selection__choice').each(function(index) {
+      var title = $(this).attr('title');
+      $(select2_selector + " option").each(function(){
+        if($(this).text() === title){
+          sorted_options.push([$(this).val(), title]);
+        }
+      });
+    });
+    $(select2_selector).empty();
+    $(select2_selector).trigger("change");
+    for(var i=0; i<sorted_options.length; i++){
+      var item = sorted_options[i];
+      $(select2_selector).append($("<option value='" + item[0] + "' selected>" + item[1] + "</option>"));
+    }
+    $(select2_selector).trigger("change");
+  }
+
   $(document).ready(function(){
     $("#current_edit_form").parsley();
     $("#description_redactor").redactor({
       //air: true,
     });
     /* Заменится только обработчик события отправки формы для is_tree */
-    var upload_url = '{% url "flatcontent:edit_container" ftype "img" row.id %}';
     {% if is_tree %}
-      upload_url = '';
       $("#current_edit_form").attr('action', '').parent().addClass('hidden');
     {% else %}
       $("#current_edit_form").submit(function(e) {
@@ -120,18 +155,48 @@
       });
     {% endif %}
 
+    $('#tag_select2').select2({
+      placeholder: 'Выбрать шаблон',
+      width: '100%',
+      ajax: {
+        url: "{% url 'flatcontent:search_containers' %}",
+        data: "only_templates=1",
+        cache: false,
+        dataType: 'json',
+      }
+    });
+
+    $('#linkcontainer_select2').select2({
+      placeholder: 'Какие странички привязать',
+      width: '100%',
+      tags: true,
+      ajax: {
+        url: "{% url 'flatcontent:search_containers' %}",
+        data: "without_templates=1&without_menus=1&without_main=1",
+        cache: false,
+        dataType: 'json',
+      }
+    });
+
+    // init sortable
+    $("ul.select2-selection__rendered").sortable({
+      containment: 'parent'
+    });
+
     {% if row %}
       /* Для is_tree row => это будет контейнер для каждой рубрики,
          нас это устраивает т/к рубрика тоже уже существует */
       var progressbar = $('#progressbar-files'),
         bar         = progressbar.find('.progress-bar-files'),
         settings    = {
-          action: upload_url, // upload url
+          //action: upload_url, // upload url
+          action: window.upload_url,
           allow : '*.*',
           param: 'img',
           params: {csrfmiddlewaretoken: getCookie('csrftoken')},
           // Предотвращаем загрузку при пустой ссылке для загрузки
-          before: function() {
+          before: function(o) {
+            o.action = window.upload_url;
             if(settings.action === ''){
               return false;
             }
@@ -161,6 +226,7 @@
     {% endif %}
   });
   function update_links(r){
+    {% if is_tree %}$("#field_link").val(r['row']['link']);{% endif %}
     var thumb = r['row']['thumb'];
     if(thumb === ''){
       thumb = '/static/img/empty.png';

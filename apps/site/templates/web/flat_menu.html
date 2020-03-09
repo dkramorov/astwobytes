@@ -1,0 +1,61 @@
+{% ifequal tag 'topmenu' %}
+<div class="header-top-menu">
+  <ul>
+    {% for menu in menus %}
+      <li>
+        <a href="{{ menu.link }}">{{ menu.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endifequal %}
+{% ifequal tag 'mainmenu' %}
+<div class="main-menu">
+  <nav>
+    <ul>
+      {% for menu in menus %}
+      <li class="{% ifequal menu.link request.META.PATH_INFO %}active {% endifequal %}{% if menu.sub %}menu-item-has-children{% endif %}">
+        <a href="{{ menu.link }}">{{ menu.name }}</a>
+        {% if menu.sub %}
+          <ul class="sub-menu">
+            {% for submenu in menu.sub %}
+              <li class="{% if submenu.sub %} menu-item-has-children{% endif %}">
+                <a href="{{ submenu.link }}">{{ submenu.name }}</a>
+                {% if submenu.sub %}
+                  <ul class="sub-menu">
+                    {% for item in submenu.sub %}
+                      <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+{% comment %}<!-- MEGA MENU
+      <li class="menu-item-has-children">
+        <a href="#">PAGES</a>
+        <ul class="mega-menu three-column">
+          <li>
+            <a href="#">Column One</a>
+            <ul>
+              <li><a href="cart.html">Cart</a></li>
+              <li><a href="checkout.html">Checkout</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#">Column Two</a>
+            <ul>
+              <li><a href="my-account.html">My Account</a></li>
+              <li><a href="login-register.html">Login Register</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+-->{% endcomment %}
+      {% endfor %}
+    </ul>
+  </nav>
+</div>
+{% endifequal %}

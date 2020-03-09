@@ -104,8 +104,38 @@ def update_blocks_vars(ftype, mh_vars):
         mh_vars.update({
             'singular_obj': 'Пункт меню',
             'plural_obj': 'Пункты меню',
-            'rp_singular_obj': 'Пункта меню',
-            'rp_plural_obj': 'Пунктов меню',
+            'rp_singular_obj': 'пункта меню',
+            'rp_plural_obj': 'пунктов меню',
+        })
+    elif ftype in ('flatmain', 'flatpages',
+                   'flatnews', 'flatmobile',
+                   'flattemplates'):
+        mh_vars.update({
+            'singular_obj': 'Блок',
+            'plural_obj': 'Блоки',
+            'rp_singular_obj': 'блока',
+            'rp_plural_obj': 'блоков',
+        })
+    elif ftype == 'flatprices': # Ориентирован на товар/услугу
+        mh_vars.update({
+            'singular_obj': 'Товар',
+            'plural_obj': 'Товары',
+            'rp_singular_obj': 'товара',
+            'rp_plural_obj': 'товаров',
+        })
+    elif ftype == 'flatcat': # Ориентирован на контейнеры, привязанные к рубрикам
+        mh_vars.update({
+            'singular_obj': 'Рубрика',
+            'plural_obj': 'Рубрик',
+            'rp_singular_obj': 'рубрики',
+            'rp_plural_obj': 'рубрик',
+        })
+    elif ftype == '': # шаблоны специфические для сайта
+        mh_vars.update({
+            'singular_obj': 'Шаблон',
+            'plural_obj': 'Шаблоны',
+            'rp_singular_obj': 'шаблона',
+            'rp_plural_obj': 'шаблонов',
         })
     mh_vars.update({
         'template_prefix': 'blocks/%s_' % (ftype, ),
@@ -146,7 +176,7 @@ class Blocks(Standard):
     tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     container = models.ForeignKey(Containers, blank=True, null=True, on_delete=models.CASCADE)
     # для ссылок target=_blank
-    blank = models.BooleanField(blank=True, null=True, default=True, db_index=True)
+    blank = models.BooleanField(blank=True, null=True, default=False, db_index=True)
     icon = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     # title/мета-теги для меню или title/alt для картинки
     title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
@@ -158,6 +188,7 @@ class Blocks(Standard):
         verbose_name_plural = 'Стат.контент - Блоки'
 
     def save(self, *args, **kwargs):
+        # Если это пункт меню
         if self.state == 4 and not self.link and self.name:
             link = None
             # --------------------------------------------------
@@ -165,21 +196,23 @@ class Blocks(Standard):
             # --------------------------------------------------
             parents = None
             if self.parents:
-                if "_" in self.parents:
-                    parent = self.parents.split("_")[-1]
+                if '_' in self.parents:
+                    parent = self.parents.split('_')[-1]
                     try:
                         parent = int(parent)
                     except ValueError:
                         parent = None
                     if parent:
-                        parent_menu = Blocks.objects.get(pk=parent)
+                        parent_menu = Blocks.objects.filter(pk=parent).values_list('link', flat=True).first()
                         if parent_menu:
-                            link = parent_menu.link
+                            link = parent_menu
             if link:
-              link += translit(self.name) + "/"
+                link += translit(self.name) + '/'
             else:
-              link = "/" + translit(self.name) + "/"
+                link = '/' + translit(self.name) + '/'
             self.link = link
+        if not self.parents:
+            self.parents = ''
         super(Blocks, self).save(*args, **kwargs)
 
     # ----------------------------------------

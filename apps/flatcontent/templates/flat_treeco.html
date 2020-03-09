@@ -19,6 +19,9 @@ $(document).ready(function(){
   //$.jstree.defaults.search.ajax = true;
 
   $("#current_edit_form").submit(function(e) {
+
+    update_sorted_select2("linkcontainer");
+
     var $form = $(this);
     if($form.attr('action') === ''){
         return false;
@@ -57,6 +60,7 @@ $(document).ready(function(){
     e.preventDefault();
   });
 
+  var noname = "Без названия";
   flat_tree.jstree({
     "plugins": ["search", "wholerow", "dnd", "contextmenu"],
     "core" : {
@@ -99,7 +103,7 @@ $(document).ready(function(){
             "separator_after": false,
             "label": "{{ action_create }} {{ rp_singular_obj }}",
             "action": function (obj) {
-              $node = tree.create_node($node);
+              $node = tree.create_node($node, {'id': 'new', 'text': noname});
               tree.edit($node);
             }
           },
@@ -131,7 +135,7 @@ $(document).ready(function(){
     flat_tree.jstree('open_all');
   })
   .on("rename_node.jstree", function (e, data) {
-    if(data.old === data.text){
+    if(data.old === data.text && data.text !== noname){
         return;
     }
     var node_id = data.node.id;
@@ -179,6 +183,9 @@ $(document).ready(function(){
     if(!data.node){
       return;
     }
+    if(data.node.id.indexOf('container_') > -1){
+      return;
+    }
     // Если уже этот узел выбран,
     // то не надо перезапрашивать с сервера
     var node_id = data.node.id;
@@ -188,7 +195,8 @@ $(document).ready(function(){
       return;
     }
     container.attr("prev_node_id", node_id);
-
+    // Подменяем upload_url для загрузки фоток через аякс форму
+    window.upload_url = '{% url "flatcontent:edit_block" ftype row.id "img" "0" %}'.replace('/0/', '/' + node_id + '/');
     container.parent().addClass("hidden");
     $.ajax({
       type: "GET",
@@ -212,6 +220,19 @@ $(document).ready(function(){
       container.find('input[name="keywords"]').val(row['keywords']);
       container.find('input[name="tag"]').val(row['tag']);
       container.find('input[name="position"]').val(row['position']);
+      container.find('input[name="link"]').val(row['link']);
+      // Если нет такого элемента - то и не надо мучать жопу
+      if($("#linkcontainer_select2").length > 0){
+        $("#linkcontainer_select2").empty().trigger('changed');
+        if(row['linkcontainer'] !== undefined){
+          for(var i=0; i<row['linkcontainer'].length; i++){
+            var item = row['linkcontainer'][i];
+            $("#linkcontainer_select2").append($("<option value='" + item['id'] + "' selected>" + item['name'] + " #" + item['id'] + " (" + item['tag'] + ")</option>"));
+          }
+        }
+        $("#linkcontainer_select2").trigger('changed');
+      }
+
       update_links(r);
       $("#current_edit_form").attr("action", row['url_edit']);
     });
