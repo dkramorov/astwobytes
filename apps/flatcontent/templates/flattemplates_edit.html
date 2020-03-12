@@ -1,11 +1,13 @@
 {% extends "flatcontent_core_edit.html" %}
 
 {% block extraactions %}
+{% if row %}
   <a class="btn btn-primary pull-right mb-sm mr-sm" target="_blank" href="{% url 'flatcontent:edit_container' ftype 'show' row.id %}">
     <em class="fa fa-eye fa-fw mr-sm"></em> Предпросмотр
   </a>
+{% endif %}
 {% endblock %}
 
 {% block flattree %}
-  {% include "blocks/flatpages_edit_form.html" %}
+  {% include "blocks/flattemplates_edit_form.html" %}
 {% endblock %}

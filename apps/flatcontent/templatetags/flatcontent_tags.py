@@ -39,7 +39,7 @@ def flatmenu(request, tag: str = None, containers: list = []):
     if inCache:
         result = inCache
     else:
-        search_blocks = Blocks.objects.filter(container__tag=tag, state=4)
+        search_blocks = Blocks.objects.filter(container__tag=tag, state=4, is_active=True)
         for item in search_blocks:
             all_blocks.append(item)
         menu_queryset = []

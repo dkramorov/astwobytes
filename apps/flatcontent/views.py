@@ -920,7 +920,7 @@ def SearchLink(q_string: dict = None,
     if intas:
         container_all_pages = Containers.objects.filter(Q(tag='main')|Q(pk__in=intas))
     else:
-        blocks = Blocks.objects.filter(link=path_info, state=4)
+        blocks = Blocks.objects.filter(link=path_info, state=4, is_active=True)
 
     for cap in container_all_pages:
         ids_containers[cap.id] = {
@@ -1045,7 +1045,7 @@ def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
            "position":container.position
        }"""
 
-    blocks = Blocks.objects.filter(container__in=ids_containers.keys())
+    blocks = Blocks.objects.filter(container__in=ids_containers.keys(), is_active=True)
 
     blocks_contains_prices(ids_containers, blocks)
 

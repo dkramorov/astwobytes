@@ -212,8 +212,8 @@ $(document).ready(function(){
         container.find('#html_redactor').setCode('');
       }
       container.find('input[name="link"]').val(row['link']);
-      var checked = 'checked' ? row['blank'] : '';
-      container.find('input[name="blank"]').prop('checked', checked);
+      var blank_checked = 'checked' ? row['blank'] : '';
+      container.find('input[name="blank"]').prop('checked', blank_checked);
       container.find('input[name="icon"]').val(row['icon']);
       container.find('input[name="title"]').val(row['title']);
       container.find('input[name="description"]').val(row['description']);
@@ -221,6 +221,8 @@ $(document).ready(function(){
       container.find('input[name="tag"]').val(row['tag']);
       container.find('input[name="position"]').val(row['position']);
       container.find('input[name="link"]').val(row['link']);
+      var is_active_checked = 'checked' ? row['is_active'] : '';
+      container.find('input[name="is_active"]').prop('checked', is_active_checked);
       // Если нет такого элемента - то и не надо мучать жопу
       if($("#linkcontainer_select2").length > 0){
         $("#linkcontainer_select2").empty().trigger('changed');

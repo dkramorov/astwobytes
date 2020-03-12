@@ -72,6 +72,8 @@ class Standard(models.Model):
 
     def drop_img(self):
         """Удаление изображения"""
+        if not self.id:
+            return
         if self.img:
             folder = self.get_folder()
             drop_file(os.path.join(folder, self.img))
@@ -81,6 +83,8 @@ class Standard(models.Model):
 
     def drop_file(self, field):
         """Удаление файла"""
+        if not self.id:
+            return
         if hasattr(self, field):
             path = getattr(self, field)
             if path:
@@ -91,6 +95,8 @@ class Standard(models.Model):
 
     def drop_media(self):
         """Удаление папки"""
+        if not self.id:
+            return
         drop_folder(self.get_folder())
 
     def upload_img(self, img):
