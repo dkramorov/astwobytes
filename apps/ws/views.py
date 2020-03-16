@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 import json
-import mimetypes
 import jwt
 import datetime
 

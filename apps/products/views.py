@@ -12,31 +12,32 @@ from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.tabulator import tabulator_filters_and_sorters
 
-from .models import Rubrics
+from apps.flatcontent.models import Containers, Blocks
+from .models import Products, ProductsCats
 
-CUR_APP = 'rubrics'
-rubrics_vars = {
-    'singular_obj': 'Категория',
-    'plural_obj': 'Категории',
-    'rp_singular_obj': 'рубрики',
-    'rp_plural_obj': 'рубрик',
-    'template_prefix': 'rubrics_',
+CUR_APP = 'products'
+products_vars = {
+    'singular_obj': 'Товар',
+    'plural_obj': 'Товары',
+    'rp_singular_obj': 'товара',
+    'rp_plural_obj': 'товаров',
+    'template_prefix': 'products_',
     'action_create': 'Создание',
     'action_edit': 'Редактирование',
     'action_drop': 'Удаление',
-    'menu': 'rubrics',
-    'submenu': 'rubrics',
-    'show_urla': 'show_rubrics',
-    'create_urla': 'create_rubric',
-    'edit_urla': 'edit_rubric',
-    'model': Rubrics,
+    'menu': 'products',
+    'submenu': 'products',
+    'show_urla': 'show_products',
+    'create_urla': 'create_product',
+    'edit_urla': 'edit_product',
+    'model': Products,
 }
 
-def api(request, action: str = 'demo_model'):
+def api(request, action: str = 'products_vars'):
     """Апи-метод для получения всех данных"""
-    mh_vars = demo_model_vars.copy()
-    #if action == 'demo_model':
-    #    mh_vars = demo_model_vars.copy()
+    mh_vars = products_vars.copy()
+    #if action == 'products_vars':
+    #    mh_vars = products_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     # Принудительные права на просмотр
     mh.permissions['view'] = True
@@ -55,9 +56,9 @@ def api(request, action: str = 'demo_model'):
     return JsonResponse(result, safe=False)
 
 @login_required
-def show_demo_model(request, *args, **kwargs):
-    """Вывод объектов"""
-    mh_vars = demo_model_vars.copy()
+def show_products(request, *args, **kwargs):
+    """Вывод товаров"""
+    mh_vars = products_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
     # -----------------------
@@ -93,9 +94,9 @@ def show_demo_model(request, *args, **kwargs):
     return render(request, template, context)
 
 @login_required
-def edit_demo_model(request, action:str, row_id:int = None, *args, **kwargs):
-    """Создание/редактирование объекта"""
-    mh_vars = demo_model_vars.copy()
+def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование товара"""
+    mh_vars = products_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     context = mh.context
     row = mh.get_row(row_id)
@@ -112,6 +113,8 @@ def edit_demo_model(request, action:str, row_id:int = None, *args, **kwargs):
                 'link': mh.url_edit,
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
+            cats = row.productscats_set.select_related('cat', 'cat__container').all()
+            context['cats'] = cats
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -136,6 +139,13 @@ def edit_demo_model(request, action:str, row_id:int = None, *args, **kwargs):
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
+            # Сохраняем категории для товара
+            ids_cats = request.POST.getlist('cats')
+            mh.row.productscats_set.all().delete()
+            if ids_cats:
+                cats = Blocks.objects.filter(pk__in=ids_cats)
+                for cat in cats:
+                    ProductsCats.objects.create(product=mh.row, cat=cat)
         elif action == 'img' and request.FILES:
             mh.uploads()
     if mh.row:
@@ -152,19 +162,19 @@ def edit_demo_model(request, action:str, row_id:int = None, *args, **kwargs):
     return render(request, template, context)
 
 @login_required
-def demo_model_positions(request, *args, **kwargs):
-    """Изменение позиций объектов"""
+def products_positions(request, *args, **kwargs):
+    """Изменение позиций товаров"""
     result = {}
-    mh_vars = demo_model_vars.copy()
+    mh_vars = products_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
-def search_demo_model(request, *args, **kwargs):
+def search_products(request, *args, **kwargs):
     """Поиск объектов"""
     result = {'results': []}
-    mh = ModelHelper(DemoModel, request)
-    mh_vars = demo_model_vars.copy()
+    mh = ModelHelper(Products, request)
+    mh_vars = products_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
     mh.search_fields = ('id', 'name')

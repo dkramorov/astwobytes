@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import mimetypes
 from django.db import models
 
 from apps.main_functions.models import Standard

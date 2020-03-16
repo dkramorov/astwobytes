@@ -221,7 +221,8 @@ def show_cdrcsv(request, *args, **kwargs):
         result = []
         for row in rows:
             item = object_fields(row)
-            item['folder'] = row.created.strftime('%Y-%m-%d')
+            #item['folder'] = row.created.strftime('%Y-%m-%d')
+            item['record'] = row.get_record_path()
             result.append(item)
 
         if request.GET.get('page'):

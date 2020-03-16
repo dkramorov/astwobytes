@@ -223,6 +223,7 @@ $(document).ready(function(){
       container.find('input[name="link"]').val(row['link']);
       var is_active_checked = 'checked' ? row['is_active'] : '';
       container.find('input[name="is_active"]').prop('checked', is_active_checked);
+      container.find('input[name="grab_img_by_url"]').val('');
       // Если нет такого элемента - то и не надо мучать жопу
       if($("#linkcontainer_select2").length > 0){
         $("#linkcontainer_select2").empty().trigger('changed');

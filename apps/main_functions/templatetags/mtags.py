@@ -6,7 +6,7 @@ import os
 from django import template
 from django.conf import settings
 from django.core.cache import cache
-#from django.utils.safestring import mark_safe
+from django.utils.safestring import mark_safe
 
 from apps.main_functions.string_parser import kill_quotes, translit, summa_format
 from apps.main_functions.catcher import defiz_phone
@@ -23,6 +23,13 @@ def settings_value(name: str):
        USAGE: {% settings_value "LANGUAGE_CODE" %}
     """
     return getattr(settings, name, '')
+
+@register.filter(name = 'installed_apps')
+def installed_apps(dummy: str = ''):
+    """Получение INSTALLED_APPS из settings.py
+       USAGE: {% with ''|installed_apps as apps %}
+    """
+    return [app.replace('apps.', '') for app in settings.INSTALLED_APPS]
 
 @register.filter(name = 'defizize')
 def defizize(phone: str):
@@ -62,6 +69,7 @@ def cut_length(text: str, size: int = 60):
     return text
 
 @register.simple_tag
+@mark_safe
 def imagine(img: str, size: str, source: str, alt: str = ''):
     """Создание миниатюры изображения
        :param img: имя файла, например 1.jpg

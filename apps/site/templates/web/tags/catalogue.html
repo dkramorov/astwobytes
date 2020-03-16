@@ -1,0 +1,34 @@
+{% load mtags %}
+{% if container %}
+<div class="hero-side-category">
+  <div class="category-toggle-wrap">
+    <button class="category-toggle">
+      <span class="arrow_carrot-right_alt2 mr-2"></span> {{ container.name }}
+    </button>
+  </div>
+  <nav class="category-menu">
+    <ul>
+      {% for menu in menus %}
+        <li class="{% if menu.sub %}menu-item-has-children{% endif %} {% if forloop.counter > 7 %}hidden{% endif %}">
+          <a href="{{ menu.link }}">{{ menu.name }}</a>
+          {% if menu.sub %}
+            <ul class="category-mega-menu">
+              {% for item in menu.sub %}
+                <li>
+                  <a class="megamenu-head" href="{{ item.link }}">
+                    <span class="image">{% if item.img %}{% imagine item.img '150x150' item.get_folder %}{% endif %}</span>
+                    <span class="text">{{ item.name }}</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </li>
+      {% endfor %}
+      <li>
+        <a href="#" id="more-btn"></a>
+      </li>
+    </ul>
+  </nav>
+</div>
+{% endif %}

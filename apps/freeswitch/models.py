@@ -232,6 +232,16 @@ class CdrCsv(models.Model):
     personal_user_name = models.CharField(max_length=255, blank=True, null=True,
         verbose_name='Имя пользователя на сайте')
 
+    def get_record_path(self):
+        """Получить путь до записи"""
+        record = '/media/%s/%s/%s_%s.wav' % (
+            self.context,
+            self.created.strftime('%Y-%m-%d'),
+            self.dest,
+            self.uuid,
+        )
+        return record
+
     class Meta:
         verbose_name = 'Freeswitch - Звонок'
         verbose_name_plural = 'Freeswtich - Звонки'

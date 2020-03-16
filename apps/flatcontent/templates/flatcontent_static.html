@@ -1,0 +1,1 @@
+{% for container in page.containers %}{% if not container.container.tag %}{% for block in container.blocks %}{% if block.html %}{{ block.html|safe }}{% endif %}{% endfor %}{% endif %}{% endfor %}

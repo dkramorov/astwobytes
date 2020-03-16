@@ -29,35 +29,73 @@ from django.conf.urls import url
 urlpatterns = [
     re_path(r'^admin/', include('apps.login.urls')),
     path('auth/', lambda request: redirect('/admin/', permanent=False)),
-    # Афиша
-    re_path(r'^afisha/', include('apps.afisha.urls')),
     # Стат. странички
     re_path(r'^flatcontent/', include('apps.flatcontent.urls')),
     # Файлы
     re_path(r'^files/', include('apps.files.urls')),
-    # Рассылки
-    re_path(r'^spamcha/', include('apps.spamcha.urls')),
-    # binary.com
-    re_path(r'^binary_com/', include('apps.binary_com.urls')),
-    # websocket
-    re_path(r'^ws/', include('apps.ws.urls')),
     # main_functions
     re_path(r'^', include('apps.main_functions.urls')),
-    # Переводы
-    re_path(r'^', include('apps.languages.urls')),
     # Сайт
     re_path(r'^', include('apps.site.main.urls')),
-    # FREESWITCH
-    re_path(r'^freeswitch/', include('apps.freeswitch.urls')),
-    # Создание демонов
-    re_path(r'^demonology/', include('apps.demonology.urls')),
     # статика
     re_path(r'^', include('apps.files.urls_static'))
 ]
 
+# ---------------------------------
+# Подключение приложений через .env
+# ---------------------------------
+if 'apps.afisha' in settings.INSTALLED_APPS:
+    # Афиша
+    urlpatterns += [
+        re_path(r'^afisha/', include('apps.afisha.urls')),
+    ]
+if 'apps.spamcha' in settings.INSTALLED_APPS:
+    # Рассылки
+    urlpatterns += [
+        re_path(r'^spamcha/', include('apps.spamcha.urls')),
+    ]
+if 'apps.ws' in settings.INSTALLED_APPS:
+    # websocket (chat)
+    urlpatterns += [
+        re_path(r'^ws/', include('apps.ws.urls')),
+    ]
+if 'apps.binary_com' in settings.INSTALLED_APPS:
+    # binary.com
+    urlpatterns += [
+        re_path(r'^binary_com/', include('apps.binary_com.urls')),
+    ]
+if 'apps.languages' in settings.INSTALLED_APPS:
+    # Переводы
+    urlpatterns += [
+        re_path(r'^', include('apps.languages.urls')),
+    ]
+if 'apps.freeswitch' in settings.INSTALLED_APPS:
+    # FREESWITCH
+    urlpatterns += [
+        re_path(r'^freeswitch/', include('apps.freeswitch.urls')),
+    ]
+if 'apps.demonology' in settings.INSTALLED_APPS:
+    # Создание демонов
+    urlpatterns += [
+        re_path(r'^demonology/', include('apps.demonology.urls')),
+    ]
+if 'apps.products' in settings.INSTALLED_APPS:
+    # Товары/услуги
+    urlpatterns += [
+        re_path(r'^products/', include('apps.products.urls')),
+    ]
+
+# -------------------------------------------
 # Обработка статических файлов под DEBUG=True
+# -------------------------------------------
 if settings.DEBUG:
     from django.conf.urls.static import static
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+# --------------
+# Стат странички
+# --------------
+urlpatterns += [
+    re_path(r'^', include('apps.flatcontent.urls_static')),
+]

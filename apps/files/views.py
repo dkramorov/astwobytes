@@ -2,7 +2,7 @@
 import json
 
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -190,6 +190,8 @@ def ReturnFile(request, link):
                 response['Content-Length'] = file_size(path)
                 response['Content-Disposition'] = 'inline; filename=%s' % (path, )
                 return response
+        else: # файл не найден - лучше 404 отдать
+            raise Http404
     elif link == '/favicon.ico':
         path = '%s/img/favicon.ico' % settings.STATIC_ROOT.rstrip('/')
         with open(path, 'rb') as f:

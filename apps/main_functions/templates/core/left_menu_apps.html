@@ -1,12 +1,40 @@
+{% load mtags %}
+{% with ''|installed_apps as apps %}
 <ul class="nav">
   <!-- START Menu-->
   <li class="nav-heading">Управление</li>
   {% include "users_admin_menu.html" %}
-  {% include "files_admin_menu.html" %}
-  {% include "afisha_admin_menu.html" %}
-  {% include "flatcontent_admin_menu.html" %}
-  {% include "spamcha_admin_menu.html" %}
-  {% include "ws_admin_menu.html" %}
-  {% include "freeswitch_admin_menu.html" %}
-  {% include "demonology_admin_menu.html" %}
+
+  {% if 'files' in apps %}
+    {% include "files_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'afisha' in apps %}
+    {% include "afisha_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'products' in apps %}
+    {% include "products_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'flatcontent' in apps %}
+    {% include "flatcontent_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'spamcha' in apps %}
+    {% include "spamcha_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'ws' in apps %}
+    {% include "ws_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'freeswitch' in apps %}
+    {% include "freeswitch_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'demonology' in apps %}
+    {% include "demonology_admin_menu.html" %}
+  {% endif %}
 </ul>
+{% endwith %}

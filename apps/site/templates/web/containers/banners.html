@@ -1,0 +1,16 @@
+{% load mtags %}
+<div class="double-banner-section mb-35">
+  <div class="container">
+    <div class="row">
+      {% for block in blocks %}
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-xs-35">
+          <div class="single-banner">
+            <a href="{{ block.link }}">
+              <img src="{% imagine block.img '600x400' block.get_folder True %}" class="img-fluid" alt="{{ block.description|safe }}">
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

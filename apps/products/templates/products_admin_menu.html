@@ -1,0 +1,8 @@
+{% if perms.products.view_products %}
+<li{% ifequal menu 'products' %} class="active"{% endifequal %}>
+  <a href="{% url 'products:show_products' %}">
+    <em class="fa fa-dropbox"></em>
+    <span class="item-text">Товары/услуги</span>
+  </a>
+</li>
+{% endif %}

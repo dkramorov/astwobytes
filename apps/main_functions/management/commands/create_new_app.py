@@ -11,7 +11,6 @@ from django.conf import settings
 
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.fortasks import search_process
-from apps.freeswitch.services import analyze_logs
 
 logger = logging.getLogger(__name__)
 

@@ -68,14 +68,32 @@ ALLOWED_HOSTS = [
     #'.example.com.',  # Also allow FQDN and subdomains
 ]
 
-
-
-
-
+# main_functions.tasks create_new_app
 # CUSTOM_APPS_START
 CUSTOM_APPS = [
 ]
 # CUSTOM_APPS_END
+
+if env('AFISHA_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.afisha')
+if env('SPAMCHA_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.spamcha')
+if env('WS_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.ws')
+if env('BINARY_COM_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.binary_com')
+if env('LANGUAGES_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.languages')
+if env('FREESWITCH_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.freeswitch')
+if env('DEMONOLOGY_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.demonology')
+if env('PRODUCTS_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.products')
+
+CUSTOM_APPS += [
+    'apps.upload_tasks',
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -89,20 +107,10 @@ INSTALLED_APPS = [
     'apps.login',
     'apps.telegram',
     'apps.files',
-    'apps.afisha',
     'apps.flatcontent',
-    'apps.spamcha',
-    'apps.binary_com',
-    'apps.ws',
-    'apps.upload_tasks',
-    'apps.languages',
     # Сайт
     'apps.site',
-    # Freeswitch
-    'apps.freeswitch',
-    'apps.demonology',
 ] + CUSTOM_APPS
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

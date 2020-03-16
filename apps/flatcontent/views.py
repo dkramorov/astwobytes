@@ -47,6 +47,34 @@ containers_vars = {
     'model': Containers,
 }
 
+def get_catalogue(request, tag: str = 'catalogue',
+                  cache_time: int = 300, force_new: bool = False):
+    """Получить каталог для сайта"""
+    cache_var = '%s_%s_catalogue' % (
+        settings.DATABASES['default']['NAME'],
+        tag,
+    )
+    inCache = cache.get(cache_var)
+    if inCache and not force_new:
+        return inCache
+    container = Containers.objects.filter(
+        tag = tag,
+        state = 7,
+        is_active = True
+    ).first()
+    menus = []
+    if container:
+        cats = container.blocks_set.filter(is_active=True)
+        menu_queryset = []
+        recursive_fill(cats, menu_queryset, '')
+        menus = sort_voca(menu_queryset)
+    result = {
+        'container': container,
+        'menus': menus,
+    }
+    cache.set(cache_var, result, cache_time)
+    return result
+
 def clone_block(block, container, parents: str = None):
     """Клонирование блоков в другой контейнер
        Изменение pk, parents, img
@@ -338,7 +366,14 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
     return render(request, template, context)
 
 def search_containers(request, *args, **kwargs):
-    """Поиск контейнеров"""
+    """Поиск контейнеров
+       Параметры GET для поиска:
+           :param without_templates: Без шаблонов state__in=(99,100)
+           :param without_menus: Без менюшек state=1
+           :param without_main: Без контента для всех страничек state=2
+           :param only_templates: Только шаблоны state__in=(99,100)
+           :param only_cats: Только рубрики state=7
+    """
     result = {'results': []}
 
     mh = ModelHelper(Containers, request)
@@ -356,6 +391,9 @@ def search_containers(request, *args, **kwargs):
     only_templates = request.GET.get('only_templates')
     if only_templates:
         mh.filter_add(Q(state__in=(99, 100)))
+    only_cats = request.GET.get('only_cats')
+    if only_cats:
+        mh.filter_add(Q(state=7))
 
     mh_vars = containers_vars.copy()
     for k, v in mh_vars.items():
@@ -366,6 +404,61 @@ def search_containers(request, *args, **kwargs):
 
     for row in rows:
         name = '%s #%s' % (row.name, row.id)
+        if row.tag:
+            name += ' (%s)' % (row.tag, )
+        # При поиске по шаблону отдаем тег, а не id в поле id
+        if only_templates:
+            result['results'].append({'text': name, 'id': row.tag})
+        else:
+            result['results'].append({'text': name, 'id': row.id})
+    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
+        result['pagination'] = {'more': False}
+    else:
+        result['pagination'] = {'more': True}
+
+    return JsonResponse(result, safe=False)
+
+
+def search_blocks(request, *args, **kwargs):
+    """Поиск блоков
+       Параметры GET для поиска:
+           :param without_templates: Без шаблонов state__in=(99,100)
+           :param without_menus: Без менюшек state=1
+           :param without_main: Без контента для всех страничек state=2
+           :param only_templates: Только шаблоны state__in=(99,100)
+           :param only_cats: Только рубрики state=7
+    """
+    result = {'results': []}
+
+    mh = ModelHelper(Blocks, request)
+
+    # Исключение из поиска определенных типов контейнеров
+    without_templates = request.GET.get('without_templates')
+    if without_templates:
+        mh.exclude_add(Q(container__state__in=(99, 100)))
+    without_menus = request.GET.get('without_menus')
+    if without_menus:
+        mh.exclude_add(Q(container__state=1))
+    without_main = request.GET.get('without_main')
+    if without_main:
+        mh.exclude_add(Q(container__state=2))
+    only_templates = request.GET.get('only_templates')
+    if only_templates:
+        mh.filter_add(Q(container__state__in=(99, 100)))
+    only_cats = request.GET.get('only_cats')
+    if only_cats:
+        mh.filter_add(Q(container__state=7))
+
+    mh_vars = blocks_vars.copy()
+    for k, v in mh_vars.items():
+        setattr(mh, k, v)
+
+    mh.search_fields = ('name', 'tag', 'container__name', 'container__tag')
+    mh.select_related_add('container')
+    rows = mh.standard_show()
+
+    for row in rows:
+        name = '%s > %s #%s' % (row.container.name, row.name, row.id)
         if row.tag:
             name += ' (%s)' % (row.tag, )
         # При поиске по шаблону отдаем тег, а не id в поле id
@@ -1087,3 +1180,52 @@ def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
     if block_with_content:
         head_fill(block_with_content, q_string)
 
+def MainStatPage(request, path: str = None, tags: list = None):
+    """Статическая страничка (или 404)
+       :param path: путь (ссылка)
+       :param tags: теги для доп контейнеров"""
+    breadcrumbs = []
+    q_string = {}
+    containers = {}
+    if not path:
+        path = request.META['PATH_INFO']
+    else:
+        if not path.startswith('/'):
+            path = '/%s' % path
+
+    if path.endswith('.html'):
+        page = SearchLink(q_string, request, containers)
+        template = 'flatcontent_static.html'
+        return render(request, template, {'page':page, 'containers': containers})
+    # ----------------------------------------
+    # Проверяем оканчивается ли на слеш линка,
+    # если не оканчивается - редиректим
+    # ----------------------------------------
+    if not path.endswith('/'):
+        path += '/'
+        return redirect(path)
+    page = SearchLink(q_string, request, containers)
+    if page:
+        breadcrumbs.append({'name': page.name, 'link': page.link})
+        template = 'web/main_stat.html'
+        return render(request, template, {
+            'page': page,
+            'containers': containers,
+            'breadcrumbs': breadcrumbs,
+            'q_string': q_string,
+        })
+
+    breadcrumbs.append({'name': 'Страничка не найдена', 'link': '/'})
+    page_not_found = '404 - Page not found'
+    q_string = {
+        'title': page_not_found,
+        'description': page_not_found,
+    }
+    resp = render(request, '404.html', {
+        'containers': containers,
+        'q_string': q_string,
+        'breadcrumbs': breadcrumbs,
+        'page': Blocks(name=page_not_found),
+    })
+    resp.status_code = 404
+    return resp

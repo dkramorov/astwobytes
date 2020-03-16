@@ -93,7 +93,7 @@ def show_demo_model(request, *args, **kwargs):
     return render(request, template, context)
 
 @login_required
-def edit_demo_model(request, action:str, row_id:int = None, *args, **kwargs):
+def edit_demo_model(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование объекта"""
     mh_vars = demo_model_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)

@@ -1,0 +1,19 @@
+{% load mtags %}
+<div class="policy-section mb-35">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="policy-titles d-flex align-items-center flex-wrap">
+          {% for block in blocks %}
+            <div class="single-policy">
+              <span>
+                <img src="{{ block.thumb }}" class="img-fluid" alt="{{ block.description|textize }}">
+              </span>
+              <p>{{ block.name }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

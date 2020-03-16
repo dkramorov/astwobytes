@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 import json
-import mimetypes
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse

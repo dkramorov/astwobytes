@@ -16,7 +16,7 @@ def get_ftype(ftype, by_id: bool = False):
         (4, 'flatprices'), # Ориентирован на товар/услугу
         (5, 'flatnews'),
         (6, 'flatmobile'), # Ориентирован на мобильный контент
-        (7, 'flatcat'), # Ориентирован на контейнеры, привязанные к рубрикам
+        (7, 'flatcat'), # Каталог
         (99, 'flattemplates'), # шаблоны специфические для сайта
         (100, 'flattemplates'), # шаблоны конструктора
     )
@@ -73,12 +73,12 @@ def update_containers_vars(ftype, mh_vars):
             'rp_singular_obj': 'моб. контента',
             'rp_plural_obj': 'моб. контента',
         })
-    elif ftype == 'flatcat': # Ориентирован на контейнеры, привязанные к рубрикам
+    elif ftype == 'flatcat': # Каталог сайта
         mh_vars.update({
-            'singular_obj': 'Контент рубрики',
-            'plural_obj': 'Контент рубрик',
-            'rp_singular_obj': 'контента рубрики',
-            'rp_plural_obj': 'контента рубрик',
+            'singular_obj': 'Каталог',
+            'plural_obj': 'Каталоги',
+            'rp_singular_obj': 'каталога',
+            'rp_plural_obj': 'каталогов',
         })
     elif ftype == 'flattemplates': # шаблоны специфические для сайта
         mh_vars.update({
@@ -123,10 +123,10 @@ def update_blocks_vars(ftype, mh_vars):
             'rp_singular_obj': 'товара',
             'rp_plural_obj': 'товаров',
         })
-    elif ftype == 'flatcat': # Ориентирован на контейнеры, привязанные к рубрикам
+    elif ftype == 'flatcat': # Каталог
         mh_vars.update({
             'singular_obj': 'Рубрика',
-            'plural_obj': 'Рубрик',
+            'plural_obj': 'Рубрики',
             'rp_singular_obj': 'рубрики',
             'rp_plural_obj': 'рубрик',
         })
@@ -168,7 +168,7 @@ class Blocks(Standard):
         (1, "Текст"),
         (2, "Изображение"),
         (3, "HTML"),
-        (4, "Ссылка/Меню"),
+        (4, "Каталог/Меню"),
     )
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     html = models.TextField(blank=True, null=True)
@@ -187,132 +187,63 @@ class Blocks(Standard):
         verbose_name = 'Стат.контент - Блоки'
         verbose_name_plural = 'Стат.контент - Блоки'
 
+    def create_menu_link(self, force: bool = False):
+        """Создание ссылки для меню
+           1) Только тип ссылка (state=4)
+              Только без уже имеющейся ссылки
+           2) Только с именем
+              Только с типом контейнера меню (state=1)
+           :param force: создать ссылку независимо от типа контейнера
+        """
+        if not self.state == 4 or self.link or not self.name:
+            return
+
+        if not force:
+            if not self.container.state == 1:
+                return
+        link = None
+        # --------------------------------------------------
+        # Если есть родительская ссылка, нужно ее подставить
+        # --------------------------------------------------
+        parents = None
+        if self.parents:
+            if '_' in self.parents:
+                parent = self.parents.split('_')[-1]
+                try:
+                    parent = int(parent)
+                except ValueError:
+                    parent = None
+                if parent:
+                    parent_menu = Blocks.objects.filter(pk=parent).values_list('link', flat=True).first()
+                    if parent_menu:
+                        link = parent_menu
+        if link:
+            link += translit(self.name) + '/'
+        else:
+            link = '/' + translit(self.name) + '/'
+        self.link = link
+
+    def create_cat_link(self):
+        """Создание ссылки для рубрики каталога
+           1) Только тип ссылка (state=4)
+              Только без уже имеющейся ссылки
+           2) Только с именем
+              Только с типом контейнера рубрика (state=7)
+        """
+        if not self.state == 4 or self.link:
+            return
+        if not self.name or not self.container.state == 7:
+            return
+        self.create_menu_link(force=True)
+        self.link = '/cat%s' % self.link
+
     def save(self, *args, **kwargs):
-        # Если это пункт меню
-        if self.state == 4 and not self.link and self.name:
-            link = None
-            # --------------------------------------------------
-            # Если есть родительская ссылка, нужно ее подставить
-            # --------------------------------------------------
-            parents = None
-            if self.parents:
-                if '_' in self.parents:
-                    parent = self.parents.split('_')[-1]
-                    try:
-                        parent = int(parent)
-                    except ValueError:
-                        parent = None
-                    if parent:
-                        parent_menu = Blocks.objects.filter(pk=parent).values_list('link', flat=True).first()
-                        if parent_menu:
-                            link = parent_menu
-            if link:
-                link += translit(self.name) + '/'
-            else:
-                link = '/' + translit(self.name) + '/'
-            self.link = link
+        """Сохранение объекта"""
+        self.create_menu_link()
+        self.create_cat_link()
         if not self.parents:
             self.parents = ''
         super(Blocks, self).save(*args, **kwargs)
-
-    # ----------------------------------------
-    # По блоку хотим достать товары/услуги
-    # Они крепятся к блоку через LinkContainer
-    # К меню у нас привязаны контейнеры
-    # Через функцию удобно доставать в шаблоне
-    # ----------------------------------------
-    def get_products(self, request=None):
-        all_containers = [] # Для перевода
-        # ---------------------------------------------
-        # Возможно, есть контейнеры с товарами/услугами
-        # ---------------------------------------------
-        have_prices = []
-        ids_containers = {}
-
-        if "price" in settings.INSTALLED_APPS:
-
-          from price.models import PriceContainer, Disconts, CostsTypes, Costs
-          from price.utils import search_disconts_for_prices, get_costs_types
-
-          # --------------------------------------------
-          # Вычисляем есть ли привязка меню к контейнеру
-          # --------------------------------------------
-          containers = LinkContainer.objects.select_related("container").filter(block=self)
-          if containers:
-            for container in containers:
-              all_containers.append(container.container) # Для перевода
-              ids_containers[container.container.id] = {"container":container.container, "tags":{}, "prices":[], "position":container.position}
-        # ----------------------------
-        # Вытаскиваем только контейнер
-        # и привязку к товарам,
-        # вложенные блоки не тащим
-        # ----------------------------
-        if ids_containers:
-          # -------------------------------------
-          # Обрабатываем нестандартные контейнеры
-          # -------------------------------------
-          prices = PriceContainer.objects.select_related("price").filter(container__in=ids_containers.keys()).order_by("position")
-          ids_prices = {x.price.id:x.price for x in prices}
-          # -------------------------------
-          # Находим скидки для всех товаров
-          # -------------------------------
-          shopper = None
-          if request:
-            shopper = request.session.get("shopper", None)
-          search_disconts_for_prices(ids_prices, shopper)
-          # ---------------
-          # Разные типы цен
-          # ---------------
-          get_costs_types(ids_prices)
-          # ----------------------
-          # Рейтинги товаров/услуг
-          # ----------------------
-          if "reviews" in settings.INSTALLED_APPS:
-            from reviews.models import get_objects_ratings
-            get_objects_ratings(ids_prices, "price.Products")
-          # -------
-          # Перевод
-          # -------
-          if request:
-            if hasattr(settings, "DOMAINS") and "languages" in settings.INSTALLED_APPS:
-              from django.contrib.contenttypes.models import ContentType
-              from languages.models import Translate
-              from languages.views import get_translations, translate_rows
-              # -----------------------
-              # Переводим товары/услуги
-              # -----------------------
-              ct_prices = ContentType.objects.get_for_model(Products)
-              get_translations(ids_prices.values(), ct_prices)
-              translate_rows(ids_prices.values(), request)
-              # --------------------
-              # Переводим контейнеры
-              # --------------------
-              ct_containers = ContentType.objects.get_for_model(Containers)
-              get_translations(all_containers, ct_containers)
-              translate_rows(all_containers, request)
-
-          # ----------------------------------------
-          # Для сохранения сортировки идем по prices
-          # ----------------------------------------
-          for item in prices:
-            price = ids_prices[item.price.id]
-            ids_containers[item.container_id]['prices'].append(price)
-            have_prices.append(item.container_id)
-          # ------------------------------------
-          # Ищем скидки/акции по товарам/услугам
-          # ------------------------------------
-          if have_prices:
-            disconts = Disconts.objects.filter(container__in=have_prices)
-            for discont in disconts:
-              # ----------------------------------
-              # Добавлять надо к самому контейнеру
-              # ----------------------------------
-              for key, value in ids_containers.items():
-                container_id = value['container'].id
-                if discont.container_id == container_id:
-                  value['container'].discont = discont
-                  break
-        return sorted(ids_containers.values(), key=lambda x: x['position'])
 
 class LinkContainer(Standard):
     """Линковка пункта меню к контейнеру
@@ -323,13 +254,3 @@ class LinkContainer(Standard):
     class Meta:
         verbose_name = 'Стат.контент - Линковка меню к контейнерам'
         verbose_name_plural = 'Стат.контент - Линковка меню к контейнерам'
-
-#class SiteMap(models.Model):
-#    """Карта сайта
-#     Выбираем нужные меню по поиску и по ним
-#     делаем sitemapindex в которых уже urlset
-#     TODO для ссылок добавить lastmod,
-#     changefreq и priority"""
-#    container = models.ForeignKey(Containers, blank=True, null=True, on_delete=models.CASCADE)
-#    block = models.ForeignKey(Blocks, blank=True, null=True, on_delete=models.CASCADE)
-#    #link = models.CharField(max_length=255, blank=True, null=True)

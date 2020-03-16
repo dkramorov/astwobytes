@@ -24,9 +24,9 @@ $(document).ready(function(){
     var value = cell.getValue();
     var result = "<div class='padding-rl5 text-center'>";
     if(value){
-      var record = "/media/" + data['context'] + "/" + data['folder'] + "/" + data['dest'] + "_" + value + ".wav";
+      //var record = "/media/" + data['context'] + "/" + data['folder'] + "/" + data['dest'] + "_" + value + ".wav";
       result += "<audio controls>";
-      result += "<source src='" + record + "' type='audio/wav'>Нет поддержки аудио";
+      result += "<source src='" + data['record'] + "' type='audio/wav'>Нет поддержки аудио";
       result += "</audio><br />";
     }
     result += "</div>";
@@ -38,8 +38,8 @@ $(document).ready(function(){
     var value = cell.getValue();
     var result = "<div class='padding-rl5 text-center'>";
     if(value){
-      var record = "/media/" + data['context'] + "/" + data['folder'] + "/" + data['dest'] + "_" + data['uuid'] + ".wav";
-      result += "<a target='_blank' href='" + record + "'>" + value + "</a>";
+      //var record = "/media/" + data['context'] + "/" + data['folder'] + "/" + data['dest'] + "_" + data['uuid'] + ".wav";
+      result += "<a target='_blank' href='" + data['record'] + "'>" + value + "</a>";
     }
     result += "</div>";
     return result;

@@ -1,12 +1,17 @@
 {% if perms.flatcontent.view_containers %}
 <li{% ifequal menu 'flatcontent' %} class="active"{% endifequal %}>
   <a class="has-submenu" data-toggle="collapse-next" href="">
-    <em class="fa fa-dropbox"></em>
+    <em class="fa fa-list-alt"></em>
     <div class="label label-primary pull-right">5</div>
     <span class="item-text">Контент</span>
   </a>
   <!-- START SubMenu item-->
   <ul class="nav collapse{% ifequal menu 'flatcontent' %} in{% endifequal %}">
+    <li{% ifequal submenu 'flatcat' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatcat' %}">
+        <span class="item-text">Каталог</span>
+      </a>
+    </li>
     <li{% ifequal submenu 'flatmenu' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatmenu' %}">
         <span class="item-text">Меню</span>
