@@ -20,6 +20,18 @@
         </div>
       </div>
 
+      <!-- Привязанные товары -->
+      <div class="form-group">
+        <label class="col-lg-2 control-label">Наполнение, привязанные товары</label>
+        <div class="col-lg-10">
+          <select id="products_select2" name="products" autocomplete="off" multiple>
+            {% for item in products %}
+              <option value="{{ item.0 }}" selected>{{ item.1 }} #{{ item.0 }} ({{ item.2 }})</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
       <div class="form-group">
         <label class="col-lg-2 control-label">Тег</label>
         <div class="col-lg-10">

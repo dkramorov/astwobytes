@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import create_model_helper, ModelHelper
 from apps.main_functions.tabulator import tabulator_filters_and_sorters
 
 from apps.flatcontent.models import Containers, Blocks
@@ -180,7 +180,11 @@ def search_products(request, *args, **kwargs):
     mh.search_fields = ('id', 'name')
     rows = mh.standard_show()
     for row in rows:
-        result['results'].append({'text': '%s (%s)' % (row.name, row.id), 'id': row.id})
+        name = row.name
+        if row.code:
+            name += ' (%s)' % (row.code, )
+        name += ' #%s' % (row.id, )
+        result['results'].append({'text': name, 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:

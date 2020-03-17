@@ -38,4 +38,3 @@ def best_cats(request):
         force_new = False)
     result['request'] = request
     return result
-

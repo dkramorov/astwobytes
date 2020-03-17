@@ -3,6 +3,7 @@ from django.db import models
 
 from apps.flatcontent.models import Containers, Blocks
 from apps.main_functions.models import Standard
+from apps.main_functions.string_parser import translit
 
 class Products(Standard):
     """Товары/услуги"""
@@ -41,8 +42,8 @@ class Products(Standard):
 class ProductsCats(models.Model):
     """Рубрики товаров"""
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    #container = models.ForeignKey(Containers, on_delete=models.CASCADE)
-    cat = models.ForeignKey(Blocks, on_delete=models.CASCADE)
+    container = models.ForeignKey(Containers, blank=True, null=True, on_delete=models.CASCADE)
+    cat = models.ForeignKey(Blocks, blank=True, null=True, on_delete=models.CASCADE)
 
 class ProductsPhotos(Standard):
     """Галереи для товаров"""

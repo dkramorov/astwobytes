@@ -10,15 +10,17 @@ from apps.flatcontent.models import Containers, Blocks, get_ftype
 
 register = template.Library()
 
-# ------------------------
-# Если мультиязычный сайт,
-# is_domains = 1
-# -------------------------
-is_domains = None
+# -----------------------
+# Если мультиязычный сайт
+# -----------------------
+is_domains = False
 if hasattr(settings, 'DOMAINS') and 'languages' in settings.INSTALLED_APPS:
     from languages.models import Translate
-    from languages.views import get_translations, translate_rows, cond_translations, get_domain
-    is_domains = 1
+    from languages.views import (get_translations,
+                                 translate_rows,
+                                 cond_translations,
+                                 get_domain, )
+    is_domains = True
 
 @register.inclusion_tag('web/flat_menu.html')
 def flatmenu(request, tag: str = None, containers: list = []):
@@ -91,16 +93,16 @@ def flatcontent(request,
         if 'container' in container:
             if hasattr(container['container'], 'tag'):
                 if container['container'].tag:
-                  t = 'main'
-                  if container['container'].tag == t:
-                    containers = {}
-                    containers[t] = {}
-                    containers[t]['tags'] = {}
-                    for block in container['blocks']:
-                      if hasattr(block, "tag"):
-                        if block.tag:
-                          containers[t]['tags'][block.tag] = block
-                    result['containers'] = containers
+                    t = 'main'
+                    if container['container'].tag == t:
+                        containers = {}
+                        containers[t] = {}
+                        containers[t]['tags'] = {}
+                        for block in container['blocks']:
+                            if hasattr(block, "tag"):
+                                if block.tag:
+                                    containers[t]['tags'][block.tag] = block
+                        result['containers'] = containers
 
     for item in page.containers:
         if not item:
@@ -127,7 +129,7 @@ def flatcontent(request,
         container.was_shown = 1
         result['container'] = container
         result['blocks'] = item['blocks']
-        result['prices'] = item['prices']
+        result['products'] = item['products']
 
         # ---------------------------------
         # Проверяем наличие шаблона в

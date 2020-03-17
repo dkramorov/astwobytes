@@ -114,6 +114,7 @@
     $("#description_redactor").redactor({
       //air: true,
     });
+
     /* Заменится только обработчик события отправки формы для is_tree */
     {% if is_tree %}
       $("#current_edit_form").attr('action', '').parent().addClass('hidden');
@@ -122,6 +123,9 @@
         var $form = $(this);
         var msg = 'Произошла ошибка, обновите страничку';
         var status = 'danger'; // success, warning, info, danger
+
+        update_sorted_select2('products');
+
         $.ajax({
           type: $form.attr('method'),
           url: $form.attr('action'),
@@ -160,7 +164,17 @@
       width: '100%',
       ajax: {
         url: "{% url 'flatcontent:search_containers' %}",
-        data: "only_templates=1",
+
+        data: function (params) {
+          var query = {
+            q: params.term,
+            only_templates: 1,
+            page: params.page || 1,
+          }
+          return query;
+        },
+
+        //data: "only_templates=1",
         cache: false,
         dataType: 'json',
       }
@@ -172,7 +186,39 @@
       tags: true,
       ajax: {
         url: "{% url 'flatcontent:search_containers' %}",
-        data: "without_templates=1&without_menus=1&without_main=1",
+
+        data: function (params) {
+          var query = {
+            q: params.term,
+            without_templates: 1,
+            without_menus: 1,
+            without_main: 1,
+            page: params.page || 1,
+          }
+          return query;
+        },
+
+        //data: "without_templates=1&without_menus=1&without_main=1",
+        cache: false,
+        dataType: 'json',
+      }
+    });
+
+    $('#products_select2').select2({
+      placeholder: 'Какие товары привязать',
+      width: '100%',
+      tags: true,
+      ajax: {
+        url: "{% url 'products:search_products' %}",
+
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+
         cache: false,
         dataType: 'json',
       }

@@ -25,9 +25,10 @@ from .models import (Containers,
                      update_containers_vars,
                      update_blocks_vars, )
 
-is_prices = False
-if 'price' in settings.INSTALLED_APPS:
-    is_prices = True
+is_products = False
+if 'apps.products' in settings.INSTALLED_APPS:
+    is_products = True
+    from apps.products.models import Products, ProductsCats
 
 CUR_APP = 'flatcontent'
 containers_vars = {
@@ -99,11 +100,11 @@ def clone_block(block, container, parents: str = None):
     # ---------------------------------------------------
     # Каждый блок проверяем на линковку к Товарам/Услугам
     # ---------------------------------------------------
-    if is_prices:
-        if hasattr(container, 'container_prices'):
-            for price in container.container_prices:
-                if price.block_id == pk:
-                    PriceContainer.objects.create(container=container, block=block, position=price.position, price=price.price)
+    if is_products:
+        if hasattr(container, 'container_products'):
+            for product in container.container_products:
+                if product.cat_id == pk:
+                    new = ProductsCats.objects.create(container=container, cat=block, product=product.product)
     # -------------------------
     # Спускаемся по вложенности
     # -------------------------
@@ -152,32 +153,32 @@ def fill_from_template(row):
     # Проверяем привязаны ли к шаблону Акции/Скидки
     # Проверяем привязаны ли к шаблону Товары/Услуги
     # ----------------------------------------------
-    if is_prices:
-        container_prices = []
-        disconts = Disconts.objects.filter(container=row)
-        if not disconts:
-            template_disconts = Disconts.objects.filter(container=template)
-            if template_disconts:
-                for discont in template_disconts:
-                    discont.id = 0
-                    discont.container = row
-                    discont.save()
+    if is_products:
+        container_products = []
+        #disconts = Disconts.objects.filter(container=row)
+        #if not disconts:
+        #    template_disconts = Disconts.objects.filter(container=template)
+        #    if template_disconts:
+        #        for discont in template_disconts:
+        #            discont.id = 0
+        #            discont.container = row
+        #            discont.save()
         # -----------------------------------------------
         # Вытаскиваем все привязанные к контейнеру/блокам
         # товары/услуги => в clone_block все заполним
         # -----------------------------------------------
-        prices = PriceContainer.objects.select_related('price').filter(container=template).order_by('position')
-        for price in prices:
+        products = ProductsCats.objects.select_related('product').filter(container=template)
+        for product in products:
             # ------------------------------
             # Те, что НЕ привязаны к блокам,
             # создаем для контейнера,
             # остальное через clone_block
             # ------------------------------
-            if not price.block_id:
-                PriceContainer.objects.create(container=row, price=price.price, position=price.position)
+            if not product.cat_id:
+                ProductsCats.objects.create(container=row, product=product.product)
             else:
-                container_prices.append(price)
-        row.container_prices = container_prices
+                container_products.append(product)
+        row.container_products = container_products
 
     result = []
     recursive_fill(blocks, result)
@@ -262,6 +263,8 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
         })
 
     if request.method == 'GET':
+        if action in ('edit', 'show') and mh.row:
+            context['products'] = ProductsCats.objects.select_related('product').filter(container=mh.row, cat__isnull=True).values_list('product__id', 'product__name', 'product__code')
         if action == 'create':
             mh.breadcrumbs_add({
                 'link': mh.url_create,
@@ -336,12 +339,18 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
 
             # -----------------------------
             # Заполнение данными из шаблона
-            # Пока только для flatpages
+            # flatpages/flatcat
             # -----------------------------
             row = mh.row
             children = row.blocks_set.all().aggregate(Count('id'))['id__count']
-            if (action == 'create' or not children) and row.tag and row.state in (3, ):
+            if not children and is_products:
+                children = row.productscats_set.all().aggregate(Count('id'))['id__count']
+                print("______________", children)
+            if (action == 'create' or not children) and row.tag and row.state in (3, 7):
                 fill_from_template(row)
+            else:
+                # Записываем привязки товаров к рубрике
+                update_productscats(request, row, None)
 
         # --------------------
         # Загрузка изображения
@@ -623,15 +632,47 @@ def update_linkcontainer(request, container, row):
        :param container: контейнер блока меню
        :param row: блок меню к которому линкуем контейнеры
     """
+    if not container.state == 1:
+        return
+    LinkContainer.objects.filter(block=row).delete()
     linkcontainer = [int(pk) for pk in request.POST.getlist('linkcontainer')]
-    if linkcontainer and container.state == 1:
+    if linkcontainer:
         containers = Containers.objects.filter(pk__in=linkcontainer)
         ids_containers = {cont.id: cont for cont in containers}
-        LinkContainer.objects.filter(block=row).delete()
         # Соблюдаем последовательность
         for item in linkcontainer:
             if item in ids_containers:
                 LinkContainer.objects.create(block=row, container=ids_containers[item])
+
+def update_productscats(request, container, row):
+    """Записываем привязки товаров к рубрике
+       :param request: HttpRequest
+       :param container: контейнер блока-рубрики
+       :param row: блок-рубрика к которому привязыаем товары
+    """
+    if not is_products:
+        return
+    old = ProductsCats.objects.all()
+    if row:
+        old = old.filter(cat=row)
+    elif container:
+        old = old.filter(container=container, cat__isnull=True)
+    else:
+        return
+
+    old.delete()
+
+    productscats = [int(pk) for pk in request.POST.getlist('products')]
+    if productscats:
+        # Без моделей работаем с листом
+        # учитываем это при сохранении через product_id=int
+        ids_products = list(Products.objects.filter(pk__in=productscats).values_list('id', flat=True))
+        # Соблюдаем последовательность
+        for item in productscats:
+            if item in ids_products:
+                ProductsCats.objects.create(container=container,
+                                            cat=row,
+                                            product_id=item)
 
 @login_required
 def edit_block(request, ftype: str, action: str, container_id: int, row_id: int = None, *args, **kwargs):
@@ -697,6 +738,7 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
             context['containers'] = LinkContainer.objects.select_related('container').filter(block=row)
+            context['products'] = ProductsCats.objects.select_related('product').filter(cat=row).values_list('product__id', 'product__name', 'product__code')
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -725,6 +767,8 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
                     context['error'] = 'Недостаточно прав'
             # Записываем линковки к пункту меню
             update_linkcontainer(request, container, mh.row)
+            # Записываем привязки товаров к рубрике
+            update_productscats(request, container, mh.row)
         # --------------------
         # Загрузка изображения
         # --------------------
@@ -821,6 +865,18 @@ def tree_co(request):
                             'id': item.container.id,
                             'tag': item.container.tag,
                         })
+
+                # Привязка товаров к рубрикам
+                elif is_products:
+                    result['products'] = [
+                        {
+                            'name': product[1],
+                            'id': product[0],
+                            'tag': product[2],
+                        }
+                        for product in ProductsCats.objects.select_related('product').filter(cat=node).values_list('product__id', 'product__name', 'product__code')
+                    ]
+
                 result = {'row': result}
         # Получить каталог
         elif operation == 'get_children' and mh.permissions['view']:
@@ -860,6 +916,8 @@ def tree_co(request):
             menu.save()
             # Записываем линковки к пункту меню
             update_linkcontainer(request, container, menu)
+            # Записываем привязки товаров к рубрике
+            update_productscats(request, container, menu)
             result = {'success': True, 'id': menu.id}
         elif operation == 'drop_node' and mh.permissions['drop']:
             node_id = request.GET.get('node_id')
@@ -1020,7 +1078,7 @@ def SearchLink(q_string: dict = None,
             'container': cap,
             'blocks': [],
             'tags': {},
-            'prices': [],
+            'products': [],
             'position': cap.position,
         }
         all_containers.append(cap) # Для перевода
@@ -1046,7 +1104,7 @@ def SearchLink(q_string: dict = None,
                 'container': container.container,
                 'blocks': [],
                 'tags': {},
-                'prices': [],
+                'products': [],
                 'position': container.position,
             }
     templar(ids_containers, mcap, block_with_content, all_containers, all_blocks, q_string, request)
@@ -1067,63 +1125,66 @@ def SearchLink(q_string: dict = None,
 def blocks_contains_prices(ids_containers: dict, blocks: dict):
     """Заполняем контейнеры с товарами/услугами"""
     have_prices = []
-    blocks_prices = {}
-
-    if not ids_containers:
+    blocks_products = {}
+    if not ids_containers or not is_products:
         return
 
-    if not is_prices:
-        return
+    # Как отличать служебный каталог, где нельзя к блокам-рубрикам
+    # вытаскивать товары - т/к их может быть много
+    # от каталога-шаблона (м/б проверять есть ли такой шаблон?)
+    # Тупо - если мы здесь и выводим именно через flatcontent,
+    # значит, надо все-таки подливать товары - пока так
 
     # Обрабатываем контейнеры с товарами
-    prices = PriceContainer.objects.select_related("price").filter(container__in=ids_containers.keys()).order_by("position")
-    ids_prices = {x.price.id: x.price for x in prices}
+    products = ProductsCats.objects.select_related('product').filter(container__in=ids_containers.keys())
+    ids_products = {x.product.id: x.product for x in products}
 
     # Разные типы цен
-    get_costs_types(ids_prices)
+    #get_costs_types(ids_prices)
 
     # Находим скидки для всех товаров
-    shopper = None
-    if request:
-        shopper = request.session.get('shopper', None)
-    search_disconts_for_prices(ids_prices, shopper)
+    #shopper = None
+    #if request:
+    #    shopper = request.session.get('shopper', None)
+    #search_disconts_for_prices(ids_prices, shopper)
 
     # Рейтинги товаров/услуг
-    if is_reviews:
-        get_objects_ratings(ids_prices, 'price.Products')
+    #if is_reviews:
+    #    get_objects_ratings(ids_prices, 'price.Products')
 
     # Переводим товары/услуги
-    if settings.IS_DOMAINS and request:
-        ct_prices = ContentType.objects.get_for_model(Products)
-        get_translations(ids_prices.values(), ct_prices)
-        translate_rows(ids_prices.values(), request)
+    #if settings.IS_DOMAINS and request:
+    #    ct_prices = ContentType.objects.get_for_model(Products)
+    #    get_translations(ids_prices.values(), ct_prices)
+    #    translate_rows(ids_prices.values(), request)
 
-    # Для сохранения сортировки идем по prices
-    for item in prices:
-        price = ids_prices[item.price.id]
-        if item.block_id:
-            if not item.block_id in blocks_prices:
-                blocks_prices[item.block_id] = []
-            blocks_prices[item.block_id].append(price)
+    # Для сохранения сортировки идем по products
+    for item in products:
+        product = ids_products[item.product.id]
+        if item.cat_id:
+            if not item.cat_id in blocks_products:
+                blocks_products[item.cat_id] = []
+            blocks_products[item.cat_id].append(product)
         else:
             if item.container_id in ids_containers:
-                ids_containers[item.container_id]['prices'].append(price)
-            have_prices.append(item.container_id)
+                ids_containers[item.container_id]['products'].append(product)
+            if not item.container_id in have_prices:
+                have_prices.append(item.container_id)
 
     # Ищем скидки/акции по товарам/услугам
-    if have_prices:
-        disconts = Disconts.objects.filter(container__in=have_prices)
-        for discont in disconts:
-            # Добавлять надо к самому контейнеру
-            for key, value in ids_containers.items():
-                container_id = value['container'].id
-                if discont.container_id == container_id:
-                    value['container'].discont = discont
-                    break
+    #if have_prices:
+    #    disconts = Disconts.objects.filter(container__in=have_prices)
+    #    for discont in disconts:
+    #        # Добавлять надо к самому контейнеру
+    #        for key, value in ids_containers.items():
+    #            container_id = value['container'].id
+    #            if discont.container_id == container_id:
+    #                value['container'].discont = discont
+    #                break
 
     for block in blocks:
-        if block.id in blocks_prices:
-            block.prices = blocks_prices[block.id]
+        if block.id in blocks_products:
+            block.products = blocks_products[block.id]
 
 def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
             all_containers: list, all_blocks: list, q_string: dict,
@@ -1166,7 +1227,7 @@ def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
             mcap[pk] = value
 
     if block_with_content:
-        block_with_content.containers = sorted(ids_containers.values(), key=lambda x: x['position']) #ids_containers.values()
+        block_with_content.containers = sorted(ids_containers.values(), key=lambda x: x['position'])
 
     # Переводим блоки/контейнеры
     if settings.IS_DOMAINS and request:

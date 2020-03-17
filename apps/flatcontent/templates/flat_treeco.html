@@ -21,6 +21,7 @@ $(document).ready(function(){
   $("#current_edit_form").submit(function(e) {
 
     update_sorted_select2("linkcontainer");
+    update_sorted_select2("products");
 
     var $form = $(this);
     if($form.attr('action') === ''){
@@ -235,7 +236,17 @@ $(document).ready(function(){
         }
         $("#linkcontainer_select2").trigger('changed');
       }
-
+      // Если нет такого элемента - то и не надо мучать жопу
+      if($("#products_select2").length > 0){
+        $("#products_select2").empty().trigger('changed');
+        if(row['products'] !== undefined){
+          for(var i=0; i<row['products'].length; i++){
+            var item = row['products'][i];
+            $("#products_select2").append($("<option value='" + item['id'] + "' selected>" + item['name'] + " #" + item['id'] + " (" + item['tag'] + ")</option>"));
+          }
+        }
+        $("#products_select2").trigger('changed');
+      }
       update_links(r);
       $("#current_edit_form").attr("action", row['url_edit']);
     });
