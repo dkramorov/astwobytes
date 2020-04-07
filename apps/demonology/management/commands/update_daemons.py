@@ -77,9 +77,10 @@ class Command(BaseCommand):
         for item in folder_items:
             script = os.path.join(folder, item)
             if isForD(script) == 'file' and item.endswith('.service'):
-                if os.path.exists(os.path.join(daemons_folder, item)):
-                    logger.info('%s exists, passing' % (item, ))
-                    continue
+                fname = os.path.join(daemons_folder, item)
+                if os.path.exists(fname):
+                    logger.info('%s exists, dropping' % (item, ))
+                    os.unlink(fname)
 
                 cmd = '/bin/cp %s %s' % (full_path(script), daemons_folder)
                 logger.info(cmd)

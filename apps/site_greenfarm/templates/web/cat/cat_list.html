@@ -1,0 +1,163 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extracontent %}{% endblock %}
+
+{% block content %}
+<div class="shop-page-container mb-50">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 order-2 order-lg-1">
+        <div class="sidebar-area">
+          {% sidebar_cats request %}
+{% comment %}<!--
+          <div class="sidebar mb-35">
+            <h3 class="sidebar-title">Filter By</h3>
+            <ul class="product-categories">
+              <li><a class="active" href="shop-left-sidebar.html">Gold</a></li>
+              <li><a href="shop-left-sidebar.html">Green</a></li>
+              <li><a href="shop-left-sidebar.html">White</a></li>
+            </ul>
+          </div>
+          <div class="sidebar mb-35">
+            <h3 class="sidebar-title">Filter By Price</h3>
+            <div class="sidebar-price">
+              <div id="price-range"></div>
+              <input type="text" id="price-amount" readonly>
+            </div>
+          </div>
+          <div class="sidebar mb-35">
+            <h3 class="sidebar-title">Compare</h3>
+            <ul class="product-list">
+              <li>
+                <a href="single-product.html" class="remove" title="Remove">x</a>
+                <a class="title" href="single-product.html">Cillum dolore tortor nisl fermentum</a>
+              </li>
+              <li>
+                <a href="single-product.html" class="remove" title="Remove">x</a>
+                <a class="title" href="single-product.html">Condimentum posuere consectetur</a>
+              </li>
+            </ul>
+            <div class="compare-btns">
+              <a href="#" class="clear-all">Clear all</a>
+              <a href="#" class="compare">Compare</a>
+            </div>
+          </div>
+-->{% endcomment %}
+          {% random_products request 'under_catalogue' 'Высокий спрос' %}
+{% comment %}<!--
+          <div class="sidebar">
+            <h3 class="sidebar-title">Product Tags</h3>
+            <ul class="tag-container">
+              <li><a href="shop-left-sidebar.html">new</a> </li>
+              <li><a href="shop-left-sidebar.html">bags</a> </li>
+              <li><a href="shop-left-sidebar.html">new</a> </li>
+              <li><a href="shop-left-sidebar.html">kids</a> </li>
+              <li><a href="shop-left-sidebar.html">fashion</a> </li>
+              <li><a href="shop-left-sidebar.html">Accessories</a> </li>
+            </ul>
+          </div>
+-->{% endcomment %}
+        </div>
+      </div>
+      <div class="col-lg-9 order-1 order-lg-2 mb-sm-35 mb-xs-35">
+        {% if page.img %}
+          <div class="shop-page-banner mb-35">
+            <a href="javascript:void(0);">
+              <img src="{% imagine page.img '800x600' page.get_folder True %}" class="img-fluid" alt="{{ page.name|textize }}">
+            </a>
+          </div>
+        {% endif %}
+        <div class="shop-header mb-35">
+          <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center">
+              <div class="view-mode-icons mb-xs-10">
+                <a class="active" href="#" data-target="grid"><i class="fa fa-th"></i></a>
+                <a href="#" data-target="list"><i class="fa fa-list"></i></a>
+              </div>
+            </div>
+            <div class="col-lg-8 col-md-8 col-sm-12 d-flex flex-column flex-sm-row justify-content-between align-items-left align-items-sm-center">
+              <div class="sort-by-dropdown d-flex align-items-center mb-xs-10">
+                <p class="mr-10">Сортировка: </p>
+                <select name="sort-by" id="sort-by" class="nice-select">
+                  <option value="1">По популярности</option>
+                  <option value="2">По цене</option>
+                </select>
+              </div>
+              <p class="result-show-message">{{ my_paginator.total_records }} {{ my_paginator.ends }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-product-wrap grid row no-gutters mb-35">
+          {% for product in products %}
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+              <div class="gf-product shop-grid-view-product">
+                <div class="image">
+                  <a href="/product/{{ product.id }}/">
+                    {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
+                    <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+                  </a>
+{% comment %}<!--
+                  <div class="product-hover-icons">
+                    <a href="#" data-tooltip="Add to cart"> <span class="icon_cart_alt"></span></a>
+                    <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> </a>
+                    <a href="#" data-tooltip="Compare"> <span class="arrow_left-right_alt"></span> </a>
+                    <a href="#" data-tooltip="Quick view" data-toggle = "modal" data-target="#quick-view-modal-container"> <span class="icon_search"></span> </a>
+                  </div>
+-->{% endcomment %}
+                </div>
+                <div class="product-content">
+                  <div class="product-categories">
+                    <a href="{{ page.link }}">{{ page.name }}</a>
+                  </div>
+                  <h3 class="product-title"><a href="/product/{{ product.id }}/">{{ product.name }}</a></h3>
+                  <div class="price-box">
+                    {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
+                    <span class="discounted-price">{{ product.price|money_format }} руб</span>
+                  </div>
+                </div>
+              </div>
+              <div class="gf-product shop-list-view-product">
+                <div class="image">
+
+                  <a href="/product/{{ product.id }}/">
+                    {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
+                    <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+                  </a>
+{% comment %}<!--
+                  <div class="product-hover-icons">
+                    <a href="#" data-tooltip="Quick view" data-toggle = "modal" data-target="#quick-view-modal-container"> <span class="icon_search"></span> </a>
+                  </div>
+-->{% endcomment %}
+                </div>
+                <div class="product-content">
+                  <div class="product-categories">
+                    <a href="{{ page.link }}">{{ page.name }}</a>
+                  </div>
+                  <h3 class="product-title"><a href="/product/{{ product.id }}/">{{ product.name }}</a></h3>
+                  <div class="price-box mb-20">
+                    {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
+                    <span class="discounted-price">{{ product.price|money_format }} руб</span>
+                  </div>
+                  <div class="product-description">{% if product.mini_info %}{{ product.mini_info|safe }}{% else %}{% endif %}</div>
+{% comment %}<!--
+                  <div class="list-product-icons">
+                    <a href="#" data-tooltip="Add to cart"> <span class="icon_cart_alt"></span></a>
+                    <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> </a>
+                    <a href="#" data-tooltip="Compare"> <span class="arrow_left-right_alt"></span> </a>
+                  </div>
+-->{% endcomment %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% if paginator %}{{ paginator|safe }}{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% comment %}<!--{% if paginator %}{{ paginator|safe }}{% endif %}-->{% endcomment %}
+{% endblock %}

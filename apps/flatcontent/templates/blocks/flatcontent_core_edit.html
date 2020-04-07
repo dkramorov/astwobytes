@@ -63,7 +63,7 @@
       $("#current_edit_form").submit(function(e) {
 
         update_sorted_select2("linkcontainer");
-        update_sorted_select2("products");
+        {% if is_products %}update_sorted_select2("products");{% endif %}
 
         var $form = $(this);
         var msg = 'Произошла ошибка, обновите страничку';
@@ -122,6 +122,7 @@
           dataType: 'json',
         }
       });
+      {% if is_products %}
       $('#products_select2').select2({
         placeholder: 'Какие товары привязать',
         width: '100%',
@@ -141,7 +142,7 @@
           dataType: 'json',
         }
       });
-
+      {% endif %}
       // init sortable
       $("ul.select2-selection__rendered").sortable({
         containment: 'parent'

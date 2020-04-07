@@ -1,0 +1,38 @@
+{% load mtags %}
+{% for block in blocks %}
+<section class="vc_row py-6 bg-cover" data-tooltip="{{ block.description|textize }}" style="background-image: url('{% imagine block.img '1920x1080' block.get_folder True %}')">
+  <div class="container">
+    <div class="row">
+      <div class="lqd-column col-lg-6 col-md-8" data-custom-animations="true" data-ca-options='{"triggerHandler":"inview","animationTarget":"all-childs","duration":"1600","startDelay":"100","delay":"160","easing":"easeOutQuint","direction":"forward","initValues":{"translateY":85,"rotateZ":2,"opacity":0},"animations":{"translateY":0,"rotateZ":0,"opacity":1}}'>
+        <div class="lqd-h-sep w-15 mb-45">
+          <span class="lqd-h-sep-inner"></span>
+        </div>
+        <div class="ld-fancy-heading mask-text text-uppercase">
+          <h6 class="mb-4 font-size-14 ltr-sp-1 lh-175 text-white" data-split-text="true" data-split-options='{"type":"lines"}'>
+            <span class="ld-fh-txt">{{ block.html|safe }}</span>
+          </h6>
+        </div>
+        <div class="ld-fancy-heading">
+          <h2 class="mb-55 text-white ltr-sp--05" data-fittext="true" data-split-text="true" data-split-options='{"type":"lines"}' data-fittext-options='{"compressor":0.375,"maxFontSize": 148,"minFontSize": 100}'>
+            <span class="ld-fh-txt"> {{ block.name }}</span>
+          </h2>
+        </div>
+        {% for item in block.sub %}
+        <a href="#video_{{ container.id }}" class="btn btn-naked text-uppercase fresco btn-icon-left btn-icon-xlg btn-icon-circle btn-icon-solid btn-icon-ripple font-size-13 font-weight-bold ltr-sp-1">
+          <span>
+            <span class="btn-txt text-white">{{ item.name }}</span>
+            <span class="btn-icon font-size-20">
+              <i class="fa fa-{{ item.tag }}"></i>
+            </span>
+          </span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+<div class="hidden">
+  <div id="video_{{ container.id }}">
+  </div>
+</div>
+{% endfor %}

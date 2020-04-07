@@ -1,7 +1,10 @@
 # -*- coding:utf-8 -*-
 from django.db import transaction
 from django.db.models import Value
-from django.db.models.functions import Replace
+try:
+    from django.db.models.functions import Replace
+except ImportError:
+    pass
 
 def atomic_update(model, update_tasks: dict):
     """Обновление в транзакции только нужных полей

@@ -15,9 +15,7 @@ urlpatterns = [
     path('admin/positions/', views.daemon_positions, name='daemon_positions'),
     # аякс-поиск демона
     path('daemon/search/', views.search_daemon, name='search_daemon'),
-    # админка - расписание
-    path('admin/schedule/', views.show_schedule, name='show_schedule'),
-    url('^admin/schedule/(?P<action>create)/$', views.edit_schedule, name='create_schedule'),
-    url('^admin/schedule/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_schedule, name='edit_schedule'),
-    path('admin/schedule/positions/', views.schedule_positions, name='schedule_positions'),
+    path('admin/schedule_constructor/', views.schedule_constructor, name='schedule_constructor'),
+    # Апи для робота
+    path('get_schedule/', views.get_schedule, name='get_schedule'),
 ]

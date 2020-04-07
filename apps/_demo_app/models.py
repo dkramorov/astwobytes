@@ -10,6 +10,12 @@ class DemoModel(Standard):
     class Meta:
         verbose_name = 'DemoApp - demo_object'
         verbose_name_plural = 'DemoApp - demo_objects'
+        #permissions = (
+        #    ("view_obj","Просмотр объектов"),
+        #    ("create_obj","Создание объектов"),
+        #    ("edit_obj","Редактирование объектов"),
+        #    ("drop_obj","Удаление объектов"),
+        #)
 
     def save(self, *args, **kwargs):
         super(DemoModel, self).save(*args, **kwargs)

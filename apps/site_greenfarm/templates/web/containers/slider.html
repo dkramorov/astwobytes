@@ -1,0 +1,14 @@
+{% load mtags %}
+<div class="slider-container">
+  <div class="hero-slider-two">
+    {% for block in blocks %}
+    <div class="hero-slider-item"{% if block.img %} style="background-image:url('{% imagine block.img '1920x1080' block.get_folder True %}');"{% endif %}>
+      <div class="slider-content">
+        {% if block.name %}<div class="h1">{{ block.name }}</div>{% endif %}
+        {% if block.html %}<div class="h1 change-text">{{ block.html|safe }}</div>{% endif %}
+        <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}" class="slider-two-btn mt-20">Подробнее</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

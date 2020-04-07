@@ -1,0 +1,8 @@
+<div class="sidebar mb-35">
+  <h3 class="sidebar-title">{{ container.name }}</h3>
+  <ul class="product-categories">
+    {% for menu in menus %}
+      <li><a{% ifequal request.META.PATH_INFO menu.link %} class="active"{% endifequal %} href="{{ menu.link }}">{{ menu.name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>

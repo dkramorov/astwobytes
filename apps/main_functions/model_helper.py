@@ -149,7 +149,10 @@ class ModelHelper:
         self.files.append(fname)
 
     def get_permissions(self, model=None):
-        """Запрашиваем все права и запоминаем их"""
+        """Запрашиваем все права и запоминаем их
+           :param model: Если надо запросить права от другой модели,
+           которая определяет права для текущей модели
+        """
         if self.request:
             user = self.request.user
 
@@ -265,7 +268,15 @@ class ModelHelper:
         if self.request.FILES:
             if self.request.FILES.get('img'):
                 row_vars['img'] = self.request.FILES['img']
-        if self.request.POST.get('grab_img_by_url'):
+
+        # Если мы хотим загрузить изображение не в текущую модель,
+        # а, например, в галерею текущей модели (другая модель),
+        # тогда просто pass_fields = ('grab_img_by_url', ),
+        # и обрабатываем отдельно, например, так
+        # new_photo = Photos()
+        # new_photo.upload_img(request.POST.get('grab_img_by_url'))
+        gibu = 'grab_img_by_url' in pass_fields
+        if self.request.POST.get('grab_img_by_url') and not gibu:
             row_vars['img'] = self.request.POST['grab_img_by_url']
         self.row_vars = row_vars
 

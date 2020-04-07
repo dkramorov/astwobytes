@@ -2,6 +2,9 @@
 
 {% block extraactions %}
 {% if row %}
+  <a class="btn btn-primary pull-right mb-sm mr-sm" target="_blank" href="{% url 'flatcontent:edit_container' ftype 'copy' row.id %}">
+    <em class="fa fa-copy fa-fw mr-sm"></em> Дублирование {{ rp_singular_obj }}
+  </a>
   <a class="btn btn-primary pull-right mb-sm mr-sm" target="_blank" href="{% url 'flatcontent:edit_container' ftype 'show' row.id %}">
     <em class="fa fa-eye fa-fw mr-sm"></em> Предпросмотр
   </a>

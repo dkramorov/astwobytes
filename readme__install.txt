@@ -14,6 +14,12 @@ sudo apt install uwsgi-plugin-python
 
 если нет нужного - собрать
 
+# На 16 ubuntu надо ставить 3.6 из репы
+# sudo apt install software-properties-common
+# sudo add-apt-repository ppa:deadsnakes/ppa
+# sudo apt-get update
+# sudo apt-get install python3.6
+
 $ sudo apt install \
 python3.6 python3.6-dev uwsgi uwsgi-src uuid-dev libcap-dev libpcre3-dev libssl-dev
 $ cd ~
@@ -48,7 +54,13 @@ $ django-admin startproject test_site
 $ python test_site/manage.py runserver
 
 #################################################
-# На хостинге:
+# На хостинге: ONLY FOR PYTHON >= 3.5,
+# 3.4 NOT WORK!!!
+# django 2.2.3 NOT WORK on python 3.4,
+# django 2.0 can work (pip install django==2.0)
+# Pillow does not build on hosting,
+# pip install Pillow==3.4.0
+# Удалить из .env все русские символы
 #################################################
 $ python3 -m pip # скажет /usr/bin/python3: No module named pip
 $ wget https://bootstrap.pypa.io/get-pip.py
@@ -89,6 +101,28 @@ AddHandler wsgi-script .wsgi
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ /index\.wsgi/$1 [QSA,PT,L]
 
+# --------------
+# Правильный
+# Файл .htaccess
+# ln -s wisey/media .
+# нужна символическая ссыль на media в корне сайта (там где /static/)
+# --------------
+Options +ExecCGI
+RewriteEngine On
+
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+AddHandler wsgi-script .wsgi
+
+RewriteCond %{REQUEST_URI} !.(css|gif|ico|jpg|js|png|swf|txt)$
+RewriteCond %{REQUEST_URI} !/media
+RewriteCond %{REQUEST_URI} !/static
+RewriteCond %{REQUEST_URI} !/wisey/media/
+RewriteCond %{REQUEST_URI} !/wisey/static/
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule ^(.*)$ /index\.wsgi/$1 [PT,L]
+
 # ---------------
 # Файл index.wsgi
 # ---------------
@@ -99,7 +133,7 @@ path = "/home/a/a223223/test_site/public_html"
 # -------------------------------
 if not path in sys.path:
   sys.path.append(path)
-os.environ['DJANGO_SETTINGS_MODULE'] = "test_site.settings"
+os.environ['DJANGO_SETTINGS_MODULE'] = "conf.settings"
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
 

@@ -1,14 +1,39 @@
 {% load mtags %}
-<div class="slider-container">
-  <div class="hero-slider-two">
-    {% for block in blocks %}
-    <div class="hero-slider-item"{% if block.img %} style="background-image:url('{% imagine block.img '1920x1080' block.get_folder True %}');"{% endif %}>
-      <div class="slider-content">
-        {% if block.name %}<div class="h1">{{ block.name }}</div>{% endif %}
-        {% if block.html %}<div class="h1 change-text">{{ block.html|safe }}</div>{% endif %}
-        <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}" class="slider-two-btn mt-20">Подробнее</a>
+{% for block in blocks %}
+<section class="vc_row py-6 bg-cover d-flex flex-wrap align-items-center" data-tooltip="{{ block.description|textize }}" style="background-image: url('{% imagine block.img '1920x1080' block.get_folder True %}');">
+  <div class="container">
+    <div class="row">
+      <div class="lqd-column col-md-6 col-md-offset-3" data-custom-animations="true" data-ca-options='{"triggerHandler":"inview","animationTarget":"all-childs","duration":"1600","delay":100,"easing":"easeOutQuint","direction":"forward","initValues":{"translateY":80,"rotateZ":5,"opacity":0},"animations":{"translateY":0,"rotateZ":0,"opacity":1}}'>
+        <div class="ld-fancy-heading mask-text">
+          <h2 class="mb-0 lh-1 text-white" data-fittext="true" data-fittext-options='{"compressor":0.4,"maxFontSize": 165,"minFontSize": 100}' data-split-text="true" data-split-options='{"type":"lines"}'>
+            <span class="ld-fh-txt">{{ block.name }}</span>
+          </h2>
+        </div>
+        <div class="row">
+          <div class="lqd-column col-md-3 col-xs-4">
+            <div class="lqd-h-sep w-70">
+              <span class="lqd-h-sep-inner"></span>
+            </div>
+          </div>
+          <div class="lqd-column col-md-12 mt-40 text-center">
+            <div class="ld-fancy-heading mask-text">
+              <p class="mb-5 h4 text-white" data-split-text="true" data-split-options='{"type":"lines"}'>
+                <span class="ld-fh-txt">{{ block.html|safe }}</span>
+              </p>
+            </div>
+            {% for item in block.sub %}
+              {% if item.link %}
+                <a href="{{ item.link }}" class="btn btn-{% cycle 'default' 'solid' %} btn-bordered border-thin fresco btn-white-fade-border font-size-14 font-weight-bold ltr-sp-1 mb-2">
+                  <span>
+                    <span class="btn-txt">{{ item.name }}</span>
+                  </span>
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
-    {% endfor %}
   </div>
-</div>
+</section>
+{% endfor %}

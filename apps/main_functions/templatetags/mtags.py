@@ -216,7 +216,7 @@ def translit_tag(text: str):
   return translit(text)
 
 @register.simple_tag
-def monthy(date, rp: bool = 1, socr: bool = None):
+def monthy(date: datetime.datetime, rp: bool = 1, socr: bool = None):
   """Месяц из цифр прописью
      :param date: дата
      :param rp: родительный падеж
@@ -224,7 +224,7 @@ def monthy(date, rp: bool = 1, socr: bool = None):
   return monthToStr(date, rp, socr)
 
 @register.simple_tag
-def weekly(date, rp: bool = None, socr:bool = None):
+def weekly(date: datetime.datetime, rp: bool = None, socr:bool = None):
   """День недели прописью
      :param date: дата
      :param rp: родительный падеж
@@ -232,7 +232,7 @@ def weekly(date, rp: bool = None, socr:bool = None):
   return weekdayToStr(date, rp, socr)
 
 @register.filter(name='money_format')
-def money_format(summa):
+def money_format(summa: float):
     """Визуальное разделение цифр в сумме по 3
        :param summa: сумма"""
     return summa_format(summa)
@@ -307,6 +307,8 @@ def accumulate(blocks: list):
        Работаем с sub в каждом блоке
        :param blocks: блоки
     """
+    if not blocks:
+        return []
     container = []
     for block in blocks:
         if hasattr(block, 'sub'):
@@ -324,6 +326,8 @@ def pass_by_tag(blocks: list, tag: str = None):
        :param blocks: блоки
        :param tag: тег
     """
+    if not blocks:
+        return []
     container = []
     for block in blocks:
         if hasattr(block, 'tag'):
@@ -334,6 +338,20 @@ def pass_by_tag(blocks: list, tag: str = None):
                 if not block.tag == tag:
                     container.append(block)
     return container
+
+@register.filter(name='container_by_tag')
+def container_by_tag(containers: list, tag: str):
+    """Искать контейнер/блок по тегу
+       :param blocks: контейнеры/блоки
+       :param tag: тег
+    """
+    if not containers:
+        return None
+    for container in containers:
+        cont = container.get('container')
+        if cont.tag == tag:
+            return cont
+    return None
 
 @register.filter(name='reverse')
 def reverse(blocks):

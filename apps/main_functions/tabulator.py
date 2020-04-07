@@ -93,9 +93,3 @@ def tabulator_filters_and_sorters(request, custom_position_field: str = None):
         result['sorters'].append(item)
         result['params']['sorters'][key] = value
     return result
-
-
-
-
-
-

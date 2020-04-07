@@ -32,9 +32,12 @@ WITH_REDIS = env('WITH_REDIS', default=False)
 rediska = redis.StrictRedis()
 
 BOT_TOKEN = env('BOT_TOKEN', default='')
+API_URL = env('API_URL', default='')
 logger.info('Arguments: %s: %s', len(sys.argv), sys.argv)
 if len(sys.argv) > 1:
     BOT_TOKEN = sys.argv[1]
+if len(sys.argv) > 2:
+    API_URL = sys.argv[2]
 
 def json_pretty_print(json_obj):
     """Вывести json в человеческом виде"""
@@ -76,6 +79,7 @@ class StateMachine:
         self.bollinger_bands_steps = 20
         self.standard_deviations = 2
         self.token = BOT_TOKEN
+        self.config = {} # Настройки для игры
 
     def auth(self):
         """Авторизация"""
@@ -163,7 +167,7 @@ class StateMachine:
                 cur_tick.append(bb)
 
     def playboy(self, reverse: bool = False):
-        """Играем по-черном
+        """Играем по настройкам
            Покупка =>
            Цена пересекает среднюю линию
            канала Боллинджера или касается ее
@@ -173,6 +177,14 @@ class StateMachine:
            :param reverse: для реверсивной покупки"""
         # Ищем по контракту последнюю сделку,
         # от нее считать будем
+        strategy = self.config.get('strategy')
+        if strategy == 1:
+            self.strategy = 'bollinger'
+        elif strategy == 2:
+            self.strategy = 'random'
+        else:
+            self.strategy = ''
+
         CALL = 'CALL'
         PUT = 'PUT'
         if reverse:
@@ -251,7 +263,7 @@ class StateMachine:
         if self.in_deal and self.deals_data:
             logger.info('[IN DEAL]: %s' % (json_pretty_print(self.deals_data.pop())))
         self.in_deal = False
-        self.last_updte = time.time()
+        self.last_update = time.time()
         logger.info('[REFRESH STATE MACHINE]')
 
     def check_pulse(self):
@@ -259,6 +271,49 @@ class StateMachine:
         if time.time() - self.last_update > self.max_timeout:
             return False
         return True
+
+    def set_settings(self, obj: dict = None):
+        """Очищаем настройки по стратегии"""
+        if not obj:
+            # Была стратегия (остановка)
+            if self.config.get('strategy', '') != '':
+                self.telegram.send_message('Закончил играть!')
+            self.config['strategy'] = ''
+            if 'start' in self.config:
+                del self.config['start']
+            if 'end' in self.config:
+                del self.config['end']
+        else:
+            # Не было стратегии (запуск)
+            if self.config.get('strategy', '') == '':
+                self.telegram.send_message('Начал играть!')
+            # Была стратегии и сменилась
+            elif self.config.get('strategy', '') != obj.get('strategy'):
+                self.telegram.send_message('Сменил стратегию!')
+            self.config.update(obj)
+
+    def update_settings(self, interval: int = 10):
+        """Обновить настройки, делаем раз в interval тиков"""
+        last_update = self.config.get('last_update', interval)
+        last_update += 1
+        if last_update > interval:
+            try:
+                self.config['last_update'] = 0
+                r = requests.get('%s/demonology/get_schedule/' % API_URL, params={
+                    'token': BOT_TOKEN,
+                })
+                resp = r.json()
+                if resp:
+                    self.set_settings(resp)
+                else:
+                    self.set_settings()
+            except Exception:
+                self.set_settings()
+                err = 'Не удалось получить настройки'
+                logger.exception(err)
+                self.telegram.send_message(err)
+            return
+        self.config['last_update'] = last_update
 
 def timestamp_to_date(stamp):
     """time.time() to datetime.datetime"""
@@ -291,12 +346,14 @@ async def consumer_handler(websocket, state_machine):
             # Получаем тик по подписке
             symbol = data['echo_req']['ticks']
             state_machine.save_new_tick(data[action])
+
             if not state_machine.in_deal:
                 deal = state_machine.playboy()
                 if deal:
                     await websocket.send(deal)
                     if WITH_REDIS and state_machine.loose_counter >= state_machine.max_loose:
                         rediska.set('binary_bot_deal', deal)
+            state_machine.update_settings() # Обновление настроек
         elif action == 'buy':
             if action in data:
                 state_machine.deals_data.append(data[action])
@@ -323,7 +380,7 @@ async def producer_handler(websocket, state_machine):
         # Показываем контракты
         state_machine.symbols_showed = True
         await websocket.send(state_machine.get_active_symbols())
-    if not state_machine.authorized:
+    elif not state_machine.authorized:
         # 1) Авторизация
         state_machine.authorized = True
         await websocket.send(state_machine.auth())
@@ -385,8 +442,8 @@ async def handler():
     """Подключение к binary.com"""
     state_machine = StateMachine()
     while True:
-        await main_loop(state_machine)
         state_machine.refresh()
+        await main_loop(state_machine)
         time.sleep(30)
 
 

@@ -11,7 +11,7 @@ from django.conf import settings
 
 from apps.flatcontent.models import Containers, Blocks
 from apps.main_functions.catcher import json_pretty_print
-from apps.products.models import Products, ProductsPhotos
+from apps.products.models import Products, ProductsPhotos, ProductsCats
 
 logger = logging.getLogger(__name__)
 
@@ -76,11 +76,7 @@ def create_catalogue(rubrics, parents='', tag: str = 'catalogue'):
                 create_catalogue(rubric['sub'], '%s_%s' % (parents, analog.id), tag)
 
 def new_catalogue(tag: str = 'catalogue'):
-    """Создание каталога
-       TODO: Перейти на
-             все рубрики, еще и с подписанным кол-вом товаров
-             all_rubrics = 'https://www.cleanpr.ru/catalog'
-    """
+    """Создание каталога"""
     result = []
     r = requests.get(host)
     tree = html.fromstring(r.text)
@@ -209,7 +205,7 @@ def grab_product(href: str):
         'price': price,
     }
 
-def save_product(product: dict):
+def save_product(product: dict, rubric):
     """Сохранить товар"""
     price = product.get('price', {})
     code = price.get('id')
@@ -225,6 +221,9 @@ def save_product(product: dict):
     if name:
         analog.name = name
     analog.save()
+    # Рубрика товара
+    new_cat = ProductsCats.objects.create(product=analog, cat=rubric)
+    # Фотки товара
     photos = product.get('photos', [])
     if photos:
         if not analog.img:
@@ -253,7 +252,7 @@ def parse_rubrics():
         logger.info('%s => %s' % (rubric.name, len(products)))
         for product in products:
             try:
-                save_product(product)
+                save_product(product, rubric)
             except Exception:
                 logger.info('[ERROR]: save_product %s' % (product, ))
             #return
@@ -262,6 +261,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for block in Blocks.objects.filter(container__isnull=True):
             block.delete()
+        ProductsCats.objects.all().delete()
+        #new_catalogue()
         parse_rubrics()
 
 

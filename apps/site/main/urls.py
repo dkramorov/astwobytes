@@ -10,4 +10,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     # demo
     path('demo/', views.demo, name='demo'),
+    # feedback
+    path('feedback/', views.feedback, name='feedback'),
 ]

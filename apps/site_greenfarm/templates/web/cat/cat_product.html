@@ -1,0 +1,172 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extracontent %}{% endblock %}
+
+{% block content %}
+<div class="single-product-content">
+  <div class="container">
+    <div class="single-product-content-container mb-35">
+      <div class="row">
+        <div class="col-lg-6 col-md-12 col-xs-12">
+          <div class="product-image-slider d-flex flex-custom-xs-wrap flex-sm-nowrap align-items-center mb-sm-35">
+            <div class="product-small-image-list">
+              <div class="nav small-image-slider-single-product" role="tablist">
+                {% if product.img %}
+                  <div class="single-small-image img-full">
+                    <a data-toggle="tab" id="single-slide-tab-0" href="#single-slide0"><img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}"></a>
+                  </div>
+                {% endif %}
+                {% for photo in photos %}
+                  <div class="single-small-image img-full">
+                    <a data-toggle="tab" id="single-slide-tab-{{ forloop.counter }}" href="#single-slide{{ forloop.counter }}"><img src="{% imagine photo.img '600x400' photo.get_folder True %}" class="img-fluid" alt=""></a>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+              <div class="tab-content product-large-image-list">
+                {% if product.img %}
+                  <div class="tab-pane fade show active" id="single-slide0" role="tabpanel" aria-labelledby="single-slide-tab-0">
+                    <div class="single-product-img easyzoom img-full">
+                      <img src="{% imagine product.img '600x400' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+                      <a href="{{ product.imagine }}" class="big-image-popup"><i class="fa fa-search-plus"></i></a>
+                    </div>
+                  </div>
+                {% endif %}
+                {% for photo in photos %}
+                  <div class="tab-pane fade" id="single-slide{{ forloop.counter }}" role="tabpanel" aria-labelledby="single-slide-tab-{{ forloop.counter }}">
+                    <div class="single-product-img easyzoom img-full">
+                      <img src="{% imagine photo.img '600x400' photo.get_folder True %}" class="img-fluid" alt="">
+                      <a href="{{ photo.imagine }}" class="big-image-popup"><i class="fa fa-search-plus"></i></a>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-xs-12">
+            <div class="product-feature-details">
+              <h2 class="product-title mb-15">{{ product.name }}</h2>
+              <p class="product-rating">
+                <i class="fa fa-star active"></i>
+                <i class="fa fa-star active"></i>
+                <i class="fa fa-star active"></i>
+                <i class="fa fa-star active"></i>
+                <i class="fa fa-star"></i>
+                <a href="#">(нет отзывов)</a>
+              </p>
+              <h2 class="product-price mb-15">
+                {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
+                <span class="discounted-price"> {{ product.price|money_format }} руб</span>
+              </h2>
+              {% if product.mini_info %}<p class="product-description mb-20">{{ product.mini_info|safe }}</p>{% endif %}
+{% comment %}<!--
+              <div class="cart-buttons mb-20">
+                <div class="pro-qty mr-20 mb-xs-20">
+                  <input type="text" value="1">
+                </div>
+                <div class="add-to-cart-btn">
+                  <a href="#"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+                </div>
+              </div>
+
+              <div class="single-product-action-btn mb-20">
+                <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> Add to wishlist</a>
+                <a href="#" data-tooltip="Add to compare"> <span class="arrow_left-right_alt"></span> Add to compare</a>
+              </div>
+              <div class="single-product-category mb-20">
+                <h3>Categories: <span><a href="shop-left-sidebar.html">Fast Foods</a>, <a href="shop-left-sidebar.html">Vegetables</a></span></h3>
+              </div>
+-->{% endcomment %}
+              <div class="social-share-buttons">
+                <h3>Поделиться</h3>
+                <ul>
+                  <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                  <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="single-product-tab-section mb-35">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="tab-slider-wrapper">
+            <nav>
+              <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-selected="true">Описание</a>
+                <a class="nav-item nav-link" id="features-tab" data-toggle="tab" href="#features" role="tab" aria-selected="false">Характеристики</a>
+                <a class="nav-item nav-link" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-selected="false">Отзывы (0)</a>
+              </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+              <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                <p class="product-desc">{{ product.info|safe }}</p>
+              </div>
+              <div class="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
+                <table class="table-data-sheet">
+                  <tbody>
+                    <tr class="odd">
+                      <td>Артикул</td>
+                      <td>{{ product.code }}</td>
+                    </tr>
+                    <tr class="even">
+                      <td>Производство</td>
+                      <td>{{ product.manufacturer }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tab-pane fade" id="review" role="tabpanel" aria-labelledby="review-tab">
+                <div class="product-ratting-wrap">
+                  <div class="pro-avg-ratting">
+                    <h4>5 <span>(Все)</span></h4>
+                    <span>Компания</span>
+                  </div>
+                  <div class="rattings-wrapper">
+                  </div>
+                  <div class="ratting-form-wrapper fix">
+                    <h3>Добавьте ваш комментарий</h3>
+                    <form action="#">
+                      <div class="ratting-form row">
+                        <div class="col-12 mb-15">
+                          <h5>Оценка:</h5>
+                          <div class="ratting-star fix">
+                            <i class="fa fa-star-o"></i>
+                            <i class="fa fa-star-o"></i>
+                            <i class="fa fa-star-o"></i>
+                            <i class="fa fa-star-o"></i>
+                            <i class="fa fa-star-o"></i>
+                          </div>
+                        </div>
+                        <div class="col-md-6 col-12 mb-15">
+                          <label for="name">Ваше имя:</label>
+                          <input id="name" placeholder="Ваше имя" type="text">
+                        </div>
+                        <div class="col-md-6 col-12 mb-15">
+                          <label for="email">Ваш Email:</label>
+                          <input id="email" placeholder="Ваш Email" type="text">
+                        </div>
+                        <div class="col-12 mb-15">
+                          <label for="your-review">Ваш отзыв:</label>
+                          <textarea name="review" id="your-review" placeholder="Ваш отзыв"></textarea>
+                        </div>
+                        <div class="col-12">
+                          <input value="Отправить" type="submit">
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

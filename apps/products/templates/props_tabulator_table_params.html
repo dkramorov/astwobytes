@@ -1,0 +1,82 @@
+history:true, //record table history
+
+renderComplete:function(){
+  // Функция, выполняющаяся после загрузки данных в таблицу
+  if(window.tabulator_render_completed !== undefined){
+    window.tabulator_render_completed();
+  }
+},
+
+initialHeaderFilter: [
+],
+initialSort:[
+  {column: "position", dir:"asc"},
+],
+
+movableRows: true,
+rowMoved:function(row){
+  var status = 'danger'; // success, warning, info, danger
+  var table = row.getTable();
+  // ---------------------------------
+  // Если есть фильтры или сортировка,
+  // тогда не надо менять позиции
+  // ---------------------------------
+  var sorters = table.getSorters();
+  if(table.getHeaderFilters().length > 0 || sorters.length > 1){
+    main_table.undo();
+    $.notify({
+      message: 'Сортировать можно только когда таблица отсортирована по позиции',
+    },{
+      status: status,
+    });
+    return;
+  }
+
+  if(sorters[0]['field'] !== 'position' || sorters[0]['dir'] !== 'asc'){
+    main_table.undo();
+    $.notify({
+      message: 'Сортировать можно только когда таблица отсортирована по позиции',
+    },{
+      status: status,
+    });
+    return;
+  }
+  var new_positions = Array();
+  var new_position = (row.getPosition() + 1);
+  var rows = table.getRows();
+  var data = null;
+
+  for(var i=0; i<rows.length; i++){
+    data = rows[i].getData();
+    new_positions.push(data.id);
+  }
+  var msg = 'Произошла ошибка, обновите страничку';
+  $.ajax({
+    type: 'POST',
+    url: '{{ root_url }}positions/',
+    data: {csrfmiddlewaretoken: getCookie('csrftoken'), positions: new_positions},
+  }).done(function(r) {
+    if(r.error){
+      main_table.undo();
+      msg = r.error;
+    }else if(r.success){
+      msg =  r.success;
+      status = 'success';
+    }
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  }).fail(function() {
+    main_table.undo();
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  });
+},
+
+selectable: true, //make rows selectable
+layout:"fitColumns",

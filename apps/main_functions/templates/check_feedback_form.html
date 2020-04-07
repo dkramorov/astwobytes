@@ -1,0 +1,12 @@
+{% load mtags %}
+{% if page.containers|container_by_tag:'feedback' %}
+<style type="text/css">
+  label.error{
+    color:#d14;
+  }
+</style>
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/static/js/feedback.js"></script>
+{% endif %}

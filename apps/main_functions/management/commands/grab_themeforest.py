@@ -44,6 +44,8 @@ class Command(BaseCommand):
             t.get_misc_files()
             t.get_js_files()
             t.get_css_files()
+        else:
+            logger.info('Use --template=...')
 
 # -----------------------------
 # Класс для спижжувания шаблона
@@ -247,11 +249,17 @@ class Parser:
     def get_misc_files(self):
         """Получить misc файлы"""
         contents = self.load_file()
+        # -----------------------
+        # search images in styles
+        # -----------------------
+        rega_imaga_style = re.compile('(url["(]+([\.]*[^")]+)[")]+)', re.I+re.U+re.DOTALL)
+        matches_imga_style = rega_imaga_style.findall(contents)
         # ----
         # MISC
         # ----
         rega_imga = re.compile('(<img[^>]+src[\s]*=[\s]*["\']([^>"\']+)[^>])', re.I+re.U+re.DOTALL)
-        matches_imga = rega_imga.findall(contents)
+        matches_imga = rega_imga.findall(contents) + matches_imga_style
+
         counter = 0
         for item in matches_imga:
             counter += 1

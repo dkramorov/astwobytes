@@ -19,7 +19,7 @@ def drop_daemon(daemon_name):
     daemon = '%s/%s' % (DAEMON_FOLDER, daemon_name)
     drop_file(daemon)
 
-def create_daemon(daemon_name, exec_script, port, pyenv: str = None):
+def create_daemon(daemon_name, exec_script, port, pyenv: str = None, api_url: str = None):
     """Создаем демона
        :param daemon_name: название демона, например daemon_1.service
        :param exec_script: исполняемый файл, например,
@@ -30,6 +30,8 @@ def create_daemon(daemon_name, exec_script, port, pyenv: str = None):
            демон к этому не имеет отношения, просто передает
        :param pyenv: питонячий путь для запуска через python, например,
            /home/jocker/sites/astwobytes/env/bin/python
+       :param api_url: endpoint, чтобы обращаться за настройками,
+           отправлять обновления
        :return:
        --------
        В демоне не нужно активировать виртуальное окружение,
@@ -50,7 +52,7 @@ def create_daemon(daemon_name, exec_script, port, pyenv: str = None):
     #daemon_path = '%s/%s.service' % (SYSTEM_FOLDER, daemon_name)
     #if os.path.exists(daemon_path):
     #    logger.info('daemon already exists')
-    #    return
+    #    os.unlink(daemon_path)
 
     daemon_script = """[Unit]
 Description=%s
@@ -58,14 +60,14 @@ After=multi-user.target
 ConditionPathExists=%s
 
 [Service]
-ExecStart=%s %s %s
+ExecStart=%s %s %s %s
 Restart=always
 Type=idle
 
 [Install]
 WantedBy=multi-user.target
 #Alias=%s # Алиас не должен быть таким же как имя сервсиа
-""" % (daemon_name, exec_script, pyenv, exec_script, port, daemon_name)
+""" % (daemon_name, exec_script, pyenv, exec_script, port, api_url, daemon_name)
 
     daemon = '%s/%s' % (DAEMON_FOLDER, daemon_name)
     with open_file(daemon, 'w+') as f:

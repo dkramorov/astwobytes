@@ -39,6 +39,24 @@ class Products(Standard):
             link = '/product/%s-%s/' % (translit(self.name), self.id)
         return link
 
+class Property(Standard):
+    """Свойство для товара"""
+    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
+class PropertiesValues(Standard):
+    """Свойства для товаров/услуг
+       это точные свойства, то есть не так, что текст от балды,
+       а именно конкретное свойство с конкретным значением
+    """
+    prop = models.ForeignKey(Property, on_delete=models.CASCADE)
+    str_value = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    digit_value = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=4, db_index=True) # 990 000 000,0000
+
+class ProductsProperties(models.Model):
+    """Линковка значения свойства к товару"""
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    prop = models.ForeignKey(PropertiesValues, on_delete=models.CASCADE)
+
 class ProductsCats(models.Model):
     """Рубрики товаров"""
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
@@ -49,5 +67,4 @@ class ProductsPhotos(Standard):
     """Галереи для товаров"""
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
-
 

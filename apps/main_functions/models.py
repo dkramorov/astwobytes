@@ -58,7 +58,7 @@ class Standard(models.Model):
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     updated = models.DateTimeField(auto_now=True, db_index=True)
     position = models.IntegerField(blank=True, null=True, db_index=True)
-    is_active = models.BooleanField(blank=True, null=True, db_index=True, default=True)
+    is_active = models.BooleanField(db_index=True, default=True)
     state = models.IntegerField(blank=True, null=True, db_index=True)
     parents = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 

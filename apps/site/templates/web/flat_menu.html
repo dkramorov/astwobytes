@@ -1,81 +1,41 @@
-{% ifequal tag 'topmenu' %}
-<div class="header-top-menu">
-  <ul>
-    {% for menu in menus %}
-      <li>
-        <a href="{{ menu.link }}">{{ menu.name }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-</div>
-{% endifequal %}
 {% ifequal tag 'mainmenu' %}
-<div class="main-menu">
-  <nav>
-    <ul>
+  <div class="collapse navbar-collapse navbar-visible-ontoggle collapsed" id="main-header-collapse" aria-expanded="false" role="tablist">
+    <ul class="main-nav main-nav-hover-underline-2 nav align-items-lg-stretch justify-content-lg-end" data-submenu-options='{"toggleType":"fade","handler":"mouse-in-out"}'>
       {% for menu in menus %}
-      <li class="{% ifequal menu.link request.META.PATH_INFO %}active {% endifequal %}{% if menu.sub %}menu-item-has-children{% endif %}">
-        <a href="{{ menu.link }}">{{ menu.name }}</a>
-        {% if menu.sub %}
-          <ul class="sub-menu">
-            {% for submenu in menu.sub %}
-              <li class="{% if submenu.sub %} menu-item-has-children{% endif %}">
-                <a href="{{ submenu.link }}">{{ submenu.name }}</a>
-                {% if submenu.sub %}
-                  <ul class="sub-menu">
-                    {% for item in submenu.sub %}
-                      <li><a href="{{ item.link }}">{{ item.name }}</a></li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </li>
-{% comment %}<!-- MEGA MENU
-      <li class="menu-item-has-children">
-        <a href="#">PAGES</a>
-        <ul class="mega-menu three-column">
-          <li>
-            <a href="#">Column One</a>
-            <ul>
-              <li><a href="cart.html">Cart</a></li>
-              <li><a href="checkout.html">Checkout</a></li>
-            </ul>
-          </li>
-          <li>
-            <a href="#">Column Two</a>
-            <ul>
-              <li><a href="my-account.html">My Account</a></li>
-              <li><a href="login-register.html">Login Register</a></li>
-            </ul>
-          </li>
-        </ul>
-      </li>
--->{% endcomment %}
+        <li{% ifequal request.META.PATH_INFO menu.link %} class="current-menu-item"{% endifequal %}>
+          <a href="{{ menu.link }}">
+            <span class="link-icon"></span>
+            <span class="link-txt">
+              <span class="link-ext"></span>
+              <span class="txt">{{ menu.name }}</span>
+            </span>
+          </a>
+        </li>
       {% endfor %}
     </ul>
-  </nav>
-</div>
-{% endifequal %}
-{% ifequal tag 'bottommenu' %}
-<div class="footer-navigation-section pt-40 pb-40">
-  <div class="container">
-    <div class="row">
-      {% for menu in menus %}
-        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb-xs-30">
-          <div class="single-navigation-section">
-            <h3 class="nav-section-title">{{ menu.name }}</h3>
-            <ul>
-              {% for submenu in menu.sub %}
-                <li><a href="{{ submenu.link }}">{{ submenu.name }}</a></li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
   </div>
-</div>
+  <div class="header-module">
+    <button class="nav-trigger collapsed style-1 fill-solid scheme-light txt-left main-nav-trigger" role="button" type="button" data-toggle="collapse" data-target="#main-header-collapse" aria-expanded="false" aria-controls="main-header-collapse" data-changeclassnames='{ "html": "overflow-hidden" }'>
+      <span class="bars">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </span>
+    </button>
+  </div>
+{% endifequal %}
+
+{% ifequal tag 'bottommenu' %}
+  {% for menu in menus %}
+    <div class="lqd-column col-md-3 col-sm-6">
+      <h3 class="widget-title text-white">{{ menu.name }}</h3>
+      {% if menu.sub %}
+        <ul class="lqd-custom-menu reset-ul text-white">
+          {% for item in menu.sub %}
+            <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  {% endfor %}
 {% endifequal %}

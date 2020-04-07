@@ -1,0 +1,30 @@
+<div class="pagination-container">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="pagination-content text-center">
+          {% if not paginator.onepage %}
+          <ul>
+            {% if paginator.prev_link %}
+              <li><a href="{{ paginator.prev_link }}"><i class="fa fa-angle-left"></i></a></li>
+            {% endif %}
+            {% for page in pages %}
+              {% if page.ellipsis %}
+                <li><a href="javascript:void(0);" class="disabled">...</a></li>
+              {% else %}
+                <li><a{% if page.active %} class="active" href="javascript:void(0);"{% else %} href="{{ page.link }}"{% endif %}>{{ page.content }}</a></li>
+              {% endif %}
+            {% endfor %}
+            {% if paginator.next_link %}
+              <li><a href="{{ paginator.next_link }}"><i class="fa fa-angle-right"></i></a></li>
+            {% endif %}
+          </ul>
+          {% endif %}
+          <span class="float-right position-absolute;"><b>{{ paginator.total_records }} {{ ends }}</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

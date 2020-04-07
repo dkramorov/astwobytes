@@ -1,0 +1,29 @@
+{% load mtags %}
+<div class="sidebar mb-35">
+  <h3 class="sidebar-title">{{ name }}</h3>
+  <div class="top-rated-product-container">
+    {% for product in products %}
+      <div class="single-top-rated-product d-flex align-content-center">
+        <div class="image">
+          <a href="single-product.html">
+            <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+          </a>
+        </div>
+        <div class="content">
+          <p><a href="/product/{{ product.id }}/">{{ product.name }}</a></p>
+          <p class="product-rating">
+            <i class="fa fa-star active"></i>
+            <i class="fa fa-star active"></i>
+            <i class="fa fa-star active"></i>
+            <i class="fa fa-star active"></i>
+            <i class="fa fa-star active"></i>
+          </p>
+          <p class="product-price">
+            <span class="discounted-price"> {{ product.price|money_format }} руб</span>
+            {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
+          </p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

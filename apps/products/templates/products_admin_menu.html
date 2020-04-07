@@ -1,8 +1,23 @@
 {% if perms.products.view_products %}
 <li{% ifequal menu 'products' %} class="active"{% endifequal %}>
-  <a href="{% url 'products:show_products' %}">
+  <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-dropbox"></em>
+    <div class="label label-primary pull-right">2</div>
     <span class="item-text">Товары/услуги</span>
   </a>
+  <!-- START SubMenu item-->
+  <ul class="nav collapse{% ifequal menu 'products' %} in{% endifequal %}">
+    <li{% ifequal submenu 'products' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'products:show_products' %}">
+        <span class="item-text">Товары/услуги</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'props' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'products:show_props' %}">
+        <span class="item-text">Свойства товаров</span>
+      </a>
+    </li>
+  </ul>
+  <!-- END SubMenu item-->
 </li>
 {% endif %}

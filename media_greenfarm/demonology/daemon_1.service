@@ -1,0 +1,13 @@
+[Unit]
+Description=daemon_1.service
+After=multi-user.target
+ConditionPathExists=/Users/jocker/astwobytes/apps/binary_com/binary_bot.py
+
+[Service]
+ExecStart=/Users/jocker/astwobytes/env/bin/python /Users/jocker/astwobytes/apps/binary_com/binary_bot.py S2CdZcfFPZ6Q0A2 None
+Restart=always
+Type=idle
+
+[Install]
+WantedBy=multi-user.target
+#Alias=daemon_1.service # Алиас не должен быть таким же как имя сервсиа

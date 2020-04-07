@@ -176,7 +176,7 @@ class Blocks(Standard):
     tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     container = models.ForeignKey(Containers, blank=True, null=True, on_delete=models.CASCADE)
     # для ссылок target=_blank
-    blank = models.BooleanField(blank=True, null=True, default=False, db_index=True)
+    blank = models.BooleanField(db_index=True, default=False)
     icon = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     # title/мета-теги для меню или title/alt для картинки
     title = models.CharField(max_length=255, blank=True, null=True, db_index=True)

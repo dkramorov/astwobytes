@@ -48,34 +48,6 @@ containers_vars = {
     'model': Containers,
 }
 
-def get_catalogue(request, tag: str = 'catalogue',
-                  cache_time: int = 300, force_new: bool = False):
-    """Получить каталог для сайта"""
-    cache_var = '%s_%s_catalogue' % (
-        settings.DATABASES['default']['NAME'],
-        tag,
-    )
-    inCache = cache.get(cache_var)
-    if inCache and not force_new:
-        return inCache
-    container = Containers.objects.filter(
-        tag = tag,
-        state = 7,
-        is_active = True
-    ).first()
-    menus = []
-    if container:
-        cats = container.blocks_set.filter(is_active=True)
-        menu_queryset = []
-        recursive_fill(cats, menu_queryset, '')
-        menus = sort_voca(menu_queryset)
-    result = {
-        'container': container,
-        'menus': menus,
-    }
-    cache.set(cache_var, result, cache_time)
-    return result
-
 def clone_block(block, container, parents: str = None):
     """Клонирование блоков в другой контейнер
        Изменение pk, parents, img
@@ -117,13 +89,13 @@ def clone_block(block, container, parents: str = None):
             clone_block(item, container, parents)
     return block
 
-def fill_from_template(row):
+def fill_from_template(row, state: int = 99):
     """Заполнение контейнера данными из шаблона
        Нужно делать только если создаем контейнер,
        либо контейнер пустой и его сохранили
        :param row: контейнер
     """
-    template = Containers.objects.filter(tag=row.tag, state=99).exclude(pk=row.id).first()
+    template = Containers.objects.filter(tag=row.tag, state=state).exclude(pk=row.id).first()
     if not template:
         return
     # --------------------------------------------------
@@ -193,6 +165,7 @@ def show_containers(request, ftype: str, *args, **kwargs):
 
     mh = create_model_helper(mh_vars, request, CUR_APP, reverse_params={'ftype': ftype})
     context = mh.context
+    context['is_products'] = is_products
     context['ftype_state'] = get_ftype(ftype)
     mh.filter_add({'state': context['ftype_state']})
 
@@ -238,6 +211,7 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
 
     mh = create_model_helper(mh_vars, request, CUR_APP, action, reverse_params={'ftype': ftype})
     context = mh.context
+    context['is_products'] = is_products
     context['ftype_state'] = get_ftype(ftype)
     mh.filter_add({'state': context['ftype_state']})
 
@@ -264,7 +238,8 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
 
     if request.method == 'GET':
         if action in ('edit', 'show') and mh.row:
-            context['products'] = ProductsCats.objects.select_related('product').filter(container=mh.row, cat__isnull=True).values_list('product__id', 'product__name', 'product__code')
+            if is_products:
+                context['products'] = ProductsCats.objects.select_related('product').filter(container=mh.row, cat__isnull=True).values_list('product__id', 'product__name', 'product__code')
         if action == 'create':
             mh.breadcrumbs_add({
                 'link': mh.url_create,
@@ -289,6 +264,20 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
                 'link': mh.url_edit,
                 'name': '%s %s' % ('Иерархия', mh.rp_singular_obj),
             })
+        elif action == 'copy' and row:
+            # ---------------------
+            # Клонировать контейнер
+            # ---------------------
+            new_container = row
+            new_container.id = None
+            new_container.save()
+            fill_from_template(new_container, row.state)
+            urla = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
+                           kwargs={'ftype': ftype,
+                                   'action': 'edit',
+                                   'row_id': new_container.id})
+            return redirect(urla)
+
         elif action == 'show' and row:
             # -------------------------------
             # Просмотр шаблона/стат.странички
@@ -345,7 +334,6 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
             children = row.blocks_set.all().aggregate(Count('id'))['id__count']
             if not children and is_products:
                 children = row.productscats_set.all().aggregate(Count('id'))['id__count']
-                print("______________", children)
             if (action == 'create' or not children) and row.tag and row.state in (3, 7):
                 fill_from_template(row)
             else:
@@ -550,6 +538,7 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
     })
 
     context = mh.context
+    context['is_products'] = is_products
     context['ftype_state'] = get_ftype(ftype)
     context['container'] = mh_containers.row
     context['url_edit'] = mh_containers.url_edit
@@ -716,6 +705,7 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
     })
 
     context = mh.context
+    context['is_products'] = is_products
     context['ftype_state'] = get_ftype(ftype)
     context['container'] = object_fields(mh_containers.row)
     context['url_tree'] = mh_containers.url_tree
@@ -738,7 +728,8 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
             context['containers'] = LinkContainer.objects.select_related('container').filter(block=row)
-            context['products'] = ProductsCats.objects.select_related('product').filter(cat=row).values_list('product__id', 'product__name', 'product__code')
+            if is_products:
+                context['products'] = ProductsCats.objects.select_related('product').filter(cat=row).values_list('product__id', 'product__name', 'product__code')
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
