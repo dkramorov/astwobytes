@@ -1,0 +1,36 @@
+{% load mtags %}
+<section class="vc_row page-404 error-404 not-found fullheight bg-white text-black">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2 text-center">
+        <div class="text-404">
+          <div class="ld-particles-container">
+            <div class="re-particles-inner" id="particles-404-1" data-particles="true" data-particles-options='{ "particles": { "number": { "value": 15 }, "opacity": { "random": true, "anim": { "enable": true, "opacity_min": 0.7 } }, "size": { "value": 30, "anim": { "enable": true, "speed": 1, "size_min": 0.7 } }, "move": { "direction": "top-right", "speed": 2 } }, "interactivity": {} }'>
+            </div>
+          </div>
+          <h1 data-fittext="true" data-fittext-options='{ "compressor": 0.25, "minFontSize": 150, "maxFontSize": 300 }' class="liquid-counter-element text-black" data-enable-counter="true" data-counter-options='{ "targetNumber": "404", "blurEffect": true }'>
+            <span>000</span>
+          </h1>
+          <div class="ld-particles-container">
+            <div class="re-particles-inner" id="particles-404-2" data-particles="true" data-particles-options='{ "particles": { "number": { "value": 15 }, "opacity": { "random": true, "anim": { "enable": true, "opacity_min": 0.7 } }, "size": { "value": 30, "anim": { "enable": true, "speed": 1, "size_min": 0.7 } }, "move": { "direction": "top-left", "speed": 2 } }, "interactivity": {} }'>
+           </div>
+         </div>
+       </div>
+       {% for block in blocks %}
+         <h3 class="font-weight-bold mb-1">{{ blcok.name }}</h3>
+         {% if block.html %}<div class="mb-5">{{ block.html|safe }}</div>{% endif %}
+         <a href="/" class="btn btn-md btn-solid btn-gradient circle btn-icon-left font-weight-bold text-uppercase ltr-sp-1 wide">
+           <span>
+             <span class="btn-gradient-bg"></span>
+             <span class="btn-icon">
+               <i class="icon-ion-ios-arrow-round-back"></i>
+             </span>
+             <span class="btn-txt">На главную</span>
+             <span class="btn-gradient-bg btn-gradient-bg-hover"></span>
+           </span>
+         </a>
+       {% endfor %}
+     </div>
+    </div>
+  </div>
+</section>

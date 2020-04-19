@@ -1,0 +1,60 @@
+{% load mtags %}
+<section class="vc_row pt-120 pb-75 services1">
+  {% for block in blocks %}
+  <div class="container">
+    <div class="row">
+
+      <div class="mobile">
+        <figure>
+          <img src="{% imagine block.img '800x600' block.get_folder True %}" alt="{{ block.description|textize }}" />
+        </figure>
+      </div>
+
+      <div class="lqd-column col-md-4 pt-5">
+        <div class="font-size-30 lh-16 font-weight-light">{{ block.html|safe }}</div><br />
+        <a href="{{ block.link }}" target="_blank" class="btn classic text-uppercase font-size-12 font-weight-bold ltr-sp-1 hvr-sweep-to-right">
+          <span>
+            <span class="btn-txt">{{ block.name }}</span>
+            <span class="btn-icon">
+              <i class="fa fa-angle-right"></i>
+            </span>
+          </span>
+        </a>
+        <div class="clearfix"></div><br /><br />
+      </div>
+      <div class="lqd-column col-md-7">
+        <div class="lqd-parallax-images-4">
+          <div class="liquid-img-group-container desktop">
+            <div class="liquid-img-group-inner">
+              <div class="liquid-img-group-single" data-reveal="true" data-reveal-options='{ "direction":"tb", "bgcolor":"rgb(41, 45, 53)" }'>
+                <div class="liquid-img-group-img-container">
+                  <div class="liquid-img-container-inner" data-parallax="true" data-parallax-from='{"translateY":-42}' data-parallax-to='{"translateY":33}' data-parallax-options='{"overflowHidden":false,"easing":"linear"}'>
+                    <figure>
+                      <img src="{% imagine block.img '800x600' block.get_folder True %}" alt="{{ block.description|textize }}" />
+                    </figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="liquid-img-group-container">
+            <div class="liquid-img-group-inner">
+              <div class="liquid-img-group-single" data-reveal="true" data-reveal-options='{"direction":"rl", "bgcolor":"rgb(41, 45, 53)"}'>
+                <div class="row">
+                  {% for item in block.sub %}
+                    <div class="lqd-column col-md-4 mb-30">
+                      <h4 class="mb-1 font-size-14 left_blue_line">{{ item.name }}</h4>
+                      {% if item.html %}<div class="font-size-13 text">{{ item.html|safe }}</div>{% endif %}
+                    </div>
+                    {% cycle '' '' '<div class="clearfix"></div>' %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</section>

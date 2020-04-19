@@ -23,7 +23,8 @@ def get_psutil_attr_names():
 def search_process(q: list):
     """Ищем процесс
        :param q: список строк для поиска
-       Посмотреть всевозможные свойства можно get_psutil_attr_names()"""
+       Посмотреть все свойства можно get_psutil_attr_names()
+    """
     if not isinstance(q, list) and not isinstance(q, tuple):
         assert False
     mypid = os.getpid()
@@ -35,10 +36,11 @@ def search_process(q: list):
             continue
         match = True
         for item in q:
-            if not item in process['cmdline']:
+            in_cmd = list(filter(lambda x: item in x, process['cmdline']))
+            #print(in_cmd)
+            if not in_cmd:
                 match = False
                 break
         if match:
             return process
     return None
-

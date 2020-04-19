@@ -71,6 +71,34 @@ class Command(BaseCommand):
             return
 
         daemons_folder = '/etc/systemd/system/'
+
+        # ---------------------------
+        # Убиваем все, что не активно
+        # ---------------------------
+        folder_items = os.listdir(daemons_folder)
+        logger.info(folder_items)
+        for item in folder_items:
+            script = os.path.join(daemons_folder, item)
+            if isForD(script) == 'file' and item.endswith('.service') and item.startswith('daemon_'):
+
+                cmd = '/bin/systemctl disable %s' % (item, )
+                logger.info(cmd)
+                os.system(cmd)
+
+                cmd = '/bin/systemctl stop %s' % (item, )
+                logger.info(cmd)
+                os.system(cmd)
+
+                logger.info('dropping %s' % (item, ))
+                os.unlink(script)
+
+                cmd = '/bin/systemctl daemon-reload'
+                logger.info(cmd)
+                os.system(cmd)
+
+        # ------------------------------
+        # Перезапускаем все, что активно
+        # ------------------------------
         folder = 'demonology'
         folder_items = ListDir(folder)
         logger.info(folder_items)
@@ -97,6 +125,7 @@ class Command(BaseCommand):
                 cmd = '/bin/systemctl restart %s' % (item, )
                 logger.info(cmd)
                 os.system(cmd)
+
 
 
 

@@ -1,6 +1,6 @@
-{% if perms.demo_app.view_demo_model %}
+{% if perms.demo_app.view_demo_app %}
 <li{% ifequal menu 'demo_app' %} class="active"{% endifequal %}>
-  <a href="{% url 'demo_app:show_demo_model' %}">
+  <a href="{% url 'demo_app:show_demo_app' %}">
     <em class="fa fa-file"></em>
     <span class="item-text">Объекты</span>
   </a>

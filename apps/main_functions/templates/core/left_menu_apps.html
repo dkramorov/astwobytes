@@ -36,5 +36,11 @@
   {% if 'demonology' in apps %}
     {% include "demonology_admin_menu.html" %}
   {% endif %}
+
+  {% if 'flattooltip' in apps %}
+    {% include "flattooltip_admin_menu.html" %}
+  {% endif %}
+
+  {% include "main_functions_admin_menu.html" %}
 </ul>
 {% endwith %}

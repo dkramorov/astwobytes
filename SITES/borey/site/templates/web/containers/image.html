@@ -1,0 +1,25 @@
+{% load mtags %}
+<section class="vc_row pt-65 pb-40">
+  <div class="container">
+    <div class="row flex-wrap align-items-center">
+      <div class="lqd-column col-md-12 col-xs-12 mb-5 mb-md-0">
+        {% for block in blocks %}
+          {% if block.img %}
+            <div id="block_{{ block.id }}"{% if block.sub %} class="desktop"{% endif %}>
+              <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+                <img src="{% imagine block.img '1920x1080' block.get_folder True %}" alt="{{ block.description|textize }}">
+              </a>
+            </div>
+            {% for item in block.sub %}
+              <div id="block_{{ item.id }}_mobile" class="mobile">
+                <a href="{% if block.link %}{{ item.link }}{% else %}javascript:void(0);{% endif %}">
+                  <img src="{% imagine item.img '1920x1080' item.get_folder True %}" alt="{{ item.description|textize }}">
+                </a>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

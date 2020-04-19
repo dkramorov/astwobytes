@@ -25,7 +25,7 @@ $(document).ready(function(){
     var value = cell.getValue();
     var result = "<div class='padding-rl5 text-center'>";
     if(value){
-      result += " <a class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
+      result += " <a style='white-space:normal;' class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
     }
     result += "</div>";
     return result;
@@ -47,6 +47,15 @@ $(document).ready(function(){
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
       {% include "core/tabulator_cell/name.html" %}
+      {
+        title: "Описание",
+        field: "desc",
+        headerFilterPlaceholder: "Описание",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: pathFormatter,
+        minWidth: 150,
+      },
       {% include "core/tabulator_cell/image.html" %}
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}

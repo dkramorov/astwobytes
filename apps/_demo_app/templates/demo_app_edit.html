@@ -17,6 +17,23 @@
         <div class="panel-body">
           {% csrf_token %}
           {% include "core/forms/row_name.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Описание</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Описание" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <!-- Привязанные странички -->
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Наполнение, привязанные странички</label>
+            <div class="col-lg-10">
+              <select id="linkcontainer_select2" name="linkcontainer" autocomplete="off" multiple>
+                {% for item in containers %}
+                  <option value="{{ item.container.id }}" selected>{{ item.container.name }} #{{ item.container.id }} ({{ item.container.tag }})</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
           {% include "core/forms/row_image.html" %}
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
@@ -71,6 +88,30 @@
         e.preventDefault();
       });
 
+      $('#linkcontainer_select2').select2({
+        placeholder: 'Какие странички привязать',
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'flatcontent:search_containers' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              without_templates: 1,
+              without_menus: 1,
+              without_main: 1,
+              page: params.page || 1,
+            }
+            return query;
+          },
+
+          //data: "without_templates=1&without_menus=1&without_main=1",
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
       function update_links(r){
         var thumb = r['row']['thumb'];
         if(thumb === ''){
@@ -82,7 +123,7 @@
         var progressbar = $('#progressbar-files'),
           bar         = progressbar.find('.progress-bar-files'),
           settings    = {
-            action: '{% url "demo_app:edit_demo_model" "img" row.id %}', // upload url
+            action: '{% url "demo_app:edit_demo_app" "img" row.id %}', // upload url
             allow : '*.*',
             param: 'img',
             params: {csrfmiddlewaretoken: getCookie('csrftoken')},

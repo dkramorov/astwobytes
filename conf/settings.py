@@ -90,6 +90,8 @@ if env('DEMONOLOGY_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.demonology')
 if env('PRODUCTS_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.products')
+if env('FLATTOOLTIP_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.flattooltip')
 
 CUSTOM_APPS += [
     'apps.upload_tasks',

@@ -12,6 +12,7 @@
 
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
+{% include "core/breadcrumbs.html" %}
 <!-- START row-->
 <div class="row">
   <div class="col-sm-12">

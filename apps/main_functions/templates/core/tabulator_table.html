@@ -63,6 +63,16 @@ var imgFormatter = function(cell, formatterParams, onRendered){
   }
   return result;
 };
+var wordwrapFormatter = function(cell, formatterParams, onRendered){
+  var data = cell.getRow().getData();
+  var value = cell.getValue();
+  var result = "";
+  if(value){
+    result += " <div style='white-space:normal;'>" + value + "</div> ";
+  }
+  result += "";
+  return result;
+};
 
 $(document).ready(function(){
   //trigger download of data.csv file

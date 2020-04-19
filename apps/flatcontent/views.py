@@ -368,6 +368,7 @@ def search_containers(request, *args, **kwargs):
            :param without_templates: Без шаблонов state__in=(99,100)
            :param without_menus: Без менюшек state=1
            :param without_main: Без контента для всех страничек state=2
+           :param with_images: Только с изображениями
            :param only_templates: Только шаблоны state__in=(99,100)
            :param only_cats: Только рубрики state=7
     """
@@ -391,6 +392,9 @@ def search_containers(request, *args, **kwargs):
     only_cats = request.GET.get('only_cats')
     if only_cats:
         mh.filter_add(Q(state=7))
+    with_images = request.GET.get('with_images')
+    if with_images:
+        mh.filter_add(Q(img__isnull=False))
 
     mh_vars = containers_vars.copy()
     for k, v in mh_vars.items():
@@ -422,6 +426,7 @@ def search_blocks(request, *args, **kwargs):
            :param without_templates: Без шаблонов state__in=(99,100)
            :param without_menus: Без менюшек state=1
            :param without_main: Без контента для всех страничек state=2
+           :param with_images: Только с изображениями
            :param only_templates: Только шаблоны state__in=(99,100)
            :param only_cats: Только рубрики state=7
     """
@@ -445,12 +450,15 @@ def search_blocks(request, *args, **kwargs):
     only_cats = request.GET.get('only_cats')
     if only_cats:
         mh.filter_add(Q(container__state=7))
+    with_images = request.GET.get('with_images')
+    if with_images:
+        mh.filter_add(Q(img__isnull=False))
 
     mh_vars = blocks_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
 
-    mh.search_fields = ('name', 'tag', 'container__name', 'container__tag')
+    mh.search_fields = ('id', 'name', 'tag', 'container__name', 'container__tag')
     mh.select_related_add('container')
     rows = mh.standard_show()
 
@@ -545,7 +553,6 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
     context['url_tree'] = mh_containers.url_tree
 
     mh.filter_add({'container__id': mh_containers.row.id})
-    mh.filter_add(Q(parents=''))
     # -----------------------
     # Фильтрация и сортировка
     # -----------------------
@@ -556,6 +563,8 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
         mh.order_by_add(rsorter)
     context['fas'] = filters_and_sorters['params']
 
+    if not context['fas']['filters']:
+        mh.filter_add(Q(parents=''))
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -737,6 +746,27 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
                 context['success'] = '%s удален' % (mh.singular_obj, )
             else:
                 context['error'] = 'Недостаточно прав'
+        elif action == 'copy' and row:
+            # ---------------------
+            # Клонировать контейнер
+            # ---------------------
+            parents = '_%s' % row.id
+            if row.parents:
+                parents = '%s%s' % (row.parents, parents)
+            blocks = mh_containers.row.blocks_set.filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents))
+            result = []
+            blocks = [block for block in blocks]
+            blocks.append(row)
+            recursive_fill(blocks, result, parents=row.parents)
+            if len(result) != 1:
+                assert False
+            new_block = clone_block(result[0], mh_containers.row, parents=result[0].parents)
+            urla = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
+                           kwargs={'ftype': ftype,
+                                   'action': 'edit',
+                                   'container_id': mh_containers.row.id,
+                                   'row_id': new_block.id})
+            return redirect(urla)
 
     elif request.method == 'POST':
         pass_fields = ('parents', )

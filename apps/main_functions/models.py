@@ -19,38 +19,6 @@ from apps.main_functions.files import (check_path,
                                        grab_image_by_url, )
 from apps.main_functions.problem32folders import get_smart_folder
 
-class Config(models.Model):
-    """Различные настройки"""
-    name = models.CharField(max_length = 255,
-                            blank = True, null = True,
-                            db_index = True)
-    attr = models.CharField(max_length = 255,
-                            blank = True, null = True,
-                            db_index = True)
-    value = models.CharField(max_length = 255,
-                             blank = True, null = True,
-                             db_index = True)
-    class Meta:
-        verbose_name = 'Админка - Настрока'
-        verbose_name_plural = 'Админка - Настройки'
-
-class Tasks(models.Model):
-    """Задачи для call_command"""
-    command = models.TextField()
-    start = models.DateTimeField(auto_now_add=True)
-    description = models.CharField(blank=True, null=True, max_length=255)
-
-    class Meta:
-        verbose_name = 'Админка - Задача'
-        verbose_name_plural = 'Админка - Задачи'
-
-    def save(self, *args, **kwargs):
-        analog = Tasks.objects.filter(command=self.command).first()
-        if analog:
-            analog.update(start = datetime.datetime.today())
-        else:
-            super(Tasks, self).save(*args, **kwargs)
-
 class Standard(models.Model):
     """Абстрактная модель
        Стандартная модель"""
@@ -70,6 +38,13 @@ class Standard(models.Model):
             return ''
         return '%s_%s/%s%s/' % (self._meta.app_label.lower(), self._meta.object_name.lower(), get_smart_folder(self.id), self.id)
 
+    def drop_resized_folder(self):
+        """Удаление папки с миниатюрами"""
+        if not self.id:
+            return
+        folder = self.get_folder()
+        drop_folder(os.path.join(folder, 'resized'))
+
     def drop_img(self):
         """Удаление изображения"""
         if not self.id:
@@ -77,7 +52,7 @@ class Standard(models.Model):
         if self.img:
             folder = self.get_folder()
             drop_file(os.path.join(folder, self.img))
-            drop_folder(os.path.join(folder, "resized"))
+            drop_folder(os.path.join(folder, 'resized'))
             self.__class__.objects.filter(pk=self.id).update(img=None)
             self.img = None
 
@@ -227,4 +202,35 @@ class Standard(models.Model):
                 return '%s?size=150x150' % self.img
             return imagine_image(self.img, size, self.get_folder())
         return ''
+
+class Config(Standard):
+    """Различные настройки"""
+    name = models.CharField(max_length = 255,
+                            blank = True, null = True,
+                            db_index = True)
+    attr = models.CharField(max_length = 255,
+                            blank = True, null = True,
+                            db_index = True)
+    value = models.CharField(max_length = 255,
+                             blank = True, null = True,
+                             db_index = True)
+    class Meta:
+        verbose_name = 'Админка - Настрока'
+        verbose_name_plural = 'Админка - Настройки'
+
+class Tasks(Standard):
+    """Задачи для call_command"""
+    name = models.CharField(blank=True, null=True, max_length=255, db_index=True)
+    command = models.TextField()
+
+    class Meta:
+        verbose_name = 'Админка - Задача'
+        verbose_name_plural = 'Админка - Задачи'
+
+    def save(self, *args, **kwargs):
+        analogs = Tasks.objects.filter(command=self.command)
+        if analogs:
+            analogs.update(updated = datetime.datetime.today())
+        else:
+            super(Tasks, self).save(*args, **kwargs)
 

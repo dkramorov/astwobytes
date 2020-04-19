@@ -1,0 +1,55 @@
+{% load mtags %}
+<section class="vc_row pt-100 pb-50">
+  <div class="container">
+    <div class="row">
+      <div class="lqd-column col-md-12">
+        <div class="liquid-blog-posts">
+          <div class="liquid-blog-grid liquid-blog-style-carousel row">
+            <div class="carousel-container carousel-nav-circle carousel-nav-bordered carousel-nav-sm">
+{% comment %}<!--
+              <header class="fancy-title" id="carousel-nav-container-1">
+                <h2 class="font-weight-bold">{{ container.name }}</h2>
+              </header>
+-->{% endcomment %}
+              <div class="carousel-items row" data-lqd-flickity='{ "equalHeightCells": true, "fullwidthSide": true, "prevNextButtons": false, "navArrow": 6, "buttonsAppendTo": "#carousel-nav-container-{{ container.id }}", "pageDots":true}' id="carousel_{{ container.id }}">
+                {% for block in blocks %}
+                  <div class="lqd-column carousel-item col-lg-4 col-md-6 col-sm-12">
+                    <article class="liquid-lp liquid-blog-item liquid-blog-item-carousel liquid-blog-contents-inside contents-bottom liquid-blog-scheme-light liquid-blog-scheme-light-alt h-300">
+
+
+                      <a href="{% imagine block.img '1920x1080' block.get_folder True %}" class="zoom fresco" data-fresco-group="ld-pf-{{ container.id }}">
+
+                      <figure class="liquid-lp-media" style="background-image: url('{% imagine block.img '600x400' block.get_folder True %}');">
+
+                          <img src="{% imagine block.img '600x400' block.get_folder True %}" alt="{{ block.description|textize }}">
+
+                      </figure>
+<!--
+                      <div class="liquid-blog-item-inner">
+                        {% if block.name %}<a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}" class="liquid-overlay-link">{{ block.name }}</a>{% endif %}
+                        <header class="liquid-lp-header">
+                          {% if block.name %}
+                          <h2 class="liquid-lp-title size-lg font-weight-bold h3" data-fittext="true" data-fittext-options='{ "maxFontSize": "currentFontSize", "compressor": 0.6 }'>
+                            <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}" data-split-text="text" data-split-options='{ "type": "lines" }'>{{ block.name }}</a>
+                          </h2>
+                          {% endif %}
+                          <div class="liquid-lp-details liquid-lp-details-lined size-sm text-uppercase lp-sp-1">
+                            <ul class="liquid-lp-category">
+                              {% if block.html %}<li>{{ block.html|safe }}</li>{% endif %}
+                            </ul>
+                          </div>
+                        </header>
+                      </div>
+-->
+                      </a>
+                    </article>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,209 @@
+{% load mtags tags flatcontent_tags %}<!DOCTYPE html><html lang="en">
+<head>
+{% include "skeleton_header.html" %}
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="/media/css/liquid-icon.min.css" />
+<link rel="stylesheet" href="/media/css/font-awesome.min.css" />
+<link rel="stylesheet" href="/media/css/theme-vendors.min.css" />
+<link rel="stylesheet" href="/media/css/theme.min.css" />
+<link rel="stylesheet" href="/media/css/multiconcept.css" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/media/css/custom.css" />
+<link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css">
+<script async src="/media/js/modernizr.min.js"></script>
+{% block extrascript %}{% endblock %}
+</head>
+<body class="lqd-stack-buttons-style-2 header-style-fullscreen" data-mobile-nav-trigger-alignment="right" data-mobile-nav-align="left" data-mobile-nav-style="classic" data-mobile-nav-shceme="gray" data-mobile-header-scheme="gray">
+{%  block body %}
+<div id="wrap" class="{% ifequal request.META.PATH_INFO "/" %}homepage{% endifequal %}">
+  <header class="main-header main-header-overlay">
+    <div class="mainbar-wrap">
+      <div class="megamenu-hover-bg"></div>
+      <div class="container-fluid mainbar-container">
+        <div class="mainbar">
+          <div class="row mainbar-row align-items-lg-stretch px-4">
+            <div class="col">
+
+              {% with containers.main.tags.logo as logo %}
+                <div class="navbar-header-overlay">
+                  <img class="logo-dark" src="{{ logo.thumb }}" alt="">
+                  <div class="helper"><img src="/media/misc/scroll_down.png" /></div>
+                </div>
+
+                <div class="navbar-header">
+                  <a class="navbar-brand" href="/" rel="home">
+                    <span class="navbar-brand-inner">
+                      <img class="logo-dark" src="{{ logo.thumb }}" alt="">
+                      <img class="logo-light" src="{{ logo.thumb }}" alt="">
+                      <img class="logo-sticky" src="{{ logo.thumb }}" alt="">
+                      <img class="mobile-logo-default" src="{{ logo.thumb }}" alt="">
+                      <img class="logo-default" src="{{ logo.thumb }}" alt="">
+                    </span>
+                  </a>
+
+                  <div class="call_to_action">
+                    <div class="icon"><img src="/media/misc/phone.svg" /></div>
+                    <div class="phone">
+                      {{ containers.main.tags.phone.html|safe }}
+                      <a class="request_call" href="#request_call">Заказать звонок</a>
+                    </div>
+                  </div>
+
+
+                  <button type="button" class="navbar-toggle collapsed nav-trigger style-mobile" data-toggle="collapse" data-target="#main-header-collapse" aria-expanded="false" data-changeclassnames='{ "html": "mobile-nav-activated overflow-hidden" }'>
+                    <span class="sr-only">Меню</span>
+                    <span class="bars">
+                      <span class="bar"></span>
+                      <span class="bar"></span>
+                      <span class="bar"></span>
+                    </span>
+                  </button>
+                </div>
+              {% endwith %}
+            </div>
+            <div class="col text-right">
+              <div class="collapse navbar-collapse navbar-visible-ontoggle collapsed" id="main-header-collapse" aria-expanded="false" role="tablist">
+                <div class="call_to_action">
+                  <div class="icon"><img src="/media/misc/phone.svg" /></div>
+                  <div class="phone">
+                    {{ containers.main.tags.phone.html|safe }}
+                    <a class="request_call" href="#request_call">Заказать звонок</a>
+                  </div>
+                </div>
+                {% flatmenu request "mainmenu" %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main id="content" class="content bg-black"{% ifequal request.META.PATH_INFO "/" %} data-liquid-stack="true" data-stack-options='{"navigation":true, "prevNextButtons":true, "pageNumber":true, "effect":"fadeScale"}'{% endifequal %}>
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="main-footer bg-charade pt-70">
+    <section>
+      <div class="container">
+        <div class="row">
+          {% flatmenu request "bottommenu" %}
+          <div class="lqd-column col-md-3 col-sm-6">
+            <h3 class="widget-title text-white">Контакты</h3>
+            <p>
+              {{ containers.main.tags.address.html|safe }}<br><br>
+              {{ containers.main.tags.phone.html|safe }}
+            </p>
+          </div>
+          <div class="lqd-column col-md-3 col-sm-6">
+            <h3 class="widget-title text-white">Сообщества</h3>
+            <ul class="social-icon social-icon-md">
+              {% for item in containers.main.tags.social.sub %}
+              <li>
+                <a href="{{ item.link }}" target="_blank">
+                  <i class="fa fa-{{ item.tag }}"></i>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% comment %}<!--{% include "web/subscribe.html" %}-->{% endcomment %}
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="bt-fade-white-015 pt-35 pb-35 mt-50">
+      <div class="container">
+        <div class="row">
+          <div class="lqd-column col-md-6">
+            <ul class="lqd-custom-menu reset-ul inline-nav">
+              <li><a href="#">Правила пользования сайтом</a></li>
+              <li><a href="#">Политика безопасности</a></li>
+            </ul>
+          </div>
+          <div class="lqd-column col-md-6 text-md-right">
+            <p class="my-0">{{ containers.main.tags.copyright.html|safe }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </footer>
+</div>
+
+<div id="request_call">
+  {% include "web/containers/feedback.html" %}
+</div>
+{% endblock %}
+<script src="/media/js/jquery.min.js"></script>
+<script src="/media/js/theme-vendors.js"></script>
+<script src="/media/js/jquery.pagepiling.min.js"></script>
+<script src="/media/js/theme.min.js"></script>
+<script src="/media/js/custom.js"></script>
+<script src="/static/fancybox/jquery.fancybox.min.js"></script>
+
+
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/static/js/feedback.js"></script>
+
+
+<!-- DEBUG:
+{% for cont in page.containers %}
+  {{ cont.container.name }} - {{ cont.container.tag }}<br />
+  {% ifequal cont.container.tag 'main' %}
+    {% for block in cont.blocks %}
+      __ {{ block.name }}<br />
+      {% for item in block.sub %}
+        __ __ {{ item.name }}<br />
+      {% endfor %}
+    {% endfor %}
+  {% endifequal %}
+{% endfor %}
+-->
+<form class="hidden" id="all_blocks" method="GET" action="{% url 'flattooltip:api' 'flattooltip' %}">
+<input type="text" name="by" value="50" />
+<input type="text" name="only_fields" value="name,xpos,ypos,block,direction" />
+{% for cont in page.containers %}
+  {% for block in cont.blocks %}
+    {% if block.img %}
+    <input type="text" value="{{ block.id }}" name="blocks_with_images" />
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+</form>
+
+{% comment %}<!--{% include "check_feedback_form.html" %}-->{% endcomment %}
+
+<script type="text/javascript">
+  function set_nav_height($){
+    var window_height = $(window).height();
+    var nav_height = $(".navbar-header-overlay").height();
+    if(window_height !== nav_height){
+      $(".navbar-header-overlay").height(window_height);
+    }
+  }
+  window.addEventListener('resize', function(event){
+    set_nav_height(jQuery);
+  });
+  jQuery(document).ready(function($){
+
+    $("a[href='#request_call']").each(function(){
+      $(this).fancybox();
+    });
+
+    setTimeout(function(){
+      if($("section.slider4").length > 0){
+        $("#pp-nav").hide();
+        $(".lqd-stack-prevnext-wrap").hide();
+        $(".lqd-stack-page-number").hide();
+        $(".navbar-header-overlay .helper").hide();
+      }
+      if($("section.slider1").length > 0){
+        $(".navbar-header-overlay .helper").hide();
+      }
+      set_nav_height($);
+    }, 250);
+  });
+</script>
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

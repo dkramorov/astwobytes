@@ -365,3 +365,39 @@ def date_translater(date):
     result = '%s ' % (period_digit, )
     result += analyze_digit(period_digit, period_padej)
     return result
+
+def punto(text: str, direction: str = 'eng2rus'):
+    """Перевод английской раскладки в русские буквы,
+       например, для ввода паролей по логину
+       :param text: текст для изменения
+       :param direction: тип для изменения
+    """
+    if not text:
+        return text
+    text = '%s' % text
+    eng = ('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']',
+           'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '\\',
+           'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/')
+    rus = ('й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ',
+           'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'ё',
+           'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '/')
+    def get_letter(letter: str):
+        """Возвращаем букву после преобразований
+           :param letter: буква до преобразований
+        """
+        if direction == 'eng2rus':
+            source = eng
+            dest = rus
+        elif direction == 'rus2eng':
+            source = rus
+            dest = eng
+        ind = None
+        if letter in source:
+            ind = source.index(letter)
+            return dest[ind]
+        return letter
+
+    result = ''
+    for letter in text:
+        result += get_letter(letter)
+    return result

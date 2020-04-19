@@ -1,0 +1,19 @@
+{% load mtags %}
+<section class="vc_row pt-70 pb-30">
+  <div class="container">
+    <div class="row">
+      <div class="lqd-column col-md-12">
+        <header class="fancy-title mb-50">
+          <h2 class="mb-3">{{ container.name }}</h2>
+          {% if container.description %}<p class="font-size-18">{{ container.description|safe }}</p>{% endif %}
+        </header>
+      </div>
+      {% for block in blocks %}
+        <div class="lqd-column col-md-4 mb-10">
+          <h4 class="mb-1 font-size-20 font-weight-normal left_red_line">{{ block.name }}</h4>
+        </div>
+        {% cycle '' '' '<div class="clearfix"></div>' %}
+      {% endfor %}
+    </div>
+  </div>
+</section>

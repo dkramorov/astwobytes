@@ -40,7 +40,7 @@ $(document).ready(function(){
     var pk = cell.getData()['id'];
     var result = "<div class='padding-rl5 text-center'>";
     if(value){
-      result += " <a class='btn' target='_blank' href='{{ root_url }}" + pk + "/'>" + value + "</a> ";
+      result += " <a class='btn' target='_blank' href='javascript:void(0);'>" + value + "</a> ";
     }
     result += "</div>";
     return result;

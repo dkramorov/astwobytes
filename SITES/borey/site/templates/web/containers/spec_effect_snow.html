@@ -1,0 +1,28 @@
+{% load mtags %}
+<section class="vc_row fullheight d-flex flex-wrap align-items-center py-5 bg-cover" style="background-image: url('{% imagine container.img '1920x1080' container.get_folder True %}');">
+  <div class="ld-particles-container pos-abs" style="height: 50vh; top: 25vh;">
+    <div class="ld-particles-inner pos-abs" id="particles-1" data-particles="true" data-particles-options='{"particles":{"number":{"value":150},"color":{"value":"#ffffff"},"shape":{"type":["circle"]},"opacity":{"value":0.5,"random":true,"anim":{"enable":true,"opacity_min":0.25,"speed":0,"sync":true}},"size":{"value":2,"random":true,"anim":{"enable":true,"size_min":35}},"move":{"enable":true,"direction":"right","speed":6,"random":true,"out_mode":"out","attract":{"enable":true}}},"interactivity":{"modes":{"bubble":{"distance":1,"size":1,"duration":1}}},"retina_detect":true}'>
+    </div>
+  </div>
+  <div class="ld-particles-container pos-abs" style="height: 50vh; top: 25vh;">
+    <div class="ld-particles-inner" id="particles-2" data-particles="true" data-particles-options='{"particles":{"number":{"value":100},"color":{"value":"#ffffff"},"shape":{"type":["circle"]},"opacity":{"value":0.65,"random":true,"anim":{"enable":true,"opacity_min":0.2,"speed":1,"sync":true}},"size":{"value":2,"random":true,"anim":{"enable":true,"size_min":44}},"move":{"enable":true,"direction":"right","speed":4,"random":true,"out_mode":"out","attract":{"enable":true}}},"interactivity":{"modes":{"bubble":{"distance":1,"size":1,"duration":1}}},"retina_detect":true}'></div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="lqd-column col-md-12 text-center">
+        {% for block in blocks %}
+          <h1 class="my-0 text-white text-uppercase" data-fittext="true" data-fittext-options='{"compressor":1,"maxFontSize": 100,"minFontSize": 68}'>
+{{ block.name }}</h1>
+          <div class="font-size-20 text-white">{{ block.html|safe }}</div>
+        {% endfor %}
+        <div class="mb-100"></div>
+        <div class="row">
+          <div class="lqd-column col-md-8 col-md-offset-2">
+            <div class="countdown primary countdown-sep-off" data-plugin-countdown="true" data-countdown-options='{"until":"2030-12-31"}' data-fittext="true" data-fittext-options='{"minFontSize": 100, "maxFontSize": 100}'>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

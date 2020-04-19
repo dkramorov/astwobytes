@@ -15,28 +15,28 @@ from apps.main_functions.tabulator import tabulator_filters_and_sorters
 from .models import DemoModel
 
 CUR_APP = 'demo_app'
-demo_model_vars = {
-    'singular_obj': 'объект',
-    'plural_obj': 'объекты',
+demo_app_vars = {
+    'singular_obj': 'Объект',
+    'plural_obj': 'Объекты',
     'rp_singular_obj': 'объекта',
     'rp_plural_obj': 'объектов',
-    'template_prefix': 'demo_model_',
+    'template_prefix': 'demo_app_',
     'action_create': 'Создание',
     'action_edit': 'Редактирование',
     'action_drop': 'Удаление',
     'menu': 'demo_app',
-    'submenu': 'demo_model',
-    'show_urla': 'show_demo_model',
-    'create_urla': 'create_demo_model',
-    'edit_urla': 'edit_demo_model',
+    'submenu': 'demo_app',
+    'show_urla': 'show_demo_app',
+    'create_urla': 'create_demo_app',
+    'edit_urla': 'edit_demo_app',
     'model': DemoModel,
 }
 
-def api(request, action: str = 'demo_model'):
+def api(request, action: str = 'demo_app'):
     """Апи-метод для получения всех данных"""
-    mh_vars = demo_model_vars.copy()
-    #if action == 'demo_model':
-    #    mh_vars = demo_model_vars.copy()
+    mh_vars = demo_app_vars.copy()
+    #if action == 'demo_app':
+    #    mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     # Принудительные права на просмотр
     mh.permissions['view'] = True
@@ -55,9 +55,9 @@ def api(request, action: str = 'demo_model'):
     return JsonResponse(result, safe=False)
 
 @login_required
-def show_demo_model(request, *args, **kwargs):
+def show_demo_app(request, *args, **kwargs):
     """Вывод объектов"""
-    mh_vars = demo_model_vars.copy()
+    mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
     # -----------------------
@@ -93,9 +93,9 @@ def show_demo_model(request, *args, **kwargs):
     return render(request, template, context)
 
 @login_required
-def edit_demo_model(request, action: str, row_id: int = None, *args, **kwargs):
+def edit_demo_app(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование объекта"""
-    mh_vars = demo_model_vars.copy()
+    mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     context = mh.context
     row = mh.get_row(row_id)
@@ -152,19 +152,19 @@ def edit_demo_model(request, action: str, row_id: int = None, *args, **kwargs):
     return render(request, template, context)
 
 @login_required
-def demo_model_positions(request, *args, **kwargs):
+def demo_app_positions(request, *args, **kwargs):
     """Изменение позиций объектов"""
     result = {}
-    mh_vars = demo_model_vars.copy()
+    mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
-def search_demo_model(request, *args, **kwargs):
+def search_demo_app(request, *args, **kwargs):
     """Поиск объектов"""
     result = {'results': []}
     mh = ModelHelper(DemoModel, request)
-    mh_vars = demo_model_vars.copy()
+    mh_vars = demo_app_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
     mh.search_fields = ('id', 'name')

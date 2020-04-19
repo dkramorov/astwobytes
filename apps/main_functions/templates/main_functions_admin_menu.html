@@ -1,0 +1,8 @@
+{% if perms.main_functions.view_tasks %}
+<li{% ifequal menu 'main_functions' %} class="active"{% endifequal %}>
+  <a href="{% url 'main_functions:show_tasks' %}">
+    <em class="fa fa-superscript"></em>
+    <span class="item-text">Задачи</span>
+  </a>
+</li>
+{% endif %}

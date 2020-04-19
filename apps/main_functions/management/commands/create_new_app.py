@@ -93,7 +93,10 @@ class Command(BaseCommand):
             help = 'Set new model name')
 
     def handle(self, *args, **options):
-        """Загрузка cdr_csv информации о звонках в базу"""
+        """Создание нового приложения,
+           пример использования:
+           python manage.py create_new_app --app_name=flattooltip --model_name=FlatToolTip
+        """
         is_running = search_process(q = ('create_new_app', 'manage.py'))
         if is_running:
             logger.error('Already running %s' % (is_running, ))
@@ -180,10 +183,10 @@ class Command(BaseCommand):
             'to': 'templates/%s_admin_menu.html' % (app_name, ),
         }, {
             'from': 'templates/demo_app_edit.html',
-            'to': 'templates/%s_edit.html' % (model_name, ),
+            'to': 'templates/%s_edit.html' % (app_name, ),
         }, {
             'from': 'templates/demo_app_table.html',
-            'to': 'templates/%s_table.html' % (model_name, ),
+            'to': 'templates/%s_table.html' % (app_name, ),
         }]
         for task in REPLACE_TASKS:
             source = os.path.join(apps_path, app_name, task['from'])
