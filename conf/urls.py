@@ -35,8 +35,6 @@ urlpatterns = [
     re_path(r'^files/', include('apps.files.urls')),
     # main_functions
     re_path(r'^', include('apps.main_functions.urls')),
-    # Сайт
-    re_path(r'^', include('apps.site.main.urls')),
     # статика
     re_path(r'^', include('apps.files.urls_static'))
 ]
@@ -44,6 +42,10 @@ urlpatterns = [
 # ---------------------------------
 # Подключение приложений через .env
 # ---------------------------------
+if 'apps.site' in settings.INSTALLED_APPS:
+    # Сайт (вставляем выше статики)
+    urlpatterns.insert(1, re_path(r'^', include('apps.site.main.urls')))
+
 if 'apps.afisha' in settings.INSTALLED_APPS:
     # Афиша
     urlpatterns += [
@@ -88,6 +90,11 @@ if 'apps.flattooltip' in settings.INSTALLED_APPS:
     # Подсказки для изображений
     urlpatterns += [
         re_path(r'^flattooltip/', include('apps.flattooltip.urls')),
+    ]
+if 'apps.promotion' in settings.INSTALLED_APPS:
+    # Продвижение и сео
+    urlpatterns += [
+        re_path(r'^promotion/', include('apps.promotion.urls')),
     ]
 
 # -------------------------------------------

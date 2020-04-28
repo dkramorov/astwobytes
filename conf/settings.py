@@ -74,6 +74,10 @@ CUSTOM_APPS = [
 ]
 # CUSTOM_APPS_END
 
+# Сайт
+if env('SITE_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.site')
+
 if env('AFISHA_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.afisha')
 if env('SPAMCHA_APP', cast=bool, default=False):
@@ -92,6 +96,8 @@ if env('PRODUCTS_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.products')
 if env('FLATTOOLTIP_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.flattooltip')
+if env('PROMOTION_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.promotion')
 
 CUSTOM_APPS += [
     'apps.upload_tasks',
@@ -117,8 +123,6 @@ INSTALLED_APPS = [
     'apps.telegram',
     'apps.files',
     'apps.flatcontent',
-    # Сайт
-    'apps.site',
 ] + CUSTOM_APPS
 
 MIDDLEWARE = [

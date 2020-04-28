@@ -67,3 +67,46 @@ class TelegramBot:
         except Exception as e:
             logger.error("Telegram и медный таз встретились на раз! %s" % str(e))
         return {}
+
+    def send_document(self, input_file, caption='', chat_id=None):
+        """Отправка файла в телеграм чат"""
+        self.send_file(input_file, caption=caption, chat_id=chat_id, file_type='doc')
+
+    def send_photo(self, input_file, caption='', chat_id=None):
+        """Отправка файла в телеграм чат"""
+        self.send_file(input_file, caption=caption, chat_id=chat_id, file_type='img')
+
+    # ---------------------------------
+    # USAGE:
+    # передаем в f открытый дескриптор
+    # fname = '/home/.../1.xlsx'
+    # with open(fname, "rb") as f:
+    #   TelegramBot().send_document(f))
+    # ---------------------------------
+    def send_file(self, input_file, caption='', chat_id=None, file_type: str = 'doc'):
+        """Отправка файла в телеграм чат
+           :param input_file: открытый дескриптор файла
+           :param caption: заголовок файла
+           :param chat_id: идентификатор чата
+           :param file_type: тип файла
+        """
+        params = {'caption': caption, 'chat_id': chat_id or self.chat_id}
+        method = 'sendDocument'
+        files = {'document': input_file}
+        if file_type == 'img':
+            method = 'sendPhoto'
+            files = {'photo': input_file}
+        try:
+            resp = requests.post(
+                "{}{}".format(self.api_url, method),
+                files=files,
+                data=params,
+                proxies=self.proxies
+            )
+            if not resp.status_code == 200:
+                logger.error('Telegram response: %s' % (resp.text, ))
+                return {}
+            return resp.json()
+        except Exception as e:
+            logger.error('Telegram и медный таз встретились на раз! %s' % str(e))
+        return {}

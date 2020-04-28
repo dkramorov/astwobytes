@@ -1,13 +1,14 @@
 {
     title: "Включен",
     field: "is_active",
-    editor: "select",
     headerFilterPlaceholder: "Включен",
     headerFilter: true,
     headerFilterFunc: "=",
     headerFilterParams: {
         values: {"": "Без фильтра", true: "Да", false: "Нет"},
     },
+    editable: false,
+    editor: "select",
     formatter: booleanFormatter,
     width: 90,
 },

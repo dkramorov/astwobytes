@@ -53,7 +53,7 @@ rowMoved:function(row){
   var msg = 'Произошла ошибка, обновите страничку';
   $.ajax({
     type: 'POST',
-    url: '{{ root_url }}positions/',
+    url: '{% url "products:pvalues_positions" %}',
     data: {csrfmiddlewaretoken: getCookie('csrftoken'), positions: new_positions},
   }).done(function(r) {
     if(r.error){
@@ -78,5 +78,5 @@ rowMoved:function(row){
   });
 },
 
-selectable: true, //make rows selectable
+selectable: false,
 layout:"fitColumns",

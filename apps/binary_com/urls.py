@@ -7,4 +7,5 @@ from . import views
 app_name = 'binary_com'
 urlpatterns = [
     path('', views.index, name='index'),
+    path('generate_report/', views.generate_report, name='generate_report'),
 ]

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
+import sys
 import logging
 import asyncio
 import time
@@ -7,7 +9,6 @@ import datetime
 import websockets
 import json
 import ssl
-import sys
 import requests
 import redis
 import random
@@ -15,6 +16,7 @@ import random
 from telegram import TelegramBot
 from math_operations import MathOperations
 from strategies import strategy_opposite_touches
+from plotly_builder import save_with_plotly
 
 FORMAT = '%(asctime)s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -250,6 +252,18 @@ class StateMachine:
                     msg = '%s %s, profit %s, balance %s' % (BOT_TOKEN, deal.get('status'), profit, self.balance.get('balance'))
                     logger.info(msg)
                     self.telegram.send_message(msg)
+                    self.make_deal_report() # отчет по сделкам
+
+    def make_deal_report(self):
+        """Создать отчет через plotly,
+           отправить сообщение в телегу
+        """
+        output_img = save_with_plotly(ticks=self.ticks_data, image='png')
+        with open(output_img, 'rb') as f:
+            self.telegram.send_photo(f)
+        if output_img.endswith('.png'):
+            os.unlink(output_img)
+
 
     def refresh(self):
         """Мягкий перезапуск"""

@@ -2,7 +2,16 @@
 <li{% ifequal menu 'demo_app' %} class="active"{% endifequal %}>
   <a href="{% url 'demo_app:show_demo_app' %}">
     <em class="fa fa-file"></em>
+    <div class="label label-primary pull-right">1</div>
     <span class="item-text">Объекты</span>
   </a>
+  <!-- START SubMenu item-->
+  <ul class="nav collapse{% ifequal menu 'demo_app' %} in{% endifequal %}">
+    <li{% ifequal submenu 'demo_app' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'demo_app:show_demo_app' %}">
+        <span class="item-text">Объекты</span>
+      </a>
+    </li>
+  </ul>
 </li>
 {% endif %}

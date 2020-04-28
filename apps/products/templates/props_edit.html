@@ -18,18 +18,27 @@
         <div class="panel-body">
           {% csrf_token %}
           {% include "core/forms/row_name.html" %}
+          <div class="form-group">
+            <label class="col-md-2">Тип свойства</label>
+            <div class="col-md-10">
+              <select id="prop_ptype" class="form-control" name="ptype">
+                <option value="">Не выбран</option>
+                {% for ptype in ptypes %}
+                  <option value="{{ ptype.0 }}"{% ifequal row.ptype ptype.0 %} selected{% endifequal %}>{{ ptype.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
           {% include "core/forms/row_image.html" %}
 
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
         </div>
-        <div class="panel-body">
-          {% include "props_tabulator_table.html" %}
-        </div>
         {% include "core/forms/footer_buttons.html" %}
       </form>
     </div>
     <!-- END panel-->
+    {% include "props_tabulator_table.html" %}
   </div>
 </div>
 <!-- END row-->
@@ -76,6 +85,8 @@
         e.preventDefault();
       });
 
+      $("#prop_ptype").select2();
+
       function update_links(r){
         // Обновление фотки
         var thumb = r['row']['thumb'];
@@ -118,37 +129,79 @@
         var select = new $.upload.select($('#upload-select-files'), settings),
         drop   = new $.upload.drop($('#upload-drop-files'), settings);
 
-
-
-
-
-
-
-
-
-  main_table = new Tabulator("#main-table", {
-    {% include "props_tabulator_table_params.html" %}
-    columns:[
-/*
-      {
-        formatter: "responsiveCollapse",
-        width: 30,
-        minWidth: 30,
-        align: "center",
-        resizable: false,
-        headerSort: false,
-      },
-*/
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
-
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
-      {% include "core/tabulator_cell/actions.html" %}
-    ],
-  });
+        main_table = new Tabulator("#main-table", {
+          data: [{% for pvalue in pvalues %}
+            {
+              'id': '{{ pvalue.id }}',
+              'name': '{{ pvalue.str_value }}',
+              'is_active': {% if pvalue.is_active %}true{% else %}false{% endif %},
+              'position': '{{ pvalue.position }}',
+              'actions': '{{ pvalue.id }}',
+            },
+          {% endfor %}],
+          {% include "props_tabulator_table_params.html" %}
+          columns:[
+            {% include "core/tabulator_cell/drag.html" %}
+            {% include "core/tabulator_cell/id.html" %}
+            {
+              title: "Значение свойства",
+              field: "name",
+              headerFilterPlaceholder: "Значение свойства",
+              headerFilter: "input",
+              headerFilterFunc: "like",
+              //formatter: wordwrapFormatter,
+              editor: fieldEditor,
+              minWidth: 150,
+            },
+            {
+              title: "Включен",
+              field: "is_active",
+              headerFilterPlaceholder: "Включен",
+              headerFilter: true,
+              headerFilterFunc: "=",
+              headerFilterParams: {
+                values: {"": "Без фильтра", true: "Да", false: "Нет"},
+              },
+              editable: true,
+              editor: tickCrossEditor,
+              formatter: booleanFormatter,
+              width: 90,
+            },
+            {% include "core/tabulator_cell/position.html" %}
+            {% include "core/tabulator_cell/actions.html" %}
+          ],
+        });
 
       {% endif %}
     });
   </script>
+
+  <!-- START modal-->
+  <div id="ajax_drop_pvalue" tabindex="-1" role="dialog" aria-labelledby="myModalLabelPValue" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
+          <h4 id="myModalLabelPValue" class="modal-title">Удалить значение свойства</h4>
+        </div>
+        <div class="modal-body">Вы уверенны, что хотите удалить значение свойства id=<span id="ajax_drop_pvalue_id"></span><span class="hidden" id="ajax_drop_pvalue_ind"></span>?</div>
+        <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
+          <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_pvalue_button">Да</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form class="hidden" method="get" action="{{ root_url }}" id="current_drop_form_pvalue">{% csrf_token %}
+    <input type="hidden" name="drop_pvalue" id="drop_pvalue_id" value="0" />
+  </form>
+  <script type="text/javascript">
+    function prepare_for_drop_pvalue(pk, row_index){
+      $("#ajax_drop_pvalue_id").html(pk);
+      $("#drop_pvalue_id").val(pk);
+      $("#ajax_drop_pvalue_ind").html(row_index);
+      $("#current_drop_form_pvalue").attr("action", "{{ url_edit_pvalue }}");
+    }
+  </script>
+  <!-- END modal-->
 {% endblock %}

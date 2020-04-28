@@ -14,7 +14,7 @@ from apps.main_functions.tabulator import tabulator_filters_and_sorters
 from apps.main_functions.string_parser import analyze_digit
 
 from apps.flatcontent.models import Containers, Blocks
-from .models import Products, ProductsCats, ProductsPhotos, Property
+from .models import Products, ProductsCats, ProductsPhotos, Property, PropertiesValues
 
 CUR_APP = 'products'
 products_vars = {
@@ -106,6 +106,8 @@ def add_photo2gallery(photo, product, context):
     context['photo']['folder'] = new_photo.get_folder()
     context['photo']['thumb'] = new_photo.thumb()
     context['photo']['imagine'] = new_photo.imagine()
+    if not 'row' in context:
+        context['row'] = object_fields(product)
     context['row']['is_gallery'] = True
 
 @login_required
@@ -407,6 +409,8 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
+        if action in ('create', 'edit'):
+            context['ptypes'] = Property.ptype_choices
         if action == 'create':
             mh.breadcrumbs_add({
                 'link': mh.url_create,
@@ -418,7 +422,8 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
             # Значения свойства
-            context['pvalues'] = mh.row.propertiesvalues_set.all().values('str_value', 'digit_value')
+            context['pvalues'] = [object_fields(prop, pass_fields=('prop', ))
+                for prop in mh.row.propertiesvalues_set.all()]
             context['pvalues_ends'] = analyze_digit(len(context['pvalues']), end = ('запись', 'записей', 'записи'))
 
         elif action == 'drop' and row:
@@ -428,6 +433,20 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
                 context['success'] = '%s удалено' % (mh.singular_obj, )
             else:
                 context['error'] = 'Недостаточно прав'
+        elif action == 'pvalue' and row:
+            result = {}
+            if mh.permissions['drop']:
+                drop_pvalue = request.GET.get('drop_pvalue')
+                if drop_pvalue:
+                    result['drop_pvalue'] = drop_pvalue
+                    pvalue = PropertiesValues.objects.filter(prop=row, pk=drop_pvalue).first()
+                    if pvalue:
+                        pvalue.delete()
+                result['success'] = 'Значение свойства удалено'
+            else:
+                result['error'] = 'Недостаточно прав'
+            return JsonResponse(result, safe=False)
+
     elif request.method == 'POST':
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
@@ -445,12 +464,38 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
-
         elif action == 'img' and request.FILES:
             mh.uploads()
+        elif action == 'pvalue' and row:
+            result = {}
+            pk = request.POST.get('id')
+            value = request.POST.get('value')
+            is_active = request.POST.get('is_active')
+            prop = PropertiesValues(prop=row)
+            if pk:
+                analog = PropertiesValues.objects.filter(pk=pk, prop=row).first()
+                if analog:
+                    prop = analog
+            prop.str_value = value
+            prop.is_active = True if is_active else False
+            try:
+                prop.digit_value = float(value)
+            except Exception:
+                prop.digit_value = None
+
+            if mh.permissions['edit']:
+                result['success'] = 'Данные успешно записаны'
+                prop.save()
+            else:
+                result['error'] = 'Недостаточно прав'
+            result['row'] = object_fields(prop, pass_fields=('prop', ))
+            return JsonResponse(result, safe=False)
     if mh.row:
         mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
                               kwargs={'action': 'edit', 'row_id': mh.row.id})
+        context['url_edit'] = mh.url_edit
+        context['url_edit_pvalue'] = reverse('%s:%s' % (CUR_APP, 'edit_prop'),
+                                         kwargs={'action': 'pvalue', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
@@ -460,3 +505,69 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
+
+pvalues_vars = {
+    'singular_obj': 'Значение свойства',
+    'plural_obj': 'Значения свойства',
+    'rp_singular_obj': 'значения свойства товара',
+    'rp_plural_obj': 'значений свойств товара',
+    'template_prefix': 'pvalues_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'products',
+    'submenu': 'pvalues',
+    'show_urla': 'show_pvalues',
+    #'create_urla': 'create_pvalue',
+    #'edit_urla': 'edit_pvalue',
+    'model': PropertiesValues,
+}
+
+@login_required
+def show_pvalues(request, *args, **kwargs):
+    """Вывод значений свойств для товаров/услуг"""
+    mh_vars = pvalues_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh.get_permissions(Products) # Права от товаров/услуг
+    context = mh.context
+    # -----------------------
+    # Фильтрация и сортировка
+    # -----------------------
+    filters_and_sorters = tabulator_filters_and_sorters(request)
+    for rfilter in filters_and_sorters['filters']:
+        mh.filter_add(rfilter)
+    for rsorter in filters_and_sorters['sorters']:
+        mh.order_by_add(rsorter)
+    context['fas'] = filters_and_sorters['params']
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        rows = mh.standard_show()
+        result = []
+        for row in rows:
+            item = object_fields(row)
+            item['actions'] = row.id
+            item['folder'] = row.get_folder()
+            item['thumb'] = row.thumb()
+            item['imagine'] = row.imagine()
+            result.append(item)
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+@login_required
+def pvalues_positions(request, *args, **kwargs):
+    """Изменение позиций значений свойств в свойстве"""
+    result = {}
+    mh_vars = pvalues_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    mh.get_permissions(Products) # Права от товаров/услуг
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)

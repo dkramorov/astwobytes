@@ -597,7 +597,7 @@ class ModelHelper:
             bulk_update.append(ids_items[pk])
         if bulk_update:
             self.model.objects.bulk_update(bulk_update, ['position'])
-            result['success'] = 'Сортировка выполнена, обновите страничку'
+            result['success'] = 'Сортировка выполнена'
         else:
             result['error'] = 'Ошибка при сортировке'
         return result

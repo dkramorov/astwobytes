@@ -31,6 +31,28 @@
   </div>
 </div>
 <script type="text/javascript">
+var tickCrossEditor = function(cell, onRendered, success, cancel, editorParams){
+  //cell - the cell component for the editable cell
+  //onRendered - function to call when the editor has been rendered
+  //success - function to call to pass the successfuly updated value to Tabulator
+  //cancel - function to call to abort the edit and return to a normal cell
+  //editorParams - params object passed into the editorParams column definition property
+  var editor = document.createElement("input");
+  editor.setAttribute("type", "checkbox");
+  editor.checked = cell.getValue();
+  editor.setAttribute("value", 1);
+  //create and style input
+  editor.style.marginTop = "17px";
+  editor.style.marginLeft = "auto";
+  editor.style.marginRight = "auto";
+  editor.style.display = "block";
+  function successFunc(){
+      success(editor.checked);
+  }
+  editor.addEventListener("change", successFunc);
+  editor.addEventListener("blur", successFunc);
+  return editor;
+};
 var actionsFormatter = function(cell, formatterParams, onRendered){
   var row = cell.getRow();
   var rowIndex = row.getIndex();

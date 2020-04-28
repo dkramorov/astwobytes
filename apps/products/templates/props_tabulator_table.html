@@ -1,6 +1,6 @@
 <!-- START panel-->
 <div class="panel panel-default">
-  <div class="panel-heading">{{ plural_obj }}
+  <div class="panel-heading">Значения свойства
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
       <em class="fa fa-times"></em>
     </a>
@@ -8,7 +8,6 @@
       <em class="fa fa-minus"></em>
     </a>
   </div>
-  <!-- Скачивание таблицы -->
   <div class="panel-body">
     <button class="mb-sm btn btn-primary" type="button" id="download-csv">
       <em class="fa fa-file-text fa-fw mr-sm"></em>Скачать csv
@@ -19,30 +18,92 @@
     <button class="mb-sm btn btn-primary" type="button" id="download-xlsx">
       <em class="fa fa-files-o fa-fw mr-sm"></em>Скачать xlsx
     </button>
-    <a class="mb-sm btn btn-primary" id="main-table-link">
-      <em class="fa fa-link fa-fw mr-sm"></em>Ссылка на таблицу
-    </a>
+    <div class="clearfix"></div>
+    <div id="main-table"></div>
   </div>
-
-  <div class="clearfix"></div>
-  <div id="main-table"></div>
-  <div id="main-table-footer">
-    <span class="start">{{ pvalues|length }} {{ pvalues_ends }}</span>
-
+  <div class="panel-footer">
     <button type="button" class="btn btn-labeled btn-default pull-left mr-sm" id="add-prop">
       <span class="btn-label"><i class="fa fa-plus"></i></span>
-      Добавить свойство
+      Добавить значений
     </button>
     <div class="clearfix"></div>
   </div>
 </div>
 <script type="text/javascript">
+var tickCrossEditor = function(cell, onRendered, success, cancel, editorParams){
+  //cell - the cell component for the editable cell
+  //onRendered - function to call when the editor has been rendered
+  //success - function to call to pass the successfuly updated value to Tabulator
+  //cancel - function to call to abort the edit and return to a normal cell
+  //editorParams - params object passed into the editorParams column definition property
+  var editor = document.createElement("input");
+  editor.setAttribute("type", "checkbox");
+  editor.checked = cell.getValue();
+  editor.setAttribute("value", 1);
+  //create and style input
+  editor.style.marginTop = "17px";
+  editor.style.marginLeft = "auto";
+  editor.style.marginRight = "auto";
+  editor.style.display = "block";
+  function successFunc(){
+      if(!cell.getData){
+        success(editor.checked);
+        return;
+      }
+      if(cell.getData().id){
+        success(editor.checked);
+        edit_on_fly(cell);
+      }else{
+        cancel();
+      }
+  }
+  editor.addEventListener("change", successFunc);
+  //editor.addEventListener("blur", successFunc);
+  return editor;
+};
+//Create field Editor
+var fieldEditor = function(cell, onRendered, success, cancel){
+    //cell - the cell component for the editable cell
+    //onRendered - function to call when the editor has been rendered
+    //success - function to call to pass the successfuly updated value to Tabulator
+    //cancel - function to call to abort the edit and return to a normal cell
+    var cellValue = cell.getValue() || '';
+    var input = document.createElement("input");
+    //input.setAttribute("type", "date");
+    input.style.padding = "4px";
+    input.style.width = "100%";
+    input.style.boxSizing = "border-box";
+    input.value = cellValue;
+    onRendered(function(){
+        input.focus();
+        input.style.height = "100%";
+    });
+    function onChange(e){
+        if(input.value != cellValue){
+            success(input.value);
+            edit_on_fly(cell);
+        }else{
+            cancel();
+        }
+    }
+    input.addEventListener("change", onChange);
+    //input.addEventListener("blur", onChange);
+    input.addEventListener("keydown", function(e){
+        if(e.keyCode == 13){
+            onChange();
+        }
+        if(e.keyCode == 27){
+            cancel();
+        }
+    });
+    return input;
+};
 var actionsFormatter = function(cell, formatterParams, onRendered){
   var row = cell.getRow();
   var rowIndex = row.getIndex();
   var pk = cell.getValue();
   var actions = "<div class='padding-rl5 text-center'>";
-  actions += " <a class='btn-xs btn btn-danger' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+  actions += " <a class='btn-xs btn btn-danger' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_pvalue' onclick='prepare_for_drop_pvalue(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
   actions += "</div>";
   return actions;
 };
@@ -69,10 +130,50 @@ var imgFormatter = function(cell, formatterParams, onRendered){
   return result;
 };
 
+function edit_on_fly(cell){
+  data = cell.getData();
+  $.ajax({
+    type: 'POST',
+    url: '{{ url_edit_pvalue }}',
+    data: {
+      csrfmiddlewaretoken: getCookie('csrftoken'),
+      //props: main_table.getData(),
+      id: data.id,
+      value: data.name,
+      is_active: data.is_active ? 1 : '',
+    },
+  }).done(function(r) {
+    if(r.error){
+      msg = r.error;
+    }else if(r.success){
+      msg =  r.success;
+      status = 'success';
+      cell.getRow().update({
+        'id': r['row']['id'],
+        'name': r['row']['str_value'],
+        'is_active': r['row']['is_active'],
+      });
+    }
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  }).fail(function() {
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  });
+}
+
 $(document).ready(function(){
   //Add row on "Add Row" button click
   $("#add-prop").click(function(){
-    main_table.addRow({});
+    for(var i=0; i<10; i++){
+      main_table.addRow({});
+    }
   });
   //Delete row on "Delete Row" button click
   $("#del-row").click(function(){
@@ -98,5 +199,40 @@ $(document).ready(function(){
       title:"{{ plural_obj }}", //add title to report
     });
   });
+
+  $('#ajax_drop_pvalue_button').click(function(){
+    var pk = $('#ajax_drop_pvalue_id').html();
+    var row_index = parseInt($('#ajax_drop_pvalue_ind').html());
+    var $form = $('#current_drop_form_pvalue');
+    var msg = 'Произошла ошибка, сообщите администратору';
+    var status = 'danger';
+
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: $form.serialize()
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+        // Удаляем строчку из таблицы
+        main_table.deleteRow(row_index);
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    });
+  });
+
 });
 </script>

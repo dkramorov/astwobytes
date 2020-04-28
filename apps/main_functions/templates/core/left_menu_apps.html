@@ -41,6 +41,10 @@
     {% include "flattooltip_admin_menu.html" %}
   {% endif %}
 
+  {% if 'promotion' in apps %}
+    {% include "promotion_admin_menu.html" %}
+  {% endif %}
+
   {% include "main_functions_admin_menu.html" %}
 </ul>
 {% endwith %}

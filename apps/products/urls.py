@@ -15,13 +15,14 @@ urlpatterns = [
     path('admin/positions/', views.products_positions, name='products_positions'),
     # аякс-поиск
     path('products/search/', views.search_products, name='search_products'),
-
     # фотки товаров/услуг
     path('admin/photos/', views.show_photos, name='show_photos'),
     url('^admin/photos/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_photo, name='edit_photo'),
-
     # свойства товаров/услуг
     path('admin/props/', views.show_props, name='show_props'),
     url('^admin/props/(?P<action>create)/$', views.edit_prop, name='create_prop'),
     url('^admin/props/(?P<action>edit|drop|img|pvalue)/(?P<row_id>[0-9]{1,11})/$', views.edit_prop, name='edit_prop'),
+    # значения свойств товаров/услуг
+    path('admin/pvalues/', views.show_pvalues, name='show_pvalues'),
+    path('admin/pvalues/positions/', views.pvalues_positions, name='pvalues_positions'),
 ]

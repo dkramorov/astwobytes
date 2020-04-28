@@ -28,6 +28,10 @@ class Products(Standard):
         verbose_name_plural = 'Товары - товары/услуги'
 
     def save(self, *args, **kwargs):
+        if self.old_price and self.old_price > 99999999999:
+            self.old_price = None
+        if self.price and self.price > 99999999999:
+            self.price = None
         super(Products, self).save(*args, **kwargs)
 
     def link(self):
@@ -41,16 +45,28 @@ class Products(Standard):
 
 class Property(Standard):
     """Свойство для товара"""
+    ptype_choices = (
+        (1, 'Выпадающий список select'),
+        (2, 'Выпадающий список с множественным выбором multiselect'),
+        (3, 'Выбор из вариантов radio'),
+        (4, 'Множественный выбор из вариантов checkbox'),
+    )
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    ptype = models.IntegerField(choices=ptype_choices, blank=True, null=True, db_index=True)
 
 class PropertiesValues(Standard):
     """Свойства для товаров/услуг
-       это точные свойства, то есть не так, что текст от балды,
+       это точные свойства, то есть, не текст от балды,
        а именно конкретное свойство с конкретным значением
     """
     prop = models.ForeignKey(Property, on_delete=models.CASCADE)
     str_value = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     digit_value = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=4, db_index=True) # 990 000 000,0000
+
+    def save(self, *args, **kwargs):
+        if self.digit_value and self.digit_value > 999999999:
+            self.digit_value = None
+        super(PropertiesValues, self).save(*args, **kwargs)
 
 class ProductsProperties(models.Model):
     """Линковка значения свойства к товару"""
