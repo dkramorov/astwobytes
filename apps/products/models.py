@@ -52,6 +52,7 @@ class Property(Standard):
         (4, 'Множественный выбор из вариантов checkbox'),
     )
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    code = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     ptype = models.IntegerField(choices=ptype_choices, blank=True, null=True, db_index=True)
 
 class PropertiesValues(Standard):

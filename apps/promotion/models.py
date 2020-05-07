@@ -20,3 +20,14 @@ class Vocabulary(Standard):
 
         super(Vocabulary, self).save(*args, **kwargs)
 
+class SVisits(Standard):
+    """Статистика для посещений сайтов ботом"""
+    date = models.DateField(blank=True, null=True, db_index=True)
+    ip = models.CharField(max_length=255, blank=True, null=True)
+    company_id = models.IntegerField(blank=True, null=True, db_index=True)
+    profile = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    count = models.IntegerField(blank=True, null=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Promotion - посещение сайта'
+        verbose_name_plural = 'Promotion - посещения сайтов'

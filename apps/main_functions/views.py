@@ -14,7 +14,6 @@ from apps.main_functions.catcher import feedback_form, json_pretty_print
 from apps.main_functions.models import Tasks
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
 
 logger = logging.getLogger('main')
 
@@ -44,16 +43,6 @@ def show_tasks(request, *args, **kwargs):
     mh_vars = main_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс

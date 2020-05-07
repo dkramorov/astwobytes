@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
+from apps.main_functions.api_helper import ApiHelper
 
 from .models import Rubrics, RGenres, REvents, Places, RSeances
 
@@ -33,35 +33,17 @@ rubrics_vars = {
 
 def api(request, action: str = 'rubrics'):
     """Апи-метод для получения всех данных"""
-    mh_vars = rubrics_vars.copy() # rubrics by default
     if action == 'genres':
-        mh_vars = genres_vars.copy()
+        result = ApiHelper(request, genres_vars, CUR_APP)
     elif action == 'events':
-        mh_vars = events_vars.copy()
+        result = ApiHelper(request, events_vars, CUR_APP)
     elif action == 'places':
-        mh_vars = places_vars.copy()
+        result = ApiHelper(request, places_vars, CUR_APP)
     elif action == 'seances':
-        mh_vars = seances_vars.copy()
-
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    # Принудительные права на просмотр
-    mh.permissions['view'] = True
-    context = mh.context
-
-    rows = mh.standard_show()
-
-    result = []
-    for row in rows:
-        item = object_fields(row)
-        item['folder'] = row.get_folder()
-        result.append(item)
-
-    result = {'data': result,
-              'last_page': mh.raw_paginator['total_pages'],
-              'total_records': mh.raw_paginator['total_records'],
-              'cur_page': mh.raw_paginator['cur_page'],
-              'by': mh.raw_paginator['by'], }
-    return JsonResponse(result, safe=False)
+        result = ApiHelper(request, seances_vars, CUR_APP)
+    else:
+        result = ApiHelper(request, rubrics_vars, CUR_APP)
+    return result
 
 @login_required
 def show_rubrics(request, *args, **kwargs):
@@ -69,16 +51,6 @@ def show_rubrics(request, *args, **kwargs):
     mh_vars = rubrics_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -208,16 +180,6 @@ def show_genres(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
 
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
-
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -346,16 +308,6 @@ def show_events(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
     mh.select_related_add('rgenre')
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -498,16 +450,6 @@ def show_places(request, *args, **kwargs):
     context = mh.context
     mh.select_related_add('rubric')
 
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
-
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -640,16 +582,6 @@ def show_seances(request, *args, **kwargs):
     context = mh.context
     mh.select_related_add('place')
     mh.select_related_add('event')
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс

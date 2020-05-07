@@ -15,7 +15,7 @@ from django.conf import settings
 from apps.main_functions.files import check_path, full_path, file_size
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
+from apps.main_functions.api_helper import ApiHelper
 
 from .models import (SpamTable,
                      SpamRow,
@@ -41,37 +41,17 @@ spam_tables_vars = {
     'model': SpamTable,
 }
 
-def api(request, action: str = 'spam_tables_vars'):
+def api(request, action: str = 'spam_tables'):
     """Апи-метод для получения всех данных"""
-    mh_vars = spam_tables_vars.copy()
-    if action == 'spam_tables':
-        mh_vars = spam_tables_vars.copy()
-    elif action == 'spam_rows':
-        mh_vars = spam_rows_vars.copy()
+    if action == 'spam_rows':
+        result = ApiHelper(request, spam_rows_vars, CUR_APP)
     elif action == 'email_accounts':
-        mh_vars = email_accounts_vars.copy()
+        result = ApiHelper(request, email_accounts_vars, CUR_APP)
     elif action == 'black_list':
-        mh_vars = black_list_vars.copy()
-
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    # Принудительные права на просмотр
-    mh.permissions['view'] = True
-    context = mh.context
-
-    rows = mh.standard_show()
-
-    result = []
-    for row in rows:
-        item = object_fields(row)
-        item['folder'] = row.get_folder()
-        result.append(item)
-
-    result = {'data': result,
-              'last_page': mh.raw_paginator['total_pages'],
-              'total_records': mh.raw_paginator['total_records'],
-              'cur_page': mh.raw_paginator['cur_page'],
-              'by': mh.raw_paginator['by'], }
-    return JsonResponse(result, safe=False)
+        result = ApiHelper(request, black_list_vars, CUR_APP)
+    else:
+        result = ApiHelper(request, spam_tables_vars, CUR_APP)
+    return result
 
 @login_required
 def show_spam_tables(request, *args, **kwargs):
@@ -80,16 +60,6 @@ def show_spam_tables(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     mh.breadcrumbs.insert(0, root_breadcrumbs)
     context = mh.context
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -259,16 +229,6 @@ def show_spam_rows(request, spam_table_id: int, *args, **kwargs):
     context = mh.context
 
     mh.filter_add({'spam_table__id': mh_spam_tables.row.id})
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -442,16 +402,6 @@ def show_email_accounts(request, *args, **kwargs):
     mh.breadcrumbs.insert(0, root_breadcrumbs)
     context = mh.context
 
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
-
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -599,16 +549,6 @@ def show_black_list(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     mh.breadcrumbs.insert(0, root_breadcrumbs)
     context = mh.context
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс

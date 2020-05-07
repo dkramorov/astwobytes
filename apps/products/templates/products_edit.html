@@ -130,6 +130,30 @@
   </div>
 </div>
 <!-- END row-->
+
+{% if row %}
+<!-- START row-->
+<div class="row">
+  <div class="col-sm-12">
+    <!-- START panel-->
+    <div class="panel panel-default">
+      <div class="panel-heading">Свойства товара</div>
+      <div class="panel-body" id="product_properties">
+      </div>
+      <div class="panel-footer">
+        <div class="col-lg-6 col-sm-6 padding-tb5">
+          <button type="submit" class="btn btn-labeled btn-info" id="add_product_property">
+            <span class="btn-label"><i class="fa fa-plus"></i></span>Добавить свойство
+          </button>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END row-->
+{% endif %}
+
 {% endblock %}
 
 {% block extrascripts %}
@@ -141,7 +165,7 @@
           <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
           <h4 id="myModalLabelPhoto" class="modal-title">{{ action_drop }} фото из галереи товара</h4>
         </div>
-        <div class="modal-body">Вы уверенны, что хотите удалить фото id=<span id="ajax_drop_photo_id"></span><span class="hidden" id="ajax_drop_photo_ind"></span>?</div>
+        <div class="modal-body">Вы уверены, что хотите удалить фото id=<span id="ajax_drop_photo_id"></span><span class="hidden" id="ajax_drop_photo_ind"></span>?</div>
         <div class="modal-footer">
           <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
           <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_photo_button">Да</button>
@@ -161,7 +185,163 @@
   <script src="/static/redactor/redactor.js"></script>
   <script src="/static/admin/js/parsley.min.js"></script>
   <script type="text/javascript">
+    var new_prop_counter = 0;
+
+function select2_listerner(el_id, prop_id){
+  // Задаем select2 поиск свойства или значения
+  // :param el_id: ид элемента select, например, #prop_1
+  // :param prop_id: ид свойства, значит, ищем значения свойства
+  var urla = "{% url 'products:search_props' %}";
+  var placeholder = "Свойство для товара";
+  if(prop_id){ // Значения свойств, а не свойства
+    urla = "{% url 'products:search_pvalues' %}";
+    placeholder = "Значение свойства";
+  }
+  $(el_id).select2({
+    placeholder: placeholder,
+    width: '100%',
+    ajax: {
+      delay: 150,
+      url: urla,
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+          prop_id: prop_id,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+}
+
+function change_prop(prop_id, el_id){
+  // Смена свойства
+  // Узнаем тип свойства по апи
+  // :param prop_id: ид совйства
+  // :param el_id: ид элемента
+  var msg = "Ошибка при получении значений свойств";
+  var status = "danger";
+  var html = "";
+  $(el_id + "_pvalues").html("");
+  // Получаем значения свойства
+  // Событие должно срабатывать на onchange выбора свойства,
+  // при этом значения должны разрушаться в onchange,
+  // т/к выбирают новое свойства и старые значения не актуальны
+  $.ajax({
+    type: "POST",
+    url: "{% url 'products:api' 'props' %}",
+    data: {
+      csrfmiddlewaretoken: getCookie('csrftoken'),
+      filter__id: prop_id,
+      only_fields: 'ptype',
+    },
+  }).done(function(r) {
+    var ptype = parseInt(r['data'][0]['ptype']);
+    // В зависимости от типа свойства будем создавать
+    // select, radio, checkbox
+    switch(ptype){
+      // select
+      case 1:
+        html += "<select id='pvalues_" + prop_id + "'></select>";
+        $(el_id + "_pvalues").append($(html));
+        select2_listerner("#pvalues_" + prop_id, prop_id);
+        break;
+      // multiselect
+      case 2:
+        break;
+      // radio
+      case 3:
+        break;
+      // checkbox
+      case 4:
+        break;
+      default:
+        console.log('unknown ptype');
+        break;
+    }
+
+  }).fail(function() {
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  });
+  //get_prop_pvalues(prop_id, el_id);
+}
+
+function get_prop_pvalues(prop_id, el_id){
+  // Получаем значения свойства
+  // Событие должно срабатывать на onchange выбора свойства,
+  // при этом значения должны разрушаться в onchange,
+  // т/к выбирают новое свойства и старые значения не актуальны
+  // :param prop_id: ид свойства, значения которого получаем
+  var msg = "Ошибка при получении значений свойств";
+  var status = "danger";
+  $.ajax({
+    type: "POST",
+    url: "{% url 'products:search_pvalues' %}",
+    data: {
+      by: 100,
+      csrfmiddlewaretoken: getCookie('csrftoken'),
+      prop_id: prop_id,
+    },
+  }).done(function(r) {
+    // Добавляем полученные значения свойства для выбора
+    console.log(r, el_id);
+    var html = '';
+    var value = null;
+    for(var i=0; i<r['results'].length; i++){
+      value = r['results'][i];
+      html += "id=" + value['id'] + " text=" + value['text'];
+    }
+    $(el_id + "_pvalues").html(html);
+  }).fail(function() {
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  });
+}
+
     $(document).ready(function(){
+      // Добавление свойств товару
+      // Нужны перетаскиваемые вложенные панели,
+      // чтобы следить за сортировкой свойств
+      // ---
+      // Когда добавляется свойство, узнаем его тип
+      // Когда выбирается свойство, получаем список значений
+      // Когда изменяются значения - сохраняем свойство
+      // ---
+      // Нужна возможность удалять свойства
+      $("#add_product_property").click(function(){
+        new_prop_counter += 1;
+        var html = `
+          <div class="form-group">
+            <label class="col-md-2 control-label">Свойство</label>
+            <div class="col-md-10">
+              <select id="prop_${new_prop_counter}" class="form-control" name="ptype">
+                <option value="">Не выбрано</option>
+              </select>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2 control-label">Значения</label>
+            <div class="col-md-10" id="prop_${new_prop_counter}_pvalues">
+            </div>
+            <div class="clearfix"></div>
+          </div>`;
+        $("#product_properties").append($(html));
+        select2_listerner("#prop_" + new_prop_counter, "")
+        $("#prop_" + new_prop_counter).change(function(){
+          change_prop($(this).val(), "#" + $(this).attr('id'));
+        });
+      });
 
       // -------------
       // Удаление фото

@@ -2,6 +2,19 @@
 import os
 import platform
 import psutil
+import socket
+
+def get_locale():
+    """Возвращает локаль,
+       функция здесь для информации:
+       иногда через LaunchAgents запускается локаль US-ASCII (None, None)
+       вместо utf-8 и проблема с записью и чтением файла начинается"""
+    import locale
+    return (locale.getpreferredencoding(False), locale.getlocale())
+
+def get_hostname():
+    """Возвращаем имя хоста"""
+    return socket.gethostname()
 
 def search_binary(cmd):
     """Поиск исполняемого файла в системе"""
@@ -28,11 +41,12 @@ def search_process(q: list):
     if not isinstance(q, list) and not isinstance(q, tuple):
         assert False
     mypid = os.getpid()
+    myppid = os.getppid()
     for obj in psutil.process_iter():
         process = obj.as_dict(attrs=['pid', 'cmdline', 'create_time', ])
         if not process['cmdline']:
             continue
-        if process['pid'] == mypid:
+        if process['pid'] == mypid or process['pid'] == myppid:
             continue
         match = True
         for item in q:

@@ -13,7 +13,7 @@ from django.core import management
 from apps.main_functions.date_time import str_to_date
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
+from apps.main_functions.api_helper import ApiHelper
 
 from .models import Daemon, Schedule
 
@@ -37,25 +37,10 @@ daemon_vars = {
 
 def api(request, action: str = 'daemon'):
     """Апи-метод для получения всех данных"""
-    mh_vars = daemon_vars.copy()
     #if action == 'daemon':
-    #    mh_vars = daemon_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    # Принудительные права на просмотр
-    mh.permissions['view'] = True
-    context = mh.context
-    rows = mh.standard_show()
-    result = []
-    for row in rows:
-        item = object_fields(row)
-        item['folder'] = row.get_folder()
-        result.append(item)
-    result = {'data': result,
-              'last_page': mh.raw_paginator['total_pages'],
-              'total_records': mh.raw_paginator['total_records'],
-              'cur_page': mh.raw_paginator['cur_page'],
-              'by': mh.raw_paginator['by'], }
-    return JsonResponse(result, safe=False)
+    #    result = ApiHelper(request, daemon_vars, CUR_APP)
+    result = ApiHelper(request, daemon_vars, CUR_APP)
+    return result
 
 @login_required
 def show_daemon(request, *args, **kwargs):
@@ -63,15 +48,7 @@ def show_daemon(request, *args, **kwargs):
     mh_vars = daemon_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
+
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------

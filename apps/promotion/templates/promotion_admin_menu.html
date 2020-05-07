@@ -1,8 +1,8 @@
 {% if perms.promotion.view_promotion %}
 <li{% ifequal menu 'promotion' %} class="active"{% endifequal %}>
-  <a href="{% url 'promotion:show_vocabulary' %}">
+  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'promotion:show_vocabulary' %}">
     <em class="fa fa-rocket"></em>
-    <div class="label label-primary pull-right">1</div>
+    <div class="label label-primary pull-right">2</div>
     <span class="item-text">Продвижение</span>
   </a>
   <!-- START SubMenu item-->
@@ -10,6 +10,11 @@
     <li{% ifequal submenu 'vocabulary' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'promotion:show_vocabulary' %}">
         <span class="item-text">Запросы</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'svisits' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'promotion:show_svisits' %}">
+        <span class="item-text">Посещения сайтов</span>
       </a>
     </li>
   </ul>

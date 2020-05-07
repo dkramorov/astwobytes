@@ -13,6 +13,7 @@ from apps.main_functions.functions import (object_foreign_keys,
 from apps.main_functions.string_parser import q_string_fill
 from apps.main_functions.paginator import myPaginator, navigator
 from apps.main_functions.date_time import str_to_date
+from apps.main_functions.tabulator import tabulator_filters_and_sorters
 
 logger = logging.getLogger()
 
@@ -382,10 +383,12 @@ class ModelHelper:
             if hasattr(dest, 'upload_img'):
                 dest.upload_img(self.row_vars['img'])
 
-    def standard_show(self, only_query:bool = False):
+    def standard_show(self, only_query: bool = False, only_fields: list = None):
         """Стандартный вывод данных по модели
            filters = Q(name__isnull=True)|Q(name="")
-           only_query просто вернуть запрос с фильтрами"""
+           :param only_query: просто вернуть запрос с фильтрами
+           :param only_fields: достать только определенные поля
+        """
         result = []
 
         # --------------------------
@@ -408,6 +411,8 @@ class ModelHelper:
 
         if self.select_related:
             query = query.select_related(*self.select_related)
+        if only_fields:
+            query = query.only(*only_fields)
 
         q = None
 
@@ -602,8 +607,17 @@ class ModelHelper:
             result['error'] = 'Ошибка при сортировке'
         return result
 
-def create_model_helper(mh_vars, request, CUR_APP:str, action:str = None, reverse_params:dict = None):
-    """Вспомогательная функция для создания ModelHelper"""
+def create_model_helper(mh_vars, request, CUR_APP: str,
+                        action: str = None, reverse_params: dict = None,
+                        disable_fas: bool = False):
+    """Вспомогательная функция для создания ModelHelper
+       :param mh_vars: константы для модели (название объекта, модель, ссылки)
+       :param request: HttpRequest
+       :param CUR_APP: папка приложения
+       :param action: действие над моделью
+       :param reverse_params: параметры для ссылки (создание) на действие над моделью
+       :param disable_fas: отключить filters_and_sorters - во вьюхе свой
+    """
     model = mh_vars.pop('model')
     mh = ModelHelper(model, request)
     if not reverse_params:
@@ -628,5 +642,19 @@ def create_model_helper(mh_vars, request, CUR_APP:str, action:str = None, revers
         'name': mh.plural_obj,
     })
     mh.context['breadcrumbs'] = mh.breadcrumbs
+
+    # -----------------------
+    # Фильтрация и сортировка
+    # -----------------------
+    if not disable_fas:
+        filters_and_sorters = tabulator_filters_and_sorters(request)
+        for rfilter in filters_and_sorters['filters']:
+            mh.filter_add(rfilter)
+        for rsorter in filters_and_sorters['sorters']:
+            mh.order_by_add(rsorter)
+        mh.context['fas'] = filters_and_sorters['params']
+        # Чтобы получить возможность модифицировать фильтры и сортировщики
+        mh.filters_and_sorters = filters_and_sorters
+
     return mh
 

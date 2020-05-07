@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from apps.main_functions.files import check_path, full_path, file_size
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
+from apps.main_functions.api_helper import ApiHelper
 
 from .models import Translate
 
@@ -117,31 +117,12 @@ def PickLanguage(request, lang):
                 return redirect("http://%s%s" % (domain['domain'], referer))
     return redirect("/")
 
-def api(request, action: str = 'files'):
+def api(request, action: str = 'languages'):
     """Апи-метод для получения всех данных"""
-    mh_vars = languages_vars.copy()
-    #if action == 'files':
-    #    mh_vars = files_vars.copy()
-
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    # Принудительные права на просмотр
-    mh.permissions['view'] = True
-    context = mh.context
-
-    rows = mh.standard_show()
-
-    result = []
-    for row in rows:
-        item = object_fields(row)
-        item['folder'] = row.get_folder()
-        result.append(item)
-
-    result = {'data': result,
-              'last_page': mh.raw_paginator['total_pages'],
-              'total_records': mh.raw_paginator['total_records'],
-              'cur_page': mh.raw_paginator['cur_page'],
-              'by': mh.raw_paginator['by'], }
-    return JsonResponse(result, safe=False)
+    #if action == 'languages':
+    #    result = ApiHelper(request, languages_vars, CUR_APP)
+    result = ApiHelper(request, languages_vars, CUR_APP)
+    return result
 
 @login_required
 def show_translates(request, *args, **kwargs):
@@ -149,16 +130,6 @@ def show_translates(request, *args, **kwargs):
     mh_vars = languages_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс

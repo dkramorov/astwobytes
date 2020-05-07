@@ -95,7 +95,11 @@ var wordwrapFormatter = function(cell, formatterParams, onRendered){
   result += "";
   return result;
 };
-
+var accessor_is_active = function(value, data, type, params, column){
+  // param.test <= accessorDownloadParams: {test: 'test'},
+  //console.log(params, value, value ? 1: 0);
+  return value ? 1: 0;
+}
 $(document).ready(function(){
   //trigger download of data.csv file
   $("#download-csv").click(function(){

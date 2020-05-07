@@ -16,6 +16,7 @@ rega_img = re.compile("url\(([^\)]+)", re.I+re.U+re.DOTALL)
 #@import "css/main.css";
 #@import"../plugin/bootstrap/css/bootstrap.min.css";
 rega_import = re.compile("@import[\surl(\"']+([^\"';]+)", re.I+re.U+re.DOTALL)
+root_path = 'new_template'
 
 # 1) https://demo.hasthemes.com/greenfarm-preview/greenfarm/index-2.html
 

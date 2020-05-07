@@ -14,7 +14,6 @@ from django.core.cache import cache
 from apps.main_functions.files import check_path, full_path, file_size, make_folder, copy_file
 from apps.main_functions.functions import object_fields, recursive_fill, sort_voca
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
 from apps.main_functions.atomic_operations import atomic_update, bulk_replace
 from apps.main_functions.crypto import serp_hash
 
@@ -168,16 +167,6 @@ def show_containers(request, ftype: str, *args, **kwargs):
     context['is_products'] = is_products
     context['ftype_state'] = get_ftype(ftype)
     mh.filter_add({'state': context['ftype_state']})
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -553,15 +542,6 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
     context['url_tree'] = mh_containers.url_tree
 
     mh.filter_add({'container__id': mh_containers.row.id})
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     if not context['fas']['filters']:
         mh.filter_add(Q(parents=''))

@@ -151,7 +151,9 @@ function edit_on_fly(cell){
       cell.getRow().update({
         'id': r['row']['id'],
         'name': r['row']['str_value'],
+        'position': r['row']['position'],
         'is_active': r['row']['is_active'],
+        'actions': r['row']['id'],
       });
     }
     $.notify({

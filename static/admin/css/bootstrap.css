@@ -2999,7 +2999,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 .input-group-addon,
 .input-group-btn {
-  width: 1%;
+  /*width: 1%;*/
+  height: 35px;
   white-space: nowrap;
   vertical-align: middle;
 }

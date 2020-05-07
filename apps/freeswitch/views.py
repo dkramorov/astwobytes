@@ -12,7 +12,7 @@ from django.core.cache import cache
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
+from apps.main_functions.api_helper import ApiHelper
 
 from .models import Redirects, CdrCsv, FSUser, PhonesWhiteList, PersonalUsers
 from .backend import FreeswitchBackend
@@ -37,29 +37,10 @@ redirects_vars = {
 
 def api(request, action: str = 'redirects'):
     """Апи-метод для получения всех данных"""
-    mh_vars = redirects_vars.copy()
     if action == 'phones_white_list':
-        mh_vars = phones_white_list_vars.copy()
-
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    # Принудительные права на просмотр
-    mh.permissions['view'] = True
-    context = mh.context
-
-    rows = mh.standard_show()
-
-    result = []
-    for row in rows:
-        item = object_fields(row)
-        item['folder'] = row.get_folder()
-        result.append(item)
-
-    result = {'data': result,
-              'last_page': mh.raw_paginator['total_pages'],
-              'total_records': mh.raw_paginator['total_records'],
-              'cur_page': mh.raw_paginator['cur_page'],
-              'by': mh.raw_paginator['by'], }
-    return JsonResponse(result, safe=False)
+        result = ApiHelper(request, phones_white_list_vars, CUR_APP)
+    result = ApiHelper(request, redirects_vars, CUR_APP)
+    return result
 
 @login_required
 def show_redirects(request, *args, **kwargs):
@@ -67,16 +48,6 @@ def show_redirects(request, *args, **kwargs):
     mh_vars = redirects_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -195,15 +166,10 @@ def show_cdrcsv(request, *args, **kwargs):
     # -----------------------
     # Фильтрация и сортировка
     # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    if not filters_and_sorters['sorters']:
-        filters_and_sorters['params']['sorters']['created'] = 'desc'
-
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
+    if not mh.filters_and_sorters['sorters']:
+        mh.filters_and_sorters['params']['sorters']['created'] = 'desc'
+        for rsorter in mh.filters_and_sorters['sorters']:
+            mh.order_by_add(rsorter)
 
     cache_var_sip_codes = 'sip_codes_cache'
     cache_time_sip_codes = 3600
@@ -332,16 +298,6 @@ def show_users(request, *args, **kwargs):
     mh.select_related_add('user')
     mh.select_related_add('personal_user')
     context = mh.context
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -540,16 +496,6 @@ def show_phones_white_list(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
 
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
-
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -666,16 +612,6 @@ def show_personal_users(request, *args, **kwargs):
     mh_vars = personal_users_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
-
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
 
     # -----------------------------
     # Вся выборка только через аякс

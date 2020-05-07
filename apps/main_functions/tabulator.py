@@ -9,8 +9,8 @@ def tabulator_filters_and_sorters(request, custom_position_field: str = None):
        custom_position_field для своего поля сортировки, например,
        user => customuser OneToOneRelation и тогда
        custom_position_field = customuser__position
-       Как переопределить сортировку по умолчанию:
 
+       Как переопределить сортировку по умолчанию:
        filters_and_sorters = tabulator_filters_and_sorters(request)
        if not filters_and_sorters['sorters']:
            filters_and_sorters['params']['sorters']['id'] = 'desc'
@@ -92,4 +92,5 @@ def tabulator_filters_and_sorters(request, custom_position_field: str = None):
             item = '-%s' % (key, )
         result['sorters'].append(item)
         result['params']['sorters'][key] = value
+
     return result

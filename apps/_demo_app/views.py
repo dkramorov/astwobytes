@@ -10,7 +10,7 @@ from django.conf import settings
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
+from apps.main_functions.api_helper import ApiHelper
 
 from .models import DemoModel
 
@@ -33,42 +33,24 @@ demo_app_vars = {
 }
 
 def api(request, action: str = 'demo_app'):
-    """Апи-метод для получения всех данных"""
-    mh_vars = demo_app_vars.copy()
+    """Апи-метод для получения всех данных
+       :param request: HttpRequest
+       :param action: к какой модели обращаемся
+    """
     #if action == 'demo_app':
-    #    mh_vars = demo_app_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    # Принудительные права на просмотр
-    mh.permissions['view'] = True
-    context = mh.context
-    rows = mh.standard_show()
-    result = []
-    for row in rows:
-        item = object_fields(row)
-        item['folder'] = row.get_folder()
-        result.append(item)
-    result = {'data': result,
-              'last_page': mh.raw_paginator['total_pages'],
-              'total_records': mh.raw_paginator['total_records'],
-              'cur_page': mh.raw_paginator['cur_page'],
-              'by': mh.raw_paginator['by'], }
-    return JsonResponse(result, safe=False)
+    #    result = ApiHelper(request, demo_app_vars, CUR_APP)
+    result = ApiHelper(request, demo_app_vars, CUR_APP)
+    return result
 
 @login_required
 def show_demo_app(request, *args, **kwargs):
-    """Вывод объектов"""
+    """Вывод объектов
+       :param request: HttpRequest
+    """
     mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
+
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -94,7 +76,11 @@ def show_demo_app(request, *args, **kwargs):
 
 @login_required
 def edit_demo_app(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование объекта"""
+    """Создание/редактирование объекта
+       :param request: HttpRequest
+       :param action: действие над объектом (создание/редактирование/удаление)
+       :param row_id: ид записи
+    """
     mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     context = mh.context
@@ -153,7 +139,9 @@ def edit_demo_app(request, action: str, row_id: int = None, *args, **kwargs):
 
 @login_required
 def demo_app_positions(request, *args, **kwargs):
-    """Изменение позиций объектов"""
+    """Изменение позиций объектов
+       :param request: HttpRequest
+    """
     result = {}
     mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
@@ -161,7 +149,9 @@ def demo_app_positions(request, *args, **kwargs):
     return JsonResponse(result, safe=False)
 
 def search_demo_app(request, *args, **kwargs):
-    """Поиск объектов"""
+    """Поиск объектов
+       :param request: HttpRequest
+    """
     result = {'results': []}
     mh = ModelHelper(DemoModel, request)
     mh_vars = demo_app_vars.copy()

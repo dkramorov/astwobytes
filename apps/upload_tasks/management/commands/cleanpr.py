@@ -16,7 +16,7 @@ from apps.products.models import Products, ProductsPhotos, ProductsCats
 logger = logging.getLogger(__name__)
 
 host = 'https://www.cleanpr.ru'
-headers = {"X-Requested-With":"XMLHttpRequest"}
+headers = {'X-Requested-With': 'XMLHttpRequest'}
 
 def parse_ul_menu(ul, result):
     """Рекурсивный обход меню"""

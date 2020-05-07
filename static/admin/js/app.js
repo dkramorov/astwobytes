@@ -1521,3 +1521,113 @@ function getCookie(c_name) {
   }
   return "";
 }
+
+function set_ajax_form(form_id, callback_success, callback_fail, is_file){
+  // Настраиваем форму на аякс отправку
+  // :param form_id: ид формы #current_edit_form
+  // :param callback_success: функция после успешного получения данных
+  // :param callback_fail: функция после НЕуспешного получения данных
+  // :param is_file: отправка файла через форму
+  if(typeof(parsley) === "undefined"){
+    console.log('[ERROR]: parsley not imported');
+    console.log('/static/admin/js/parsley.min.js not found');
+    return;
+  }
+  $(form_id).parsley();
+  $(form_id).submit(function(e) {
+    var $form = $(this);
+    var msg = 'Произошла ошибка, обновите страничку';
+    var status = 'danger'; // success, warning, info, danger
+    var params = {
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: $form.serialize(),
+    };
+    if(is_file){
+      // Отправка файла через аякс-форму
+      var formData = new FormData($form[0]);
+      params.processData = false;
+      params.contentType = false;
+      params.data = formData;
+    }
+    $.ajax(params).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      } else if(r.success) {
+        msg =  r.success;
+        status = 'success';
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      if(callback_success !== undefined){
+        callback_success(r);
+      }
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      if(callback_fail !== undefined){
+        callback_fail(r);
+      }
+    });
+    //отмена действия по умолчанию для кнопки submit
+    e.preventDefault();
+  });
+}
+function set_ajax_form_save_xlsx(button_id, excel_table, callback_success, callback_fail){
+  // Настраиваем форму на аякс отправку данных, полученных с xlsx файла
+  // Кнопке button_id даем data-save-action и туда засылаем xlsx данные
+  // :param button_id: ид кнопки сохранения #save_excel_table
+  // :param excel_table: таблица с данными эксельки
+  // :param callback_success: функция после успешного получения данных
+  // :param callback_fail: функция после НЕуспешного получения данных
+  $(button_id).click(function(){
+    var msg = "Произошла ошибка, обновите страничку";
+    var status = "danger"; // success, warning, info, danger
+    var rows = excel_table.getData();
+    var action = $(button_id).attr('data-save-action');
+    if(rows.length < 1 || !action){
+      console.log("[ERROR]: empty data or action for save from xlsx");
+      return;
+    }
+    $.ajax({
+      type: "POST",
+      url: action,
+      data: {
+        csrfmiddlewaretoken: getCookie('csrftoken'),
+        action: 'save',
+        count: rows.length,
+        data: rows,
+      },
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      } else if(r.success) {
+        msg =  r.success;
+        status = 'success';
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      if(callback_success !== undefined){
+        callback_success(r);
+      }
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      if(callback_fail !== undefined){
+        callback_fail(r);
+      }
+    });
+  });
+}

@@ -69,10 +69,15 @@ class TelegramBot:
     # parse_mode = 'HTML' (<b>123</b>)
     # parse_mode = 'Markdown'
     # --------------------------------
-    def send_message(self, text, chat_id=None, parse_mode=None):
+    def send_message(self, text: str, chat_id: int = None, parse_mode: str = None,
+                     disable_web_page_preview: bool = False):
         if not settings.TELEGRAM_ENABLED:
             return {'error': 'Telegram is disabled in settings'}
-        params = {'chat_id': chat_id or self.chat_id, 'text': text}
+        params = {
+            'chat_id': chat_id or self.chat_id,
+            'text': text,
+            'disable_web_page_preview': disable_web_page_preview,
+        }
         if parse_mode:
             params['parse_mode'] = parse_mode
         try:

@@ -88,13 +88,16 @@ def move_file(fname, dest):
     except:
         return 0
 
-def open_file(fname, mode='rb'):
+def open_file(fname, mode: str = 'rb', encoding: str = 'utf-8'):
     """Функция открытия файла, после использования надо f.close()"""
     path = os.path.join(DEFAULT_FOLDER, fname)
     if not mode in ['r', 'r+', 'rb', 'rb+', 'w', 'w+', 'wb', 'wb+', 'a', 'ab', 'a+', 'ab+']:
         mode = 'rb'
+    kwargs = {}
+    if not 'b' in mode:
+        kwargs['encoding'] = encoding
     try:
-        f = open(path, mode)
+        f = open(path, mode, **kwargs)
     except IOError:
         return 0
     return f

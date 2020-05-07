@@ -42,7 +42,7 @@ initialSort:[
       {column: "{{ k }}", dir: "{{ v }}"},
     {% endfor %}
   {% else %}
-    {column: "position", dir:"asc"},
+    {column: "position", dir: "asc"},
   {% endif %}
 ],
 
@@ -55,7 +55,7 @@ rowMoved:function(row){
   // тогда не надо менять позиции
   // ---------------------------------
   var sorters = table.getSorters();
-  if(table.getHeaderFilters().length > 0 || sorters.length > 1){
+  if(table.getHeaderFilters().length > 0 || sorters.length != 1 || sorters[0]['field'] != 'position' || sorters[0]['dir'] != 'asc'){
     main_table.undo();
     $.notify({
       message: 'Сортировать можно только когда таблица отсортирована по позиции',
@@ -65,29 +65,16 @@ rowMoved:function(row){
     return;
   }
 
-  if(sorters[0]['field'] !== 'position' || sorters[0]['dir'] !== 'asc'){
-    main_table.undo();
-    $.notify({
-      message: 'Сортировать можно только когда таблица отсортирована по позиции',
-    },{
-      status: status,
-    });
-    return;
-  }
-  var new_positions = Array();
-  var new_position = (row.getPosition() + 1);
-  var rows = table.getRows();
-  var data = null;
+  var rows = table.getRows().map(function(obj){
+    return obj.getData().id;
+  });
+  console.log(rows);
 
-  for(var i=0; i<rows.length; i++){
-    data = rows[i].getData();
-    new_positions.push(data.id);
-  }
   var msg = 'Произошла ошибка, обновите страничку';
   $.ajax({
     type: 'POST',
     url: '{{ root_url }}positions/',
-    data: {csrfmiddlewaretoken: getCookie('csrftoken'), positions: new_positions},
+    data: {csrfmiddlewaretoken: getCookie('csrftoken'), positions: rows},
   }).done(function(r) {
     if(r.error){
       main_table.undo();
@@ -114,7 +101,7 @@ rowMoved:function(row){
 selectable: true, //make rows selectable
 paginationSize: 50,
 height: 600,
-layout:"fitColumns",
+layout: "fitColumns",
 
 // ------------------
 // Ссылка для запроса

@@ -47,6 +47,14 @@ $(document).ready(function(){
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
       {% include "core/tabulator_cell/name.html" %}
+      {
+        title: "Код",
+        field: "code",
+        headerFilterPlaceholder: "Код",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 80,
+      },
       {% include "core/tabulator_cell/image.html" %}
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}

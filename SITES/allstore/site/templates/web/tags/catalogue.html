@@ -1,0 +1,31 @@
+{% load mtags %}
+<div class="topcatalog">
+  <a class="topcatalog-btn" href="/cat/"><span>Каталог</span></a>
+  <ul class="topcatalog-list">
+    {% for menu in menus %}
+      <li>
+        <a href="/cat/{{ menu.altname }}/">{{ menu.name }}</a>
+        {% if menu.sub %}
+          <i class="fa fa-angle-right"></i>
+          <ul>
+            {% for submenu in menu.sub %}
+              <li>
+                <a href="/cat/{{ submenu.altname }}/">{{ submenu.name }}</a>
+                {% if submenu.sub %}
+                  <i class="fa fa-angle-right"></i>
+                  <ul>
+                    {% for item in submenu.sub %}
+                      <li><a href="/cat/{{ item.altname }}/">{{ item.name }}</a></li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+

@@ -108,7 +108,7 @@ def logout_view(request, *args, **kwargs):
 def show_users(request, *args, **kwargs):
     """Вывод пользователей админки"""
     mh_vars = users_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh = create_model_helper(mh_vars, request, CUR_APP, disable_fas=True)
     mh.select_related_add('customuser')
     context = mh.context
     # -----------------------

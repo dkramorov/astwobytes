@@ -10,7 +10,7 @@ from django.conf import settings
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper, ModelHelper
-from apps.main_functions.tabulator import tabulator_filters_and_sorters
+from apps.main_functions.api_helper import ApiHelper
 from apps.main_functions.string_parser import analyze_digit
 
 from apps.flatcontent.models import Containers, Blocks
@@ -34,27 +34,15 @@ products_vars = {
     'model': Products,
 }
 
-def api(request, action: str = 'products_vars'):
+def api(request, action: str = 'products'):
     """Апи-метод для получения всех данных"""
-    mh_vars = products_vars.copy()
-    #if action == 'products_vars':
-    #    mh_vars = products_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    # Принудительные права на просмотр
-    mh.permissions['view'] = True
-    context = mh.context
-    rows = mh.standard_show()
-    result = []
-    for row in rows:
-        item = object_fields(row)
-        item['folder'] = row.get_folder()
-        result.append(item)
-    result = {'data': result,
-              'last_page': mh.raw_paginator['total_pages'],
-              'total_records': mh.raw_paginator['total_records'],
-              'cur_page': mh.raw_paginator['cur_page'],
-              'by': mh.raw_paginator['by'], }
-    return JsonResponse(result, safe=False)
+    if action == 'props':
+        result = ApiHelper(request, props_vars, CUR_APP)
+    elif action == 'pvalues':
+        result = ApiHelper(request, pvalues_vars, CUR_APP)
+    else:
+        result = ApiHelper(request, products_vars, CUR_APP)
+    return result
 
 @login_required
 def show_products(request, *args, **kwargs):
@@ -62,15 +50,7 @@ def show_products(request, *args, **kwargs):
     mh_vars = products_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
+
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -205,7 +185,9 @@ def products_positions(request, *args, **kwargs):
     return JsonResponse(result, safe=False)
 
 def search_products(request, *args, **kwargs):
-    """Поиск объектов"""
+    """Поиск товаров
+       :param request: HttpRequest
+    """
     result = {'results': []}
     mh = ModelHelper(Products, request)
     mh_vars = products_vars.copy()
@@ -249,15 +231,7 @@ def show_photos(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     mh.get_permissions(Products) # Права от товаров/услуг
     context = mh.context
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
+
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -366,15 +340,7 @@ def show_props(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     mh.get_permissions(Products) # Права от товаров/услуг
     context = mh.context
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
+
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -506,6 +472,29 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
 
+def search_props(request, *args, **kwargs):
+    """Поиск свойств
+       :param request: HttpRequest
+    """
+    result = {'results': []}
+    mh = ModelHelper(Property, request)
+    mh_vars = props_vars.copy()
+    for k, v in mh_vars.items():
+        setattr(mh, k, v)
+    mh.search_fields = ('id', 'name', 'code')
+    rows = mh.standard_show()
+    for row in rows:
+        name = row.name
+        if row.code:
+            name += ' (%s)' % (row.code, )
+        name += ' #%s' % (row.id, )
+        result['results'].append({'text': name, 'id': row.id})
+    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
+        result['pagination'] = {'more': False}
+    else:
+        result['pagination'] = {'more': True}
+    return JsonResponse(result, safe=False)
+
 pvalues_vars = {
     'singular_obj': 'Значение свойства',
     'plural_obj': 'Значения свойства',
@@ -530,15 +519,7 @@ def show_pvalues(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     mh.get_permissions(Products) # Права от товаров/услуг
     context = mh.context
-    # -----------------------
-    # Фильтрация и сортировка
-    # -----------------------
-    filters_and_sorters = tabulator_filters_and_sorters(request)
-    for rfilter in filters_and_sorters['filters']:
-        mh.filter_add(rfilter)
-    for rsorter in filters_and_sorters['sorters']:
-        mh.order_by_add(rsorter)
-    context['fas'] = filters_and_sorters['params']
+
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -570,4 +551,24 @@ def pvalues_positions(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
     mh.get_permissions(Products) # Права от товаров/услуг
     result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_pvalues(request, *args, **kwargs):
+    """Поиск значений свойств
+       :param request: HttpRequest
+    """
+    result = {'results': []}
+    mh = ModelHelper(PropertiesValues, request)
+    mh_vars = pvalues_vars.copy()
+    for k, v in mh_vars.items():
+        setattr(mh, k, v)
+    mh.search_fields = ('id', 'str_value', 'digit_value')
+    rows = mh.standard_show()
+    for row in rows:
+        name = row.digit_value if row.digit_value else row.str_value
+        result['results'].append({'text': name, 'id': row.id})
+    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
+        result['pagination'] = {'more': False}
+    else:
+        result['pagination'] = {'more': True}
     return JsonResponse(result, safe=False)

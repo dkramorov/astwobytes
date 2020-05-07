@@ -1,0 +1,38 @@
+{% ifequal tag "mainmenu" %}
+<button type="button" class="mainmenu-btn">Меню</button>
+<ul class="mainmenu">
+  {% for menu in menus %}
+    <li class="{% if menu.sub %}menu-item-has-children{% endif %}">
+      <a href="{{ menu.link }}" class="{% ifequal request.META.PATH_INFO menu.link %} active{% endifequal %}">
+        {{ menu.name }}
+        {% if menu.sub %} <i class="fa fa-angle-down"></i>{% endif %}
+      </a>
+      {% if menu.sub %}
+        <ul class="sub-menu">
+          {% for item in menu.sub %}
+            <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+  <li class="mainmenu-more">
+    <span>...</span>
+    <ul class="mainmenu-sub"></ul>
+  </li>
+</ul>
+{% endifequal %}
+{% ifequal tag "bottommenu" %}
+  {% for menu in menus %}
+    {% if menu.sub %}
+      <div class="f-menu">
+        <h3>{{ menu.name }}</h3>
+        <ul class="nav nav-pills nav-stacked">
+          {% for item in menu.sub %}
+          <li{% ifequal request.META.PATH_INFO item.link %} class="active"{% endifequal %}><a href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endifequal %}

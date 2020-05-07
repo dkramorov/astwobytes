@@ -102,7 +102,7 @@ if env('PROMOTION_APP', cast=bool, default=False):
 CUSTOM_APPS += [
     'apps.upload_tasks',
 ]
-
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 # Email settings
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', cast=bool, default=True)
 EMAIL_HOST = env('EMAIL_HOST')
