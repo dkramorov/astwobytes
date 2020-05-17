@@ -1,0 +1,65 @@
+{% load mtags %}
+<div class="fr-pop-wrap">
+  <h3 class="component-ttl"><span>{{ container.name }}</span></h3>
+  <ul class="fr-pop-tabs sections-show">
+    {% for block in blocks %}
+      <li>
+        <a data-frpoptab-num="{{ forloop.counter }}" data-frpoptab="#frpoptab-tab-{{ forloop.counter }}" href="#"{% if forloop.first %} class="active"{% endif %}>{{ block.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="fr-pop-tab-cont">
+    {% for block in blocks %}
+      <p data-frpoptab-num="{{ forloop.counter }}" class="fr-pop-tab-mob{% if forloop.first %} active{% endif %}" data-frpoptab="#frpoptab-tab-{{ forloop.counter }}">{{ block.name }}</p>
+      <div class="flexslider prod-items fr-pop-tab" id="frpoptab-tab-{{ forloop.counter }}">
+        <ul class="slides">
+          {% for product in block.products %}
+          <li class="prod-i">
+            <div class="prod-i-top">
+              <a href="{{ product.link }}" class="prod-i-img">
+                <img src="{% if product.img %}{{ product.thumb }}{% else %}/static/img/ups.png{% endif %}" alt="{{ product.name|textize }}">
+              </a>
+              <p class="prod-i-info">
+                <a href="#" class="prod-i-favorites">
+                  <span>Избранное</span>
+                  <i class="fa fa-heart"></i>
+                </a>
+                <a href="#" class="qview-btn prod-i-qview">
+                  <span>Быстрый просмотр</span>
+                  <i class="fa fa-search"></i>
+                </a>
+                <a class="prod-i-compare" href="#">
+                  <span>Сравнить</span>
+                  <i class="fa fa-bar-chart"></i>
+                </a>
+              </p>
+              <p class="prod-i-addwrap">
+                <a href="{{ product.link }}" class="prod-i-add">Подробнее</a>
+              </p>
+{% comment %}<!--
+              <div class="prod-sticker">
+                <p class="prod-sticker-1">NEW</p>
+              </div>
+-->{% endcomment %}
+            </div>
+            <h3>
+              <a href="{{ product.link }}">{{ product.name }}</a>
+            </h3>
+            <p class="prod-i-price">
+              <b>{{ product.price|money_format }} ₽</b>
+            </p>
+{% comment %}<!--
+            <div class="prod-i-skuwrapcolor">
+              <ul class="prod-i-skucolor">
+                <li class="bx_active"><img src="/media/misc/red.jpg" alt="Red"></li>
+                <li><img src="/media/misc/blue.jpg" alt="Blue"></li>
+              </ul>
+            </div>
+-->{% endcomment %}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+</div>

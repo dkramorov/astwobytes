@@ -32,6 +32,8 @@ class Products(Standard):
             self.old_price = None
         if self.price and self.price > 99999999999:
             self.price = None
+        if self.code:
+            self.code = self.code.replace('-', '_')
         super(Products, self).save(*args, **kwargs)
 
     def link(self):
@@ -54,6 +56,7 @@ class Property(Standard):
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     code = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     ptype = models.IntegerField(choices=ptype_choices, blank=True, null=True, db_index=True)
+    measure = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Единица измерения')
 
 class PropertiesValues(Standard):
     """Свойства для товаров/услуг
@@ -62,10 +65,17 @@ class PropertiesValues(Standard):
     """
     prop = models.ForeignKey(Property, on_delete=models.CASCADE)
     str_value = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    # По большей части для сортировки и фильтров
     digit_value = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=4, db_index=True) # 990 000 000,0000
 
     def save(self, *args, **kwargs):
-        if self.digit_value and self.digit_value > 999999999:
+        if self.str_value:
+            try:
+                self.digit_value = float(self.str_value.replace(',', '.'))
+            except Exception:
+                self.digit_value = None
+
+        if self.digit_value and (self.digit_value > 999999999 or self.digit_value < -999999999):
             self.digit_value = None
         super(PropertiesValues, self).save(*args, **kwargs)
 

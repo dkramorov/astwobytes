@@ -1,0 +1,33 @@
+{% load mtags %}
+<div class="prod-related">
+  <h2><span>{{ container.name }}</span></h2>
+  <div class="prod-related-car" id="prod-related-car">
+    <ul class="slides">
+      {% for products_container in products|assembleby:4 %}
+      <li class="prod-rel-wrap">
+        {% for product in products_container %}
+          <div class="prod-rel">
+            <a href="{{ product.link }}" class="prod-rel-img">
+              <img src="{{ product.thumb }}" alt="{{ product.name|textize }}">
+            </a>
+            <div class="prod-rel-cont">
+              <h3><a href="{{ product.link }}">{{ product.name }}</a></h3>
+              <p class="prod-rel-price">
+                <b>{{ product.price|money_format }} ₽</b>
+              </p>
+              <div class="prod-rel-actions">
+                <a title="Избранное" href="#" class="prod-rel-favorites"><i class="fa fa-heart"></i></a>
+                <a title="Сравнить" href="#" class="prod-rel-compare"><i class="fa fa-bar-chart"></i></a>
+                <p class="prod-i-addwrap">
+                  <a title="В корзину" href="#" class="prod-i-add"><i class="fa fa-shopping-cart"></i></a>
+                </p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        <!-- 4 товара -->
+      </li><!-- кол-во слайдов -->
+      {% endfor %}
+    </ul>
+  </div>
+</div>

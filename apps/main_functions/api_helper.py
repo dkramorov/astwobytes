@@ -66,14 +66,11 @@ def XlsxHelper(request, model_vars: dict, CUR_APP: str,
 
     action = request.POST.get('action')
     job = {'errors': ['Операция не поддерживается']}
-    if action == 'import_xlsx':
-        job = import_from_excel(mh.model, request.FILES.get('file'))
-        if not job['errors']:
-            result['success'] = 'Файл обработан, подтвердите загрузку'
-    elif action == 'save':
+
+    rows = []
+    if action in ('save', 'drop'):
         count = request.POST.get('count')
         data = request.POST.get('data')
-        rows = []
         if count.isdigit():
             count = int(count)
             template = object_fields(mh.model(),
@@ -82,9 +79,25 @@ def XlsxHelper(request, model_vars: dict, CUR_APP: str,
                 names = [k for k in template.keys() if request.POST.get('data[0][%s]' % k)]
                 # по шаблону модели обходим количество отправленных объектов
                 rows = [{k: request.POST.get('data[%s][%s]' % (i, k)) for k in names} for i in range(count)]
-        job = save_from_excel(mh.model, rows, cond_fields)
+
+    if action == 'import_xlsx':
+        job = import_from_excel(mh.model, request.FILES.get('file'))
+        if not job['errors']:
+            result['success'] = 'Файл обработан, проверьте данные и подтвердите операцию'
+    elif action == 'save':
+        if 'create' in mh.permissions and 'edit' in mh.permissions:
+            job = save_from_excel(mh.model, rows, cond_fields)
+        else:
+            job = {'errors': ['Нужны права на создание и редактирование, чтобы выполнить загрузку файлом']}
         if not job['errors']:
             result['success'] = 'Добавлено %s, обновлено %s' % (job['created'], job['updated'])
+    elif action == 'drop':
+        if 'drop' in mh.permissions:
+            job = drop_from_excel(mh.model, rows, cond_fields)
+        else:
+            job = {'errors': ['Нужны права на удаление, чтобы выполнить удаление файлом']}
+        if not job['errors']:
+            result['success'] = 'Удалено %s, Не найдено %s' % (job['dropped'], job['not_found'])
     result['resp'] = job
     if job['errors']:
         result['error'] = '<br>'.join(job['errors'])
@@ -169,4 +182,36 @@ def save_from_excel(model, data, cond_fields: list = None):
             model.objects.create(**item)
     result['created'] = created
     result['updated'] = updated
+    return result
+
+def drop_from_excel(model, data, cond_fields: list = None):
+    """Удаление массовм из базы
+       :param model: модель, откуда удаляем данные
+       :param data: массив с данными для удаления
+       :param cond_fields: поля по которым ищем аналоги
+    """
+    result = {'errors': []}
+    if not data:
+        result['errors'].append('Не переданы данные для сохранения')
+        return result
+    if not cond_fields:
+        result['errors'].append('Не переданы условия для обновления')
+        return result
+    not_found = 0
+    dropped = 0
+    for item in data:
+        cond = Q()
+        for k, v in item.items():
+            if v:
+                item[k] = v.strip()
+        for cond_field in cond_fields:
+            cond.add(Q(**{cond_field: item.get(cond_field)}), Q.AND)
+        analog = model.objects.filter(cond).first()
+        if analog:
+            dropped += 1
+            analog.delete()
+        else:
+            not_found += 1
+    result['not_found'] = not_found
+    result['dropped'] = dropped
     return result

@@ -16,6 +16,18 @@ def get_hostname():
     """Возвращаем имя хоста"""
     return socket.gethostname()
 
+def get_hd_space(dev: str = '/'):
+    """Получить информацию по месту на диске в МБ
+       :param dev: точка монтирования
+    """
+    space = psutil.disk_usage('/')
+    return {
+        'free': space.free / 1024 / 1024,
+        'used': space.used / 1024 / 1024,
+        'total': space.total / 1024 / 1024,
+        'percent': space.percent,
+    }
+
 def search_binary(cmd):
     """Поиск исполняемого файла в системе"""
     search = '/usr/bin/which'

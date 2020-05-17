@@ -46,9 +46,13 @@ def api(request, action: str = 'vocabulary'):
     return result
 
 def import_xlsx(request, action: str = 'vocabulary'):
-    """Апи-метод для сохранения данных из excel-файла"""
+    """Апи-метод для сохранения данных из excel-файла
+                     удаления данных по excel-файлу
+       :param request: HttpRequest
+       :param action: какую модель использовать
+    """
     #if action == 'promotion':
-    #    result = ApiHelper(request, vocabulary_vars, CUR_APP)
+    #    result = XlsxHelper(request, vocabulary_vars, CUR_APP)
     result = XlsxHelper(request, vocabulary_vars, CUR_APP,
                         cond_fields = ['name'])
     return result

@@ -1,0 +1,27 @@
+{% load mtags %}
+<div class="reviews-wrap">
+  <div class="reviewscar-wrap">
+    <div class="swiper-container reviewscar">
+      <div class="swiper-wrapper">
+        {% for block in blocks %}
+          <div class="swiper-slide">
+            {{ block.html|safe }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="swiper-container reviewscar-thumbs">
+      <div class="swiper-wrapper">
+        {% for block in blocks %}
+          <div class="swiper-slide">
+            <img src="{{ block.thumb }}" alt="{{ block.name|textize }}">
+            <h3 class="reviewscar-ttl">
+              <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">{{ block.name }}</a>
+            </h3>
+            {% if block.description %}<p class="reviewscar-post">{{ block.description }}</p>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

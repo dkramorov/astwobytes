@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.cache import cache
 
 from apps.flatcontent.flatcat import get_catalogue
+from apps.products.models import Products, ProductsCats
 
 register = template.Library()
 
@@ -85,4 +86,18 @@ def random_products(request,
     cache.set(cache_var, result, cache_time)
 
     result['request'] = request
+    return result
+
+@register.inclusion_tag('web/containers/products_sidebar_slider.html')
+def products_sidebar_slider(product, limit: int = 12):
+    """Вывод на страничке товара других товаров из той же рубрики
+       :param product: товар
+       :param limit: количество аналогов
+    """
+    cat_id = ProductsCats.objects.filter(product=product).values_list('cat', flat=True)
+    products = ProductsCats.objects.select_related('product').filter(cat__in=cat_id).exclude(product=product)[:limit]
+    result = {
+        'container': {'name': 'Похожие товары'},
+        'products': [product.product for product in products],
+    }
     return result

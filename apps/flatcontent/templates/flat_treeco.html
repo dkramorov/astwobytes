@@ -246,6 +246,7 @@ $(document).ready(function(){
           }
         }
         $("#products_select2").trigger('changed');
+        $("#products_select2").parent().parent().find("label").html("Привязанные товары: " + row['products'].length);
       }
       update_links(r);
       $("#current_edit_form").attr("action", row['url_edit']);

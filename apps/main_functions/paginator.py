@@ -100,6 +100,27 @@ def myPaginator(ids, page, by):
                                       end=('запись', 'записей', 'записи'))
     return paginator, records
 
+def build_page_request(q_string: dict, page: str = None):
+    """Построить запрос из параметров q_string
+       :param q_string: параметры запроса
+       :param page: переопределить страничку
+    """
+    if not q_string:
+        return ''
+    if not page:
+        page = q_string['page']
+
+    page_request = ['page=%s' % page, 'by=%s' % q_string['by']]
+    if not 'q' in q_string:
+        return '?' + '&'.join(page_request)
+
+    for key, value in q_string['q'].items():
+        if isinstance(value, list):
+            page_request += ['%s=%s' % (key, v) for v in value]
+        else:
+            page_request.append('%s=%s' % (key, value))
+    return '?' + '&'.join(page_request)
+
 def navigator(paginator,
               q_string: dict,
               template:str = None,
@@ -120,27 +141,17 @@ def navigator(paginator,
     # q_string['q'] - содержит все условия для перехода по страницам
     halfa = 3
     html = ''
-    page_request = ''
     ostatok1 = 0
     ostatok2 = 0
 
     t = loader.get_template(template)
-
-    if 'q' in q_string:
-        for key, value in q_string['q'].items():
-            if isinstance(value, list):
-                for item in value:
-                    page_request += '%s=%s&' % (key, item)
-            else:
-                page_request += '%s=%s&' % (key, value)
-        if page_request:
-            page_request = page_request[:-1]
+    page_request = build_page_request(q_string)
 
     if 'onepage' in paginator:
         c = {
             'q_string': q_string,
             'paginator': paginator,
-            'page_request':page_request,
+            'page_request': page_request,
             'ends': paginator['ends'],
             'select': select,
         }
@@ -177,13 +188,7 @@ def navigator(paginator,
                 page['active'] = 1
                 pages.append(page)
             else:
-                href = '%s' % q_string['link']
-                if page_request:
-                    href += '?%s' % page_request
-                    href += 'page=1&by=%s' % q_string['by']
-                else:
-                    href += '?page=1&by=%s' % q_string['by']
-
+                href = q_string['link'] + build_page_request(q_string, 1)
                 page['link'] = href
                 page['content'] = 1
                 pages.append(page)
@@ -213,7 +218,9 @@ def navigator(paginator,
                     # ---------------------------
                     if not paginator['total_pages'] == pages[-1]['content'] + 1:
                       pages.append({'i': i, 'ellipsis': 1})
-                page['link'] = '%s?%spage=%s&by=%s' % (q_string['link'], page_request, last, q_string['by'])
+
+                link = q_string['link'] + build_page_request(q_string, last)
+                page['link'] = link
                 page['content'] = paginator['total_pages']
                 pages.append(page)
             continue
@@ -225,13 +232,16 @@ def navigator(paginator,
             page['active'] = 1
             pages.append(page)
         else:
-            page['link'] = '%s?%spage=%s&by=%s' % (q_string['link'], page_request, i+1, q_string['by'])
+            link = q_string['link'] + build_page_request(q_string, i + 1)
+            page['link'] = link
             page['content'] = i + 1
             pages.append(page)
     if paginator['cur_page'] < paginator['total_pages']:
-        paginator['next_link'] = '%s?%spage=%s&by=%s' % (q_string['link'], page_request, paginator['next_page'], q_string['by'])
+        link = q_string['link'] + build_page_request(q_string, paginator['next_page'])
+        paginator['next_link'] = link
     if paginator['cur_page'] > 1:
-        paginator['prev_link'] = '%s?%spage=%s&by=%s' % (q_string['link'], page_request, paginator['next_page'], q_string['by'])
+        link = q_string['link'] + build_page_request(q_string, paginator['prev_page'])
+        paginator['prev_link'] = link
 
     c = {
       'q_string': q_string,

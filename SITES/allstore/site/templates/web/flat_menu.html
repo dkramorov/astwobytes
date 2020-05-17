@@ -23,16 +23,26 @@
 </ul>
 {% endifequal %}
 {% ifequal tag "bottommenu" %}
-  {% for menu in menus %}
-    {% if menu.sub %}
+<div class="container f-menu-list">
+  <div class="row">
+    {% for menu in menus %}
       <div class="f-menu">
         <h3>{{ menu.name }}</h3>
         <ul class="nav nav-pills nav-stacked">
           {% for item in menu.sub %}
-          <li{% ifequal request.META.PATH_INFO item.link %} class="active"{% endifequal %}><a href="{{ item.link }}">{{ item.name }}</a></li>
+            <li{% ifequal request.META.PATH_INFO item.link %} class="active"{% endifequal %}><a href="{{ item.link }}">{{ item.name }}</a></li>
           {% endfor %}
         </ul>
       </div>
-    {% endif %}
-  {% endfor %}
+    {% endfor %}
+    <div class="f-subscribe">
+      <h3>Подпишитесь на новости</h3>
+      <form class="f-subscribe-form" action="#">
+        <input placeholder="Ваш e-mail" type="text">
+        <button type="submit"><i class="fa fa-paper-plane"></i></button>
+      </form>
+      <p>Введите ваш Email и получайте новости об акциях и скидках</p>
+    </div>
+  </div>
+</div>
 {% endifequal %}

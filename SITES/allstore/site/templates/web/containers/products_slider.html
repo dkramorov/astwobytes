@@ -1,0 +1,32 @@
+{% load mtags %}
+<div class="discounts-wrap">
+  <h3 class="component-ttl">
+    <span>{{ container.name }}</span>
+  </h3>
+  <div class="flexslider discounts-list">
+    <ul class="slides">
+      {% for product in products %}
+        <li class="discounts-i">
+          <a href="{{ product.link }}" class="discounts-i-img">
+            <img src="{% if product.img %}{{ product.thumb }}{% else %}/static/img/ups.png{% endif %}" alt="{{ product.name|textize }}">
+          </a>
+          <h3 class="discounts-i-ttl">
+            <a href="{{ product.link }}">{{ product.name }}</a>
+          </h3>
+          <p class="discounts-i-price">
+            <b>{{ product.price|money_format }} ₽</b>
+            {% if product.old_price %}<del>{{ product.old_price|money_format }} ₽</del>{% endif %}
+          </p>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="discounts-info">
+    {% for block in blocks %}
+      {{ block.html|safe }}
+      <a href="{{ block.link }}">{{ block.name }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+

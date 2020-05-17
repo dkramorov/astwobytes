@@ -1,0 +1,44 @@
+Oli: you are the best. I love working with tabulator and I'm happy to help on smaller problems with dependencies. Of course I've already spend some funds on Patreon ;-)
+For all who are struggling with UTF-8 in Table-Headers, using tabulator and jsPDF with autoTable;
+this solution works:
+( I tried several fonts, good results are given with WorkSans from Google Fonts
+https://fonts.google.com/specimen/Work+Sans?selection.family=Work+Sans&sidebar.open
+OpenFont License. Big thanks to Wei Huang!)
+
+    generate a font-file with fontconverter.html from jsPDF-master\jsPDF-master\fontconverter (I've uploaded 'WorkSans-Regular.ttf')
+    load font-file after jspdf and before autotable :
+
+<script src="assets/js/tabulator.min.js"></script>
+<script src="assets/js/jspdf.min.js"}></script>
+
+<script src="assets/js/WorkSans-Regular-normal.js"></script>
+<script src="assets/js/jspdf.plugin.autotable.min.js"></script>
+
+3) set-up PDF-Download:
+
+function downloadPDF() {
+    tabulator.download("pdf", "Output.pdf", {
+        orientation: "l", //set page orientation to landscape
+        title: "Report", //add title to report
+        jsPDF: {
+            unit: "mm", //set units to mm
+            format: [420, 297], // A3
+        },
+        autoTable: function (doc) {
+            doc.addFont('WorkSans-Regular-normal.ttf', 'WorkSans-Regular', 'bold');
+            doc.setFont("WorkSans-Regular", 'bold'); // set font->important: use bold instead of normal , as it is in header, body text stays normal
+            doc.setFontSize(10);
+            return {
+                styles: {
+                    font: "WorkSans-Regular",
+                    fontStyle: "bold", ->important: use bold instead of normal , as it is in header, body text stays normal
+                    fontSize: 10,
+                },
+                theme: 'striped',
+                margin: { top: 35 },
+            }
+        }
+    });
+}
+
+Done.

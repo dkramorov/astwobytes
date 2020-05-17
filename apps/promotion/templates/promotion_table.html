@@ -12,7 +12,7 @@
 
 {% include "core/breadcrumbs.html" %}
 
-{% include "core/excel/xlsx_form.html" %}
+{% include "core/excel/xlsx_form_import.html" %}
 
 {% include "core/tabulator_table.html" %}
 {% endblock %}
@@ -48,7 +48,7 @@ $(document).ready(function(){
     // success callback
   }, function(r){
     // error callback
-  });
+  }, 'save');
 
 
   main_table = new Tabulator("#main-table", {

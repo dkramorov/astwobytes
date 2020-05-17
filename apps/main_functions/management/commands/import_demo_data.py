@@ -50,6 +50,13 @@ def fill_flatmain():
             name='Режим работы', html='пн-пт 9:00 - 18:00<br>сб-вс 10:00 - 17:00',
             state=3,
         )
+    copyright = Blocks.objects.filter(container=container, tag='copyright').first()
+    if not copyright:
+        copyright = Blocks.objects.create(
+            container=container, tag='copyright',
+            name='Copyright', html='<p>&copy; 2020 Все права защищены</p>',
+            state=3,
+        )
     social = Blocks.objects.filter(container=container, tag='social').first()
     if not social:
         social = Blocks.objects.create(

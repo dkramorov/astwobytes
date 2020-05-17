@@ -1,0 +1,41 @@
+<!-- START panel-->
+<div class="panel panel-default">
+  <div class="panel-heading">Удаление файлом
+    <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
+      <em class="fa fa-times"></em>
+    </a>
+    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть/развернуть" class="pull-right">
+      <em class="fa fa-plus"></em>
+    </a>
+  </div>
+  <div class="panel-wrapper collapse">
+    <form method="post" action="{{ import_xlsx_url }}" id="drop_excel_file_form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="import_xlsx" />
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Выберите xlsx файл</label>
+            <div class="col-sm-10">
+              <input type="file" name='file' data-classbutton="btn btn-default" class="filestyle" data-buttonText="Выбрать xlsx" data-iconName="fa fa-file" data-placeholder="Выберите xlsx файл">
+          </div>
+        </div>
+        <div class="clearfix"></div><br>
+        <div id="excel-table-drop" class="hidden"></div>
+      </div>
+      <div class="panel-footer">
+        <div class="col-lg-6 col-sm-6 padding-tb5">
+          <button type="submit" class="btn btn-labeled btn-info">
+            <span class="btn-label"><i class="fa fa-upload"></i></span>Загрузить файл
+          </button>
+        </div>
+        <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+          <a class="btn btn-labeled btn-danger hidden" href="javascript:void(0);" id="drop_excel_table" data-save-action="{{ import_xlsx_url }}">
+            <span class="btn-label"><i class="fa fa-trash"></i></span>Выполнить удаление
+          </a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="clearfix"></div>

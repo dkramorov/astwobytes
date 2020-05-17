@@ -7,14 +7,15 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.db.models import Q
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper, ModelHelper
-from apps.main_functions.api_helper import ApiHelper
+from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 from apps.main_functions.string_parser import analyze_digit
 
 from apps.flatcontent.models import Containers, Blocks
-from .models import Products, ProductsCats, ProductsPhotos, Property, PropertiesValues
+from .models import Products, ProductsCats, ProductsPhotos, Property, PropertiesValues, ProductsProperties
 
 CUR_APP = 'products'
 products_vars = {
@@ -44,6 +45,18 @@ def api(request, action: str = 'products'):
         result = ApiHelper(request, products_vars, CUR_APP)
     return result
 
+def import_xlsx(request, action: str = 'vocabulary'):
+    """Апи-метод для сохранения данных из excel-файла
+                     удаления данных по excel-файлу
+       :param request: HttpRequest
+       :param action: какую модель использовать
+    """
+    #if action == 'promotion':
+    #    result = XlsxHelper(request, vocabulary_vars, CUR_APP)
+    result = XlsxHelper(request, products_vars, CUR_APP,
+                        cond_fields = ['code'])
+    return result
+
 @login_required
 def show_products(request, *args, **kwargs):
     """Вывод товаров"""
@@ -71,6 +84,8 @@ def show_products(request, *args, **kwargs):
                       'cur_page': mh.raw_paginator['cur_page'],
                       'by': mh.raw_paginator['by'], }
         return JsonResponse(result, safe=False)
+    context['import_xlsx_url'] = reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
+                              kwargs={'action': 'products'})
     template = '%stable.html' % (mh.template_prefix, )
     return render(request, template, context)
 
@@ -111,6 +126,7 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
             context['cats'] = row.productscats_set.select_related('cat', 'cat__container').all()
+            context['props'] = row.productsproperties_set.select_related('prop', 'prop__prop').all()
             context['photos'] = row.productsphotos_set.all()
         elif action == 'drop' and row:
             if mh.permissions['drop']:
@@ -315,12 +331,11 @@ def edit_photo(request, action: str, row_id: int = None, *args, **kwargs):
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
 
-
 props_vars = {
     'singular_obj': 'Свойство товара',
-    'plural_obj': 'Свойства товара',
+    'plural_obj': 'Свойства товаров',
     'rp_singular_obj': 'свойства товара',
-    'rp_plural_obj': 'свойств товара',
+    'rp_plural_obj': 'свойств товаров',
     'template_prefix': 'props_',
     'action_create': 'Создание',
     'action_edit': 'Редактирование',
@@ -444,10 +459,6 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
                     prop = analog
             prop.str_value = value
             prop.is_active = True if is_active else False
-            try:
-                prop.digit_value = float(value)
-            except Exception:
-                prop.digit_value = None
 
             if mh.permissions['edit']:
                 result['success'] = 'Данные успешно записаны'
@@ -562,13 +573,124 @@ def search_pvalues(request, *args, **kwargs):
     mh_vars = pvalues_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
-    mh.search_fields = ('id', 'str_value', 'digit_value')
+    mh.search_fields = ('id', 'str_value')
+
+    prop_id = request.GET.get('prop_id')
+    if prop_id:
+        mh.filter_add(Q(prop__id=prop_id))
+    order_by = request.GET.get('order_by')
+    if order_by:
+        for item in order_by.split(','):
+            mh.order_by_add(item.strip())
+
     rows = mh.standard_show()
     for row in rows:
-        name = row.digit_value if row.digit_value else row.str_value
-        result['results'].append({'text': name, 'id': row.id})
+        result['results'].append({'text': row.str_value, 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:
         result['pagination'] = {'more': True}
     return JsonResponse(result, safe=False)
+
+products_pvalues_vars = {
+    'singular_obj': 'Значение свойства товара',
+    'plural_obj': 'Значения свойства товара',
+    'rp_singular_obj': 'значения свойства товара',
+    'rp_plural_obj': 'значений свойств товара',
+    'template_prefix': 'products_pvalues_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'products',
+    'submenu': 'products_pvalues',
+    'show_urla': 'show_product_pvalues',
+    'create_urla': 'create_product_pvalue',
+    'edit_urla': 'edit_product_pvalue',
+    'model': ProductsProperties,
+}
+
+@login_required
+def show_product_pvalues(request, *args, **kwargs):
+    """Вывод привязанных свойств для товаров/услуг"""
+    mh_vars = products_pvalues_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh.get_permissions(Products) # Права от товаров/услуг
+    context = mh.context
+
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        rows = mh.standard_show()
+        result = []
+        for row in rows:
+            item = object_fields(row)
+            item['actions'] = row.id
+            result.append(item)
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+@login_required
+def edit_product_pvalue(request, action: str, row_id: int = None, *args, **kwargs):
+    """Добавление/удаление свойства к товару
+       Аяксовый метод
+       :param request: HttpRequest
+       :param action: действие
+       :param row_id: ид ProductsProperties
+    """
+    result = {}
+    mh_vars = products_pvalues_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    mh.get_permissions(Products) # Права от товаров/услуг
+    context = mh.context
+    row = mh.get_row(row_id)
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+
+    if request.method == 'GET':
+        if action == 'drop' and row:
+            if mh.permissions['drop']:
+                row.delete()
+                mh.row = None
+                context['success'] = '%s удалено' % (mh.singular_obj, )
+            else:
+                context['error'] = 'Недостаточно прав'
+    elif request.method == 'POST':
+        # Нетрадиционное сохранение
+        # Принимаем prop, записываем линковку
+        prop = None
+        prop_id = request.POST.get('prop')
+        if prop_id:
+            prop = PropertiesValues.objects.filter(pk=prop_id).first()
+        product = None
+        product_id = request.POST.get('product')
+        if product_id:
+            product = Products.objects.filter(pk=product_id).first()
+
+        if action == 'create' or (action == 'edit' and row):
+            if action == 'create' and product and prop:
+                if mh.permissions['create'] and prop:
+                    row = ProductsProperties.objects.create(
+                        product=product,
+                        prop = prop,
+                    )
+                    context['success'] = 'Данные успешно записаны'
+                    context['row'] = {'id': row.id}
+                else:
+                    context['error'] = 'Недостаточно прав'
+            if action == 'edit' and row and prop and product and product.id == row.product_id:
+                if mh.permissions['edit']:
+                    row.prop = prop
+                    row.save()
+                    context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+
+    return JsonResponse(context, safe=False)

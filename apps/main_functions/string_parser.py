@@ -15,9 +15,14 @@ rega_html = re.compile('(<[^>]+>)?', re.U+re.I+re.DOTALL)
 rega_ip = re.compile("([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})")
 
 def q_string_fill(request, q_string):
-    """Заполняем параметры для запроса q_string page, by"""
+    """Заполняем параметры для запроса q_string page, by
+       :param request: HttpRequest
+       :param q_string: параметры запроса
+    """
     page = 1
     by = 20
+    method = request.GET if request.method == 'GET' else request.POST
+    # !TODO by=20, view=grid брать из сессии/кук
     q_vars = {'page':1, 'by':20, 'size': None}
     for var in q_vars:
         value = None
@@ -26,24 +31,14 @@ def q_string_fill(request, q_string):
         # -----------------------------------------
         if var in q_string:
             q_vars[var] = q_string[var]
-        # ---
-        # GET
-        # ---
-        if request.method == "GET":
-            if request.GET.get(var):
-              try:
-                  value = int(request.GET[var])
-              except ValueError:
-                  value = None
-        # ----
-        # POST
-        # ----
-        if request.method == "POST":
-            if request.POST.get(var):
-                try:
-                    value = int(request.POST[var])
-                except ValueError:
-                    value = None
+        # --------
+        # GET/POST
+        # --------
+        if method.get(var):
+          try:
+              value = int(request.GET[var])
+          except ValueError:
+              value = None
         if value:
             q_vars[var] = value
         # ----------------------------------
@@ -60,6 +55,10 @@ def q_string_fill(request, q_string):
     if q_string['by'] < 1:
         q_string['by'] = 20
     q_string['link'] = request.META['PATH_INFO']
+    if not 'q' in q_string:
+        q_string['q'] = {}
+        if method.get('q'):
+            q_string['q']['q'] = method['q']
 
 def prepare_simple_text(text:str):
     """Убрать из текста хтмл-пробелы типа &nbsp;
@@ -296,35 +295,39 @@ def analyze_digit(digit, end:tuple = ('тысяча', 'тысяч', 'тысяч�
     return result
 
 def summa_format(summa):
-  """Деньга с пробелами через 3 знака с конца"""
-  summa_str = str(summa)
-  rub, kop = summa_str, 0
-  if '.' in summa_str:
-    rub, kop = summa_str.split('.')
-  if ',' in summa_str:
-    rub, kop = summa_str.split(',')
-  summa_tmp = ''
-  summa_len = len(rub)
-  zero_kop = kop
-  try:
-      kop = int(kop)
-  except ValueError:
-      kop = 0
+    """Деньга с пробелами через 3 знака с конца
+       :param summa: число, которое будем разбивать
+    """
+    if not summa:
+        return summa
+    summa_str = str(summa)
+    if ',' in summa_str:
+        summa_str = summa_str.replace(',', '.')
+    rub, kop = summa_str, 0
+    if '.' in summa_str:
+        rub, kop = summa_str.split('.')
+    summa_tmp = ''
+    summa_len = len(rub)
+    zero_kop = kop
+    try:
+        kop = int(kop)
+    except ValueError:
+        kop = 0
 
-  if summa_len <= 3:
-      if kop > 0:
-          return summa_str
-      return rub
-  else:
-      for i in range(summa_len):
-          if i > 0 and i % 3 == 0:
-              summa_tmp = ' ' + summa_tmp
-          summa_tmp = rub[summa_len-i-1] + summa_tmp
-      summa = summa_tmp
+    if summa_len <= 3:
+        if kop > 0:
+            return summa_str
+        return rub
+    else:
+        for i in range(summa_len):
+            if i > 0 and i % 3 == 0:
+                summa_tmp = ' ' + summa_tmp
+            summa_tmp = rub[summa_len-i-1] + summa_tmp
+        summa = summa_tmp
 
-  if kop > 0:
-      summa = '%s.%s' % (summa, zero_kop)
-  return summa
+    if kop > 0:
+        summa = '%s.%s' % (summa, zero_kop)
+    return summa
 
 def ip2long(ip):
     """Преобразуем ip-адрес в число"""

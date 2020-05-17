@@ -638,9 +638,18 @@ def update_productscats(request, container, row):
     else:
         return
 
-    old.delete()
-
     productscats = [int(pk) for pk in request.POST.getlist('products')]
+    if productscats:
+        all_links = old.values_list('product', flat=True)
+        fordel = [item for item in all_links if not item in productscats]
+        if fordel:
+            old = old.filter(product__in=fordel)
+            old.delete()
+        exists = [item for item in productscats if item in all_links]
+        productscats = [item for item in productscats if not item in exists]
+    else:
+        old.delete()
+
     if productscats:
         # Без моделей работаем с листом
         # учитываем это при сохранении через product_id=int

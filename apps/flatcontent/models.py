@@ -235,7 +235,12 @@ class Blocks(Standard):
         if not self.name or not self.container.state == 7:
             return
         self.create_menu_link(force=True)
-        self.link = '/cat%s' % self.link
+        # Для подуровней не надо /cat
+        # /cat уже будет у верхнего уровня
+        prefix = ''
+        if not self.parents:
+            prefix = '/cat'
+        self.link = '%s%s' % (prefix, self.link)
 
     def save(self, *args, **kwargs):
         """Сохранение объекта"""

@@ -1579,13 +1579,17 @@ function set_ajax_form(form_id, callback_success, callback_fail, is_file){
     e.preventDefault();
   });
 }
-function set_ajax_form_save_xlsx(button_id, excel_table, callback_success, callback_fail){
+function set_ajax_form_save_xlsx(button_id, excel_table, callback_success, callback_fail, operation){
   // Настраиваем форму на аякс отправку данных, полученных с xlsx файла
   // Кнопке button_id даем data-save-action и туда засылаем xlsx данные
   // :param button_id: ид кнопки сохранения #save_excel_table
   // :param excel_table: таблица с данными эксельки
   // :param callback_success: функция после успешного получения данных
   // :param callback_fail: функция после НЕуспешного получения данных
+  // :param action: действие (по умолчанию save)
+  if(operation === undefined){
+    operation = 'save';
+  }
   $(button_id).click(function(){
     var msg = "Произошла ошибка, обновите страничку";
     var status = "danger"; // success, warning, info, danger
@@ -1600,7 +1604,7 @@ function set_ajax_form_save_xlsx(button_id, excel_table, callback_success, callb
       url: action,
       data: {
         csrfmiddlewaretoken: getCookie('csrftoken'),
-        action: 'save',
+        action: operation,
         count: rows.length,
         data: rows,
       },

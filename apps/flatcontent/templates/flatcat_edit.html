@@ -31,13 +31,9 @@
       {% if is_products %}
       <!-- Привязанные товары -->
       <div class="form-group">
-        <label class="col-lg-2 control-label">Наполнение, привязанные товары</label>
+        <label class="col-lg-2 control-label">Привязанные товары ({{ products|length }})</label>
         <div class="col-lg-10">
-          <select id="products_select2" name="products" autocomplete="off" multiple>
-            {% for item in products %}
-              <option value="{{ item.0 }}" selected>{{ item.1 }} #{{ item.0 }} ({{ item.2 }})</option>
-            {% endfor %}
-          </select>
+          {% include "blocks/linked_products_select2.html" %}
         </div>
       </div>
       {% endif %}

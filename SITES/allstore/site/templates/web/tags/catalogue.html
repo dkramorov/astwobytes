@@ -4,18 +4,18 @@
   <ul class="topcatalog-list">
     {% for menu in menus %}
       <li>
-        <a href="/cat/{{ menu.altname }}/">{{ menu.name }}</a>
+        <a href="{{ menu.link }}">{{ menu.name }}</a>
         {% if menu.sub %}
           <i class="fa fa-angle-right"></i>
           <ul>
             {% for submenu in menu.sub %}
               <li>
-                <a href="/cat/{{ submenu.altname }}/">{{ submenu.name }}</a>
+                <a href="{{ submenu.link }}">{{ submenu.name }}</a>
                 {% if submenu.sub %}
                   <i class="fa fa-angle-right"></i>
                   <ul>
                     {% for item in submenu.sub %}
-                      <li><a href="/cat/{{ item.altname }}/">{{ item.name }}</a></li>
+                      <li><a href="{{ item.link }}">{{ item.name }}</a></li>
                     {% endfor %}
                   </ul>
                 {% endif %}

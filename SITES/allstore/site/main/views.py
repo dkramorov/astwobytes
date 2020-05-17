@@ -7,7 +7,9 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 
 from apps.flatcontent.views import SearchLink
+from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
 from apps.main_functions.views import DefaultFeedback
+from apps.products.models import Products
 
 CUR_APP = 'main'
 main_vars = {
@@ -78,10 +80,22 @@ def cat_on_site(request, link: str = None):
     template = 'web/cat/%slist.html' % (mh_vars['template_prefix'], )
 
     page = SearchLink(q_string, request, containers)
-    context['page'] = page
+    #context['page'] = page
     context['containers'] = containers
 
     return render(request, template, context)
+
+def product_by_link(request, link: str):
+    """Вытаскиваем код товара по ссылке и возвращаем товар
+       :param request: HttpRequest
+       :param link: ссылка на товар по транслит-названию-код
+    """
+    code = link.split('-')[-1]
+    code = code.replace('/', '')
+    product = Products.objects.filter(code=code).only('id').first()
+    if product:
+        return product_on_site(request, product.id)
+    raise Http404
 
 def product_on_site(request, product_id: int):
     """Страничка товара/услуги
