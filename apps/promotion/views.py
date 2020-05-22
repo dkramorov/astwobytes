@@ -16,9 +16,10 @@ from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 from apps.main_functions.tabulator import tabulator_filters_and_sorters
 
-from .models import Vocabulary, SVisits
+from apps.flatcontent.seo import check_titles_and_metatags
+from .models import Vocabulary, SVisits, SeoReport
 
-logger = logging.getLogger('simple')
+logger = logging.getLogger('main')
 
 CUR_APP = 'promotion'
 vocabulary_vars = {
@@ -329,3 +330,49 @@ def svisits_import(request, *args, **kwargs):
                 analog.save()
     return JsonResponse(result, safe=False)
 
+
+seo_report_vars = {
+    'singular_obj': 'Проблема сео',
+    'plural_obj': 'Проблемы сео',
+    'rp_singular_obj': 'проблему сео',
+    'rp_plural_obj': 'проблем сео',
+    'template_prefix': 'seo_report_',
+    'action_create': 'Анализ',
+    'action_edit': 'Решение',
+    'action_drop': 'Удаление',
+    'menu': 'promotion',
+    'submenu': 'seo_report',
+    'show_urla': 'show_seo_report',
+    'model': SeoReport,
+}
+
+@login_required
+def show_seo_report(request, *args, **kwargs):
+    """Вывод проблем сео"""
+    result = []
+
+    if request.method == 'POST':
+        result = check_titles_and_metatags()
+        return JsonResponse(result, safe=False)
+
+    mh_vars = seo_report_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, disable_fas=True)
+    context = mh.context
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        rows = mh.standard_show()
+        for row in rows:
+            item = object_fields(row)
+            item['actions'] = row.id
+            result.append(item)
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)

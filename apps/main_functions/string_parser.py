@@ -12,7 +12,66 @@ rega_int = re.compile('[^0-9]', re.U+re.I+re.DOTALL)
 rega_quotes = re.compile('[\'"`]', re.U+re.I+re.DOTALL)
 rega_strict_text = re.compile('[^0-9a-zA-Zа-яА-ЯёЁ/-]', re.U+re.I+re.DOTALL)
 rega_html = re.compile('(<[^>]+>)?', re.U+re.I+re.DOTALL)
-rega_ip = re.compile("([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})")
+rega_ip = re.compile('([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})')
+
+def check_ip(ip: str):
+    """Проверка на айпи адрес
+       :param ip: айпи адрес
+       :return: айпи адрес
+    """
+    search_ip = rega_ip.search(ip)
+    if search_ip:
+        return '%s.%s.%s.%s' % (search_ip.group(1),
+                                search_ip.group(2),
+                                search_ip.group(3),
+                                search_ip.group(4), )
+    return None
+
+def load_iptables(path='/home/jocker/iptables'):
+    """Загрузить таблицу фаервола
+       :param path: путь к файлу с сохраненной таблицей фаервола
+       :return: список с заблоченными айпи-адресами
+    """
+    fips = []
+    with open(path, 'r') as f:
+        content = f.readlines()
+    for line in content:
+        ip = check_ip(line)
+        if ip:
+            fips.append(ip)
+    return fips
+
+def domain2punycode(domain: str) -> str:
+    """Преобразуем домен к punycode
+       :param domain: Домен
+       :return: домен строкой в punycode
+    """
+    if not domain:
+        return ''
+    if '://' in domain:
+        domain = domain.split('://')[1]
+    if '?' in domain:
+        domain = domain.split("?")[0]
+    if '/' in domain:
+        domain = domain.split('/')[0]
+    if '#' in domain:
+        domain = domain.split('#')[0]
+    domain = domain.encode('idna')
+    return domain.decode('utf-8')
+
+def generate_base_auth(passwd: str = 'bugoga', salt: str = '86') -> str:
+    """CRYPT HTPASSWD, например, для nginx
+       т.к. утилита htpasswd только в апаче
+       Генерация хэша пароля для базовой авторизации
+       формат файла
+       jocker:86PZUBArg1zu6
+       86 - соль, остальное хэш пароля
+       :param passwd: пароль
+       :param salt: соль
+       :return: зашифрованная строка
+    """
+    import crypt
+    return crypt.crypt(passwd, salt)
 
 def q_string_fill(request, q_string):
     """Заполняем параметры для запроса q_string page, by
@@ -65,7 +124,7 @@ def prepare_simple_text(text:str):
        которые хуй увидишь - даже в mysql они
        печатаются обычным пробелом"""
     rega_search = rega_space.search(text)
-    if rega_search > -1:
+    if rega_search:
         text = rega_space.sub(' ', text)
     return text.strip()
 
@@ -330,14 +389,17 @@ def summa_format(summa):
     return summa
 
 def ip2long(ip):
-    """Преобразуем ip-адрес в число"""
+    """Преобразуем ip-адрес в число
+       :param ip: ip адрес
+       :return: число
+    """
     #>>> o = map(int, "146.0.238.42".split("."))
     #[146, 0, 238, 42]
     #>>> res = (16777216 * o[0]) + (65536 * o[1]) + (256 * o[2]) + o[3];
     #2449534506
     result = None
     search_ip = rega_ip.match(ip)
-    if search_ip > -1:
+    if search_ip:
         a, b, c, d = search_ip.group(1), search_ip.group(2), search_ip.group(3), search_ip.group(4)
         ### << Binary Left Shift
         ### The left operands value is moved left by the number of bits specified by the right operand. 	a << = 240 (means 1111 0000)

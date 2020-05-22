@@ -328,3 +328,15 @@ if SENTRY_DSN:
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True
     )
+
+# ----------------------------
+# Внешнее хранилище для файлов
+# ----------------------------
+AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID', default='')
+AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY', default='')
+AWS_ACL_POLICY = "public-read"
+BOTO_S3_BUCKET = env.str('BOTO_S3_BUCKET', default='my_bucket')
+BOTO_S3_HOST = env.str('BOTO_S3_HOST', default='hb.bizmrg.com')
+AWS_S3_FORCE_HTTP_URL = False
+# с этим не все пашет
+#BOTO_BUCKET_LOCATION = env.str('BOTO_BUCKET_LOCATION', default='RU')

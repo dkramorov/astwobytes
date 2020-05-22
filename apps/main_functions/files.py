@@ -401,6 +401,8 @@ def full_path(path):
     """Возвращает абсолютный путь к файлу (/home/...)"""
     if not path:
         return ''
+    if path.startswith('/media/'):
+        path = path.replace('/media/', '')
     path = os.path.join(DEFAULT_FOLDER, path)
     if not path.startswith(DEFAULT_FOLDER):
         return ''
@@ -472,7 +474,10 @@ def imagine_image(img, size, source, dest='resized'):
     return path_resized_img
 
 def file_size(fname):
-    """Размер файла"""
+    """Размер файла
+       :param fname: Путь до файла
+       :return: размер в байтах
+    """
     result = 0
     path = os.path.join(DEFAULT_FOLDER, fname)
     if not check_path(path):

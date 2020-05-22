@@ -17,6 +17,11 @@
         <span class="item-text">Посещения сайтов</span>
       </a>
     </li>
+    <li{% ifequal submenu 'seo_report' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'promotion:show_seo_report' %}">
+        <span class="item-text">Сео-проблемы</span>
+      </a>
+    </li>
   </ul>
 </li>
 {% endif %}

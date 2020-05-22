@@ -26,4 +26,6 @@ urlpatterns = [
     # аякс-поиск
     path('vocabulary/search/', views.search_vocabulary, name='search_vocabulary'),
 
+    # сео-отчет
+    path('admin/seo_report/', views.show_seo_report, name='show_seo_report'),
 ]

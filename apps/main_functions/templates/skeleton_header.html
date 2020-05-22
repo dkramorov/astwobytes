@@ -1,7 +1,7 @@
 {% load mtags %}
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-<title>{% if q_string.title %}{{ q_string.title|textize }}{% endif %}</title>
+<title>{% if q_string.title %}{{ q_string.title|textize }}{% endif %} - {{ containers.main.tags.company_name.title }}</title>
 <meta name="description" content="{% if q_string.description %}{{ q_string.description|textize }}{% endif %}" />
 {% if q_string.keywords %}<meta name="keywords" content="{{ q_string.keywords|textize }}" />{% endif %}
 

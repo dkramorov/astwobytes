@@ -1,0 +1,101 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+var problem_state = 1;
+var problem_page = 1;
+function fill_problems(problems){
+  for(var i=0; i<problems.length; i++){
+    main_table.addData([{
+      name: problems[i]['name'],
+      description: problems[i]['description'],
+      link: problems[i]['link'],
+    }], false); // true - add at the top
+  }
+}
+function check_problems(){
+  var msg = 'Произошла ошибка, обновите страничку';
+  var status = 'danger'; // success, warning, info, danger
+  $.ajax({
+    type: "POST",
+    url: "{% url 'promotion:show_seo_report' %}",
+    data: {
+        csrfmiddlewaretoken: getCookie('csrftoken'),
+        state: problem_state,
+        page: problem_page,
+    },
+  }).done(function(r) {
+    if(r.error){
+      msg = r.error;
+    }else if(r.success){
+      msg =  r.success;
+      status = 'success';
+    }
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+    fill_problems(r['problems']);
+  }).fail(function() {
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  });
+}
+
+$(document).ready(function(){
+  var linkFormatter = function(cell, formatterParams, onRendered){
+    var value = cell.getValue();
+    var pk = cell.getData()['id'];
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      result += " <a class='btn' target='_blank' href='" + value + "'>перейти</a> ";
+    }
+    result += "</div>";
+    return result;
+  };
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {
+        title: "Проблема",
+        field: "name",
+        headerFilterPlaceholder: "Проблема",
+        headerSort: false,
+        minWidth: 120,
+        formatter: wordwrapFormatter,
+      },
+      {
+        title: "Описание",
+        field: "description",
+        headerFilterPlaceholder: "Описание",
+        headerSort: false,
+        minWidth: 150,
+        formatter: wordwrapFormatter,
+      },
+      {
+        title: "Ссылка",
+        field: "link",
+        headerFilterPlaceholder: "Ссылка",
+        headerSort: false,
+        minWidth: 150,
+        formatter: linkFormatter,
+      },
+    ],
+  });
+  check_problems();
+});
+</script>
+{% endblock %}

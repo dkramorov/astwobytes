@@ -13,7 +13,7 @@ from apps.main_functions.fortasks import search_process
 from apps.main_functions.files import open_file, check_path
 from apps.main_functions.models import Tasks
 
-logger = logging.getLogger('simple')
+logger = logging.getLogger('main')
 
 def run_task(task):
     """Запускает фоновую задачу из Tasks очереди

@@ -23,7 +23,7 @@ class Vocabulary(Standard):
 class SVisits(Standard):
     """Статистика для посещений сайтов ботом"""
     date = models.DateField(blank=True, null=True, db_index=True)
-    ip = models.CharField(max_length=255, blank=True, null=True)
+    ip = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     company_id = models.IntegerField(blank=True, null=True, db_index=True)
     profile = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     count = models.IntegerField(blank=True, null=True, db_index=True)
@@ -31,3 +31,15 @@ class SVisits(Standard):
     class Meta:
         verbose_name = 'Promotion - посещение сайта'
         verbose_name_plural = 'Promotion - посещения сайтов'
+
+class SeoReport(Standard):
+    """Отчет о сео-проблемах"""
+    state_choices = (
+        1, 'Нет названия компании',
+        2, 'Не заполнен title',
+        3, 'Дублирующийся title',
+    )
+    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    description = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    link = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
