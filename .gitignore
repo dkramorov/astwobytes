@@ -109,3 +109,10 @@ dump.rdb
 
 # media folder - uploaded by user
 media
+
+# xapian
+apps/xapian64/bin
+apps/xapian64/include
+apps/xapian64/lib
+apps/xapian64/share
+apps/xapian64/site-packages
