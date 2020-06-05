@@ -98,6 +98,10 @@ if env('FLATTOOLTIP_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.flattooltip')
 if env('PROMOTION_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.promotion')
+if env('PERSONAL_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.personal')
+if env('YANDEX_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.yandex')
 
 CUSTOM_APPS += [
     'apps.upload_tasks',
@@ -340,3 +344,17 @@ BOTO_S3_HOST = env.str('BOTO_S3_HOST', default='hb.bizmrg.com')
 AWS_S3_FORCE_HTTP_URL = False
 # с этим не все пашет
 #BOTO_BUCKET_LOCATION = env.str('BOTO_BUCKET_LOCATION', default='RU')
+
+# --------
+# OAUTH VK
+# --------
+VK_OAUTH_APP_ID = env.str('VK_OAUTH_APP_ID', default='')
+VK_OAUTH_REDIRECT_URL = env.str('VK_OAUTH_REDIRECT_URL', default='http://localhost:8000/personal/oauth/vk/')
+VK_OAUTH_SECRET = env.str('VK_OAUTH_SECRET', default='')
+
+# ------------
+# OAUTH Yandex
+# ------------
+YANDEX_OAUTH_APP_ID = env.str('YANDEX_OAUTH_APP_ID', default='')
+YANDEX_OAUTH_REDIRECT_URL = env.str('YANDEX_OAUTH_REDIRECT_URL', default='http://localhost:8000/personal/oauth/yandex/')
+YANDEX_OAUTH_SECRET = env.str('YANDEX_OAUTH_SECRET', default='')

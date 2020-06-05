@@ -1,28 +1,30 @@
 {% load mtags %}
-<section class="vc_row pt-65 pb-40">
+<section class="vc_row pt-65 pb-40{% if container.class_name %} {{ container.class_name }}{% endif %}">
   <div class="container">
     <div class="row">
       <div class="lqd-column col-md-7 col-xs-12 mb-5 mb-md-0">
         {% if blocks|length > 1 %}
         <div class="carousel-container carousel-shadow-active carousel-nav-left carousel-nav-md carousel-dots-style1">
-          <div class="carousel-items row" data-lqd-flickity='{"cellAlign":"center","prevNextButtons":true,"pageDots":false,"groupCells":false,"wrapAround":true,"pauseAutoPlayOnHover":false}'>
+          <div class="owl-carousel row article2">
         {% endif %}
-            {% for block in blocks %}
-              {% if block.img %}
-                <div class="carousel-item col-xs-12 px-0 mb-4">
-                  <figure>
-                    <div class="imga" id="block_{{ block.id }}">
-                      <a href="{{ block.link }}" class="btn btn-naked text-uppercase fresco btn-icon-left btn-icon-xlg btn-icon-circle btn-icon-solid btn-icon-ripple font-size-13 font-weight-bold ltr-sp-1 lqd-unit-animation-done blue">
-                        <span>
-                          <span class="btn-icon font-size-20"><i class="fa fa-play"></i></span>
-                        </span>
-                      </a>
-                      <img src="{% imagine block.img '1920x1080' block.get_folder True %}" alt="{{ block.description|textize }}">
-                    </div>
-                  </figure>
+        {% for block in blocks %}
+          {% if block.img %}
+            <div class="carousel-item col-xs-12 px-0 mb-4">
+              <figure>
+                <div class="imga" id="block_{{ block.id }}">
+                  {% if block.link %}
+                    <a href="{{ block.link }}" class="btn btn-naked text-uppercase fresco btn-icon-left btn-icon-xlg btn-icon-circle btn-icon-solid btn-icon-ripple font-size-13 font-weight-bold ltr-sp-1 lqd-unit-animation-done blue">
+                      <span>
+                        <span class="btn-icon font-size-20"><i class="fa fa-play"></i></span>
+                      </span>
+                    </a>
+                  {% endif %}
+                  <img src="{% imagine block.img '1920x1080' block.get_folder True %}" alt="{{ block.description|textize }}">
                 </div>
-              {% endif %}
-            {% endfor %}
+              </figure>
+            </div>
+          {% endif %}
+        {% endfor %}
 
         {% if blocks|length > 1 %}
           </div>

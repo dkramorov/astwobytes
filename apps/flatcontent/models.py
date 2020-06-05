@@ -94,8 +94,9 @@ def update_containers_vars(ftype, mh_vars):
             'rp_singular_obj': 'шаблона конструктора',
             'rp_plural_obj': 'шаблонов конструктора',
         })
+    template_prefix = '%s_' % (ftype, )
     mh_vars.update({
-        'template_prefix': '%s_' % (ftype, ),
+        'template_prefix': template_prefix,
         'submenu': ftype,
     })
 
@@ -150,6 +151,7 @@ class Containers(Standard):
     description = models.TextField(blank=True, null=True)
     tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     template_position = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    class_name = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Класс css')
 
     class Meta:
         verbose_name = 'Стат.контент - Контейнеры'

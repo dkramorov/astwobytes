@@ -158,6 +158,17 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
-{% comment %}<!--{% if paginator %}{{ paginator|safe }}{% endif %}-->{% endcomment %}
+{% block extrascripts %}
+{% if search_terms %}
+<script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".product-title a").mark('{% for search_term in search_terms %}{% if not forloop.first %} {% endif %}{{ search_term }}{% endfor %}', {
+      'accuracy': 'complementary',
+    });
+  });
+</script>
+{% endif %}
 {% endblock %}

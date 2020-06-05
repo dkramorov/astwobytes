@@ -96,6 +96,17 @@ if 'apps.promotion' in settings.INSTALLED_APPS:
     urlpatterns += [
         re_path(r'^promotion/', include('apps.promotion.urls')),
     ]
+if 'apps.personal' in settings.INSTALLED_APPS:
+    # Пользователи сайта
+    urlpatterns += [
+        re_path(r'^personal/', include('apps.personal.urls')),
+    ]
+if 'apps.yandex' in settings.INSTALLED_APPS:
+    # Яндекс сервисы
+    urlpatterns += [
+        re_path(r'^yandex/', include('apps.yandex.urls')),
+    ]
+
 
 # -------------------------------------------
 # Обработка статических файлов под DEBUG=True

@@ -189,7 +189,14 @@ def show_containers(request, ftype: str, *args, **kwargs):
                       'cur_page': mh.raw_paginator['cur_page'],
                       'by': mh.raw_paginator['by'], }
         return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
+
+    template_prefix = 'flatcontent_core_'
+    # Если буду разделять вывод, то заюзаю конструкцию
+    # template_prefix = mh.template_prefix
+    # if context['ftype'] in ('flattemplates', 'flatpages', ):
+    #     template_prefix = 'flatcontent_core_'
+
+    template = '%stable.html' % template_prefix
     return render(request, template, context)
 
 @login_required

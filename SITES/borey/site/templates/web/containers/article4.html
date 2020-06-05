@@ -1,0 +1,17 @@
+{% load mtags %}
+<section class="vc_row pt-80 pb-80 mt-25">
+  <div class="container">
+    <div class="row flex-wrap align-items-center">
+      {% for block in blocks %}
+        <div class="col-md-2"></div>
+        <div class="lqd-column col-md-8">
+          <h2 class="h3 mt-0 text-center">{{ block.name }}</h2>
+          <div class="text-justify">
+            {% if block.html %}{{ block.html|safe }}{% endif %}
+          </div>
+        </div>
+        <div class="col-md-2"></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -17,4 +17,7 @@ urlpatterns = [
     url('^product/(?P<link>[a-z0-9_-]+)/$', views.product_by_link, name='product_by_link'),
     # feedback
     path('feedback/', views.feedback, name='feedback'),
+    # registration
+    path('registration/', views.registration, name='registration'),
+    path('logout/', views.logout, name='logout'),
 ]

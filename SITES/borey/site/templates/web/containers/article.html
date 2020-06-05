@@ -3,8 +3,8 @@
   <div class="container">
     <div class="row flex-wrap align-items-center">
       {% for block in blocks %}
-        <div class="lqd-column col-md-6 col-xs-12 mb-5 mb-md-0 mobile">
-          {% if block.img %}
+        {% if block.img %}
+          <div class="lqd-column col-md-6 col-xs-12 mb-5 mb-md-0 mobile">
             <div class="carousel-item col-xs-12 px-0 mb-4">
               <figure>
                 <div class="imga" id="block_{{ block.id }}_mobile">
@@ -12,9 +12,9 @@
                 </div>
               </figure>
             </div>
-          {% endif %}
-        </div>
-        <div class="lqd-column col-md-6">
+          </div>
+        {% endif %}
+        <div class="lqd-column col-md-{% if block.img %}6{% else %}12{% endif %}">
           <h2 class="h3 mt-0">{{ block.name }}</h2>
           {% if block.html %}{{ block.html|safe }}{% endif %}
         </div>

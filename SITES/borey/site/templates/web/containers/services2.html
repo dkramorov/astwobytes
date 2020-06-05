@@ -1,5 +1,5 @@
 {% load mtags %}
-<section class="vc_row pt-120 pb-75 services2">
+<section class="vc_row pt-120 pb-75 services2{% if container.class_name %} {{ container.class_name }}{% endif %}">
   {% for block in blocks %}
   <div class="container">
     <div class="row">
@@ -40,8 +40,8 @@
                 <div class="row">
                   {% for item in block.sub %}
                     <div class="lqd-column col-md-4 mb-30">
-                      <h4 class="mb-1 font-size-14 left_blue_line">{{ item.name }}</h4>
-                      {% if item.html %}<div class="font-size-13 text">{{ item.html|safe }}</div>{% endif %}
+                      <h4 class="mb-1 font-size-14 bold">{{ item.name }}</h4>
+                      {% if item.html %}<div class="font-size-13 text left_blue_line">{{ item.html|safe }}</div>{% endif %}
                     </div>
                     {% cycle '' '' '<div class="clearfix"></div>' %}
                   {% endfor %}

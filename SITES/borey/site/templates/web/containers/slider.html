@@ -1,7 +1,7 @@
 {% load mtags %}
 <main id="content" class="content bg-black" data-liquid-stack="true" data-stack-options='{"navigation":true, "prevNextButtons":true, "pageNumber":true, "effect":"fadeScale", "autoPlay": false}'>
 {% for block in blocks %}
-<section class="vc_row py-7 mt-25 bg-cover bg-center slider1" data-tooltip="{{ block.description|textize }}" id="anchor_block_{{ block.id }}">
+<section class="vc_row py-7 mt-25 bg-cover slider1" data-tooltip="{{ block.description|textize }}" id="anchor_block_{{ block.id }}">
 
   <div class="imga" id="block_{{ block.id }}">
     {% if block.description %}<div class="imga_text">{{ block.description|textize }}</div>{% endif %}
@@ -11,8 +11,15 @@
       </span>
     </a>
     <img src="{% imagine block.img '1920x1080' block.get_folder True %}" />
-  </div>
 
+    <table class="slider_pagination">
+      <tr>
+        {% for block in blocks %}
+          <td data-anchor="block_{{ block.id }}">{{ forloop.counter }}</td>
+        {% endfor %}
+      </tr>
+    </table><br />
+  </div>
 
   <div class="container">
     <div class="row">

@@ -47,6 +47,14 @@
     </div>
   </div>
 </div>
+<input type="text" id="test_speech" />
+{% endblock %}
 
 
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    var test_speech = new MySpeechRecognition("test_speech");
+  });
+</script>
 {% endblock %}

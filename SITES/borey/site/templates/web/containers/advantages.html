@@ -1,5 +1,5 @@
 {% load mtags %}
-<section class="vc_row pt-70 pb-30">
+<section class="vc_row pt-70 pb-30{% if container.class_name %} {{ container.class_name }}{% endif %}"{% if container.img %} style="background-image:url('{{ container.imagine }}');"{% endif %}>
   <div class="container">
     <div class="row">
       <div class="lqd-column col-md-12">
@@ -13,6 +13,13 @@
           <h4 class="mb-1 font-size-20 font-weight-normal left_red_line">{{ block.name }}</h4>
         </div>
         {% cycle '' '' '<div class="clearfix"></div>' %}
+      {% endfor %}
+      {% for block in blocks %}
+        {% if block.img %}
+          <div class="lqd-column col-md-12 mt-50">
+            <img src="{% imagine block.img '1920x1080' block.get_folder True %}" alt="{{ block.description|textize }}">
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>

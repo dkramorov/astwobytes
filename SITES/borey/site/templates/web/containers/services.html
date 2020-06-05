@@ -1,5 +1,5 @@
 {% load mtags %}
-<section class="vc_row pt-120 pb-75 services1">
+<section class="vc_row pt-120 pb-75 services1{% if container.class_name %} {{ container.class_name }}{% endif %}">
   {% for block in blocks %}
   <div class="container">
     <div class="row">

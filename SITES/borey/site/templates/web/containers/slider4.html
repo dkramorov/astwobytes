@@ -1,7 +1,8 @@
 {% load mtags %}
 {% for block in blocks %}
-<section class="vc_row py-7 mt-25 bg-cover bg-center slider4" data-tooltip="{{ block.description|textize }}">
-  <div class="imga" id="block_{{ block.id }}">
+<section class="vc_row bg-cover slider4" data-tooltip="{{ block.description|textize }}">
+  {% if container.description %}<div class="video-bg">{{ container.description|safe }}</div>{% endif %}
+  <div class="imga pt-100" id="block_{{ block.id }}">
     <a href="{{ block.link }}" class="btn btn-naked text-uppercase fresco btn-icon-left btn-icon-xlg btn-icon-circle btn-icon-solid btn-icon-ripple font-size-13 font-weight-bold ltr-sp-1 lqd-unit-animation-done blue">
       <span>
         <span class="btn-icon font-size-20"><i class="fa fa-play"></i></span>
@@ -9,11 +10,11 @@
     </a>
     <img src="{% imagine block.img '1920x1080' block.get_folder True %}" />
   </div>
-  <div class="container">
+  <div class="container pt-100">
     <div class="row">
       <div class="lqd-column col-lg-7 col-md-9 col-lg-offset-5 col-md-offset-3">
         <div class="row">
-          <div class="lqd-column col-md-9 col-md-offset-3">
+          <div class="lqd-column col-md-9 col-md-offset-3 mt-30">
             <h2 class="h1 ltr-sp--05 font-weight-bold text-white" data-fittext="true" data-fittext-options='{"compressor":0.375,"maxFontSize": 42,"minFontSize": 20}' data-split-text="true" data-split-options='{"type":"lines"}' data-custom-animations="true" data-ca-options='{"triggerHandler":"inview","animationTarget":".split-inner","duration":"1600","delay":"160","easing":"easeOutQuint","direction":"forward","initValues":{"translateY":150,"rotateZ":-5,"opacity":0},"animations":{"translateY":0,"rotateZ":0,"opacity":1}}'>
               <span class="ld-fh-txt">{{ block.name }}</span>
             </h2>

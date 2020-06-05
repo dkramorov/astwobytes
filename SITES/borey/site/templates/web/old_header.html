@@ -1,0 +1,63 @@
+  <header class="main-header main-header-overlay">
+    <div class="mainbar-wrap">
+      <div class="megamenu-hover-bg"></div>
+      <div class="container-fluid mainbar-container">
+        <div class="mainbar">
+          <div class="row mainbar-row align-items-lg-stretch px-4">
+            <div class="col">
+
+              {% with containers.main.tags.logo as logo %}
+
+                <div class="navbar-header-overlay">
+                  <img class="logo-dark" src="{{ logo.thumb }}" alt="">
+                  <div class="helper"><img src="/media/misc/scroll_down.png" /></div>
+                </div>
+
+                <div class="navbar-header">
+                  <a class="navbar-brand" href="/" rel="home">
+                    <span class="navbar-brand-inner">
+                      <img class="logo-dark" src="{{ logo.thumb }}" alt="">
+                      <img class="logo-light" src="{{ logo.thumb }}" alt="">
+                      <img class="logo-sticky" src="{{ logo.thumb }}" alt="">
+                      <img class="mobile-logo-default" src="{{ logo.thumb }}" alt="">
+                      <img class="logo-default" src="{{ logo.thumb }}" alt="">
+                    </span>
+                  </a>
+
+                  <div class="call_to_action">
+                    <div class="icon"><img src="/media/misc/phone.svg" /></div>
+                    <div class="phone">
+                      {{ containers.main.tags.phone.html|safe }}
+                      <a class="request_call" href="#request_call">Заказать звонок</a>
+                    </div>
+                  </div>
+
+
+                  <button type="button" class="navbar-toggle collapsed nav-trigger style-mobile" data-toggle="collapse" data-target="#main-header-collapse" aria-expanded="false" data-changeclassnames='{ "html": "mobile-nav-activated overflow-hidden" }'>
+                    <span class="sr-only">Меню</span>
+                    <span class="bars">
+                      <span class="bar"></span>
+                      <span class="bar"></span>
+                      <span class="bar"></span>
+                    </span>
+                  </button>
+                </div>
+              {% endwith %}
+            </div>
+            <div class="col text-right">
+              <div class="collapse navbar-collapse navbar-visible-ontoggle collapsed" id="main-header-collapse" aria-expanded="false" role="tablist">
+                <div class="call_to_action">
+                  <div class="icon"><img src="/media/misc/phone.svg" /></div>
+                  <div class="phone">
+                    {{ containers.main.tags.phone.html|safe }}
+                    <a class="request_call" href="#request_call">Заказать звонок</a>
+                  </div>
+                </div>
+                {% flatmenu request "mainmenu" %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>

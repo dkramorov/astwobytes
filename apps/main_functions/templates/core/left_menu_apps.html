@@ -45,6 +45,14 @@
     {% include "promotion_admin_menu.html" %}
   {% endif %}
 
+  {% if 'personal' in apps %}
+    {% include "personal_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'yandex' in apps %}
+    {% include "yandex_admin_menu.html" %}
+  {% endif %}
+
   {% include "main_functions_admin_menu.html" %}
 </ul>
 {% endwith %}

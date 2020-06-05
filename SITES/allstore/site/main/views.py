@@ -6,10 +6,13 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
 
+from apps.flatcontent.models import Blocks
 from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
 from apps.main_functions.views import DefaultFeedback
 from apps.products.models import Products
+from apps.personal.oauth import VK, Yandex
+from apps.personal.utils import remove_user_from_request
 
 CUR_APP = 'main'
 main_vars = {
@@ -130,3 +133,40 @@ def feedback(request):
         ],
     }
     return DefaultFeedback(request, **kwargs)
+
+reg_vars = {
+    'singular_obj': 'Регистрация',
+    'template_prefix': 'main_',
+    'show_urla': 'registration',
+}
+
+def registration(request):
+    """Страничка для регистрации"""
+    mh_vars = reg_vars.copy()
+    context = {}
+    q_string = {}
+    containers = {}
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/login/registration.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=reg_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Регистрация',
+        'link': reverse('%s:%s' % (CUR_APP, 'registration')),
+    }]
+    context['page'] = page
+    context['containers'] = containers
+    context['vk_link'] = VK().get_auth_user_link()
+    context['yandex_link'] = Yandex().get_auth_user_link()
+
+    return render(request, template, context)
+
+def logout(request):
+    """Деавторизация пользователя"""
+    remove_user_from_request(request)
+    return redirect(reverse('%s:%s' % (CUR_APP, 'registration')))
+

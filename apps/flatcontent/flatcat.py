@@ -79,21 +79,24 @@ def search_products(q: str):
     """Поиск товаров по запросу,
        возвращаем только id
        :param q: поисковая фраза
+       :return: ид товаров и поисковые фразы
     """
     if not q:
         return []
     search_fields = ('name', 'altname', 'dj_info', 'code')
     cond = Q()
     q_arr = q.strip().split(' ')
+    search_terms = []
     for item in q_arr:
         if not item:
             continue
+        search_terms.append(item)
         search_cond = Q()
         for field in search_fields:
             scond = {'%s__icontains' % field: item}
             search_cond.add(Q(**scond), Q.OR)
         cond.add(Q(search_cond), Q.AND)
-    return Products.objects.filter(cond).filter(is_active=True).values_list('id', flat=True)
+    return (Products.objects.filter(cond).filter(is_active=True).values_list('id', flat=True), search_terms)
 
 def get_cat_for_site(request, link: str = None,
                      with_props: bool = True,
@@ -111,6 +114,7 @@ def get_cat_for_site(request, link: str = None,
     breadcrumbs = []
     q_string = {}
     is_search = False
+    search_terms = []
 
     if not link:
         link = '/cat/'
@@ -127,7 +131,7 @@ def get_cat_for_site(request, link: str = None,
         catalogue = Containers.objects.filter(tag='catalogue', state=cat_type).first()
         if q:
             page.name = 'Вы искали %s' % q
-            ids_products = search_products(q)
+            ids_products, search_terms = search_products(q)
             is_search = True
             query = Products.objects.filter(pk__in=ids_products)
         else:
@@ -215,6 +219,7 @@ def get_cat_for_site(request, link: str = None,
         'my_paginator': my_paginator,
         'products': products,
         'cost_filter': cost_filter,
+        'search_terms': search_terms,
     }
 
 def get_props_for_products(products: list, only_props: list = None):

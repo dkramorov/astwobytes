@@ -1506,6 +1506,13 @@
   });
 
   autosize(document.querySelectorAll("textarea"));
+
+  $(".bg-color-for-img").keyup(function(){
+    var value = $(this).val();
+    if(value.length == 4 || value.length == 7){
+      $(this).parent().parent().find('.img_block').css('background-color', value);
+    }
+  });
 }(jQuery, window, document));
 
 // для аякс форм: {csrfmiddlewaretoken: getCookie('csrftoken')}

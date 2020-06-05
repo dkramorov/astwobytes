@@ -688,11 +688,13 @@ body {
   text-decoration: underline !important;
   color: #232224;
 }
+/*
 .sidebar .nav > li > a > em,
 .sidebar .nav > li > .nav-item > em {
   width: 2em;
   color: inherit;
 }
+*/
 .sidebar .nav > li.active,
 .sidebar .nav > li:hover,
 .sidebar .nav > li.active > a,
@@ -5185,4 +5187,7 @@ fieldset[disabled] .fc-button.active {
   .main-content {
     overflow: hidden !important;
   }
+}
+.voice-trigger.active i{
+  color:#f00;
 }

@@ -1,0 +1,51 @@
+{% load mtags flatcontent_tags %}
+<header class="main-header main-header-overlay" data-react-to-megamenu="true" data-sticky-header="true" data-sticky-options='{ "stickyTrigger": "first-section" }'>
+  {% with containers.main.tags.logo as logo %}
+  <div class="mainbar-wrap">
+    <div class="megamenu-hover-bg"></div>
+    <div class="container-fluid mainbar-container">
+      <div class="mainbar">
+        <div class="row mainbar-row align-items-lg-stretch px-4">
+          <div class="col">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="/" rel="home">
+                <span class="navbar-brand-inner">
+                  <img class="logo-dark" src="{% imagine logo.img '250x250' logo.get_folder True %}" alt="{{ logo.description|textize }}">
+                  <img class="logo-sticky" src="{% imagine logo.img '250x250' logo.get_folder True %}" alt="{{ logo.description|textize }}">
+                  <img class="mobile-logo-default" src="{% imagine containers.main.tags.logo_mobile.img '250x250' containers.main.tags.logo_mobile.get_folder True %}" alt="{{ logo.description|textize }}">
+                  <img class="logo-default" src="{% imagine logo.img '250x250' logo.get_folder True %}" alt="{{ logo.description|textize }}">
+                </span>
+              </a>
+
+              <div class="call_to_action">
+                <div class="phone">
+                  {{ containers.main.tags.phone.html|safe }}
+                  <i class="fa fa-phone"></i>
+                </div>
+                <div class="phone">
+                  {{ containers.main.tags.email.html|safe }}
+                  <i class="fa fa-envelope"></i>
+                </div>
+              </div>
+
+              <button type="button" class="navbar-toggle collapsed nav-trigger style-mobile" data-toggle="collapse" data-target="#main-header-collapse" aria-expanded="false" data-changeclassnames='{ "html": "mobile-nav-activated overflow-hidden" }'>
+                <span class="sr-only">Меню</span>
+                <span class="bars">
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="col">
+            <div class="collapse navbar-collapse" id="main-header-collapse">
+              {% flatmenu request "mainmenu" %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endwith %}
+</header>

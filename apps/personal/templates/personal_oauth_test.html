@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+
+<a target="_blank" class="btn btn-primary pull-left mr" href="{{ VK_OAUTH_LINK }}">
+  <em class="fa fa-vk fa-fw mr-sm"></em> Авторизация
+</a>
+<a target="_blank" class="btn btn-primary pull-left mr" href="{{ YANDEX_OAUTH_LINK }}">
+  Yandex - Авторизация
+</a>
+
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+});
+</script>
+{% endblock %}

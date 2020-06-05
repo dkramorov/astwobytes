@@ -1,54 +1,48 @@
 {% ifequal tag 'mainmenu' %}
-  <ul class="main-nav main-nav-hover-underline-2 nav align-items-lg-stretch justify-content-lg-end" data-submenu-options='{"toggleType":"fade","handler":"mouse-in-out"}'>
-    {% for menu in menus %}
-      <li class="{% ifequal request.META.PATH_INFO menu.link %}current-menu-item{% endifequal %} {% if menu.sub %}menu-item-has-children{% endif %}">
-        <a href="{{ menu.link }}">
-          <span class="link-icon"></span>
-          <span class="link-txt">
-            <span class="link-ext"></span>
-            <span class="txt">
-              {{ menu.name }}
-              {% if menu.sub %}
-                <span class="submenu-expander">
-                  <i class="fa fa-angle-down"></i>
-                </span>
-              {% endif %}
+<ul id="primary-nav" class="main-nav nav align-items-lg-stretch justify-content-lg-center" data-submenu-options='{ "toggleType":"fade", "handler":"mouse-in-out" }'>
+  {% for menu in menus %}
+    <li class="{% ifequal request.META.PATH_INFO menu.link %}current-menu-item{% endifequal %}{% if menu.sub %} menu-item-has-children{% endif %}">
+      <a href="{{ menu.link }}">
+        <span class="link-icon"></span>
+        <span class="link-txt">
+          <span class="link-ext"></span>
+          <span class="txt">
+            {{ menu.name }}
+            <span class="submenu-expander">
+              <i class="fa fa-angle-down"></i>
             </span>
           </span>
-        </a>
-        {% if menu.sub %}
-          <ul class="nav-item-children">
-            {% for item in menu.sub %}
-              <li>
-                <a href="{{ item.link }}">
-                  <span class="link-icon"></span>
-                  <span class="link-txt">
-                    <span class="link-ext"></span>
-                    <span class="txt">
-                      {{ item.name }}
-                      <span class="submenu-expander">
-                        <i class="fa fa-angle-down"></i>
-                      </span>
+        </span>
+      </a>
+      {% if menu.sub %}
+        <ul class="nav-item-children">
+          {% for item in menu.sub %}
+            <li>
+              <a href="{{ item.link }}">
+                <span class="link-icon"></span>
+                <span class="link-txt">
+                  <span class="link-ext"></span>
+                  <span class="txt">
+                    {{ item.name }}
+                    <span class="submenu-expander">
+                      <i class="fa fa-angle-down"></i>
                     </span>
                   </span>
-                </a>
-              </li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-</div>
-<div class="header-module">
-  <button class="nav-trigger collapsed style-1 fill-solid scheme-light txt-left main-nav-trigger" role="button" type="button" data-toggle="collapse" data-target="#main-header-collapse" aria-expanded="false" aria-controls="main-header-collapse" data-changeclassnames='{ "html": "overflow-hidden" }'>
-    <span class="help_text">МЕНЮ</span>
-    <span class="bars">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
-    </span>
-  </button>
+                </span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+  <li class="equalizer">
+    <a class="mute_bg">
+      <img src="/media/new/equalizer.gif" class="playing" />
+      <img src="/media/new/equalizer.png" class="silence" />
+    </a>
+  </li>
+</ul>
 {% endifequal %}
 
 {% ifequal tag 'bottommenu' %}

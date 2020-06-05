@@ -12,74 +12,28 @@
 <link rel="stylesheet" href="/media/css/custom.css" />
 <link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css">
 <script async src="/media/js/modernizr.min.js"></script>
+
+<link rel="stylesheet" href="/media/css/owl.carousel.min.css">
+ <link rel="stylesheet" href="/media/css/owl.theme.default.min.css">
+
 {% block extrascript %}{% endblock %}
 </head>
 <body class="lqd-stack-buttons-style-2 header-style-fullscreen" data-mobile-nav-trigger-alignment="right" data-mobile-nav-align="left" data-mobile-nav-style="classic" data-mobile-nav-shceme="gray" data-mobile-header-scheme="gray">
 {%  block body %}
 <div id="wrap" class="{% ifequal request.META.PATH_INFO "/" %}homepage{% endifequal %}">
-  <header class="main-header main-header-overlay">
-    <div class="mainbar-wrap">
-      <div class="megamenu-hover-bg"></div>
-      <div class="container-fluid mainbar-container">
-        <div class="mainbar">
-          <div class="row mainbar-row align-items-lg-stretch px-4">
-            <div class="col">
 
-              {% with containers.main.tags.logo as logo %}
-                <div class="navbar-header-overlay">
-                  <img class="logo-dark" src="{{ logo.thumb }}" alt="">
-                  <div class="helper"><img src="/media/misc/scroll_down.png" /></div>
-                </div>
+  {% include "web/header.html" %}
 
-                <div class="navbar-header">
-                  <a class="navbar-brand" href="/" rel="home">
-                    <span class="navbar-brand-inner">
-                      <img class="logo-dark" src="{{ logo.thumb }}" alt="">
-                      <img class="logo-light" src="{{ logo.thumb }}" alt="">
-                      <img class="logo-sticky" src="{{ logo.thumb }}" alt="">
-                      <img class="mobile-logo-default" src="{{ logo.thumb }}" alt="">
-                      <img class="logo-default" src="{{ logo.thumb }}" alt="">
-                    </span>
-                  </a>
-
-                  <div class="call_to_action">
-                    <div class="icon"><img src="/media/misc/phone.svg" /></div>
-                    <div class="phone">
-                      {{ containers.main.tags.phone.html|safe }}
-                      <a class="request_call" href="#request_call">Заказать звонок</a>
-                    </div>
-                  </div>
-
-
-                  <button type="button" class="navbar-toggle collapsed nav-trigger style-mobile" data-toggle="collapse" data-target="#main-header-collapse" aria-expanded="false" data-changeclassnames='{ "html": "mobile-nav-activated overflow-hidden" }'>
-                    <span class="sr-only">Меню</span>
-                    <span class="bars">
-                      <span class="bar"></span>
-                      <span class="bar"></span>
-                      <span class="bar"></span>
-                    </span>
-                  </button>
-                </div>
-              {% endwith %}
-            </div>
-            <div class="col text-right">
-              <div class="collapse navbar-collapse navbar-visible-ontoggle collapsed" id="main-header-collapse" aria-expanded="false" role="tablist">
-                <div class="call_to_action">
-                  <div class="icon"><img src="/media/misc/phone.svg" /></div>
-                  <div class="phone">
-                    {{ containers.main.tags.phone.html|safe }}
-                    <a class="request_call" href="#request_call">Заказать звонок</a>
-                  </div>
-                </div>
-                {% flatmenu request "mainmenu" %}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+{% comment %}<!--
   <main id="content" class="content bg-black"{% ifequal request.META.PATH_INFO "/" %} data-liquid-stack="true" data-stack-options='{"navigation":true, "prevNextButtons":true, "pageNumber":true, "effect":"fadeScale"}'{% endifequal %}>
+-->{% endcomment %}
+  <main id="content" class="content bg-black">
+    {% if breadcrumbs %}
+      <section class="mt-30">&nbsp;</section>
+    {% endif %}
+    <div class="video-bg">
+      {% if page.html %}{{ page.html|safe }}{% endif %}
+    </div>
     {% block content %}{% endblock %}
   </main>
   <footer class="main-footer bg-charade pt-70">
@@ -136,6 +90,7 @@
 <script src="/media/js/theme-vendors.js"></script>
 <script src="/media/js/jquery.pagepiling.min.js"></script>
 <script src="/media/js/theme.min.js"></script>
+<script src="/media/js/owl.carousel.min.js"></script>
 <script src="/media/js/custom.js"></script>
 <script src="/static/fancybox/jquery.fancybox.min.js"></script>
 
@@ -205,5 +160,7 @@
   });
 </script>
 {% block extrascripts %}{% endblock %}
+<audio id="sound_button" src="/media/new/button.ogg"/>
+<audio id="sound_tink" src="/media/new/tink.mp3"/>
 </body>
 </html>

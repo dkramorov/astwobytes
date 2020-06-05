@@ -1,0 +1,22 @@
+{% if perms.personal.view_personal %}
+<li{% ifequal menu 'personal' %} class="active"{% endifequal %}>
+  <a href="{% url 'personal:show_shoppers' %}">
+    <em class="fa fa-users"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Посетители</span>
+  </a>
+  <!-- START SubMenu item-->
+  <ul class="nav collapse{% ifequal menu 'personal' %} in{% endifequal %}">
+    <li{% ifequal submenu 'shoppers' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'personal:show_shoppers' %}">
+        <span class="item-text">Посетители</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'oauth' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'personal:oauth_test' %}">
+        <span class="item-text">Проверка OAuth</span>
+      </a>
+    </li>
+  </ul>
+</li>
+{% endif %}
