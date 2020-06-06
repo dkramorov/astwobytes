@@ -506,7 +506,6 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
     """Вывод блоков"""
     mh_vars = blocks_vars.copy()
     update_blocks_vars(ftype, mh_vars)
-
     # -------------------------------
     # Родительская модель (контейнер)
     # -------------------------------
