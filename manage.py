@@ -15,6 +15,16 @@ def main():
     #if not path in sys.path:
     #    sys.path.append(path)
     #sys.path.insert(0, '%s/env/lib/python3.4/site-packages' % path)
+
+    xapian_path = os.path.dirname(os.path.abspath(__file__))
+    xapian_site_packages = os.path.join(xapian_path, 'xapian64', 'site-packages')
+    sys.path.insert(0, xapian_site_packages)
+    xapian_libs = os.path.join(xapian_path, 'xapian64', 'lib')
+    sys.path.insert(0, xapian_libs)
+
+    #djapian = os.path.join(xapian_site_packages, 'djapian')
+    #sys.path.insert(1, djapian)
+
     # -----------------
     # USAGE:
     # python3 manage.py

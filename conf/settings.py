@@ -358,3 +358,12 @@ VK_OAUTH_SECRET = env.str('VK_OAUTH_SECRET', default='')
 YANDEX_OAUTH_APP_ID = env.str('YANDEX_OAUTH_APP_ID', default='')
 YANDEX_OAUTH_REDIRECT_URL = env.str('YANDEX_OAUTH_REDIRECT_URL', default='http://localhost:8000/personal/oauth/yandex/')
 YANDEX_OAUTH_SECRET = env.str('YANDEX_OAUTH_SECRET', default='')
+
+
+# Djapian settings
+# https://docs.djangoproject.com/en/2.2/ref/applications/
+DJAPIAN_STEMMING_LANG = 'ru'
+DJAPIAN_DATABASE_PATH = os.path.join(MEDIA_ROOT, 'djapian_base')
+DJAPIAN_VOCA = os.path.join(BASE_DIR, 'xapian64', 'spell')
+if env('DJAPIAN_APP', cast=bool, default=False):
+    INSTALLED_APPS.append('djapian')

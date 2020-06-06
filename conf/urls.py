@@ -107,7 +107,6 @@ if 'apps.yandex' in settings.INSTALLED_APPS:
         re_path(r'^yandex/', include('apps.yandex.urls')),
     ]
 
-
 # -------------------------------------------
 # Обработка статических файлов под DEBUG=True
 # -------------------------------------------
