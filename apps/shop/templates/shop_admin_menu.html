@@ -1,0 +1,22 @@
+{% if perms.shop.view_orders %}
+<li{% ifequal menu 'shop' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="">
+    <em class="fa fa-shopping-cart"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Магазин</span>
+  </a>
+  <!-- START SubMenu item-->
+  <ul class="nav collapse{% ifequal menu 'shop' %} in{% endifequal %}">
+    <li{% ifequal submenu 'orders' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'shop:show_orders' %}">
+        <span class="item-text">Заказы</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'purchases' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'shop:show_purchases' %}">
+        <span class="item-text">Покупки</span>
+      </a>
+    </li>
+  </ul>
+</li>
+{% endif %}

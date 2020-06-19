@@ -76,12 +76,12 @@
         <b class="item_current_price">{{ product.price|money_format }} ₽</b>
       </p>
       <p class="prod-qnt">
-        <input value="1" type="text">
+        <input value="1" type="text" id="quantity_{{ product.id }}">
         <a href="#" class="prod-plus"><i class="fa fa-angle-up"></i></a>
         <a href="#" class="prod-minus"><i class="fa fa-angle-down"></i></a>
       </p>
       <p class="prod-addwrap">
-        <a href="#" class="prod-add" rel="nofollow">В корзину</a>
+        <a href="javascript:void(0);" class="prod-add add_to_cart_btn" rel="nofollow" data-product_id="{{ product.id }}">В корзину</a>
       </p>
     </div>
     <ul class="prod-i-props">

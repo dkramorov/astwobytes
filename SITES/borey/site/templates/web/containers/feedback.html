@@ -2,7 +2,7 @@
 <section class="vc_row">
   <div class="container">
     <div class="row">
-      <div class="lqd-column col-md-12 px-4 pt-45 pb-30 bg-black box-shadow-1">
+      <div class="lqd-column col-md-12 px-4 pt-45 pb-30 box-shadow-1">
         <div class="row d-flex flex-wrap align-items-center">
           <div class="lqd-column col-md-6 col-md-offset-1">
             <header class="fancy-title">
@@ -28,8 +28,10 @@
                 <div class="row d-flex flex-wrap">
                   <div class="lqd-column col-md-12 mb-20">
                     <input class="lh-25 mb-30 required" type="text" name="name" placeholder="Ваше имя *" data-msg="Введите ваше имя">
+                    <input class="lh-25 mb-30 required email" type="text" name="email" placeholder="Ваша почта *" data-msg="Введите вашу почту">
                     <input class="lh-25 mb-30 required phone" type="text" name="phone" placeholder="Ваш телефон *" data-msg="Введите ваш телефон">
-                    <textarea cols="10" rows="3" name="msg" placeholder="Комментарий"></textarea>
+                    <input class="lh-25 mb-30" type="text" name="company" placeholder="Название организации">
+                    <textarea cols="10" rows="3" name="msg" placeholder="Комментарий" class="hidden">{{ container.name }}</textarea>
                   </div>
                   <div class="lqd-column col-md-12">
                     <p class="font-size-16 opacity-07">Заполняя эту, и любую другую форму на нашем сайте вы соглашаетесь с обработкой персональных данных, которые вы вводите</p>

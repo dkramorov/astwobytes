@@ -1,0 +1,99 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+
+// Обработка кнопок для управления демонами
+// после загрузки таблицы
+window.tabulator_render_completed = function(){
+  $(".get_daemon_status").each(function(){
+    if($(this).hasClass("touched")){
+      return;
+    }
+    $(this).addClass("touched");
+    $(".get_daemon_status").click(function(){
+      return false;
+    });
+  });
+}
+
+$(document).ready(function(){
+  var actionsDaemonsFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var rowIndex = row.getIndex();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+    actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+
+    actions += " <a class='get_daemon_status btn-xs btn btn-primary pull-left ml' href='{{ root_url }}status/" + pk + "/'><i class='fa fa-eye'></i></a> ";
+
+    actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    actions += "</div>";
+    return actions;
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+/*
+      {
+        formatter: "responsiveCollapse",
+        width: 30,
+        minWidth: 30,
+        align: "center",
+        resizable: false,
+        headerSort: false,
+      },
+*/
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {% include "core/tabulator_cell/name.html" %}
+      {
+        title: "Токен",
+        field: "token",
+        headerFilterPlaceholder: "Токен",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Исполняемый файл",
+        field: "exec_path",
+        headerFilterPlaceholder: "Исполняемый файл",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 160,
+      },
+      /*{% include "core/tabulator_cell/image.html" %}*/
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsDaemonsFormatter,
+        width: 120,
+      },
+    ],
+  });
+
+
+
+});
+</script>
+{% endblock %}

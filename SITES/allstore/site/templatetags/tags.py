@@ -5,6 +5,7 @@ from django.core.cache import cache
 
 from apps.flatcontent.flatcat import get_catalogue
 from apps.products.models import Products, ProductsCats
+from apps.shop.cart import calc_cart, get_shopper
 
 register = template.Library()
 
@@ -16,9 +17,8 @@ def test_tag():
 def ajax_cart(request):
     """Аякс-корзинка"""
     result = {}
-    if request.session.get("shopper"):
-      shopper = request.session['shopper']
-      #result['cart'] = CalcCart(shopper, 1)
+    shopper = get_shopper(request)
+    result['cart'] = calc_cart(shopper, min_info=False)
     result['request'] = request
     return result
 

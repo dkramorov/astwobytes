@@ -102,6 +102,8 @@ if env('PERSONAL_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.personal')
 if env('YANDEX_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.yandex')
+if env('SHOP_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.shop')
 
 CUSTOM_APPS += [
     'apps.upload_tasks',

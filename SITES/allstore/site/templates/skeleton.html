@@ -81,12 +81,8 @@
             {% endif %}
           </li>
           <li>
-            <div class="h-cart">
-              <a href="/shop/cart/">
-                <i class="fa fa-shopping-cart"></i>
-                <span class="shop-menu-ttl">Корзина</span>
-                (<b id="mini-cart-sum">0</b>)
-              </a>
+            <div class="h-cart" id="mini-cart">
+              {% ajax_cart request %}
             </div>
           </li>
         </ul>
@@ -202,6 +198,7 @@
 </footer>
 {% endblock %}
 <script src="/media/js/jquery-1.11.2.min.js"></script>
+{% include "shop_js.html" %}
 <script src="/media/js/jquery.bxslider.min.js"></script>
 <script src="/media/js/fancybox.js"></script>
 <script src="/media/js/jquery.fancybox-thumbs.js"></script>

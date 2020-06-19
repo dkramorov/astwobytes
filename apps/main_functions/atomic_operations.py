@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
 from django.db import transaction
 from django.db.models import Value
+
+smartReplace = True
 try:
     from django.db.models.functions import Replace
 except ImportError:
-    pass
+    smartReplace = False
 
 def atomic_update(model, update_tasks: dict):
     """Обновление в транзакции только нужных полей
@@ -23,6 +25,17 @@ def atomic_update(model, update_tasks: dict):
 
 def bulk_replace(queryset, field, old_value, new_value):
     """Массовое обновление записей методом замены"""
-    queryset.update(**{field:Replace(field, Value(old_value), Value(new_value))})
+    if smartReplace:
+        queryset.update(**{field:Replace(field, Value(old_value), Value(new_value))})
+    else:
+        oldReplace(queryset, field, old_value, new_value)
 
-
+def oldReplace(queryset, field, old_value, new_value):
+    """До django 2.1 не было метода Replace"""
+    from django.db.models import F, Func, Value
+    queryset.update(**{
+        field: Func(F(field),
+                    Value(old_value), Value(new_value),
+                    function='replace',
+        )
+    })

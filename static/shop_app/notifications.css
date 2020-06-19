@@ -1,0 +1,11 @@
+#notification{z-index:3000;position:fixed;top:20px;right:20px;line-height:16px;font-size:11px}
+#notification a{color:#6cf}
+#notification a:hover{color:#f2498f}
+#notification>div{width:220px;padding:8px 12px;background-color:#fff;border-radius:3px;margin-bottom:10px;overflow:hidden;border:1px solid #d9d9d9;border:0 solid rgba(0,0,0,0);box-shadow:0 0 3px 1px rgba(0,0,0,0.25),0px 0 0 1px rgba(0,0,0,0.2);-moz-box-shadow:0 0 3px 1px rgba(0,0,0,0.25),0px 0 0 1px rgba(0,0,0,0.2);-webkit-box-shadow:0 0 3px 1px rgba(0,0,0,0.25),0px 0 0 1px rgba(0,0,0,0.2)}
+#notification .close{width:8px;height:8px;background:#000 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAWklEQVQY013OUQqAMAwD0IKeY+A9BoL3P8NgJ3l+uOpcftomJUmg4xoz8XKBE4FjCH3sgRpoKIMok1jQYrLMp1eEPT5s8cdzL5llifuVTNs5rqZDzcypU0W7AWyOwL+Y+ITyAAAAAElFTkSuQmCC');cursor:pointer;float:right;margin:5px 0 6px 6px}
+#notification .close:hover{background-color:#6cf}
+#notification .icon{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAAsTAAALEwEAmpwYAAABhUlEQVRIx8WWsUoDQRCGv4MlYBUIpLINRAKCYHWQwkawEnyntILvEVCwCohyVqkEQQiKQVFSCFapJCHw22zkSC53O3dgfljYW27mu73ZnZlIkijWE3AF3AA/wKNfPwB2gGPgDNgv9KR8XUpqSyJwtCX18xxuAn5Iig2g1RF7H0HARFKjAmw5Gt5XLjCRVMtx0sv4wF7O+7VVaBr4JqlZ8NWzDOCswKbpfa8BuwG/Ke8s5I3uKrAfGJeyQJanN/L3cA94CbiPm+5sFGDbBp7xQQ09eZOM3U0M9okDBoTrHdjNWAvVwAFDI7BbATh0wMhgkBXnscF+5ICpweBzw65DNXXYNK64QxxQB74NMayyw7oDOsB9oMEXMAdq/nnu10LVcUBsAALcASepuUVxJCkBjvgf3VpTWxX9pTZL8kbSuS9JMz/Hkryt5QlJi5TNwtByrNXD14ACXAbY9L5LtRhIuvCghZ9TtsXYShO1lTYxrb6klgHUKmqEo8BW/wG4Lmj1T4HDIke/HavGn/RzAR0AAAAASUVORK5CYII=');float:left;width:28px;height:28px;margin:3px 10px 3px 0;padding:0;}
+#notification .success .icon{background-color:#41a6d9}
+#notification .warning .icon{background-color:#d94c4c}
+#notification .attention .icon{background-color:#e5a422}#notification .information .icon{background-color:#a6d941}
+label.error{color:brown;}

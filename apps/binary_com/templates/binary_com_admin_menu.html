@@ -1,0 +1,17 @@
+{% if perms.binary_com.view_robots %}
+<li{% ifequal menu 'binary_com' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="">
+    <em class="fa fa-android"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Роботы</span>
+  </a>
+  <!-- START SubMenu item-->
+  <ul class="nav collapse{% ifequal menu 'binary_com' %} in{% endifequal %}">
+    <li{% ifequal submenu 'robots' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'binary_com:show_robots' %}">
+        <span class="item-text">Роботы</span>
+      </a>
+    </li>
+  </ul>
+</li>
+{% endif %}

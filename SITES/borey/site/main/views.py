@@ -113,6 +113,7 @@ def feedback(request):
         #'do_not_send': 1, # Не отправляем письмо
         'fields':[
           {'name': 'test_field', 'value': 'Тестовое поле'},
+          {'name': 'company', 'value': 'Название организации'},
         ],
     }
     return DefaultFeedback(request, **kwargs)

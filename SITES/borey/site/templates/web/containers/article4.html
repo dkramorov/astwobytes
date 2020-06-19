@@ -1,5 +1,5 @@
 {% load mtags %}
-<section class="vc_row pt-80 pb-80 mt-25">
+<section class="vc_row pt-80 pb-80{% if container.class_name %} {{ container.class_name }}{% endif %}">
   <div class="container">
     <div class="row flex-wrap align-items-center">
       {% for block in blocks %}

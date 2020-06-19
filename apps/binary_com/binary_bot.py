@@ -313,7 +313,8 @@ class StateMachine:
         if last_update > interval:
             try:
                 self.config['last_update'] = 0
-                r = requests.get('%s/demonology/get_schedule/' % API_URL, params={
+                urla = '%s/binary_com/get_schedule/' % API_URL
+                r = requests.get(urla, params={
                     'token': BOT_TOKEN,
                 })
                 resp = r.json()
@@ -360,7 +361,6 @@ async def consumer_handler(websocket, state_machine):
             # Получаем тик по подписке
             symbol = data['echo_req']['ticks']
             state_machine.save_new_tick(data[action])
-
             if not state_machine.in_deal:
                 deal = state_machine.playboy()
                 if deal:
@@ -384,7 +384,7 @@ async def consumer_handler(websocket, state_machine):
                 logger.info(json_pretty_print(data))
         elif action == 'active_symbols':
             logger.info('received symbols')
-            #logger.info(json_pretty_print(data))
+            logger.info(json_pretty_print(data))
         else:
             logger.warning(data)
 

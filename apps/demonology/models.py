@@ -37,16 +37,3 @@ class Daemon(Standard):
         drop_daemon(daemon_name)
         super(Daemon, self).delete(*args, **kwargs)
 
-class Schedule(Standard):
-    """Расписание с использованием календаря"""
-    event_choices = (
-        (1, 'Стратегия Bollinger'),
-        (2, 'Стратегия Random'),
-    )
-    event = models.IntegerField(choices=event_choices, blank=True, null=True, db_index=True)
-    start = models.DateTimeField(blank=True, null=True, verbose_name='Начало события', db_index=True)
-    end = models.DateTimeField(blank=True, null=True, verbose_name='Завершение события', db_index=True)
-    daemon = models.ForeignKey(Daemon, blank=True, null=True, on_delete=models.CASCADE)
-    class Meta:
-        verbose_name = 'Сервисы - Расписание для демона'
-        verbose_name_plural = 'Сервисы - Расписания для демонов'

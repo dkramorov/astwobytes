@@ -1,0 +1,164 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+  <link rel="stylesheet" href="/static/jquery-ui/jquery-ui.min.css">
+  <!-- FullCalendar-->
+  <link rel="stylesheet" href="/static/fullcalendar/fullcalendar.min.css">
+  <link rel="stylesheet" href="/static/fullcalendar/fullcalendar.print.css" type="text/css" media="print">
+  <style type="text/css">
+    .closeon{
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      z-index: 3;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<!-- START row-->
+<div class="row">
+  <div class="col-sm-12">
+    <!-- START panel-->
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          {% include "core/forms/row_name.html" %}
+{% comment %}<!--
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Название</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Название" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" id="form-field-name" data-parsley-required>
+            </div>
+          </div>
+-->{% endcomment %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Сервис-робот</label>
+            <div class="col-lg-10">
+              <select name="daemon" id="daemon_select2" data-parsley-required>
+                {% if row.daemon %}
+                  <option value="{{ row.daemon.id }}" selected>{{ row.daemon.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Контракт</label>
+            <div class="col-lg-10">
+              <select name="symbol" id="symbol_select2" data-parsley-required>
+                {% if row.symbol %}
+                  <option value="{{ row.symbol }}" selected>{{ row.symbol }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          {% if row %}
+            <!-- Календарь таблица -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">События</h4>
+                  </div>
+                  <div class="external-events-trash">
+                    <div class="panel-body">
+                      <div class="external-events">
+                        {% for event in events %}
+                          <div class="bg-{% cycle 'green' 'danger' 'info' 'warning' 'inverse' %}">{{ event.1 }}</div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="panel">
+                  <div class="panel-body">
+                    <div id="calendar"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          {% endif %}
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+    <!-- END panel-->
+  </div>
+</div>
+<!-- END row-->
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  {% include "binary_com_schedule_js.html" %}
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+          // Обновление ссылок
+          update_links(r);
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+      function update_links(r){
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      $('#daemon_select2').select2({
+        placeholder: 'Выберите сервис-робота',
+        width: '100%',
+        ajax: {
+          url: "{% url 'demonology:search_daemons' %}",
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
+    });
+  </script>
+{% endblock %}

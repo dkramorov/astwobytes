@@ -289,6 +289,7 @@ class ModelHelper:
         # Находим ForeignKey's
         # --------------------
         foreign_keys = object_foreign_keys(self.row)
+        print("_______", foreign_keys)
         types = object_fields_types(self.row)
         # --------------------------------------
         # Значения полей, указанные по умолчанию

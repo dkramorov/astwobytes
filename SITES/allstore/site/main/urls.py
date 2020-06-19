@@ -20,4 +20,6 @@ urlpatterns = [
     # registration
     path('registration/', views.registration, name='registration'),
     path('logout/', views.logout, name='logout'),
+
+    path('shop/cart/', views.show_cart, name='show_cart'),
 ]

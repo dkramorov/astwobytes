@@ -1,0 +1,75 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block content %}
+<form action="#">
+  <div class="cart-items-wrap">
+    <table class="cart-items">
+      <thead>
+        <tr>
+          <td class="cart-image">Фото</td>
+          <td class="cart-ttl">Наименование</td>
+          <td class="cart-price">Цена</td>
+          <td class="cart-quantity">Кол-во</td>
+          <td class="cart-summ">Сумма</td>
+          <td class="cart-del">&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for purchase in cart.purchases %}
+          <tr>
+            <td class="cart-image">
+              <a href="{{ purchase.link }}" target="_blank">
+                <img src="{{ purchase.thumb }}" alt="{{ purchase.product_name|textize }}">
+              </a>
+            </td>
+            <td class="cart-ttl">
+              <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
+{% comment %}<!--
+              <p>Color: Red</p>
+              <p>Size: XS</p>
+-->{% endcomment %}
+            </td>
+            <td class="cart-price">
+              <b>{{ purchase.cost|money_format }} ₽</b>
+            </td>
+            <td class="cart-quantity">
+              <p class="cart-qnt">
+                <input value="{{ purchase.count }}" type="text">
+                <a href="#" class="cart-plus"><i class="fa fa-angle-up"></i></a>
+                <a href="#" class="cart-minus"><i class="fa fa-angle-down"></i></a>
+              </p>
+            </td>
+            <td class="cart-summ">
+              <b>{{ purchase.total|money_format }} ₽</b>
+              <p class="cart-forone">{{ purchase.measure }} <b>{{ purchase.cost|money_format }}</b></p>
+            </td>
+            <td class="cart-del">
+              <a href="javascript:void(0);" class="cart-remove remove_from_cart_btn"></a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <ul class="cart-total">
+    <li class="cart-summ">Итого: <b>{{ cart.total|money_format }} ₽</b></li>
+  </ul>
+  <div class="cart-submit">
+    <div class="cart-coupon">
+      <input placeholder="your coupon" type="text">
+      <a class="cart-coupon-btn" href="#"><img src="/media/misc/ok.png" alt="купон"></a>
+    </div>
+    <a href="#" class="cart-submit-btn">Оформить заказ</a>
+    <a href="#" class="cart-clear">Очистить корзину</a>
+  </div>
+</form>
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}

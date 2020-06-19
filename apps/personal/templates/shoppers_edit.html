@@ -72,7 +72,12 @@
               <input type="text" placeholder="Адрес" class="form-control" name="address" value="{% if row.address %}{{ row.address }}{% endif %}" autocomplete="off">
             </div>
           </div>
-
+          <div class="form-group">
+            <label class="col-lg-2 control-label">IP-адрес</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="IP-адрес" class="form-control" name="ip" value="{% if row.ip %}{{ row.ip }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
           <div class="form-group">
             <label class="col-md-2 control-label">Тип авторизации</label>
             <div class="col-md-10">

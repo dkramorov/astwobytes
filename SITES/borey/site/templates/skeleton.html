@@ -14,7 +14,7 @@
 <script async src="/media/js/modernizr.min.js"></script>
 
 <link rel="stylesheet" href="/media/css/owl.carousel.min.css">
- <link rel="stylesheet" href="/media/css/owl.theme.default.min.css">
+<link rel="stylesheet" href="/media/css/owl.theme.default.min.css">
 
 {% block extrascript %}{% endblock %}
 </head>
@@ -29,41 +29,45 @@
 -->{% endcomment %}
   <main id="content" class="content bg-black">
     {% if breadcrumbs %}
-      <section class="mt-30">&nbsp;</section>
+      <section class="mt-30" id="section_mt_30">&nbsp;</section>
     {% endif %}
     <div class="video-bg">
       {% if page.html %}{{ page.html|safe }}{% endif %}
     </div>
     {% block content %}{% endblock %}
-  </main>
-  <footer class="main-footer bg-charade pt-70">
+  <a href="#" class="scrollup">Наверх</a></main>
+  <footer class="main-footer bg-charade pt-20">
     <section>
       <div class="container">
         <div class="row">
-          {% flatmenu request "bottommenu" %}
-          <div class="lqd-column col-md-3 col-sm-6">
-            <h3 class="widget-title text-white">Контакты</h3>
-            <p>
-              {{ containers.main.tags.address.html|safe }}<br><br>
-              {{ containers.main.tags.phone.html|safe }}
-            </p>
+{% comment %}<!--
+          {% include "web/footer.html" %}
+-->{% endcomment %}
+          <div class="lqd-column col-md-4 col-sm-6">
+            <h3 class="widget-title text-white foot-txt">
+              {{ containers.main.tags.phone.html|safe }} <span class="phone"><i class="fa fa-phone"></i></span>
+            </h3>
+            {{ containers.main.tags.copyright.html|safe }}
           </div>
-          <div class="lqd-column col-md-3 col-sm-6">
-            <h3 class="widget-title text-white">Сообщества</h3>
-            <ul class="social-icon social-icon-md">
-              {% for item in containers.main.tags.social.sub %}
-              <li>
-                <a href="{{ item.link }}" target="_blank">
-                  <i class="fa fa-{{ item.tag }}"></i>
-                </a>
-              </li>
-              {% endfor %}
-            </ul>
-            {% comment %}<!--{% include "web/subscribe.html" %}-->{% endcomment %}
+          <div class="lqd-column col-md-4 col-sm-6">
+            <h3 class="widget-title text-white foot-txt">
+              {{ containers.main.tags.email.html|safe }} <span class="email"><i class="fa fa-envelope"></i></span>
+            </h3>
+             <h3 class="widget-title text-white foot-txt">
+              <a href="https://www.youtube.com/channel/UCt5jpPk2dJNd4xOipt7-IfQ">Наш youtube канал</a>
+<span class="email"><i class="fa fa-youtube"></i></span>
+            </h3>
+          </div>
+          <div class="lqd-column col-md-4 col-sm-6">
+            <h3 class="widget-title text-white foot-txt">
+              {{ containers.main.tags.address.html|safe }} <span class="address"><i class="fa fa-map-marker"></i></span>
+            </h3>
           </div>
         </div>
       </div>
+      <div class="clearfix"></div><br /><br />
     </section>
+{% comment %}<!--
     <section class="bt-fade-white-015 pt-35 pb-35 mt-50">
       <div class="container">
         <div class="row">
@@ -79,9 +83,9 @@
         </div>
       </div>
     </section>
+-->{% endcomment %}
   </footer>
 </div>
-
 <div id="request_call">
   {% include "web/containers/feedback.html" %}
 </div>
@@ -91,7 +95,7 @@
 <script src="/media/js/jquery.pagepiling.min.js"></script>
 <script src="/media/js/theme.min.js"></script>
 <script src="/media/js/owl.carousel.min.js"></script>
-<script src="/media/js/custom.js"></script>
+<script src="/media/js/custom.js?v=1"></script>
 <script src="/static/fancybox/jquery.fancybox.min.js"></script>
 
 
@@ -157,10 +161,24 @@
       }
       set_nav_height($);
     }, 250);
+
+    $(window).scroll(function(){
+      if ($(this).scrollTop() > 100) {
+        $('.scrollup').fadeIn();
+      } else {
+        $('.scrollup').fadeOut();
+      }
+    });
+    $('.scrollup').click(function(){
+      $("html, body").animate({ scrollTop: 0 }, 600);
+      return false;
+    });
+
   });
 </script>
 {% block extrascripts %}{% endblock %}
 <audio id="sound_button" src="/media/new/button.ogg"/>
 <audio id="sound_tink" src="/media/new/tink.mp3"/>
+
 </body>
 </html>

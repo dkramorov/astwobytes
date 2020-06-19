@@ -13,6 +13,7 @@ from apps.main_functions.views import DefaultFeedback
 from apps.products.models import Products
 from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import remove_user_from_request
+from apps.shop.cart import calc_cart, get_shopper
 
 CUR_APP = 'main'
 main_vars = {
@@ -170,3 +171,34 @@ def logout(request):
     remove_user_from_request(request)
     return redirect(reverse('%s:%s' % (CUR_APP, 'registration')))
 
+cart_vars = {
+    'singular_obj': 'Корзина',
+    'template_prefix': 'cart_',
+    'show_urla': 'cart',
+}
+
+def show_cart(request):
+    """Главная страничка сайта"""
+    mh_vars = cart_vars.copy()
+    context = {}
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/cart.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=cart_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Корзина',
+        'link': reverse('%s:%s' % (CUR_APP, 'show_cart')),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+    context['cart'] = calc_cart(shopper, min_info=False)
+
+    return render(request, template, context)

@@ -32,7 +32,7 @@ def object_foreign_keys(row):
     """ForeignKey's в row"""
     result = {}
     for field in row.__class__._meta.fields:
-        if type(field) == fields.related.ForeignKey:
+        if isinstance(field, (fields.related.ForeignKey, )):
             #result[field.name] = field.rel.to
             result[field.name] = field.related_model
     return result
@@ -74,7 +74,7 @@ def object_fields_types(row):
         'float': (fields.DecimalField, ),
         'date': (fields.DateField, ),
         'datetime': (fields.DateTimeField, ),
-        'foreign_key': (fields.related.ForeignKey, ),
+        'foreign_key': (fields.related.ForeignKey, fields.related.OneToOneField),
     }
     for field in row.__class__._meta.fields:
         ###print(field.get_internal_type(), field)

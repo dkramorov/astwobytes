@@ -27,6 +27,23 @@ class Shopper(Standard):
     oauth = models.IntegerField(choices=oauth_choices, blank=True, null=True, db_index=True)
     discount = models.IntegerField(blank=True, null=True, db_index=True, verbose_name='Персональная скидка')
     balance = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True, verbose_name='Баланс пользователя') # 99 000 000 000,00
+    ip = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='ip адрес пользователя')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'middle_name': self.middle_name,
+            'email': self.email,
+            'phone': self.phone,
+            'address': self.address,
+            'login': self.login,
+            'discount': self.discount,
+            'balance': self.balance,
+            'ip': self.ip,
+        }
 
     class Meta:
         verbose_name = 'Пользователи - пользователь'

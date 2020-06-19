@@ -1,18 +1,6 @@
 {% extends "core/base.html" %}
 
 {% block extrahead %}
-  <link rel="stylesheet" href="/static/jquery-ui/jquery-ui.min.css">
-  <!-- FullCalendar-->
-  <link rel="stylesheet" href="/static/fullcalendar/fullcalendar.min.css">
-  <link rel="stylesheet" href="/static/fullcalendar/fullcalendar.print.css" type="text/css" media="print">
-  <style type="text/css">
-    .closeon{
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      z-index: 3;
-    }
-  </style>
 {% endblock %}
 
 {% block content %}
@@ -45,9 +33,6 @@
           <div class="form-group">
             <label class="col-lg-2 control-label">Исполняемый файл</label>
             <div class="col-lg-10">
-<!--
-              <input type="text" placeholder="Исполняемый файл" class="form-control" name="port" value="{% if row.exec_path %}{{ row.exec_path }}{% endif %}" autocomplete="off" id="form-field-exec_path">
--->
               <select name="exec_path" id="exec_path_select2" data-parsley-required>
                 {% for exec_path in exec_paths %}
                   <option value="{{ exec_path.0 }}">{{ exec_path.1 }}</option>
@@ -55,35 +40,6 @@
               </select>
             </div>
           </div>
-          {% if row %}
-          <!-- Календарь таблица -->
-          <div class="row">
-            <div class="col-md-12">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title">События</h4>
-                </div>
-                <div class="external-events-trash">
-                  <div class="panel-body">
-                    <div class="external-events">
-                      {% for event in events %}
-                        <div class="bg-{% cycle 'green' 'danger' 'info' 'warning' 'inverse' %}">{{ event.1 }}</div>
-                      {% endfor %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="panel">
-                <div class="panel-body">
-                  <div id="calendar"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="clearfix"></div>
-          {% endif %}
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
         </div>
@@ -97,240 +53,10 @@
 {% endblock %}
 
 {% block extrascripts %}
-  <script src="/static/jquery-ui/jquery-ui.min.js"></script>
-  <script src="/static/jquery-ui/jquery.ui.touch-punch.min.js"></script>
-  <!-- MomentJs-->
-  <script src="/static/fullcalendar/moment-with-langs.min.js"></script>
-  <!-- FulCalendar-->
-  <script src="/static/fullcalendar/fullcalendar.min.js"></script>
-  <script src="/static/fullcalendar/ru.js"></script>
-
   <script src="/static/admin/js/parsley.min.js"></script>
 
   <script type="text/javascript">
-
-
-  // global shared var to know what we are dragging
-  var draggingEvent = null;
-
-
-  // Создание/редактирование/удаление события
-  function save_event(cal, event, action){
-    $.ajax({
-      url: '{% url "demonology:schedule_constructor" %}',
-      data: {
-        csrfmiddlewaretoken: getCookie('csrftoken'),
-        daemon: {{ row.id }},
-        action: action,
-        id: event._id,
-        title: event.title,
-        start: event.start.format().replace('T', ' '),
-        end: event.end.format().replace('T', ' '),
-      },
-      type: "POST",
-      success: function(resp) {
-        event._id = resp['id'];
-        cal.fullCalendar('renderEvent', event, true);
-      }
-    });
-  }
-
-  /**
-   * ExternalEvent object
-   * @param jQuery Object elements Set of element as jQuery objects
-   */
-  var ExternalEvent = function (elements) {
-      if (!elements) return;
-      elements.each(function() {
-          var $this = $(this);
-          // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-          // it doesn't need to have a start or end
-          var calendarEventObject = {
-              title: $.trim($this.text()) // use the element's text as the event title
-          };
-
-          // store the Event Object in the DOM element so we can get to it later
-          $this.data('calendarEventObject', calendarEventObject);
-
-          // make the event draggable using jQuery UI
-          $this.draggable({
-              zIndex: 1070,
-              revert: true, // will cause the event to go back to its
-              revertDuration: 0  //  original position after the drag
-          });
-
-      });
-  };
-
-  /**
-   * Invoke full calendar plugin and attach behavior
-   * @param  jQuery [calElement] The calendar dom element wrapped into jQuery
-   */
-  function initCalendar(calElement) {
-      // check to remove elements from the list
-      var removeAfterDrop = $('#remove-after-drop');
-
-      calElement.fullCalendar({
-          defaultView: 'agendaWeek',
-          height: 'auto',
-          locale: 'ru',
-          header: {
-              left:   'prev,next today',
-              center: 'title',
-              //right:  'month,agendaWeek,agendaDay',
-              right:  'agendaWeek,agendaDay',
-          },
-          buttonIcons: { // note the space at the beginning
-              prev:    ' fa fa-caret-left',
-              next:    ' fa fa-caret-right'
-          },
-          buttonText: {
-              today: 'сегодня',
-              //month: 'месяц',
-              week:  'неделя',
-              day:   'день'
-          },
-          editable: true,
-          droppable: true, // this allows things to be dropped onto the calendar
-          drop: function(date, allDay) {
-              // this function is called when something is dropped
-              var $this = $(this),
-                  // retrieve the dropped element's stored Event Object
-                  originalEventObject = $this.data('calendarEventObject');
-              // if something went wrong, abort
-              if(!originalEventObject) return;
-
-              // clone the object to avoid multiple events with reference to the same object
-              var clonedEventObject = $.extend({}, originalEventObject);
-
-              // assign the reported date
-              clonedEventObject.start = date;
-              end = $.extend({}, date);
-              clonedEventObject.end = end
-              clonedEventObject.end._d = new Date(end._d.getFullYear(), end._d.getMonth(), end._d.getDate(), end._d.getHours() + 2, 0, 0);
-              clonedEventObject.allDay = false;
-              clonedEventObject.backgroundColor = $this.css('background-color');
-              clonedEventObject.borderColor = $this.css('border-color');
-
-              // render the event on the calendar
-              // the last `true` argument determines if the event "sticks"
-              // (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-              // ----------------
-              // CREATE NEW EVENT
-              // ----------------
-              save_event(calElement, clonedEventObject, 'new');
-          },
-
-          eventRender: function(event, element) {
-            element.append( "<i class='closeon fa fa-trash pull-right'></i>" );
-            element.find(".closeon").click(function() {
-               // ----------
-               // DROP EVENT
-               // ----------
-               save_event(calElement, event, 'drop');
-               calElement.fullCalendar("removeEvents", event._id);
-            });
-          },
-          eventResize: function(event, delta, revertFunc) {
-            // ------------
-            // RESIZE EVENT
-            // ------------
-            save_event(calElement, event, 'edit');
-          },
-          eventDrop: function(event, delta, revertFunc) {
-            // ----------
-            // MOVE EVENT
-            // ----------
-            save_event(calElement, event, 'edit');
-          },
-          events: '/demonology/admin/schedule_constructor/?action=show&daemon={{ row.id }}',
-      });
-  }
-
-
-  /**
-   * Inits the external events panel
-   * @param  jQuery [calElement] The calendar dom element wrapped into jQuery
-   */
-  function initExternalEvents(calElement){
-    // Panel with the external events list
-    var externalEvents = $('.external-events');
-
-    // init the external events in the panel
-    new ExternalEvent(externalEvents.children('div'));
-
-    // External event color is danger-red by default
-    var currColor = '#f6504d';
-    // Color selector button
-    var eventAddBtn = $('.external-event-add-btn');
-    // New external event name input
-    var eventNameInput = $('.external-event-name');
-    // Color switchers
-    var eventColorSelector = $('.external-event-color-selector .point');
-
-    // Trash events Droparea
-    $('.external-events-trash').droppable({
-      accept:       '.fc-event',
-      activeClass:  'active',
-      hoverClass:   'hovered',
-      tolerance:    'touch',
-      drop: function(event, ui) {
-        // You can use this function to send an ajax request
-        // to remove the event from the repository
-        if(draggingEvent) {
-          var eid = draggingEvent.id || draggingEvent._id;
-          // Remove the event
-          calElement.fullCalendar('removeEvents', eid);
-          // Remove the dom element
-          ui.draggable.remove();
-          // clear
-          draggingEvent = null;
-        }
-      }
-    });
-
-    eventColorSelector.click(function(e) {
-        e.preventDefault();
-        var $this = $(this);
-
-        // Save color
-        currColor = $this.css('background-color');
-        // De-select all and select the current one
-        eventColorSelector.removeClass('selected');
-        $this.addClass('selected');
-    });
-
-    eventAddBtn.click(function(e) {
-        e.preventDefault();
-
-        // Get event name from input
-        var val = eventNameInput.val();
-        // Dont allow empty values
-        if ($.trim(val) === '') return;
-        // Create new event element
-        var newEvent = $('<div/>').css({
-                            'background-color': currColor,
-                            'border-color':     currColor,
-                            'color':            '#fff'
-                        })
-                        .html(val);
-
-        // Prepends to the external events list
-        externalEvents.prepend(newEvent);
-        // Initialize the new event element
-        new ExternalEvent(newEvent);
-        // Clear input
-        eventNameInput.val('');
-    });
-  }
-
-
     $(document).ready(function(){
-      // The element that will display the calendar
-      var calendar = $('#calendar');
-      initExternalEvents(calendar);
-      initCalendar(calendar);
-
       $("#current_edit_form").parsley();
       $("#current_edit_form").submit(function(e) {
         var $form = $(this);
@@ -379,40 +105,7 @@
         placeholder: 'Выберите исполняемый скрипт',
         width: '100%',
       });
-/*
-      {% if row %}
-        var progressbar = $('#progressbar-files'),
-          bar         = progressbar.find('.progress-bar-files'),
-          settings    = {
-            action: '{% url "demonology:edit_daemon" "img" row.id %}', // upload url
-            allow : '*.*',
-            param: 'img',
-            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
-            loadstart: function() {
-              bar.css('width', '0%').text('0%');
-              progressbar.removeClass('hidden');
-            },
-            progress: function(percent) {
-              percent = Math.ceil(percent);
-              bar.css('width', percent+'%').text(percent+'%');
-            },
-            allcomplete: function(response) {
-              bar.css('width', '100%').text('100%');
-              setTimeout(function(){
-                progressbar.addClass('hidden');
-              }, 750);
-              // Upload Completed
-              //alert(response);
 
-              // Обновление ссылок
-              var r = JSON.parse(response);
-              update_links(r);
-            }
-          };
-        var select = new $.upload.select($('#upload-select-files'), settings),
-        drop   = new $.upload.drop($('#upload-drop-files'), settings);
-      {% endif %}
-*/
     });
   </script>
 {% endblock %}

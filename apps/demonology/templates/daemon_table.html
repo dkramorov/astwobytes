@@ -33,20 +33,6 @@ window.tabulator_render_completed = function(){
 }
 
 $(document).ready(function(){
-  var actionsDaemonsFormatter = function(cell, formatterParams, onRendered){
-    var row = cell.getRow();
-    var rowIndex = row.getIndex();
-    var pk = cell.getValue();
-    var actions = "<div class='padding-rl5'>";
-    actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
-
-    actions += " <a class='get_daemon_status btn-xs btn btn-primary pull-left ml' href='{{ root_url }}status/" + pk + "/'><i class='fa fa-eye'></i></a> ";
-
-    actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
-    actions += "</div>";
-    return actions;
-  };
-
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -82,13 +68,7 @@ $(document).ready(function(){
       /*{% include "core/tabulator_cell/image.html" %}*/
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}
-      {
-        title: "Действия",
-        field: "actions",
-        headerSort: false,
-        formatter: actionsDaemonsFormatter,
-        width: 120,
-      },
+      {% include "core/tabulator_cell/actions.html" %}
     ],
   });
 

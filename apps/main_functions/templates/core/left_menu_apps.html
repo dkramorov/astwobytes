@@ -33,6 +33,10 @@
     {% include "freeswitch_admin_menu.html" %}
   {% endif %}
 
+  {% if 'binary_com' in apps %}
+    {% include "binary_com_admin_menu.html" %}
+  {% endif %}
+
   {% if 'demonology' in apps %}
     {% include "demonology_admin_menu.html" %}
   {% endif %}
@@ -51,6 +55,10 @@
 
   {% if 'yandex' in apps %}
     {% include "yandex_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'shop' in apps %}
+    {% include "shop_admin_menu.html" %}
   {% endif %}
 
   {% include "main_functions_admin_menu.html" %}

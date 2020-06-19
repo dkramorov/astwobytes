@@ -106,6 +106,11 @@ if 'apps.yandex' in settings.INSTALLED_APPS:
     urlpatterns += [
         re_path(r'^yandex/', include('apps.yandex.urls')),
     ]
+if 'apps.shop' in settings.INSTALLED_APPS:
+    # Магазин
+    urlpatterns += [
+        re_path(r'^shop/', include('apps.shop.urls')),
+    ]
 if 'djapian' in settings.INSTALLED_APPS:
     # DJAPIAN SEARCH
     from djapian.utils import load_indexes

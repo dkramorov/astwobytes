@@ -159,7 +159,7 @@ def feedback_form(request, q_string: dict = None,
     for field in fields:
         key = request.POST.get(field['name'])
         if key:
-            fv['result'] += '%s: %s<br>\n' % (field['value'], request.POST[key])
+            fv['result'] += '<br>\n%s: %s' % (field['value'], key)
     # --------------
     # Служебные поля
     # --------------

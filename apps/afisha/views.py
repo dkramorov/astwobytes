@@ -306,8 +306,8 @@ def show_events(request, *args, **kwargs):
     """Вывод событий"""
     mh_vars = events_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
     mh.select_related_add('rgenre')
+    context = mh.context
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -340,8 +340,8 @@ def edit_event(request, action:str, row_id:int = None, *args, **kwargs):
     """Создание/редактирование события Афиши"""
     mh_vars = events_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
     mh.select_related_add('rgenre')
+    context = mh.context
 
     row = mh.get_row(row_id)
     if mh.error:
@@ -447,8 +447,8 @@ def show_places(request, *args, **kwargs):
     """Вывод мест Афиши"""
     mh_vars = places_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
     mh.select_related_add('rubric')
+    context = mh.context
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -479,8 +479,8 @@ def edit_place(request, action:str, row_id:int = None, *args, **kwargs):
     """Создание/редактирование места Афиши"""
     mh_vars = places_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
     mh.select_related_add('rubric')
+    context = mh.context
 
     row = mh.get_row(row_id)
     if mh.error:
@@ -579,9 +579,9 @@ def show_seances(request, *args, **kwargs):
     """Вывод сеансов для Афиши"""
     mh_vars = seances_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
     mh.select_related_add('place')
     mh.select_related_add('event')
+    context = mh.context
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -614,9 +614,9 @@ def edit_seance(request, action:str, row_id:int = None, *args, **kwargs):
     """Создание/редактирование сеансов для Афиши"""
     mh_vars = seances_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
     mh.select_related_add('place')
     mh.select_related_add('event')
+    context = mh.context
 
     row = mh.get_row(row_id)
     if mh.error:
