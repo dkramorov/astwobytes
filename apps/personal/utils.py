@@ -6,6 +6,8 @@ def get_user_name(user):
        :param user: словарь с полями пользователя
        :return: имя пользователя
     """
+    if not isinstance(user, dict):
+        user = user.to_dict()
     if user['name']:
         return user['name']
     if user['first_name'] and user['middle_name']:
@@ -25,10 +27,11 @@ def save_user_to_request(request, user):
        :param request: HttpRequest
        :param user: Shopper
     """
-    remove_user_from_request(request)
-    shopper = object_fields(user, only_fields=('name', 'first_name', 'last_name', 'middle_name', 'balance', 'discount', 'email', 'phone', 'login'))
+    #remove_user_from_request(request)
+    shopper = user.to_dict()
     shopper['name'] = get_user_name(shopper)
-    request.session['shopper'] = shopper
+    request.session['shopper'] = shopper.copy()
+    #request.session.modified = True
 
 def remove_user_from_request(request):
     """Удаляем пользователя из сессии
@@ -36,3 +39,4 @@ def remove_user_from_request(request):
     """
     if request.session.get('shopper'):
         del request.session['shopper']
+

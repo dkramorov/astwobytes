@@ -53,6 +53,17 @@ def check_email(email):
             return email
     return None
 
+def check_phone(phone):
+    """Проверка телефона на валидность
+       :param phone: телефон
+    """
+    if phone:
+        phone = kill_quotes(phone, 'int')
+        if len(phone) == 11 and phone[0] in ('7', '8'):
+            phone = '8%s' % phone[1:]
+            return phone
+    return None
+
 def feedback_emails():
     """Поиск emailов, разделенных пробелом
        для обратной связи, заполняется в Config"""

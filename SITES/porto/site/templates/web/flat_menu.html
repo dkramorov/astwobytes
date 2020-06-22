@@ -1,0 +1,34 @@
+{% ifequal tag "mainmenu" %}
+  {% for menu in menus %}
+    <li class="{% ifequal request.META.PATH_INFO menu.link %}active{% endifequal %}">
+      <a href="{{ menu.link }}"{% if menu.sub %} class="sf-with-ul"{% endif %}>{{ menu.name }}</a>
+      {% if menu.sub %}
+        <ul>
+          {% for item in menu.sub %}
+            <li>
+              <a href="{{ item.link }}">{{ item.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+{% endifequal %}
+{% ifequal tag "bottommenu" %}
+  <div class="col-lg-9">
+    <div class="widget">
+      <div class="row">
+        {% for menu in menus %}
+        <div class="col-sm-3">
+          <h4 class="widget-title">{{ menu.name }}</h4>
+          <ul class="links">
+            {% for item in menu.sub %}
+              <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endifequal %}

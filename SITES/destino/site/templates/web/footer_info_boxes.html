@@ -1,0 +1,13 @@
+<div class="info-boxes-container">
+  <div class="container">
+    {% for block in containers.main.tags.advantages.sub %}
+      <div class="info-box">
+        <i class="{% cycle 'icon-shipping' 'icon-us-dollar' 'icon-support' %}"></i>
+        <div class="info-box-content">
+          <h4>{{ block.name }}</h4>
+          <p>{{ block.html|safe }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

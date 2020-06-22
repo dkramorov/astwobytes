@@ -39,10 +39,10 @@
               <b>{{ purchase.cost|money_format }} ₽</b>
             </td>
             <td class="cart-quantity">
-              <p class="cart-qnt">
-                <input value="{{ purchase.count }}" type="text">
-                <a href="#" class="cart-plus"><i class="fa fa-angle-up"></i></a>
-                <a href="#" class="cart-minus"><i class="fa fa-angle-down"></i></a>
+              <p class="cart-qnt" id="qbuttons_{{ purchase.id }}">
+                <input value="{{ purchase.count }}" type="text" id="quantity_{{ purchase.id }}" autocomplete="off">
+                <a href="javascript:void(0);" class="cart-plus"><i class="fa fa-angle-up"></i></a>
+                <a href="javascript:void(0);" class="cart-minus"><i class="fa fa-angle-down"></i></a>
               </p>
             </td>
             <td class="cart-summ">
@@ -50,7 +50,7 @@
               <p class="cart-forone">{{ purchase.measure }} <b>{{ purchase.cost|money_format }}</b></p>
             </td>
             <td class="cart-del">
-              <a href="javascript:void(0);" class="cart-remove remove_from_cart_btn"></a>
+              <a href="javascript:void(0);" class="cart-remove remove_from_cart_btn" id="purchase_drop_{{ purchase.id }}"></a>
             </td>
           </tr>
         {% endfor %}
@@ -62,8 +62,8 @@
   </ul>
   <div class="cart-submit">
     <div class="cart-coupon">
-      <input placeholder="your coupon" type="text">
-      <a class="cart-coupon-btn" href="#"><img src="/media/misc/ok.png" alt="купон"></a>
+      <input placeholder="Купон" type="text">
+      <a class="cart-coupon-btn" href="javascript:void(0);"><img src="/media/misc/ok.png" alt="купон"></a>
     </div>
     <a href="#" class="cart-submit-btn">Оформить заказ</a>
     <a href="#" class="cart-clear">Очистить корзину</a>
@@ -72,4 +72,21 @@
 {% for container in page.containers %}
   {% flatcontent request page container.container.tag %}
 {% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    {% for purchase in cart.purchases %}
+      quantity_listener("{{ purchase.id }}",
+                        $("#qbuttons_{{ purchase.id }} .cart-plus"),
+                        $("#qbuttons_{{ purchase.id }} .cart-minus"),
+                        true // сразу обновить
+      );
+      purchase_drop_listener("{{ purchase.id }}",
+                             $("#purchase_drop_{{ purchase.id }}")
+      );
+    {% endfor %}
+  });
+</script>
 {% endblock %}

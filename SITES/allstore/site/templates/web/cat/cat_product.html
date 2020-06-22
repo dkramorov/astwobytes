@@ -75,10 +75,10 @@
       <p class="prod-price">
         <b class="item_current_price">{{ product.price|money_format }} ₽</b>
       </p>
-      <p class="prod-qnt">
-        <input value="1" type="text" id="quantity_{{ product.id }}">
-        <a href="#" class="prod-plus"><i class="fa fa-angle-up"></i></a>
-        <a href="#" class="prod-minus"><i class="fa fa-angle-down"></i></a>
+      <p class="prod-qnt" id="qbuttons_{{ product.id }}">
+        <input value="1" type="text" id="quantity_{{ product.id }}" autocomplete="off">
+        <a href="javascript:void(0);" class="prod-plus"><i class="fa fa-angle-up"></i></a>
+        <a href="javascript:void(0);" class="prod-minus"><i class="fa fa-angle-down"></i></a>
       </p>
       <p class="prod-addwrap">
         <a href="javascript:void(0);" class="prod-add add_to_cart_btn" rel="nofollow" data-product_id="{{ product.id }}">В корзину</a>
@@ -265,4 +265,15 @@
 </div>
 {% products_sidebar_slider product %}
 <div class="clearfix"></div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    quantity_listener("{{ product.id }}",
+                      $("#qbuttons_{{ product.id }} .prod-plus"),
+                      $("#qbuttons_{{ product.id }} .prod-minus"),
+    );
+  });
+</script>
 {% endblock %}

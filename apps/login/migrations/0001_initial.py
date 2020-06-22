@@ -5,6 +5,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 def create_superuser(apps, schema_editor):
+    from django.contrib.auth.models import User
     superuser = User()
     superuser.is_active = True
     superuser.is_superuser = True

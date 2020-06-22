@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils.safestring import mark_safe
 
-from apps.main_functions.string_parser import kill_quotes, translit, summa_format
+from apps.main_functions.string_parser import kill_quotes, translit, summa_format, analyze_digit
 from apps.main_functions.catcher import defiz_phone
 from apps.main_functions.files import check_path, make_folder, copy_file, imageThumb, full_path, imagine_image
 from apps.main_functions.date_time import monthToStr, weekdayToStr
@@ -21,8 +21,10 @@ UPS_PATH = '/static/img/ups.png'
 def settings_value(name: str):
     """Получение переменной из settings.py
        USAGE: {% settings_value "LANGUAGE_CODE" %}
+              {% settings_value 'WS_CHAT' as ws_chat_enabled %}
     """
-    return getattr(settings, name, '')
+    value = getattr(settings, name, '')
+    return value
 
 @register.filter(name = 'installed_apps')
 def installed_apps(dummy: str = ''):
@@ -285,7 +287,7 @@ def divide(items: list, count: int = 2):
         return []
     result = []
     items_len = len(items)
-    per_container = items_len / count
+    per_container = int(items_len / count)
     reminder = items_len % count
     diff = 0
     for i in range(count):
@@ -374,3 +376,12 @@ def sortedby(blocks: list, field: str):
         reverse = True if '-' in field else False
         return sorted(blocks, key=key, reverse=reverse)
     return blocks
+
+@register.filter(name='ends')
+def ends(digit, end):
+    """Окончания в нужном падеже
+       :param digit: число
+       :param end: окончания через запятую, например,
+       тысяча,тысяч,тысячи
+    """
+    return analyze_digit(digit, end.split(','))

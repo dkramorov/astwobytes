@@ -14,7 +14,13 @@ class Orders(Standard):
     number = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Номер заказа')
     total = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2) # 99 000 000 000,00
     comments = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Комментарий к заказу')
-    user = models.ForeignKey(Shopper, blank=True, null=True, verbose_name='Покупатель', on_delete=models.SET_NULL)
+    # Информация о покупателе к заказу
+    shopper = models.ForeignKey(Shopper, blank=True, null=True, verbose_name='Покупатель', on_delete=models.SET_NULL)
+    shopper_name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    shopper_email = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    shopper_phone = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    shopper_address = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    shopper_ip = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
     class Meta:
         verbose_name = 'Магазин - Заказ'
@@ -34,7 +40,7 @@ class Purchases(Standard):
     count = models.IntegerField(blank=True, null=True, db_index=True, verbose_name='Количество товара')
     cost = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, verbose_name='Цена за единицу') # 99 000 000 000,00
     discount_info = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Информация по скидке')
-    user = models.ForeignKey(Shopper, blank=True, null=True, verbose_name='Покупатель', on_delete=models.SET_NULL)
+    shopper = models.ForeignKey(Shopper, blank=True, null=True, verbose_name='Покупатель', on_delete=models.SET_NULL)
     order = models.ForeignKey(Orders, blank=True, null=True, on_delete=models.CASCADE)
 
     def total(self):
@@ -47,5 +53,5 @@ class WishList(Standard):
         (2, 'Сравнить'),
     )
     product = models.ForeignKey(Products, blank=True, null=True, verbose_name='Товар в избранном', on_delete=models.SET_NULL)
-    user = models.ForeignKey(Shopper, blank=True, null=True, verbose_name='Покупатель', on_delete=models.CASCADE)
+    shopper = models.ForeignKey(Shopper, blank=True, null=True, verbose_name='Покупатель', on_delete=models.CASCADE)
 

@@ -35,6 +35,8 @@ class Products(Standard):
         if self.code:
             self.code = self.code.replace('-', '_')
         super(Products, self).save(*args, **kwargs)
+        if self.id and not self.code:
+            Products.objects.filter(pk=self.id).update(code=self.id)
 
     def link(self):
         """Ссылка на товар/услугу"""

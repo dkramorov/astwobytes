@@ -1,0 +1,165 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="cart-table-container">
+        <table class="table table-cart">
+          <thead>
+            <tr>
+              <th class="product-col">Наименование</th>
+              <th class="price-col">Цена</th>
+              <th class="qty-col">Кол-во</th>
+              <th>Итого</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for purchase in cart.purchases %}
+              <tr class="product-row">
+                <td class="product-col">
+                  <figure class="product-image-container">
+                    <a href="{{ purchase.link }}" class="product-image">
+                      <img src="{{ purchase.thumb }}" alt="{{ purchase.product_name|textize }}">
+                    </a>
+                  </figure>
+                  <h2 class="product-title">
+                    <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
+                  </h2>
+                </td>
+                <td>{{ purchase.cost|money_format }} ₽</td>
+                <td>
+                  <input class="vertical-quantity form-control" type="text" value="{{ purchase.count }}" autocomplete="off" id="quantity_{{ purchase.id }}" />
+                </td>
+                <td>{{ purchase.total|money_format }} ₽</td>
+                <td>
+                  <div class="float-right">
+                    <a href="javascript:void(0);" title="Удалить" class="btn-remove" id="purchase_drop_{{ purchase.id }}"><span class="sr-only">Удалить</span></a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="clearfix">
+                <div class="float-right">
+                  <a href="javascript:void(0);" class="btn btn-outline-secondary btn-clear-cart">Очистить корзину</a>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="cart-discount">
+        <h4>Скидочный купон</h4>
+        <form action="#">
+          <div class="input-group">
+            <input type="text" class="form-control form-control-sm" placeholder="Введите код купона"  required>
+            <div class="input-group-append">
+              <button class="btn btn-sm btn-primary" type="submit">Применить скидку</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="cart-summary">
+        <h3>Итого</h3>
+        <h4>
+          <a data-toggle="collapse" href="#total-estimate-section" class="collapsed" role="button" aria-expanded="false" aria-controls="total-estimate-section">Доставка</a>
+        </h4>
+        <div class="collapse" id="total-estimate-section">
+          <form action="#">
+            <div class="form-group form-group-sm">
+              <label>Страна</label>
+              <div class="select-custom">
+                <select class="form-control form-control-sm">
+                  <option value="Russia">Россия</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group form-group-sm">
+              <label>Город</label>
+              <div class="select-custom">
+                <select class="form-control form-control-sm">
+                  <option value="Irk">Иркутск</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group form-group-sm">
+              <label>Индекс</label>
+              <input type="text" class="form-control form-control-sm">
+            </div>
+{% comment %}<!--
+            <div class="form-group form-group-custom-control">
+              <label>Flat Way</label>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="flat-rate">
+                <label class="custom-control-label" for="flat-rate">Fixed $5.00</label>
+              </div>
+            </div>
+            <div class="form-group form-group-custom-control">
+              <label>Best Rate</label>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="best-rate">
+                <label class="custom-control-label" for="best-rate">Table Rate $15.00</label>
+              </div>
+            </div>
+-->{% endcomment %}
+          </form>
+        </div>
+        <table class="table table-totals">
+          <tbody>
+            <tr>
+              <td>Итого</td>
+              <td>{{ cart.total|money_format }} ₽</td>
+            </tr>
+            <tr>
+              <td>Скидка</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Итого</td>
+              <td>{{ cart.total|money_format }} ₽</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="checkout-methods">
+          <a href="/shop/checkout/" class="btn btn-block btn-sm btn-primary">Оформить заказ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    {% for purchase in cart.purchases %}
+      quantity_listener("{{ purchase.id }}",
+                        $("#qbuttons_{{ purchase.id }} .cart-plus"),
+                        $("#qbuttons_{{ purchase.id }} .cart-minus"),
+                        true // сразу обновить
+      );
+      purchase_drop_listener("{{ purchase.id }}",
+                             $("#purchase_drop_{{ purchase.id }}")
+      );
+    {% endfor %}
+  });
+</script>
+{% endblock %}

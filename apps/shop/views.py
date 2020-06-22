@@ -9,12 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import ModelHelper, create_model_helper
 from apps.main_functions.api_helper import ApiHelper
 from apps.products.models import Products
 
 from .models import Orders, Purchases
-from .cart import calc_cart, get_shopper, create_shopper
+from .cart import calc_cart, get_shopper, create_shopper, get_purchase
 
 CUR_APP = 'shop'
 orders_vars = {
@@ -51,6 +51,7 @@ def show_orders(request, *args, **kwargs):
     """
     mh_vars = orders_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh.select_related_add('shopper')
     context = mh.context
 
     # -----------------------------
@@ -85,6 +86,7 @@ def edit_order(request, action: str, row_id: int = None, *args, **kwargs):
     """
     mh_vars = orders_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    mh.select_related_add('shopper')
     context = mh.context
     row = mh.get_row(row_id)
     if mh.error:
@@ -159,10 +161,10 @@ def search_orders(request, *args, **kwargs):
     mh_vars = orders_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
-    mh.search_fields = ('id', 'name')
+    mh.search_fields = ('id', 'number')
     rows = mh.standard_show()
     for row in rows:
-        result['results'].append({'text': '%s (%s)' % (row.name, row.id), 'id': row.id})
+        result['results'].append({'text': '%s (%s)' % (row.number, row.id), 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:
@@ -193,6 +195,8 @@ def show_purchases(request, *args, **kwargs):
     """
     mh_vars = purchases_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh.select_related_add('shopper')
+    mh.select_related_add('order')
     context = mh.context
 
     # -----------------------------
@@ -207,6 +211,8 @@ def show_purchases(request, *args, **kwargs):
             item['folder'] = row.get_folder()
             item['thumb'] = row.thumb()
             item['imagine'] = row.imagine()
+            item['shopper__id'] = '%s #%s' % (str(row.shopper), row.shopper.id) if row.shopper else ''
+            item['order__id'] = '%s #%s' % (row.order.number or '', row.order.id) if row.order else ''
             result.append(item)
         if request.GET.get('page'):
             result = {'data': result,
@@ -227,6 +233,8 @@ def edit_purchase(request, action: str, row_id: int = None, *args, **kwargs):
     """
     mh_vars = purchases_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    mh.select_related_add('shopper')
+    mh.select_related_add('order')
     context = mh.context
     row = mh.get_row(row_id)
     if mh.error:
@@ -337,24 +345,27 @@ def cart(request, action):
         return render(request, template, context)
     elif action == 'add' and product_id.isdigit():
         # Добавление товара в корзинку
+        count = int(quantity)
+        if count <= 0:
+            count = 1
         product = Products.objects.filter(pk=product_id).first()
         purchase = None
         if not product:
             result['error'] = 'Товар не найден'
         else:
-            if not shopper.id:
+            if not shopper or not shopper.id:
                 shopper = create_shopper(request)
             else:
                 # TODO: исправить, когда заведем цены/свойства
                 # Пока думаем, что нет одинаковых товаров
                 # в корзинке с разными свойствами или ценами
-                purchase = Purchases.objects.filter(order__isnull=True, user=shopper, product_id=product.id).first()
+                purchase = get_purchase(product.id, shopper, is_purchase=False)
             if purchase:
-                Purchases.objects.filter(pk=purchase.id).update(count=quantity)
+                Purchases.objects.filter(pk=purchase.id).update(count=purchase.count + count)
                 result['success'] = 'Количество увеличено'
             else:
                 Purchases.objects.create(
-                    user=shopper,
+                    shopper=shopper,
                     product_id=product.id,
                     product_name=product.name,
                     product_manufacturer=product.manufacturer,
@@ -363,6 +374,28 @@ def cart(request, action):
                     product_code=product.code,
                     count=quantity, cost=product.price, )
                 result['success'] = 'Добавлено в корзинку'
+    elif shopper and action == 'quantity' and purchase_id and quantity:
+        not_found = 'Покупка не найдена или передано неправильное количество'
+
+        if purchase_id.isdigit() and quantity.isdigit():
+            purchase_id = int(purchase_id)
+            count = int(quantity)
+            purchase = get_purchase(purchase_id, shopper)
+            if purchase and count > 0:
+                Purchases.objects.filter(pk=purchase.id).update(count=count)
+                result['success'] = 'Количество обновлено'
+            else:
+                result['error'] = not_found
+        else:
+            result['error'] = not_found
+    elif shopper and action == 'drop' and purchase_id:
+        not_found = 'Покупка не найдена'
+        if purchase_id.isdigit():
+            purchase = get_purchase(purchase_id, shopper)
+            purchase.delete()
+            result['success'] = 'Покупка удалена'
+        else:
+            result['error'] = not_found
     else:
         result['error'] = 'Произошла ошибка'
 

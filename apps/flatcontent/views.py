@@ -924,7 +924,7 @@ def tree_co(request):
                     if parent.parents:
                         parents_str = '%s_%s' % (parent.parents, parent.id)
                 state = 1
-                if container.state == 1: # menu
+                if container.state in (1, 7): # flatmenu/flatcat
                     state = 4
                 menu = Blocks(parents=parents_str,
                               container=container, state=state)

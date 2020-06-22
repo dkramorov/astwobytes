@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import ModelHelper, create_model_helper
 from apps.main_functions.api_helper import ApiHelper
 
 from .oauth import VK, Yandex
@@ -157,13 +157,13 @@ def search_shoppers(request, *args, **kwargs):
     """
     result = {'results': []}
     mh = ModelHelper(Shopper, request)
-    mh_vars = personal_vars.copy()
+    mh_vars = shoppers_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
-    mh.search_fields = ('id', 'name')
+    mh.search_fields = ('id', 'name', 'first_name', 'last_name', 'middle_name', 'phone', 'login')
     rows = mh.standard_show()
     for row in rows:
-        result['results'].append({'text': '%s (%s)' % (row.name, row.id), 'id': row.id})
+        result['results'].append({'text': '%s #%s' % (row, row.id), 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:

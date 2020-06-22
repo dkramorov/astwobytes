@@ -98,6 +98,17 @@ def search_products(q: str):
         cond.add(Q(search_cond), Q.AND)
     return (Products.objects.filter(cond).filter(is_active=True).values_list('id', flat=True), search_terms)
 
+def create_new_cat():
+    """Создать контейнер каталога"""
+    tag = 'catalogue'
+    container = Containers.objects.create(
+        name = 'Каталог товаров',
+        tag = tag,
+        state = 7,
+        is_active = True,
+    )
+    return container
+
 def get_cat_for_site(request, link: str = None,
                      with_props: bool = True,
                      with_filters: bool = True, **kwargs):
@@ -129,6 +140,8 @@ def get_cat_for_site(request, link: str = None,
         # Поиск всегда идет на /cat/
         q = q_string['q'].get('q')
         catalogue = Containers.objects.filter(tag='catalogue', state=cat_type).first()
+        if not catalogue:
+            catalogue = create_new_cat()
         if q:
             page.name = 'Вы искали %s' % q
             ids_products, search_terms = search_products(q)

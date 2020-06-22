@@ -1,0 +1,25 @@
+{% load mtags %}
+<div class="features-section">
+  <div class="container">
+    <div class="title-group text-center">
+      <h2 class="subtitle">{{ container.name }}</h2>
+      {% if container.description %}{{ container.description|safe }}{% endif %}
+    </div>
+    <div class="row">
+      {% for block in blocks %}
+        <div class="col-md-6 col-lg-4">
+          <div class="info-box info-box-wrap">
+            {% comment %}<!--<i class="icon-support"></i>-->{% endcomment %}
+            {% if block.img %}
+              <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}" class="img"><img src="{% imagine block.img '600x400' block.get_folder True %}" /></a>
+            {% endif %}
+            <div class="info-box-content">
+              <h4><a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">{{ block.name }}</a></h4>
+              {% if block.html %}{{ block.html|safe }}{% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

@@ -16,25 +16,66 @@
         <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
-          {% include "core/forms/row_name.html" %}
           <div class="form-group">
-            <label class="col-lg-2 control-label">Описание</label>
+            <label class="col-lg-2 control-label">Номер заказа</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Описание" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="Номер заказа" class="form-control" name="number" value="{% if row.number %}{{ row.number }}{% endif %}" autocomplete="off">
             </div>
           </div>
-          <!-- Привязанные странички -->
           <div class="form-group">
-            <label class="col-lg-2 control-label">Наполнение, привязанные странички</label>
+            <label class="col-lg-2 control-label">Сумма заказа</label>
             <div class="col-lg-10">
-              <select id="linkcontainer_select2" name="linkcontainer" autocomplete="off" multiple>
-                {% for item in containers %}
-                  <option value="{{ item.container.id }}" selected>{{ item.container.name }} #{{ item.container.id }} ({{ item.container.tag }})</option>
-                {% endfor %}
+              <input type="text" placeholder="Сумма заказа" class="form-control" name="total" value="{% if row.total %}{{ row.total }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Комментарий</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Комментарий" class="form-control" name="comments" value="{% if row.comments %}{{ row.comments }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Покупатель</label>
+            <div class="col-lg-10">
+              <select id="shopper_select2" name="shopper" autocomplete="off" data-parsley-required>
+                {% if row.shopper %}
+                  <option value="{{ row.shopper.id }}" selected>{{ row.shopper.name }} #{{ row.shopper.id }}</option>
+                {% endif %}
               </select>
             </div>
           </div>
-          {% include "core/forms/row_image.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Имя покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Имя покупателя" class="form-control" name="shopper_name" value="{% if row.shopper_name %}{{ row.shopper_name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Email покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Email покупателя" class="form-control email" name="shopper_email" value="{% if row.shopper_email %}{{ row.shopper_email }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Телефон покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Телефон покупателя" class="form-control phone" name="shopper_phone" value="{% if row.shopper_phone %}{{ row.shopper_phone }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Адрес покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Адрес покупателя" class="form-control" name="shopper_address" value="{% if row.shopper_address %}{{ row.shopper_address }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">IP покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="IP покупателя" class="form-control" name="shopper_ip" value="{% if row.shopper_ip %}{{ row.shopper_ip }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
         </div>
@@ -74,8 +115,6 @@
           },{
             status: status,
           });
-          // Обновление ссылок
-          update_links(r);
 
         }).fail(function() {
           $.notify({
@@ -87,70 +126,24 @@
         //отмена действия по умолчанию для кнопки submit
         e.preventDefault();
       });
-
-      $('#linkcontainer_select2').select2({
-        placeholder: 'Какие странички привязать',
+      $('#shopper_select2').select2({
+        placeholder: 'Покупатель',
         width: '100%',
         tags: true,
         ajax: {
-          url: "{% url 'flatcontent:search_containers' %}",
+          url: "{% url 'personal:search_shoppers' %}",
 
           data: function (params) {
             var query = {
               q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
               page: params.page || 1,
             }
             return query;
           },
-
-          //data: "without_templates=1&without_menus=1&without_main=1",
           cache: false,
           dataType: 'json',
         }
       });
-
-      function update_links(r){
-        var thumb = r['row']['thumb'];
-        if(thumb === ''){
-          thumb = '/static/img/empty.png';
-        }
-        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
-      }
-      {% if row %}
-        var progressbar = $('#progressbar-files'),
-          bar         = progressbar.find('.progress-bar-files'),
-          settings    = {
-            action: '{% url "shop:edit_shop" "img" row.id %}', // upload url
-            allow : '*.*',
-            param: 'img',
-            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
-            loadstart: function() {
-              bar.css('width', '0%').text('0%');
-              progressbar.removeClass('hidden');
-            },
-            progress: function(percent) {
-              percent = Math.ceil(percent);
-              bar.css('width', percent+'%').text(percent+'%');
-            },
-            allcomplete: function(response) {
-              bar.css('width', '100%').text('100%');
-              setTimeout(function(){
-                progressbar.addClass('hidden');
-              }, 750);
-              // Upload Completed
-              //alert(response);
-
-              // Обновление ссылок
-              var r = JSON.parse(response);
-              update_links(r);
-            }
-          };
-        var select = new $.upload.select($('#upload-select-files'), settings),
-        drop   = new $.upload.drop($('#upload-drop-files'), settings);
-      {% endif %}
     });
   </script>
 {% endblock %}

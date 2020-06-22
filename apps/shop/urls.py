@@ -24,5 +24,5 @@ urlpatterns = [
     # аякс-поиск
     path('shop/search/purchases/', views.search_purchases, name='search_purchases'),
     # корзинка пользователя
-    url('^cart/(?P<action>show|add)/', views.cart, name='cart'),
+    url('^cart/(?P<action>show|add|quantity|drop)/', views.cart, name='cart'),
 ]

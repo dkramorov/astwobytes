@@ -1,0 +1,19 @@
+{% load mtags %}
+<div class="team-section{% if container.class_name %} {{ container.class_name }}{% endif %}"{% if container.img %} style="background-image:url('{{ container.imagine }}');"{% endif %}>
+  <div class="container">
+    <div class="title-group text-center">
+      <h2 class="subtitle">{{ container.name }}</h2>
+      {% if container.description %}{{ container.description|safe }}{% endif %}
+    </div>
+    <div class="team-carousel owl-carousel owl-theme">
+      {% for block in blocks %}
+        <div class="member">
+          <a href="{{ block.imagine }}" class="fancybox" rel="group{{ container.id }}">
+            <img src="{% imagine block.img '400x600' block.get_folder True %}" alt="{{ block.description|textize }}">
+            <h3 class="member-title">{{ block.name }}</h3>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

@@ -3,6 +3,9 @@ from django.db import models
 
 from apps.main_functions.string_parser import kill_quotes
 from apps.main_functions.models import Standard
+from apps.main_functions.functions import object_fields
+
+from .utils import get_user_name
 
 class Shopper(Standard):
     """Модель пользователя сайта"""
@@ -29,21 +32,24 @@ class Shopper(Standard):
     balance = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True, verbose_name='Баланс пользователя') # 99 000 000 000,00
     ip = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='ip адрес пользователя')
 
+    def __str__(self):
+        return get_user_name(self)
+
     def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'middle_name': self.middle_name,
-            'email': self.email,
-            'phone': self.phone,
-            'address': self.address,
-            'login': self.login,
-            'discount': self.discount,
-            'balance': self.balance,
-            'ip': self.ip,
-        }
+        return object_fields(self, only_fields=(
+            'id',
+            'name',
+            'first_name',
+            'last_name',
+            'middle_name',
+            'email',
+            'phone',
+            'address',
+            'login',
+            'discount',
+            'balance',
+            'ip',
+        ))
 
     class Meta:
         verbose_name = 'Пользователи - пользователь'

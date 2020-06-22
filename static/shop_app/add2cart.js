@@ -56,20 +56,22 @@ function add_to_cart(id, cost_type){
   });
   return 0;
 }
-function purchase_drop(id){
+function purchase_drop(purchase_id){
+  /* Удаление покупки
+     :param purchase_id: ид покупки
+  */
   jQuery.ajax({
     type: "GET",
-    url: "/shop/ajax_cart/remove/",
-    data: "purchase_id=" + id,
+    url: "/shop/cart/drop/",
+    data: "purchase_id=" + purchase_id,
     success: function(result){
-      cart_details();
-      result['success'] += "<br><a href='/shop/cart/'>Перейти в корзину</a>";
-      Notification(result['success'], "warning");
-
       if(window.location.href.indexOf("/shop/cart/") > -1){
+        // TODO: не перегружать страничку, просто делать товар блеклым
         window.location.reload();
       }else{
         cart_details();
+        result['success'] += "<br><a href='/shop/cart/'>Перейти в корзину</a>";
+        Notification(result['success'], "warning");
       }
     }
   });
@@ -90,27 +92,24 @@ function cart_details(cart){
   });
   return 0;
 }
-function purchase_quantity(id, action){
-  // Обновляем кол-во товара в корзине
-  var purchase_pk = "#quantity_" + id;
-
-  var count = parseInt(jQuery(purchase_pk).val());
-  if(typeof(count) != "undefined" && typeof(action) != "undefined"){
-    if(action == "+"){
-      count += 1;
-    }
-    if(action == "-"){
-      count -= 1;
-    }
-  }
-  if(typeof(count) == "undefined"){
-    count = 0;
+function purchase_quantity(id){
+  /* Обновляем кол-во товара в корзине
+     :param id: purchase_id
+  */
+  var inp = $("#quantity_" + id);
+  if(inp.length == 0){
+    console.log("[ERROR]: quantity_ input not found for " + purchase_id);
+    return;
   }
   jQuery.ajax({
     type: "GET",
-    url: "/shop/ajax_cart/quantity/",
-    data: "quantity=" + count + "&purchase_id=" + id,
+    url: "/shop/cart/quantity/",
+    data: "quantity=" + inp.val() + "&purchase_id=" + id,
     success: function(result){
+      if(result['error']){
+        Notification(result['error'], "error");
+        return;
+      }
       if(window.location.href.indexOf("/shop/cart/") > -1){
         window.location.reload();
       }else{
@@ -120,6 +119,75 @@ function purchase_quantity(id, action){
     }
   });
 }
+function purchase_drop_listener(purchase_id, drop_btn){
+  /* Слушалка на кнопочку удаления
+     :param purchase_id: ид покупки
+     :param drop_btn: Кнопка удаления (jquery элемент)
+  */
+  if(drop_btn.hasClass("touched")){
+    console.log("[WARNING]: drop_btn already touched for " + purchase_id);
+    return;
+  }
+  drop_btn.click(function(){
+    purchase_drop(purchase_id);
+  });
+}
+function quantity_listener(purchase_id, plus, minus, send_event){
+  /* Слушалка для кнопочек больше/меньше для изменения кол-ва товара
+     На инпут должен висеть purchase_id
+     Без send_event можно вешать на product_id
+     :param purchase_id: ид покупки
+     :param plus: Кнопка плюс (jquery элемент)
+     :param minus: Кнопка минус (jquery элемент)
+     :param send_event: Отправлять событие на сервер (на страничке корзинки)
+     USAGE:
+     quantity_listener(1, $("#plus_1"), $("#minus_1"));
+  */
+  var inp = jQuery("#quantity_" + purchase_id);
+  if (inp.length == 0){
+    console.log("[ERROR]: quantity_ input not found for " + purchase_id);
+    return;
+  }
+  if(inp.hasClass("touched")){
+    console.log("[WARNING]: qunatity_ input already listening for " + purchase_id);
+    return;
+  }
+  inp.addClass("touched");
+  inp.change(function(){
+    var count = parseInt(inp.val());
+    if(isNaN(count)){
+      count = 1;
+    }
+    if(count <= 0){
+      count = 1
+    }
+    inp.val(count);
+    if(send_event !== undefined){
+      purchase_quantity(purchase_id);
+    }
+  });
+  plus.click(function(){
+    var count = parseInt(inp.val());
+    inp.val(count + 1);
+    if(send_event !== undefined){
+      purchase_quantity(purchase_id);
+    }
+    return false;
+  });
+  minus.click(function(){
+    var count = parseInt(inp.val());
+    count = count - 1;
+    if(count <= 0){
+      count = 1;
+    }
+    inp.val(count);
+    if(send_event !== undefined){
+      purchase_quantity(purchase_id);
+    }
+    return false;
+  });
+}
+
 jQuery(document).ready(function($){
   if($("#notification").length){
     //console.log("notification id found");
@@ -137,6 +205,15 @@ jQuery(document).ready(function($){
     add_to_cart(product_id);
   });
 });
+function demo_fill_order(){
+  $("#confirm_order input[name='name']").val("господин Денис");
+  $("#confirm_order input[name='first_name']").val("Денис");
+  $("#confirm_order input[name='last_name']").val("Краморов");
+  $("#confirm_order input[name='middle_name']").val("Геннадьевич");
+  $("#confirm_order input[name='phone']").val("83952959223");
+  $("#confirm_order input[name='email']").val("dk@223-223.ru");
+  $("#confirm_order input[name='address']").val("Иркутск, ");
+}
 // ---------------------------------------
 // Найти все выбранные свойства для товара
 // class="prop"

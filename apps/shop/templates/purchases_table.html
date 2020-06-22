@@ -46,18 +46,54 @@ $(document).ready(function(){
 */
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
-      {% include "core/tabulator_cell/name.html" %}
       {
-        title: "Описание",
-        field: "desc",
-        headerFilterPlaceholder: "Описание",
+        title: "Ид товара",
+        field: "product_id",
+        headerFilterPlaceholder: "Ид товара",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Название товара",
+        field: "product_name",
+        headerFilterPlaceholder: "Название товара",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: pathFormatter,
         minWidth: 150,
       },
-      {% include "core/tabulator_cell/image.html" %}
-      {% include "core/tabulator_cell/is_active.html" %}
+      {
+        title: "Цена",
+        field: "cost",
+        headerFilterPlaceholder: "Цена",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Кол-во",
+        field: "count",
+        headerFilterPlaceholder: "Кол-во",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Покупатель",
+        field: "shopper__id",
+        headerFilterPlaceholder: "Покупатель",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Заказ",
+        field: "order__id",
+        headerFilterPlaceholder: "Заказ",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
       {% include "core/tabulator_cell/position.html" %}
       {% include "core/tabulator_cell/actions.html" %}
     ],

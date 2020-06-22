@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 
 {% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -15,6 +16,7 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
 <script type="text/javascript">
 var main_table = null;
 $(document).ready(function(){
@@ -46,22 +48,55 @@ $(document).ready(function(){
 */
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
-      {% include "core/tabulator_cell/name.html" %}
       {
-        title: "Описание",
-        field: "desc",
-        headerFilterPlaceholder: "Описание",
+        title: "Дата",
+        field: "created",
+        headerFilterPlaceholder: "Дата",
         headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: pathFormatter,
+        headerFilterFunc: "=",
         minWidth: 150,
       },
-      {% include "core/tabulator_cell/image.html" %}
+      {
+        title: "Сумма",
+        field: "total",
+        headerFilterPlaceholder: "Сумма",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Телефон покупателя",
+        field: "shopper_phone",
+        headerFilterPlaceholder: "Телефон покупателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });
+
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "created"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "right top",
+        todayButton: new Date(),
+      });
+    }else if($(this).attr("tabulator-field") === "created"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+    }
+  });
+
 });
 </script>
 {% endblock %}
