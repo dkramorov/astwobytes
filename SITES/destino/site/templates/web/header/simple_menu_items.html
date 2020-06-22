@@ -1,0 +1,35 @@
+{% load mtags %}
+{% for menu in menus %}
+  {% if not menu.sub %}
+    <li class="rw-url other-toggle sm_megamenu_lv1 sm_megamenu_nodrop{% ifequal request.META.PATH_INFO menu.link %} home-item-parent{% endifequal %}">
+      <a class="sm_megamenu_head sm_megamenu_nodrop " href="{{ menu.link }}">
+        <span class="sm_megamenu_icon sm_megamenu_nodesc">
+          <span class="sm_megamenu_title">{{ menu.name }}</span>
+        </span>
+      </a>
+    </li>
+  {% else %}
+    <li class="other-toggle sm_megamenu_lv1 sm_megamenu_drop parent{% ifequal request.META.PATH_INFO menu.link %} home-item-parent{% endifequal %}">
+      <a class="sm_megamenu_head sm_megamenu_drop " href="{{ menu.link }}">
+        <span class="sm_megamenu_icon sm_megamenu_nodesc">
+          <span class="sm_megamenu_title">{{ menu.name }}</span>
+       </span>
+      </a>
+      <div class="sm_megamenu_dropdown_1column">
+        <div class="sm_megamenu_col_1 sm_megamenu_firstcolumn">
+          <div class="sm_megamenu_col_6 sm_megamenu_firstcolumn">
+            <div class="sm_megamenu_head_item">
+            </div>
+            <div class="sm_megamenu_content">
+              <ul class="item-about-contact">
+                {% for item in menu.sub %}
+                  <li><a title="{{ item.name|textize }}" href="{{ item.link }}">{{ item.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  {% endif %}
+{% endfor %}

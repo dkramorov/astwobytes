@@ -1,211 +1,108 @@
-{% load mtags tags flatcontent_tags %}﻿<!DOCTYPE html><html lang="en"><head>
+{% load mtags tags flatcontent_tags %}﻿<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
 {% include "skeleton_header.html" %}
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="stylesheet" href="/media/css/bootstrap.min.css">
-<link rel="stylesheet" href="/media/css/style.min.css">
-<link rel="stylesheet" type="text/css" href="/media/css/all.min.css">
-<link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css">
-<link rel="stylesheet" type="text/css" href="/media/css/custom.css">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+
+<link rel="stylesheet" type="text/css" href="/media/css/calendar-win2k-1.css" />
+<link rel="stylesheet" type="text/css" href="/media/css/widgets.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/bootstrap.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/bootstrap-theme.min.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/theme-default.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/custom.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/font-awesome.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/print.css" media="print" />
 {% block extrahead %}{% endblock %}
 </head>
-<body>
+<body class=" cms-index-index cms-home-demo-01 wide-style home-page-1 header-1">
+<div class="wrapper">
 {% block body %}
-<div class="page-wrapper">
-  <header class="header header-transparent">
-    <div class="header-middle sticky-header{% if breadcrumbs %} inverted{% endif %}">
-      <div class="container">
-        <div class="header-left">
-
-          <nav class="main-nav">
-            <ul class="menu sf-arrows">
-{% comment %}<!--
-              {% flatmenu request "mainmenu" %}
--->{% endcomment %}
-              <button class="mobile-menu-toggler" type="button">
-                <i class="icon-menu"></i>
-              </button>
-
-
-            </ul>
-          </nav>
-        </div>
-        <div class="header-center">
-          <a href="/" class="logo">
-            <img src="{{ containers.main.tags.logo.thumb }}" alt="{{ containers.main.tags.logo.description|textize }}">
-          </a>
-        </div>
-        <div class="header-right">
-          <div class="header-search">
-            <a href="#" class="search-toggle" role="button">
-              <i class="icon-search"></i>
-            </a>
-            <form action="/cat/" method="get">
-              <div class="header-search-wrapper">
-                <input type="search" class="form-control" name="q" id="q" placeholder="Поиск..." required>
-                <div class="select-custom">
-                  <select id="cat" name="cat">
-                    <option value="">Все категории</option>
-                  </select>
-                </div>
-                <button class="btn" type="submit">
-                  <i class="icon-search"></i>
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <button class="mobile-menu-toggler" type="button">
-            <i class="icon-menu"></i>
-          </button>
-{% comment %}<!--
-          {% include "web/header_dropdowns.html" %}
--->{% endcomment %}
-          <div class="header-contact">
-            <a href="{{ containers.main.tags.phone.link }}">{{ containers.main.tags.phone.html|safe }}</a>
-          </div>
-          <div class="dropdown cart-dropdown">
-            <a href="/shop/cart/" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-              <span class="cart-count">0</span>
-            </a>
-            <div class="dropdown-menu" id="mini-cart">
-              {% ajax_cart request %}
-            </div>
-          </div>
+  {% include "web/header/noscript.html" %}
+  <div class="page">
+    <a id="yt-totop" href="javascript:void(0)" title="Подняться вверх"></a>
+    <div class="header-container header-style-1">
+      <div class="header">
+        <div class="header-inner">
+          {% include "web/header/top_menu.html" %}
+          {% include "web/header/components.html" %}
+          {% flatmenu request "mainmenu" %}
         </div>
       </div>
     </div>
-  </header>
-  <main class="main">
-    {% if breadcrumbs and not page.tag == 'nocrumbs' %}
-      <div class="page-header page-header-bg" style="background-image: url('{% if page.img %}{{ page.imagine }}{% else %}/media/misc/page-header-bg.jpg{% endif %}');">
-        <div class="container">
-          <h1 class="page_title">{% block page_title %}{{ page.name }}{% endblock %}</h1>
-        </div>
-      </div>
-      <nav aria-label="breadcrumb" class="breadcrumb-nav">
-        <div class="container ">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Главная</a></li>
-            {% for crumb in breadcrumbs %}
-              {% if forloop.last %}
-                <li class="breadcrumb-item active" aria-current="page">{{ crumb.name }}</li>
-              {% else %}
-                <li class="breadcrumb-item"><a href="{{ crumb.link }}">{{ crumb.name }}</a></li>
-              {% endif %}
-            {% endfor %}
-          </ol>
-        </div>
-      </nav>
-    {% endif %}
-
-    {% block content %}{% endblock %}
-  </main>
-  <footer class="footer">
-
-    <div class="container">
-      <div class="footer-top">
-        <div class="row">
-
-        </div>
-      </div>
-    </div>
-    <div class="footer-middle">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-3">
-            <div class="widget">
-              <ul class="contact-info">
-              <li><span class="contact-info-label">Email:</span> {{ containers.main.tags.email.html|safe }}</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div class="col-lg-7">
+    <div class="main-container col1-layout">
+      <div class="main">
+        <div class="col-main">
+          <div class="container">
             <div class="row">
-           
-              <div class="col-lg-9">
-                <div class="col-lg-8 widget-social"><span class="contact-info-label">ИП Чеснокова Дарья Владимировна<br>
-
-ИНН: 772478189280 ОГРНИП: 320774600033152</span></div>
-                          
+              <div class="col-lg-12 col-md-12">
+                <div class="std">
+                  <div class="home-default homestyle1">
+                    <div class="row">
+                      <div class="col-lg-3 col-md-12 hidden-sm hidden-xs wrapper-megamenu-vertical">
+                        {% block left %}{% catalogue request %}{% endblock %}
+                      </div>
+                      <div class="col-lg-9 col-md-12">
+                        {% block right %}{% endblock %}
+                      </div>
+                    </div>
+                    {% block content %}{% endblock %}
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="footer-bottom">
-              <p class="footer-copyright">{{ containers.main.tags.copyright.html|safe }}</p>
-              <img src="/media/misc/payments.png" alt="оплата" class="footer-payments">
-            </div>
           </div>
-          <div class="col-lg-2 widget-social">
-            <div class="social-icons">
-              {% for block in containers.main.tags.social.sub %}
-                <a href="{{ block.link }}" class="social-icon" target="_blank">
-                  <i class="icon-{{ block.tag }}"></i>
-                </a>
-              {% endfor %}
-            </div>
-          </div>
-          
         </div>
       </div>
     </div>
-  </footer>
-</div>
-
-<div class="mobile-menu-overlay"></div>
-
-<div class="mobile-menu-container">
-  <div class="mobile-menu-wrapper">
-    <span class="mobile-menu-close"><i class="icon-cancel"></i></span>
-    <nav class="mobile-nav">
-      <ul class="mobile-menu">
-        {% flatmenu request "mainmenu" %}
-      </ul>
-    </nav>
-    <div class="social-icons">
-      {% for block in containers.main.tags.social.sub %}
-        <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}" class="social-icon" target="_blank">
-          <i class="icon-{{ block.tag }}"></i>
-        </a>
-      {% endfor %}
-    </div>
+    {% include "web/footer/footer.html" %}
+    {% comment %}<!--
+    {% include "web/modals/add_to_cart_modal.html" %}
+    {% include "web/modals/loading_modal.html" %}
+    -->{% endcomment %}
   </div>
-</div>
-{% comment %}<!--
-{% include "web/modals/popup_modal.html" %}
-{% include "web/modals/add_to_cart_modal.html" %}
--->{% endcomment %}
-
-<a id="scroll-top" href="#top" title="Вверх" role="button"><i class="icon-angle-up"></i></a>
 {% endblock %}
-<script src="/media/js/jquery.min.js"></script>
-{% include "shop_js.html" %}
-<script src="/media/js/bootstrap.bundle.min.js"></script>
-<script src="/media/js/plugins.min.js"></script>
-<script src="/media/js/main.min.js"></script>
-<script src="/static/fancybox/jquery.fancybox.min.js"></script>
+</div>
+<script type="text">var cart = "#sm_cartpro";</script>
+<script type="text/javascript" src="/media/js/jquery-2.1.3.min.js"></script>
+<!--
+<script type="text/javascript" src="/media/js/prototype.js"></script>
+<script type="text/javascript" src="/media/js/ccard.js"></script>
+<script type="text/javascript" src="/media/js/validation.js"></script>
+<script type="text/javascript" src="/media/js/builder.js"></script>
+<script type="text/javascript" src="/media/js/effects.js"></script>
+<script type="text/javascript" src="/media/js/dragdrop.js"></script>
+<script type="text/javascript" src="/media/js/controls.js"></script>
+<script type="text/javascript" src="/media/js/slider.js"></script>
+<script type="text/javascript" src="/media/js/js.js"></script>
+<script type="text/javascript" src="/media/js/form.js"></script>
+<script type="text/javascript" src="/media/js/menu.js"></script>
+<script type="text/javascript" src="/media/js/translate.js"></script>
+<script type="text/javascript" src="/media/js/cookies.js"></script>
+<script type="text/javascript" src="/media/js/product.js"></script>
+<script type="text/javascript" src="/media/js/calendar.js"></script>
+<script type="text/javascript" src="/media/js/calendar-setup.js"></script>
+<script type="text/javascript" src="/media/js/configurable.js"></script>
+<script type="text/javascript" src="/media/js/product_options.js"></script>
+<script type="text/javascript" src="/media/js/jquery.noconflict.js"></script>
+<script type="text/javascript" src="/media/js/bundle.js"></script>
+<script type="text/javascript" src="/media/js/msrp.js"></script>
+<script type="text/javascript" src="/media/js/cartpro.js"></script>
+<script type="text/javascript" src="/media/js/cartpro_update.js"></script>
 
-<script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
-<script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="/static/js/jquery.maskedinput.min.js"></script>
-<script type="text/javascript" src="/static/js/feedback.js"></script>
-<script type="text/javascript">
-  $(document).ready(function(){
-    $("a.fancybox").each(function(){
-      $(this).fancybox();
-    });
-    $('form').each(function(){
-      if($(this).hasClass('touched')){
-        return;
-      }
-      $(this).addClass('touched');
-      if($(this).attr('action') === '/feedback/'){
-        var fb = new FeedBack($(this).attr('id'));
-        $("input.phone").mask("8(999)9 999-999");
-      }
-    });
-  });
-</script>
+<script type="text/javascript" src="/media/js/jquery.lightSlider.js"></script>
+<script type="text/javascript" src="/media/js/easyResponsiveTabs.js"></script>
+<script type="text/javascript" src="/media/js/jquery.elevatezoom.js"></script>
+<script type="text/javascript" src="/media/js/jquery.fancybox.js"></script>
+<script type="text/javascript" src="/media/js/product-media.js"></script>
+<script type="text/javascript" src="/media/js/swatches-list.js"></script>
+<script type="text/javascript" src="/media/js/swatches-product.js"></script>
+<script type="text/javascript" src="/media/js/app.js"></script>
+<script type="text/javascript" src="/media/js/imagesloaded.js"></script>
+<script type="text/javascript" src="/media/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/media/js/jquery.cookie.min.js"></script>
+-->
+<script type="text/javascript" src="/media/js/owl.carousel.js"></script>
+<script type="text/javascript" src="/media/js/custom.js"></script>
 {% block extrascripts %}{% endblock %}
+
 </body>
 </html>

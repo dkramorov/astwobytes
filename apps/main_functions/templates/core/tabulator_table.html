@@ -79,8 +79,10 @@ var imgFormatter = function(cell, formatterParams, onRendered){
   var data = cell.getData();
   var result = "";
   if(value){
-    result += "<div style='height:150px;'>";
+    result += "<div class='tabulator_img'>";
+    result += "<a href='" + data.imagine + "' target='_blank'>";
     result += "<img src='" + data.thumb + "' />";
+    result += "</a>";
     result += "</div>";
   }
   return result;

@@ -158,7 +158,9 @@
         if(thumb === ''){
           thumb = '/static/img/empty.png';
         }
-        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+        var date_now = Date.now()
+        $("#preview_img").attr("src", thumb + "?_=" + date_now);
+        $("#preview_img_full").attr("href", r['row']['imagine'] + "?_=" + date_now);
       }
       {% if row %}
         var progressbar = $('#progressbar-files'),

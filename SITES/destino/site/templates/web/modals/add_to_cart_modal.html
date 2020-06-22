@@ -1,19 +1,21 @@
-<div class="modal fade" id="addCartModal" tabindex="-1" role="dialog" aria-labelledby="addCartModal" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body add-cart-box text-center">
-        <p>You've just added this product to the<br>cart:</p>
-        <h4 id="productTitle"></h4>
-        <img src="" id="productImage" width="100" height="100" alt="adding cart image">
-        <div class="btn-actions">
-          <a href="cart.html">
-            <button class="btn-primary">Go to cart page</button>
-          </a>
-          <a href="#">
-            <button class="btn-primary" data-dismiss="modal">Continue</button>
-          </a>
-        </div>
-      </div>
+<div id="cartpro_modal" class="cartpro-modal ">
+  <div class="cpmodal-wrapper">
+    <a href="javascript:void(0)" title="Close" class="cpmodal-close cp-close">
+      <span class="fa fa-times"></span>
+    </a>
+    <div class="cpmodal-message"></div>
+    <div class="cpmodal-iframe"></div>
+    <div class="cpmodal-action">
+      <a class="cpmodal-button cp-close" title="Continue"  href="#">
+        Continue<span class="cpmodal-time  ">10</span>
+      </a>
+      <a class="cpmodal-button cp-close cpmodal-viewcart cpmodal-display  cartpro-hidden" title="View cart & checkout" href="">View cart & checkout</a>
+      <button type="button" title="Compare" class="cp-close cpmodal-button cartpro-compare cpmodal-display  cartpro-hidden" onclick="popWin('')">
+        <span><span>Compare</span></span>
+      </button>
+      <a  class="cpmodal-button cp-close cartpro-wishlist cpmodal-display  cartpro-hidden " href="">Go to Wishlist</a>
+    </div>
+    <div class="cpmodal-form">
     </div>
   </div>
 </div>

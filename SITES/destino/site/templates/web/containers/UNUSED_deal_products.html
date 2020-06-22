@@ -1,0 +1,549 @@
+{% load mtags %}
+
+  <div class="deal-products">
+<script type="text/javascript">
+//<![CDATA[
+data = new Date(2013,10,26,12,00,00);
+var listdeal = [];
+function CountDown(date,id){
+  dateNow = new Date();
+  amount = date.getTime() - dateNow.getTime();
+  delete dateNow;
+  if(amount < 0){
+    document.getElementById(id).innerHTML="Now!";
+  } else{
+    days=0;hours=0;mins=0;secs=0;out="";
+    amount = Math.floor(amount/1000);
+    days=Math.floor(amount/86400);
+    amount=amount%86400;
+    hours=Math.floor(amount/3600);
+    amount=amount%3600;
+    mins=Math.floor(amount/60);
+    amount=amount%60;
+    secs=Math.floor(amount);
+    if(days != 0){
+      out += "
+<div class='deals-time time-day'>
+<div class='num-time'>"+ days +"
+</div>
+<div class='title-time'>"+((days==1)?"Day":"Days")+"
+</div>
+</div>";
+    }
+    if(hours != 0){
+      out += "
+<div class='deals-time time-hours'>
+<div class='num-time'>"+ hours +"
+</div>
+<div class='title-time'>"+((hours==1)?"Hour":"Hours")+"
+</div>
+</div>";
+    }
+    out += "
+<div class='deals-time time-mins'>
+<div class='num-time'>"+ mins +"
+</div>
+<div class='title-time'>"+((mins==1)?"Min":"Mins")+"
+</div>
+</div>";
+    out += "
+<div class='deals-time time-secs'>
+<div class='num-time'>"+ secs +"
+</div>
+<div class='title-time'>"+((secs==1)?"Sec":"Secs")+"
+</div>
+</div>";
+    out = out.substr(0,out.length-2);
+    document.getElementById(id).innerHTML=out;
+    setTimeout(function(){CountDown(date,id)}, 1000);
+  }
+}
+//]]>
+</script>
+
+
+<div class="products-grid">
+  <div class="primary-title">
+    <h2>Deals Of The Week</h2>
+  </div>
+
+  <div class="owl-carousel deal-slider">
+                                    
+        
+        <div class="item">
+          <div class="item-inner">
+            <div class="box-image">
+                            
+                            <div class="effect-default">
+                <a href="/" title="Porchetta tempor mollit." class="product-image">
+                  <img id="product-collection-image-994" src="misc/4_17.jpg" alt="Porchetta tempor mollit." />
+                </a>
+              </div>
+                            
+              <div class="button-top">
+                <a class="hidden" href="http://demo.flytheme.net/themes/sm_destino/ozan-metema-1034.html"></a>
+                <ul class="add-to-links">
+                                      <li>
+                      <a class="btn-action link-wishlist" title="Wishlist" href="/" >
+                        <span class="btn-text">Wishlist</span>
+                      </a>
+                    </li>
+                                                        <li>
+                      <a class="btn-action link-compare" title="Compare" href="/" >
+                        <span>Compare</span>
+                      </a>
+                    </li>
+                                  </ul>
+              </div>
+
+                            
+              <!--LABEL PRODUCT-->
+                                <div class="label-product label-sale">
+                    <span class="sale-product-icon">
+                      -29%                    </span>
+                  </div>
+                
+
+                                  <div class="label-product label-new">
+                      <span class="new-product-icon">New</span>
+                    </div>
+                              
+              <!--END LABEL PRODUCT-->
+            
+            </div>
+            
+            <div class="box-info">
+              <h5 class="title-deal">Hurry Up! Offer ends in:</h5>
+              <div class="deals-countdown">
+                <div id="product_time_1"></div>
+              </div>
+              <script type="text/javascript">
+              //<![CDATA[
+                listdeal.push('product_time_1&&||&&2022/08/26') ;
+              //]]>
+              </script>  
+            
+              <h2 class="product-name">
+                <a href="/" title="Porchetta tempor mollit.">Porchetta tempor mollit.</a>
+              </h2>
+              
+              <div class="desc std">
+                Tenderloin tempor jowl, aliquip jerky in swine salami meatball beef ribs pork. Bacon ut pork chop consectetur ham exce...              </div>
+
+              <div class="price-rating">
+                 
+
+                        
+    <div class="price-box">
+                                            
+                    
+
+                            <span class="special-price">
+                    <span class="price-label">Special Price</span>
+          <span class="price" id="product-price-994">
+            $40.00          </span>
+          
+            
+                </span>
+                  
+      <span class="old-price">
+                <span class="price-label">Regular Price:</span>
+                <span class="price" id="old-price-994">
+                    $57.00                </span>
+            </span>
+        
+    
+        </div>
+
+                    
+<p class="no-rating">
+<a title="Write Your Review" href="http://demo.flytheme.net/themes/sm_destino/review/product/list/id/994/#review-form">Write Your Review
+</a>
+</p>
+              </div>
+              
+              <div class="button-bottom">
+                                  <button class="btn-action btn-cart" type="button" title="Add to Cart"  onclick="setLocation('http://demo.flytheme.net/themes/sm_destino/checkout/cart/add/uenc/aHR0cDovL2RlbW8uZmx5dGhlbWUubmV0L3RoZW1lcy9zbV9kZXN0aW5vLz9fX19zdG9yZT1kZWZhdWx0JmFtcDtfX19mcm9tX3N0b3JlPWFyZ2VudGluYQ,,/product/994/form_key/oYpPOWgBGwzYLuoC/')">
+                    <span>
+                      <span>Add to Cart</span>
+                    </span>
+                  </button>
+                              </div>
+
+            </div>
+
+            
+          </div>
+        </div>
+        
+              
+        
+        <div class="item">
+          <div class="item-inner">
+            <div class="box-image">
+                            
+                            <div class="effect-default">
+                <a href="/" title="Yirloin venison hambur" class="product-image">
+                  <img id="product-collection-image-995" src="misc/9_20.jpg" alt="Yirloin venison hambur" />
+                </a>
+              </div>
+                            
+              <div class="button-top">
+                <a class="hidden" href="http://demo.flytheme.net/themes/sm_destino/ozan-metema-1035.html"></a>
+                <ul class="add-to-links">
+                                      <li>
+                      <a class="btn-action link-wishlist" title="Wishlist" href="/" >
+                        <span class="btn-text">Wishlist</span>
+                      </a>
+                    </li>
+                                                        <li>
+                      <a class="btn-action link-compare" title="Compare" href="/" >
+                        <span>Compare</span>
+                      </a>
+                    </li>
+                                  </ul>
+              </div>
+
+                            
+              <!--LABEL PRODUCT-->
+                                <div class="label-product label-sale">
+                    <span class="sale-product-icon">
+                      -27%                    </span>
+                  </div>
+                
+
+                            
+              <!--END LABEL PRODUCT-->
+            
+            </div>
+            
+            <div class="box-info">
+              <h5 class="title-deal">Hurry Up! Offer ends in:</h5>
+              <div class="deals-countdown">
+                <div id="product_time_2"></div>
+              </div>
+              <script type="text/javascript">
+              //<![CDATA[
+                listdeal.push('product_time_2&&||&&2022/08/26') ;
+              //]]>
+              </script>  
+            
+              <h2 class="product-name">
+                <a href="/" title="Yirloin venison hambur">Yirloin venison hambur</a>
+              </h2>
+              
+              <div class="desc std">
+                Tenderloin tempor jowl, aliquip jerky in swine salami meatball beef ribs pork. Bacon ut pork chop consectetur ham exce...              </div>
+
+              <div class="price-rating">
+                 
+
+                        
+    <div class="price-box">
+                                            
+                    
+
+                            <span class="special-price">
+                    <span class="price-label">Special Price</span>
+          <span class="price" id="product-price-995">
+            $45.00          </span>
+          
+            
+                </span>
+                  
+      <span class="old-price">
+                <span class="price-label">Regular Price:</span>
+                <span class="price" id="old-price-995">
+                    $62.00                </span>
+            </span>
+        
+    
+        </div>
+
+                    
+<p class="no-rating">
+<a title="Write Your Review" href="http://demo.flytheme.net/themes/sm_destino/review/product/list/id/995/#review-form">Write Your Review
+</a>
+</p>
+              </div>
+              
+              <div class="button-bottom">
+                                  <button class="btn-action btn-cart" type="button" title="Add to Cart"  onclick="setLocation('http://demo.flytheme.net/themes/sm_destino/checkout/cart/add/uenc/aHR0cDovL2RlbW8uZmx5dGhlbWUubmV0L3RoZW1lcy9zbV9kZXN0aW5vLz9fX19zdG9yZT1kZWZhdWx0JmFtcDtfX19mcm9tX3N0b3JlPWFyZ2VudGluYQ,,/product/995/form_key/oYpPOWgBGwzYLuoC/')">
+                    <span>
+                      <span>Add to Cart</span>
+                    </span>
+                  </button>
+                              </div>
+
+            </div>
+
+            
+          </div>
+        </div>
+        
+              
+        
+        <div class="item">
+          <div class="item-inner">
+            <div class="box-image">
+                            
+                            <div class="effect-default">
+                <a href="/" title="Zipisicing anim stripsteak" class="product-image">
+                  <img id="product-collection-image-997" src="misc/11_20.jpg" alt="Zipisicing anim stripsteak" />
+                </a>
+              </div>
+                            
+              <div class="button-top">
+                <a class="hidden" href="http://demo.flytheme.net/themes/sm_destino/ozan-metema-1037.html"></a>
+                <ul class="add-to-links">
+                                      <li>
+                      <a class="btn-action link-wishlist" title="Wishlist" href="/" >
+                        <span class="btn-text">Wishlist</span>
+                      </a>
+                    </li>
+                                                        <li>
+                      <a class="btn-action link-compare" title="Compare" href="/" >
+                        <span>Compare</span>
+                      </a>
+                    </li>
+                                  </ul>
+              </div>
+
+                            
+              <!--LABEL PRODUCT-->
+                                <div class="label-product label-sale">
+                    <span class="sale-product-icon">
+                      -34%                    </span>
+                  </div>
+                
+
+                            
+              <!--END LABEL PRODUCT-->
+            
+            </div>
+            
+            <div class="box-info">
+              <h5 class="title-deal">Hurry Up! Offer ends in:</h5>
+              <div class="deals-countdown">
+                <div id="product_time_3"></div>
+              </div>
+              <script type="text/javascript">
+              //<![CDATA[
+                listdeal.push('product_time_3&&||&&2022/08/25') ;
+              //]]>
+              </script>  
+            
+              <h2 class="product-name">
+                <a href="/" title="Zipisicing anim stripsteak">Zipisicing anim stripsteak</a>
+              </h2>
+              
+              <div class="desc std">
+                Tenderloin tempor jowl, aliquip jerky in swine salami meatball beef ribs pork. Bacon ut pork chop consectetur ham exce...              </div>
+
+              <div class="price-rating">
+                 
+
+                        
+    <div class="price-box">
+                                            
+                    
+
+                            <span class="special-price">
+                    <span class="price-label">Special Price</span>
+          <span class="price" id="product-price-997">
+            $50.00          </span>
+          
+            
+                </span>
+                  
+      <span class="old-price">
+                <span class="price-label">Regular Price:</span>
+                <span class="price" id="old-price-997">
+                    $76.00                </span>
+            </span>
+        
+    
+        </div>
+
+                    
+<p class="no-rating">
+<a title="Write Your Review" href="http://demo.flytheme.net/themes/sm_destino/review/product/list/id/997/#review-form">Write Your Review
+</a>
+</p>
+              </div>
+              
+              <div class="button-bottom">
+                                  <button class="btn-action btn-cart" type="button" title="Add to Cart"  onclick="setLocation('http://demo.flytheme.net/themes/sm_destino/checkout/cart/add/uenc/aHR0cDovL2RlbW8uZmx5dGhlbWUubmV0L3RoZW1lcy9zbV9kZXN0aW5vLz9fX19zdG9yZT1kZWZhdWx0JmFtcDtfX19mcm9tX3N0b3JlPWFyZ2VudGluYQ,,/product/997/form_key/oYpPOWgBGwzYLuoC/')">
+                    <span>
+                      <span>Add to Cart</span>
+                    </span>
+                  </button>
+                              </div>
+
+            </div>
+
+            
+          </div>
+        </div>
+        
+              
+        
+        <div class="item">
+          <div class="item-inner">
+            <div class="box-image">
+                            
+                            <div class="effect-default">
+                <a href="/" title="Voluptate shortloin doner " class="product-image">
+                  <img id="product-collection-image-998" src="misc/12_20.jpg" alt="Voluptate shortloin doner " />
+                </a>
+              </div>
+                            
+              <div class="button-top">
+                <a class="hidden" href="http://demo.flytheme.net/themes/sm_destino/ozan-metema-1038.html"></a>
+                <ul class="add-to-links">
+                                      <li>
+                      <a class="btn-action link-wishlist" title="Wishlist" href="/" >
+                        <span class="btn-text">Wishlist</span>
+                      </a>
+                    </li>
+                                                        <li>
+                      <a class="btn-action link-compare" title="Compare" href="/" >
+                        <span>Compare</span>
+                      </a>
+                    </li>
+                                  </ul>
+              </div>
+
+                            
+              <!--LABEL PRODUCT-->
+                                <div class="label-product label-sale">
+                    <span class="sale-product-icon">
+                      -14%                    </span>
+                  </div>
+                
+
+                                  <div class="label-product label-new">
+                      <span class="new-product-icon">New</span>
+                    </div>
+                              
+              <!--END LABEL PRODUCT-->
+            
+            </div>
+            
+            <div class="box-info">
+              <h5 class="title-deal">Hurry Up! Offer ends in:</h5>
+              <div class="deals-countdown">
+                <div id="product_time_4"></div>
+              </div>
+              <script type="text/javascript">
+              //<![CDATA[
+                listdeal.push('product_time_4&&||&&2022/03/17') ;
+              //]]>
+              </script>  
+            
+              <h2 class="product-name">
+                <a href="/" title="Voluptate shortloin doner ">Voluptate shortloin doner </a>
+              </h2>
+              
+              <div class="desc std">
+                Tenderloin tempor jowl, aliquip jerky in swine salami meatball beef ribs pork. Bacon ut pork chop consectetur ham exce...              </div>
+
+              <div class="price-rating">
+                 
+
+                        
+    <div class="price-box">
+                                            
+                    
+
+                            <span class="special-price">
+                    <span class="price-label">Special Price</span>
+          <span class="price" id="product-price-998">
+            $70.00          </span>
+          
+            
+                </span>
+                  
+      <span class="old-price">
+                <span class="price-label">Regular Price:</span>
+                <span class="price" id="old-price-998">
+                    $82.00                </span>
+            </span>
+        
+    
+        </div>
+
+                    
+<p class="no-rating">
+<a title="Write Your Review" href="http://demo.flytheme.net/themes/sm_destino/review/product/list/id/998/#review-form">Write Your Review
+</a>
+</p>
+              </div>
+              
+              <div class="button-bottom">
+                                  <button class="btn-action btn-cart" type="button" title="Add to Cart"  onclick="setLocation('http://demo.flytheme.net/themes/sm_destino/checkout/cart/add/uenc/aHR0cDovL2RlbW8uZmx5dGhlbWUubmV0L3RoZW1lcy9zbV9kZXN0aW5vLz9fX19zdG9yZT1kZWZhdWx0JmFtcDtfX19mcm9tX3N0b3JlPWFyZ2VudGluYQ,,/product/998/form_key/oYpPOWgBGwzYLuoC/')">
+                    <span>
+                      <span>Add to Cart</span>
+                    </span>
+                  </button>
+                              </div>
+
+            </div>
+
+            
+          </div>
+        </div>
+        
+            </div>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+window.onload=function(){
+  if(listdeal.length > 0){
+    for(i=0;i<listdeal.length;i++)
+    {
+      var arr = listdeal[i].split("&&||&&"); 
+      var data = new Date(arr[1]);
+      CountDown(data, arr[0]);
+    }  
+  }
+};
+//]]>
+</script>  
+
+    
+    <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        $(".deal-products .deal-slider").owlCarousel({
+          responsive:{
+            0:{
+              items:1
+            },
+            480:{
+              items:1
+            },
+            768:{
+              items:1
+            },
+            992:{
+              items:2
+            },
+            1200:{
+              items:2
+            }
+          },
+          
+          autoplay:false,
+          loop:false,
+          nav : true, 
+          dots: false,
+          autoplaySpeed : 500,
+          navSpeed : 500,
+          dotsSpeed : 500,
+          autoplayHoverPause: true,
+          margin:30,
+        });    
+      });  
+    </script>
+  </div>

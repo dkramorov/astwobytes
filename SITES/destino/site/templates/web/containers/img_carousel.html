@@ -1,0 +1,15 @@
+{% load mtags %}
+<div class="slider-brand-wrapper">
+  <div class="primary-title">
+    <h2>{{ container.name }}</h2>
+  </div>
+  <div class="owl-carousel slider-brand">
+    {% for block in blocks %}
+      <div class="item">
+        <a title="{{ block.name|textize }}" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+          <img src="{{ block.thumb }}" alt="{{ block.description|textize }}" />
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>

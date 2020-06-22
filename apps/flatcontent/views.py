@@ -1053,7 +1053,8 @@ def SearchLink(q_string: dict = None,
                 # Нужно дозаполнить q_string, mcap
                 if block_with_content:
                     head_fill(block_with_content, q_string)
-                mcap = {key: value for key, value in inCache['mcap'].items()}
+                for k, v in inCache['mcap'].items():
+                    mcap[k] = v
                 return block_with_content
 
     # all_blocks нужны только для перевода

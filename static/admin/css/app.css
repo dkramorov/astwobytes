@@ -5191,3 +5191,6 @@ fieldset[disabled] .fc-button.active {
 .voice-trigger.active i{
   color:#f00;
 }
+.tabulator_img{
+  height: 150px;
+}
