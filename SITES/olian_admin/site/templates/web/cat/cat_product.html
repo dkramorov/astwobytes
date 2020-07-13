@@ -1,0 +1,212 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css" media="all" />
+{% endblock %}
+
+{% block extracontent %}{% endblock %}
+
+{% block page_title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="col-lg-9 col-md-9 col-main">
+  <div id="messages_product_view"></div>
+  <div class="product-view" itemscope itemtype="http://schema.org/Product">
+    <div class="product-essential">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="product-img-box">
+            <div class="case-option-vertical">
+              <div class="product-image product-image-zoom">
+                <div class="product-image-gallery">
+                  <img id="image-0" class="gallery-image visible" src="{{ product.imagine }}" alt="{{ product.name|textize }}" title="{{ product.name|textize }}" />
+                  {% for photo in photos %}
+                    <img id="image-{{ forloop.counter }}" class="gallery-image" src="{{ photo.imagine }}" data-zoom-image="{{ photo.imagine }}" />
+                  {% endfor %}
+                  <div class="btn-lightbox">
+                    <a id="lightbox_btn" data-placement="top" data-toggle="tooltip" title="Галерея" class="fancybox-buttons" data-fancybox="thumb" href="{{ product.imagine }}"></a>
+                    {% for photo in photos %}
+                      <a data-placement="top" data-toggle="tooltip" title="Галерея" class="fancybox-buttons" data-fancybox="thumb" href="{{ photo.imagine }}"></a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <div class="more-views">
+                <ul class="product-image-thumbs">
+                  <li>
+                    <a class="thumb-link" href="javascript:void(0);" data-src-img="{{ product.imagine }}" title="{{ product.name|textize }}" data-image-index="0">
+                      <img src="{{ product.thumb }}" alt="{{ product.name|textize }}" />
+                    </a>
+                  </li>
+                  {% for photo in photos %}
+                    <li>
+                      <a class="thumb-link" href="javascript:void(0);" data-src-img="{{ photo.imagine }}" title="Галерея" data-image-index="{{ forloop.counter }}">
+                        <img src="{{ photo.thumb }}" alt="Галерея" />
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="product-shop">
+            <div class="product-name" itemprop="name">
+              <h1>{{ product.name }}</h1>
+            </div>
+            <div class="ratings" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+              <meta itemprop="ratingValue" content="4"/>
+              <meta itemprop="reviewCount" content="1"/>
+              <div class="rating-box">
+                <div class="rating" style="width:90%"></div>
+              </div>
+              <p class="rating-links">
+                <a href="javascript:void(0);">Нет отзывов</a>
+                <span class="separator">|</span>
+                <a href="javascript:void(0);">Написать отзыв</a>
+              </p>
+            </div>
+            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+              <div class="price-box">
+                {% with "product" as view %}
+                  {% include "web/cat/costs_types.html" %}
+                {% endwith %}
+                <span class="regular-price">
+                  <span class="hidden" itemprop="priceCurrency" content="RUB">₽</span>
+                  <span class="price product_price_{{ product.id }}" itemprop="price" content="{{ product.price }}">{{ product.price|money_format }} ₽</span>
+                </span>
+              </div>
+{% comment %}<!--
+              <p class="availability in-stock">Возможность заказа:
+                <span>
+                  <link itemprop="availability" href="http://schema.org/InStock" />Да
+                </span>
+              </p>
+-->{% endcomment %}
+            </div>
+            <div class="add-to-box">
+              <div class="add-to-cart">
+                <label for="qty">Кол-во:</label>
+                <div class="control-qty" id="qbuttons_{{ product.id }}">
+                  <input type="text" id="quantity_{{ product.id }}" maxlength="3" value="1" title="Количество" class="input-text qty" />
+                  <div class="qty-action">
+                    <span type="button" class="quantity-controls quantity-plus"></span>
+                    <span type="button" class="quantity-controls quantity-minus"></span>
+                  </div>
+                </div>
+                <button type="button" title="Добавить в корзину" class="button btn-cart add_to_cart_btn" data-product_id="{{ product.id }}">
+                  <span><span>В корзину</span></span>
+                </button>
+              </div>
+              <span class="or">или</span>
+              <ul class="add-to-links">
+                <li><a href="javascript:void(0);" title="Добавить в избранное" class="link-wishlist"><span>В избранное</span></a></li>
+                <li><a href="javascript:void(0);" title="Добавить к сравнению" class="link-compare"><span>Сравнить</span></a></li>
+              </ul>
+            </div>
+            <div class="short-description">
+              <div class="std">{{ product.mini_info|safe }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="product-collateral">
+      <div class="tab-product-info" id="tab-product-view">
+        <ul class="resp-tabs-list">
+          <li>Описание</li>
+        </ul>
+        <div class="resp-tabs-container">
+          <div>
+            {% if product.info %}
+              <h2>Описание</h2>
+              <div class="std" itemprop="description">
+                {{ product.info|safe }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/media/js/jquery.elevatezoom.js"></script>
+<script type="text/javascript" src="/media/js/easyResponsiveTabs.js"></script>
+<script type="text/javascript" src="/media/js/jquery.lightSlider.js"></script>
+<script type="text/javascript" src="/static/fancybox/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    function zoom() {
+      $(".product-image-gallery .visible").elevateZoom({
+        easing: true,
+        loadingIcon: true,
+        zoomType: "inner",
+        cursor: "crosshair"
+      });
+    }
+    zoom();
+    $(".more-views .thumb-link").click(function () {
+      var ind = $(this).attr("data-image-index");
+      $(".product-image-gallery img").removeClass("visible");
+      $("#image-" + ind).addClass("visible");
+      setTimeout(function () {
+        zoom();
+      }, 100);
+    });
+    var slider_thumbs_main = $(".product-image-thumbs").lightSlider({
+      //prevHtml: '',
+      //nextHtml: '',
+      //slideMove: 1,
+      easing: 'cubic-bezier(0.25, 0, 0.25, 1)',
+      speed: 600,
+      auto: false,
+      loop: false,
+      rtl: false,
+      pager: false,
+      // Vertical
+      vertical: true,
+      item: 4,
+      slideMargin: 0,
+      verticalHeight: 260,
+    });
+    $(window).resize(function () {
+      zoom();
+      $('.zoomContainer').css({'left':'-9999px'});
+    });
+
+    $('.fancybox-buttons').fancybox();
+
+    $(".col-main .more-views .thumb-link").click(function () {
+      //add active class
+      $(".col-main .more-views li").removeClass('active_thumbs');
+      $(this).parent().addClass('active_thumbs');
+    });
+
+    $(".quickview-main .more-views .thumb-link").click(function () {
+      //add active class
+      $(".quickview-main .more-views li").removeClass('active_thumbs');
+      $(this).parent().addClass('active_thumbs');
+    });
+    $('#tab-product-view').easyResponsiveTabs({
+      type: 'default', //Types: default, vertical, accordion
+      width: 'auto', //auto or any width like 600px
+      fit: true,   // 100% fit in a container
+      closed: 'accordion', // Start closed if in accordion view
+      /* activate: function(event) {
+        console.log('actived');
+      } */
+    });
+    quantity_listener("{{ product.id }}",
+                      $("#qbuttons_{{ product.id }} .quantity-plus"),
+                      $("#qbuttons_{{ product.id }} .quantity-minus"),
+    );
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extracontent %}{% endblock %}
+
+{% block content %}
+<div class="col-lg-3 col-md-3 col-left sidebar">
+  <div id="layered-navigation">
+    <div class="block block-layered-nav">
+      <div class="block-title">
+        <strong><span>Каталог</span></strong>
+      </div>
+      <div class="block-content">
+        <dl id="narrow-by-list">
+          {% catalogue request True %}
+          {% include "web/cat/cost_filter.html" %}
+
+{% comment %}<!-- manufacturer
+<div class="filter-wrapp Manufacturer">
+  <dt class="Manufacturer"><span>Manufacturer</span></dt>
+  <dd class="scroll-3">
+    <ol>
+      <li class="Fermentum">
+        <input class="check-shopby" type="checkbox" />
+        <a title="Fermentum">Fermentum<span class="item-count">01</span></a>
+      </li>
+    </ol>
+  </dd>
+</div>
+
+<div class="filter-wrapp Color">
+  <dt class="Color"><span>Color</span></dt>
+  <dd class="scroll-4">
+    <ol class="configurable-swatch-list">
+      <li style="line-height: 16px;">
+        <a href="" class="swatch-link has-image">
+          <span class="swatch-label" style="height:14px; width:14px;">
+            <img src="" alt="Black" title="Black" width="12" height="12" />
+            <span class="label-image">Black</span>
+          </span>
+          <span class="item-count">05</span>
+        </a>
+      </li>
+    </ol>
+  </dd>
+</div>
+
+-->{% endcomment %}
+
+        </dl>
+      </div>
+    </div>
+  </div>
+{% comment %}<!--
+  <div class="block block-list block-compare">
+    <div class="block-title">
+      <strong><span>Compare Products</span></strong>
+    </div>
+    <div class="block-content">
+      <p class="empty">You have no items to compare.</p>
+    </div>
+  </div>
+  <div class="block block-tags">
+    <div class="block-title">
+      <strong><span>Popular Tags</span></strong>
+    </div>
+    <div class="block-content">
+      <ul class="tags-list">
+        <li><a href="">big font on popular tags</a></li>
+      </ul>
+      <div class="actions">
+        <a href="http://demo.flytheme.net/themes/sm_destino/tag/list/">View All Tags</a>
+      </div>
+    </div>
+  </div>
+  <div class="static-image-sidebar banner-image">
+    <a title="Static Image" href="#"><img src="" alt="Static Image" /></a>
+  </div>
+-->{% endcomment %}
+</div>
+
+<div class="col-lg-9 col-md-9 col-main">
+{% comment %}<!--
+  {% if page.img %}
+    <p class="category-image">
+      <img src="{% imagine page.img '1920x1080' page.get_folder True %}" alt="{{ page.name|textize }}" title="{{ page.name|textize }}" />
+    </p>
+  {% endif %}
+-->{% endcomment %}
+  <div class="page-title category-title">
+    <h1>{{ page.name }}</h1>
+  </div>
+{% comment %}<!--
+  <div class="des-cat"></div>
+  <div id="ajax-errors" style="display: none;">
+    <ul class="messages">
+      <li class="error-msg">
+        <ul>
+          <li><span>An error occurred, please try again later.</span></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div id="loading">
+    <img class="v-middle" src="">
+  </div>
+-->{% endcomment %}
+  <div id="catalog-listing">
+    <div class="category-products">
+      <div class="toolbar-top">
+        {% if paginator %}{{ paginator|safe }}{% endif %}
+      </div>
+      <ul class="products-grid row" id="products-grid">
+        {% for product in products %}
+          {% include "web/cat/grid_item.html" %}
+        {% endfor %}
+      </ul>
+
+      <ol class="products-list hidden" id="products-list">
+        {% for product in products %}
+          {% include "web/cat/list_item.html" %}
+        {% endfor %}
+      </ol>
+
+      <div class="toolbar-bottom">
+        <div class="toolbar">
+          {% if paginator %}{{ paginator|safe }}{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% if search_terms %}
+<script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".product-name a").mark('{% for search_term in search_terms %}{% if not forloop.first %} {% endif %}{{ search_term }}{% endfor %}', {
+      'accuracy': 'complementary',
+    });
+  });
+</script>
+{% endif %}
+
+<script type="text/javascript">
+  function rebuild_url(new_param, new_value){
+    var new_params = [];
+    var new_param_in_url = false;
+    var params = decodeURIComponent(location.search.substr(1)).split("&");
+    var is_empty_params = params.length == 1 && params[0] == ""
+    if(!is_empty_params){
+      for(var i=0; i<params.length; i++){
+        var param = params[i].split("=");
+        if(param[0] === new_param){
+          new_param_in_url = true;
+          if(new_value !== ""){
+            new_params.push(new_param + "=" + new_value);
+          }
+        }else{
+          new_params.push(param[0] + "=" + param[1]);
+        }
+      }
+    }
+    if(!new_param_in_url){
+      if(new_value !== ""){
+        new_params.push(new_param + "=" + new_value);
+      }
+    }
+    return new_params.join("&");
+  }
+
+  $(document).ready(function(){
+
+    $(".set_sort_by").change(function(){
+      var type = $(this).val();
+      var new_url = rebuild_url("sort", type);
+      if(decodeURIComponent(location.search.substr(1)) !== new_url){
+        window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
+      }
+    });
+
+    $(".set_count_by").change(function(){
+      var count = $(this).val();
+      var new_url = rebuild_url("by", count);
+      if(decodeURIComponent(location.search.substr(1)) !== new_url){
+        window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
+      }
+    });
+
+    $(".gridview").click(function(){
+      $(".listview").removeClass("active");
+      $("#products-list").addClass("hidden");
+      $("#products-grid").removeClass("hidden");
+      $(".gridview").addClass("active");
+    });
+    $(".listview").click(function(){
+      $(".gridview").removeClass("active");
+      $("#products-list").removeClass("hidden");
+      $("#products-grid").addClass("hidden");
+      $(".listview").addClass("active");
+    });
+
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% load mtags %}
+<div class="services-inline">
+  <ul>
+    {% for block in blocks %}
+      <li>
+        <div class="box-icon">
+          <img src="{{ block.thumb }}" alt="{{ block.description|textize }}" />
+        </div>
+        <div class="service-info">
+          <h2>{{ block.name }}</h2>
+          {% if block.html %}<p>{{ block.html|safe }}</p>{% endif %}
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

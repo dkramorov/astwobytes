@@ -1,0 +1,24 @@
+{% load mtags %}
+<div class="filter-wrapp Category">
+  <dt class="Category"><span>{{ container.name }}</span></dt>
+  <dd class="scroll-1">
+    <ol>
+      {% for menu in menus %}
+        <li>
+          <a href="{{ menu.link }}">
+            {{ menu.name }}
+            {% if products_count %}
+              {% for item in products_count %}
+                {% ifequal menu.id item.0 %}
+                  <span class="item-count">
+                    {{ item.1 }}
+                  </span>
+                {% endifequal %}
+              {% endfor %}
+            {% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ol>
+  </dd>
+</div>
