@@ -117,6 +117,7 @@ SITES/*/media/*
 !SITES/*/media/misc/
 !SITES/*/media/favicons/
 !SITES/*/media/fonts/
+!SITES/*/media/reference.txt
 static/themeforest
 
 # xapian
