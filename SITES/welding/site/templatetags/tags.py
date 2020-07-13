@@ -3,10 +3,6 @@ from django import template
 from django.conf import settings
 from django.core.cache import cache
 
-from apps.flatcontent.flatcat import get_catalogue
-from apps.products.models import Products, ProductsCats
-from apps.shop.cart import calc_cart, get_shopper
-
 register = template.Library()
 
 @register.simple_tag

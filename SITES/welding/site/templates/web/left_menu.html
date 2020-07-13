@@ -1,0 +1,30 @@
+<!-- START Sidebar (left)-->
+<nav class="sidebar">
+  <!-- USER -->
+  <div class="item user-block">
+    <!-- User picture-->
+    <div class="user-block-picture">
+      <div class="user-block-status">
+        <a href="/personal/profile/">
+          {% if request.shopper.img %}
+            <img src="{{ request.shopper.thumb }}" class="img-thumbnail img-circle" width="60" height="60">
+          {% else %}
+            <img src="/static/admin/misc/avatar_small.png" class="img-thumbnail img-circle" width="60" height="60">
+          {% endif %}
+        </a>
+        <div class="point point-success point-lg"></div>
+      </div>
+      <!-- Status when collapsed-->
+    </div>
+    <!-- Name and Role-->
+    <div class="user-block-info">
+      <a href="/personal/profile/">
+        <span class="user-block-name item-text">{{ request.shopper }}</span>
+        <span class="user-block-role">Пользователь</span>
+      </a>
+    </div>
+  </div>
+  <!-- END USER -->
+  {% include "core/left_menu_apps.html" %}
+</nav>
+<!-- END Sidebar (left)-->

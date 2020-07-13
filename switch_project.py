@@ -34,6 +34,8 @@ as_media = os.path.join(active_site, 'media')
 as_my_cnf = os.path.join(active_site, 'my.cnf')
 as_site = os.path.join(active_site, 'site')
 as_env = os.path.join(active_site, '.env')
+as_templates = os.path.join(active_site, 'templates')
+
 if not os.path.exists(as_db):
     logger.error('db not found: %s' % as_db)
     exit()
@@ -49,6 +51,9 @@ if not os.path.exists(as_site):
 if not os.path.exists(as_env):
     logger.error('.env not found: %s' % as_env)
     exit()
+if not os.path.exists(as_templates):
+    logger.error('core templates not found: %s' % as_templates)
+    exit()
 
 # ------------
 # Текущий сайт
@@ -57,10 +62,14 @@ media = os.path.join(root_dir, 'media')
 site = os.path.join(root_dir, 'apps', 'site')
 my_cnf = os.path.join(root_dir, 'conf', 'my.cnf')
 env = os.path.join(root_dir, 'conf', '.env')
+templates = os.path.join(root_dir, 'templates')
+
 logger.info('media: %s' % media)
 logger.info('site: %s' % site)
 logger.info('conf: %s' % my_cnf)
 logger.info('.env: %s' % env)
+logger.info('core templates: %s' % templates)
+
 if os.path.exists(media):
     if not os.path.islink(media):
         logger.error('media is not symlink')
@@ -85,6 +94,12 @@ if os.path.exists(env):
         exit()
     else:
         os.unlink(env)
+if os.path.exists(templates):
+    if not os.path.islink(templates):
+        logger.error('core templates is not symlink')
+        exit()
+    else:
+        os.unlink(templates)
 
 # -------------
 # Переключаемся
@@ -102,5 +117,9 @@ os.system(cmd)
 logger.info(cmd)
 
 cmd = 'ln -s %s %s' % (as_env, env)
+os.system(cmd)
+logger.info(cmd)
+
+cmd = 'ln -s %s %s' % (as_templates, templates)
 os.system(cmd)
 logger.info(cmd)

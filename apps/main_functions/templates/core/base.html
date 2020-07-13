@@ -8,8 +8,6 @@
 <link href="/static/admin/css/common.css" rel="stylesheet"/>
 <link href="/static/admin/css/font-awesome.min.css" rel="stylesheet"/>
 <link href="/static/admin/css/animate+animo.css" rel="stylesheet"/>
-<link href="/static/admin/css/csspinner.min.css" rel="stylesheet"/>
-
 <link href="/static/tabulator/tabulator.min.css" rel="stylesheet">
 <link href="/static/tabulator/tabulator_bootstrap4.min.css" rel="stylesheet">
 
@@ -30,10 +28,10 @@
       <div class="navbar-header">
         <a class="navbar-brand" href="/admin/">
           <div class="brand-logo">
-            <img alt="Admin Panel" class="img-responsive" src="/static/admin/misc/logo.png"/>
+            <img alt="Admin Panel" src="/static/admin/misc/logo.png"/>
           </div>
           <div class="brand-logo-collapsed">
-            <img alt="Admin Panel" class="img-responsive" src="/static/admin/misc/logo-single.png"/>
+            <img alt="Admin Panel" src="/static/admin/misc/logo-single.png"/>
           </div>
         </a>
       </div>
@@ -44,59 +42,45 @@
             <a class="hidden-xs" data-persists="true" data-toggle-state="aside-collapsed" href="#">
               <em class="fa fa-navicon"></em>
             </a>
-            <!-- Button to show/hide the sidebar on mobile. Visible on mobile only.-->
             <a class="visible-xs" data-toggle-state="aside-toggled" href="#">
               <em class="fa fa-navicon">
               </em>
             </a>
           </li>
-
+{% comment %}<!--
           <li class="dropdown dropdown-list">
             {% include "core/fast_messages.html" %}
           </li>
-
           <li>
-            <!-- Button to clear all site options stored option from browser storage-->
             <a data-toggle="reset" href="#">
               <em class="fa fa-refresh"></em>
             </a>
           </li>
+-->{% endcomment %}
         </ul>
-        <!-- END Left navbar-->
-        <!-- START Right Navbar-->
         <ul class="nav navbar-nav navbar-right">
           <li><a href="{% url 'login:logout_view' %}">Выход, {{ request.user }} <i class="fa fa-power-off"></i></a></li>
           <li><a href=""></a></li>
-{% comment %}
-          <!-- Search icon-->
+{% comment %}<!--
           <li>
             <a data-toggle="navbar-search" href="#">
               <em class="fa fa-search"></em>
             </a>
           </li>
-          <!-- START Alert menu-->
           <li class="dropdown dropdown-list">
             {% include "core/fast_notifications.html" %}
           </li>
-          <!-- END Alert menu-->
-          <!-- START User menu-->
           <li class="dropdown">
             {% include "core/fast_menu.html" %}
           </li>
-          <!-- END User menu-->
-          <!-- START Contacts button-->
           <li>
             <a data-toggle-state="offsidebar-open" href="#">
               <em class="fa fa-comment-o"></em>
             </a>
           </li>
-          <!-- END Contacts menu-->
-{% endcomment %}
+-->{% endcomment %}
         </ul>
-        <!-- END Right Navbar-->
       </div>
-      <!-- END Nav wrapper-->
-      <!-- START Search form-->
       <form class="navbar-form" role="search" method="get">
         <div class="form-group has-feedback">
           <input class="form-control" placeholder="Поиск..." type="text" name="q" value="{{ q_string.q.q }}" />
@@ -104,34 +88,21 @@
         </div>
         <button class="hidden btn btn-default" type="submit">Поиск</button>
       </form>
-      <!-- END Search form-->
     </nav>
-    <!-- END Top Navbar-->
-    <!-- START aside-->
     <aside class="aside">
       {% include "core/left_menu.html" %}
     </aside>
-    <!-- End aside-->
-    <!-- START aside-->
     <aside class="offsidebar">
       {% comment %}<!--{% include "core/right_sidebar.html" %}-->{% endcomment %}
     </aside>
-    <!-- END aside-->
-    <!-- START Main section-->
     <section>
-      <!-- START Page content-->
       <div class="main-content">
         {% block content %}{% endblock %}
       </div>
-      <!-- END Page content-->
-      <!-- START Page footer-->
       <footer>{% include "core/copyright.html" %}</footer>
-      <!-- END Page Footer-->
     </section>
-    <!-- END Main section-->
   </div>
 
-  <!-- START modal-->
   <div id="ajax_drop_obj" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" class="modal fade">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -155,18 +126,15 @@
       $("#current_drop_form").attr("action", "{{ root_url }}drop/" + pk + "/");
     }
   </script>
-  <!-- END modal-->
 {% endblock %}
 <script src="/static/admin/js/bootstrap.min.js"></script>
-<!-- Plugins-->
 <script src="/static/admin/js/bootstrap-slider.js"></script>
 <script src="/static/admin/js/bootstrap-filestyle.min.js"></script>
-<!-- Animo-->
+
 <script src="/static/admin/js/animo.min.js"></script>
-<!-- Slimscroll-->
 <script src="/static/admin/js/jquery.slimscroll.min.js"></script>
-<!-- Store + JSON-->
 <script src="/static/admin/js/store+json2.min.js"></script>
+
 <!-- Classyloader-->
 <script src="/static/admin/js/jquery.classyloader.min.js"></script>
 <script type="text/javascript" src="/static/tabulator/tabulator.min.js"></script>

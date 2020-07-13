@@ -484,3 +484,22 @@ body {
   padding: 50px 0;
   background-color: #e8ebec;
 }
+.penguins,
+.brand-logo{
+  position: relative;
+}
+.penguins a{
+  top: -36px;
+  left: 80px;
+  position: absolute;
+}
+.penguins a img,
+.brand-logo img{
+  height: 43px;
+}
+.brand-logo img,
+.brand-logo-collapsed img{
+  top: 24px;
+  left: 10px;
+  position: absolute;
+}

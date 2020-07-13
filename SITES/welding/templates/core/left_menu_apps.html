@@ -1,0 +1,10 @@
+{% load mtags %}
+{% with ''|installed_apps as apps %}
+<ul class="nav">
+  <!-- START Menu-->
+  <li class="nav-heading">Управление</li>
+  {% include "users_admin_menu.html" %}
+
+  {% include "main_functions_admin_menu.html" %}
+</ul>
+{% endwith %}

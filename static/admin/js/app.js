@@ -1425,13 +1425,10 @@
   if (typeof $ === 'undefined') { throw new Error('This application\'s JavaScript requires jQuery'); }
 
   $(window).load(function() {
-
     $('.scroll-content').slimScroll({
         height: '250px'
     });
-
     adjustLayout();
-
   }).resize(adjustLayout);
 
 
