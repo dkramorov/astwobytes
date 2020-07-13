@@ -1,0 +1,19 @@
+{% load mtags %}
+<div class="posts-wrap">
+  <div class="posts-list">
+    {% for block in blocks %}
+      <div class="posts-i">
+        <a class="posts-i-img" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+          <span style="background: url('{% imagine block.img '600x400' block.get_folder True %}')"></span>
+        </a>
+        <time class="posts-i-date"><span>{{ block.created.day }}</span> {% monthy block.created 1 0 %}</time>
+        <div class="posts-i-info">
+          <!--<a href="{{ block.link }}" class="posts-i-ctg">Отзывы</a>-->
+          <h3 class="posts-i-ttl">
+            <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">{{ block.name }}</a>
+          </h3>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

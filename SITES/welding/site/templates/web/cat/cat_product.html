@@ -1,0 +1,279 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extracontent %}{% endblock %}
+
+{% block page_title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="prod-wrap">
+  <div class="prod-slider-wrap">
+    <div class="prod-slider">
+      <ul class="prod-slider-car">
+        <li>
+          <a data-fancybox-group="product" class="fancy-img" href="{{ product.imagine }}">
+            <img src="{% imagine product.img '600x400' product.get_folder True %}">
+          </a>
+        </li>
+        {% for photo in photos %}
+          <li>
+            <a data-fancybox-group="product" class="fancy-img" href="{{ photo.imagine }}">
+              <img src="{{ photo.thumb }}">
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="prod-thumbs">
+      <ul class="prod-thumbs-car">
+        <li>
+          <a data-slide-index="0" href="#">
+            <img src="{{ product.imagine }}">
+          </a>
+        </li>
+        {% for photo in photos %}
+          <li>
+            <a data-slide-index="{{ forloop.counter }}" href="#">
+              <img src="{{ photo.thumb }}">
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="prod-cont">
+    {% if product.mini_info %}
+      <div class="prod-cont-txt">{{ product.mini_info|safe }}</div>
+    {% endif %}
+    <p class="prod-actions">
+      <a href="#" class="prod-favorites"><i class="fa fa-heart"></i> Избранное</a>
+      <a href="#" class="prod-compare"><i class="fa fa-bar-chart"></i> Сравнить</a>
+    </p>
+{% comment %}<!--
+    <div class="prod-skuwrap">
+      <p class="prod-skuttl">Color</p>
+      <ul class="prod-skucolor">
+        <li class="active">
+          <img src="img/color/blue.jpg" alt="">
+        </li>
+        <li>
+          <img src="img/color/red.jpg" alt="">
+        </li>
+      </ul>
+      <p class="prod-skuttl">CLOTHING SIZES</p>
+      <div class="offer-props-select">
+        <p>XL</p>
+        <ul>
+          <li><a href="#">XS</a></li>
+          <li><a href="#">S</a></li>
+          <li class="active"><a href="#">XL</a></li>
+        </ul>
+      </div>
+    </div>
+-->{% endcomment %}
+    <div class="prod-info">
+      <p class="prod-price">
+        <b class="item_current_price">{{ product.price|money_format }} ₽</b>
+      </p>
+      <p class="prod-qnt" id="qbuttons_{{ product.id }}">
+        <input value="1" type="text" id="quantity_{{ product.id }}" autocomplete="off">
+        <a href="javascript:void(0);" class="prod-plus"><i class="fa fa-angle-up"></i></a>
+        <a href="javascript:void(0);" class="prod-minus"><i class="fa fa-angle-down"></i></a>
+      </p>
+      <p class="prod-addwrap">
+        <a href="javascript:void(0);" class="prod-add add_to_cart_btn" rel="nofollow" data-product_id="{{ product.id }}">В корзину</a>
+      </p>
+    </div>
+    <ul class="prod-i-props">
+      {% for item in product.props %}
+        {% if forloop.counter < 5 %}
+        <li>
+          <b>{{ item.prop.name }}</b>
+          {% for pvalue in item.values %}
+            {{ pvalue.str_value }}
+            {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
+          {% endfor %}
+        </li>
+        {% endif %}
+      {% endfor %}
+      <li><a href="#" class="prod-showprops">Все характеристики</a></li>
+    </ul>
+  </div>
+
+  <div class="prod-tabs-wrap">
+    <ul class="prod-tabs">
+      <li><a data-prodtab-num="1" class="active" href="#" data-prodtab="#prod-tab-1">Описание</a></li>
+      <li><a data-prodtab-num="2" id="prod-props" href="#" data-prodtab="#prod-tab-2">Характеристики</a></li>
+      <li><a data-prodtab-num="3" href="#" data-prodtab="#prod-tab-3">Видео</a></li>
+      <li><a data-prodtab-num="4" href="#" data-prodtab="#prod-tab-4">Статьи</a></li>
+      <li><a data-prodtab-num="5" href="#" data-prodtab="#prod-tab-5">Отзывы</a></li>
+    </ul>
+    <div class="prod-tab-cont">
+      <p data-prodtab-num="1" class="prod-tab-mob active" data-prodtab="#prod-tab-1">Описание</p>
+      <div class="prod-tab stylization" id="prod-tab-1">
+        <p>{{ product.info|safe }}</p>
+      </div>
+      <p data-prodtab-num="2" class="prod-tab-mob" data-prodtab="#prod-tab-2">Характеристики</p>
+      <div class="prod-tab prod-props" id="prod-tab-2">
+        <table>
+          <tbody>
+            {% for item in product.props %}
+              <tr>
+                <td>{{ item.prop.name }}</td>
+                <td>
+                  {% for pvalue in item.values %}
+                    {{ pvalue.str_value }}
+                    {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p data-prodtab-num="3" class="prod-tab-mob" data-prodtab="#prod-tab-3">Видео</p>
+      <div class="prod-tab prod-tab-video" id="prod-tab-3">
+{% comment %}<!--
+        <iframe width="853" height="480" src="https://www.youtube.com/embed/kaOVHSkDoPY?rel=0&amp;showinfo=0" allowfullscreen></iframe>
+-->{% endcomment %}
+      </div>
+      <p data-prodtab-num="4" class="prod-tab-mob" data-prodtab="#prod-tab-4">Статьи</p>
+      <div class="prod-tab prod-tab-articles" id="prod-tab-4">
+{% comment %}<!--
+        <div class="flexslider post-rel-wrap" id="post-rel-car">
+          <ul class="slides">
+            <li class="posts-i">
+              <a class="posts-i-img" href="post.html"><span style="background: url(img/blog/blog1.jpg)"></span></a>
+              <time class="posts-i-date" datetime="2017-01-01 08:18"><span>09</span> Feb</time>
+              <div class="posts-i-info">
+                <a class="posts-i-ctg" href="blog.html">Articles</a>
+                <h3 class="posts-i-ttl"><a href="post.html">Adipisci corporis velit</a></h3>
+              </div>
+            </li>
+            <li class="posts-i">
+              <a class="posts-i-img" href="post.html"><span style="background: url(img/blog/blog2.jpg)"></span></a>
+              <time class="posts-i-date" datetime="2017-01-01 08:18"><span>05</span> Jan</time>
+              <div class="posts-i-info">
+                <a class="posts-i-ctg" href="blog.html">Reviews</a>
+                <h3 class="posts-i-ttl"><a href="post.html">Excepturi ducimus recusandae</a></h3>
+              </div>
+            </li>
+            <li class="posts-i">
+              <a class="posts-i-img" href="post.html"><span style="background: url(img/blog/blog3.jpg)"></span></a>
+              <time class="posts-i-date" datetime="2017-01-01 08:18"><span>17</span> Apr</time>
+              <div class="posts-i-info">
+                <a class="posts-i-ctg" href="blog.html">Reviews</a>
+                <h3 class="posts-i-ttl"><a href="post.html">Consequuntur minus numquam</a></h3>
+              </div>
+            </li>
+          </ul>
+        </div>
+-->{% endcomment %}
+      </div>
+      <p data-prodtab-num="5" class="prod-tab-mob" data-prodtab="#prod-tab-5">Отзывы</p>
+      <div class="prod-tab" id="prod-tab-5">
+{% comment %}<!--
+        <ul class="reviews-list">
+          <li class="reviews-i existimg">
+            <div class="reviews-i-img">
+              <img src="img/reviews/1.jpg" alt="Averill Sidony">
+              <div class="reviews-i-rating">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+              </div>
+              <time datetime="2017-12-21 12:19:46" class="reviews-i-date">21 May 2017</time>
+            </div>
+            <div class="reviews-i-cont">
+              <p>Numquam aliquam maiores ratione dolores ducimus, laborum hic similique delectus. Neque saepe nobis omnis laudantium itaque tempore voluptate harum error, illum nemo, reiciendis architecto, quam tenetur amet sit quisquam cum.<br>Pariatur cum tempore eius nulla impedit cumque odit quos porro iste a voluptas, optio alias voluptate minima distinctio facere aliquid quasi, vero illum tenetur sed temporibus eveniet obcaecati.</p>
+              <span class="reviews-i-margin"></span>
+              <h3 class="reviews-i-ttl">Averill Sidony</h3>
+              <p class="reviews-i-showanswer"><span data-open="Show answer" data-close="Hide answer">Show answer</span> <i class="fa fa-angle-down"></i></p>
+            </div>
+            <div class="reviews-i-answer">
+              <p>Thanks for your feedback!<br>
+              Nostrum voluptate autem, eaque mollitia sed rem cum amet qui repudiandae libero quaerat veniam accusantium architecto minima impedit. Magni illo illum iure tempora vero explicabo, esse dolores rem at dolorum doloremque iusto laboriosam repellendus. <br>Numquam eius voluptatum sint modi nihil exercitationem dolorum asperiores maiores provident repellat magnam vitae, consequatur omnis expedita, accusantium voluptas odit id.</p>
+              <span class="reviews-i-margin"></span>
+            </div>
+          </li>
+          <li class="reviews-i existimg">
+            <div class="reviews-i-img">
+              <img src="img/reviews/3.jpg" alt="Araminta Kristeen">
+              <div class="reviews-i-rating">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+              </div>
+              <time datetime="2017-12-21 12:19:46" class="reviews-i-date">14 February 2017</time>
+            </div>
+            <div class="reviews-i-cont">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+              <span class="reviews-i-margin"></span>
+              <h3 class="reviews-i-ttl">Araminta Kristeen</h3>
+              <p class="reviews-i-showanswer"><span data-open="Show answer" data-close="Hide answer">Show answer</span> <i class="fa fa-angle-down"></i></p>
+            </div>
+            <div class="reviews-i-answer">
+              Benjy, hi!<br>
+              Officiis culpa quos, quae optio quia.<br>
+              Amet sunt dolorem tempora, pariatur earum quidem adipisci error voluptates tempore iure, nobis optio temporibus voluptatum delectus natus accusamus incidunt provident sapiente explicabo vero labore hic quo?
+              <span class="reviews-i-margin"></span>
+            </div>
+          </li>
+          <li class="reviews-i">
+            <div class="reviews-i-cont">
+              <time datetime="2017-12-21 12:19:46" class="reviews-i-date">21 May 2017</time>
+              <div class="reviews-i-rating">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+              </div>
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+              <span class="reviews-i-margin"></span>
+              <h3 class="reviews-i-ttl">Jeni Margie</h3>
+              <p class="reviews-i-showanswer"><span data-open="Show answer" data-close="Hide answer">Show answer</span> <i class="fa fa-angle-down"></i></p>
+            </div>
+            <div class="reviews-i-answer">
+              Hello, Jeni Margie!<br>
+              Nostrum voluptate autem, eaque mollitia sed rem cum amet qui repudiandae libero quaerat veniam accusantium architecto minima impedit. Magni illo illum iure tempora vero explicabo, esse dolores rem at dolorum doloremque iusto laboriosam repellendus. <br>Numquam eius voluptatum sint modi nihil exercitationem dolorum asperiores maiores provident repellat magnam vitae, consequatur omnis expedita, accusantium voluptas odit id.
+              <span class="reviews-i-margin"></span>
+            </div>
+          </li>
+        </ul>
+        <div class="prod-comment-form">
+          <h3>Add your review</h3>
+          <form method="POST" action="#">
+            <input type="text" placeholder="Name">
+            <input type="text" placeholder="E-mail">
+            <textarea placeholder="Your review"></textarea>
+            <div class="prod-comment-submit">
+              <input type="submit" value="Submit">
+              <div class="prod-rating">
+                <i class="fa fa-star-o" title="5"></i><i class="fa fa-star-o" title="4"></i><i class="fa fa-star-o" title="3"></i><i class="fa fa-star-o" title="2"></i><i class="fa fa-star-o" title="1"></i>
+              </div>
+            </div>
+          </form>
+        </div>
+-->{% endcomment %}
+      </div>
+    </div>
+  </div>
+</div>
+{% products_sidebar_slider product %}
+<div class="clearfix"></div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    quantity_listener("{{ product.id }}",
+                      $("#qbuttons_{{ product.id }} .prod-plus"),
+                      $("#qbuttons_{{ product.id }} .prod-minus"),
+    );
+  });
+</script>
+{% endblock %}

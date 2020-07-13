@@ -1,0 +1,53 @@
+{% load mtags %}
+<section class="vc_row">
+  <div class="container">
+    <div class="row">
+      <div class="lqd-column col-md-12 px-4 pt-45 pb-30 bg-black box-shadow-1">
+        <div class="row d-flex flex-wrap align-items-center">
+          <div class="lqd-column col-md-6 col-md-offset-1">
+            <header class="fancy-title">
+              <h2>{% if container %}{{ container.name }}{% else %}Записаться{% endif %}</h2>
+              {% if container.description %}<p>{{ container.description|safe }}</p>{% endif %}
+            </header>
+          </div>
+          <div class="lqd-column col-md-4 hidden-sm hidden-xs text-right">
+            <div class="iconbox text-right iconbox-xl" data-animate-icon="true" data-plugin-options='{"resetOnHover":true,"color":"rgb(216, 219, 226)","hoverColor":"rgb(0, 0, 0)"}'>
+              <div class="iconbox-icon-wrap">
+                <span class="iconbox-icon-container">
+                  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="64px" height="64px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve"> <polygon stroke-width="2" stroke-linejoin="bevel" stroke-miterlimit="10" points="1,30 63,1 23,41" /> <polygon stroke-width="2" stroke-linejoin="bevel" stroke-miterlimit="10" points="34,63 63,1 23,41" /> </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="lqd-column col-md-10 col-md-offset-1">
+            <div class="contact-form contact-form-inputs-underlined">
+              <form id="contact-form" action="/feedback/" method="post">
+                {% csrf_token %}
+                <div class="row d-flex flex-wrap">
+                  <div class="lqd-column col-md-12 mb-20">
+                    <input class="lh-25 mb-30 required" type="text" name="name" placeholder="Ваше имя *" data-msg="Введите ваше имя">
+                    <input class="lh-25 mb-30 required phone" type="text" name="phone" placeholder="Ваш телефон *" data-msg="Введите ваш телефон">
+                    <textarea cols="10" rows="3" name="msg" placeholder="Комментарий"></textarea>
+                  </div>
+                  <div class="lqd-column col-md-12">
+                    <p class="font-size-16 opacity-07">Заполняя эту, и любую другую форму на нашем сайте вы соглашаетесь с обработкой персональных данных, которые вы вводите</p>
+                    <br /><br />
+                    <div class="contact-form-result feedback_alerts"></div>
+                    <br />
+                    <button type="submit" class="btn classic text-uppercase font-size-12 font-weight-bold ltr-sp-1 hvr-sweep-to-right">
+                      <span>
+                        <span class="btn-txt">Отправить</span>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

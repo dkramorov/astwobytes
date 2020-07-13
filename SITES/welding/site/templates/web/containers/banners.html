@@ -1,0 +1,16 @@
+{% load mtags %}
+<div class="banners-wrap">
+  <div class="banners-list">
+    {% for block in blocks %}
+      <div class="banner-i {{ block.tag }}">
+        <span class="banner-i-bg" style="background: url('{{ block.imagine }}');"></span>
+        <div class="banner-i-cont">
+          <p class="banner-i-subttl">{{ block.name }}</p>
+          <h3 class="banner-i-ttl">{{ block.html|safe }}</h3>
+          {% if block.description %}<p>{{ block.description }}</p>{% endif %}
+          <p class="banner-i-link"><a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">Подробнее</a></p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

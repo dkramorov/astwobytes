@@ -1,0 +1,21 @@
+{% load mtags %}
+<div class="fr-slider-wrap">
+  <div class="fr-slider">
+    <ul class="slides">
+      {% for block in blocks %}
+        <li>
+          <img src="{{ block.imagine }}">
+          <div class="fr-slider-cont">
+            <h3>{{ block.name }}</h3>
+            {% if block.html %}{{ block.html|safe }}{% endif %}
+            {% if block.link %}
+              <p class="fr-slider-more-wrap">
+                <a class="fr-slider-more" href="{{ block.link }}">Подробнее</a>
+              </p>
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
