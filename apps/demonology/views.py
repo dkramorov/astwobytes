@@ -45,33 +45,10 @@ def api(request, action: str = 'daemon'):
 @login_required
 def show_daemons(request, *args, **kwargs):
     """Вывод объектов"""
-    mh_vars = daemon_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            item['thumb'] = row.thumb()
-            item['imagine'] = row.imagine()
-            #item['exec_path'] = row.get_exec_path_display()
-            result.append(item)
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = daemon_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_daemon(request, action: str, row_id: int = None, *args, **kwargs):
@@ -149,17 +126,7 @@ def daemons_positions(request, *args, **kwargs):
 
 def search_daemons(request, *args, **kwargs):
     """Поиск объектов"""
-    result = {'results': []}
-    mh = ModelHelper(Daemon, request)
-    mh_vars = daemon_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-    mh.search_fields = ('id', 'name')
-    rows = mh.standard_show()
-    for row in rows:
-        result['results'].append({'text': '%s (%s)' % (row.name, row.id), 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-    return JsonResponse(result, safe=False)
+    return search_view(request,
+                       model_vars = daemon_vars,
+                       cur_app = CUR_APP,
+                       sfields = None, )

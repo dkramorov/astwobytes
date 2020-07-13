@@ -5,16 +5,18 @@ from apps.flatcontent.models import Containers, Blocks
 from apps.main_functions.models import Standard
 from apps.main_functions.string_parser import translit
 
+CURRENCY_CHOICES = (
+    (1, "₽"),
+    (2, "$"),
+)
+
 class Products(Standard):
     """Товары/услуги"""
-    currency_choices = (
-        (1, '₽'),
-    )
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     altname = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     manufacturer = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     measure = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    currency = models.IntegerField(choices=currency_choices, blank=True, null=True, db_index=True)
+    currency = models.IntegerField(choices=CURRENCY_CHOICES, blank=True, null=True, db_index=True)
     old_price = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True) # 99 000 000 000,00
     price = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True) # 99 000 000 000,00
     dj_info = models.CharField(max_length=255, blank=True, null=True, db_index=True)
@@ -22,18 +24,36 @@ class Products(Standard):
     info = models.TextField(blank=True, null=True)
     code = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     count = models.IntegerField(blank=True, null=True, db_index=True)
+    # min/max price храним преимущественно для сортировки,
+    # согда у нас есть несколько типов цен на товар
+    min_price = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True) # 99 000 000 000,00
+    max_price = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True) # 99 000 000 000,00
 
     class Meta:
         verbose_name = 'Товары - товар/услуга'
         verbose_name_plural = 'Товары - товары/услуги'
 
-    def save(self, *args, **kwargs):
+    def analyze_prices(self):
+        """Дополнительная обработка цен"""
+        self.min_price = self.price if self.price else None
+        self.max_price = self.price if self.price else None
+        if self.id:
+            min_price = Costs.objects.filter(product=self).aggregate(models.Min('cost'))['cost__min']
+            if not self.price or (min_price and self.price > min_price):
+                self.min_price = min_price
+            max_price = Costs.objects.filter(product=self).aggregate(models.Max('cost'))['cost__max']
+            if not self.price or (max_price and self.price < max_price):
+                self.max_price = max_price
+
         if self.old_price and self.old_price > 99999999999:
             self.old_price = None
         if self.price and self.price > 99999999999:
             self.price = None
+
+    def save(self, *args, **kwargs):
+        self.analyze_prices()
         if self.code:
-            self.code = self.code.replace('-', '_')
+            self.code = str(self.code).replace('-', '_')
         super(Products, self).save(*args, **kwargs)
         if self.id and not self.code:
             Products.objects.filter(pk=self.id).update(code=self.id)
@@ -96,4 +116,23 @@ class ProductsPhotos(Standard):
     """Галереи для товаров"""
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
+
+class CostsTypes(Standard):
+    """Разные типы цен для товаров"""
+    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    currency = models.IntegerField(choices=CURRENCY_CHOICES, blank=True, null=True, db_index=True)
+
+class Costs(models.Model):
+    """Цены для товара/услуги
+       Если у товара/услуги несколько цен (опт, розн)
+    """
+    measure_choices = (
+      (1, 'шт'),
+      (2, 'л'),
+    )
+    cost_type = models.ForeignKey(CostsTypes, blank=True, null=True, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, blank=True, null=True, on_delete=models.CASCADE)
+    measure = models.IntegerField(choices=measure_choices, blank=True, null=True, db_index=True)
+    cost = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True) # 99 000 000 000,00
 

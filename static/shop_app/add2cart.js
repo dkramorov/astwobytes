@@ -78,6 +78,13 @@ function purchase_drop(purchase_id){
   return 0;
 }
 function cart_details(cart){
+  /* Выводит аяксовую корзинку в шаблон
+     для обновления цены и кол-ва в аякс корзинке используем
+     <div id="ajax_cart_info" data-items="" data-total="₽"
+          data-items-selector="#sm_cartpro .cartpro-count"
+          data-total-selector="#sm_cartpro .price">
+     </div>
+  */
   jQuery.ajax({
     type: "GET",
     url: "/shop/cart/show/",
@@ -88,10 +95,33 @@ function cart_details(cart){
       }else{
         jQuery(cart_id).html(result);
       }
+      update_ajax_cart_info();
     }
   });
   return 0;
 }
+function update_ajax_cart_info(){
+  /* Обновление информации в аякс корзинке (кол-во, сумма)
+     #ajax_cart_info содержит всю нужную информацию,
+     после удачного запроса, поэтому после запроса
+     можно обновить кол-во и сумму выше аякс-корзинки
+     в элементе #ajax_cart_info мы берем
+     data-items и data-total и ложим значения в
+     data-items-selector и data-total-selector
+  */
+  var ajax_cart_info = $("#ajax_cart_info");
+  if(ajax_cart_info.length == 0){
+    console.log("#ajax_cart_info not found");
+    return;
+  }
+  var items = ajax_cart_info.attr("data-items");
+  var total = ajax_cart_info.attr("data-total");
+  var items_selector = ajax_cart_info.attr("data-items-selector");
+  var total_selector = ajax_cart_info.attr("data-total-selector");
+  $(items_selector).html(items);
+  $(total_selector).html(total);
+}
+
 function purchase_quantity(id){
   /* Обновляем кол-во товара в корзине
      :param id: purchase_id
@@ -202,8 +232,11 @@ jQuery(document).ready(function($){
   }
   $(".add_to_cart_btn").click(function(){
     var product_id = $(this).attr("data-product_id");
-    add_to_cart(product_id);
+    var cost_type_id = $(".cost-type-radio_" + product_id + ":checked").attr("data-cost_type_id");
+    add_to_cart(product_id, cost_type_id);
   });
+  // Обновление аякс корзинки (кол-во и сумма)
+  update_ajax_cart_info();
 });
 function demo_fill_order(){
   $("#confirm_order input[name='name']").val("господин Денис");

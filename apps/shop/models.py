@@ -3,7 +3,7 @@ from django.db import models
 
 from apps.main_functions.models import Standard
 from apps.personal.models import Shopper
-from apps.products.models import Products
+from apps.products.models import Products, CostsTypes
 
 class Orders(Standard):
     """Заказы пользователя"""
@@ -29,6 +29,17 @@ class Orders(Standard):
     def save(self, *args, **kwargs):
         super(Orders, self).save(*args, **kwargs)
 
+class Transactions(Standard):
+    """Транзакция по онлайн оплате"""
+    payment_choices = (
+        (1, 'YandexKassa'),
+    )
+    uuid = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    order = models.ForeignKey(Orders, blank=True, null=True, on_delete=models.SET_NULL)
+    ptype = models.IntegerField(choices=payment_choices, blank=True, null=True, db_index=True)
+    success = models.BooleanField(blank=True, null=True, default=False, db_index=True)
+    body = models.TextField(blank=True, null=True)
+
 class Purchases(Standard):
     """Товар/услуга, выбранная пользователем для покупки"""
     product_id = models.IntegerField(blank=True, null=True, db_index=True, verbose_name='Ид товара')
@@ -37,6 +48,7 @@ class Purchases(Standard):
     product_measure = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Единица измерения')
     product_price = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, verbose_name='Оригинальная цена без скидок') # 99 000 000 000,00
     product_code = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Код товара')
+    cost_type = models.ForeignKey(CostsTypes, blank=True, null=True, on_delete=models.SET_NULL)
     count = models.IntegerField(blank=True, null=True, db_index=True, verbose_name='Количество товара')
     cost = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, verbose_name='Цена за единицу') # 99 000 000 000,00
     discount_info = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Информация по скидке')

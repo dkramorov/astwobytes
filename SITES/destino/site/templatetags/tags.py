@@ -22,14 +22,28 @@ def ajax_cart(request):
     result['request'] = request
     return result
 
-@register.inclusion_tag('web/tags/catalogue.html')
-def catalogue(request):
-    """Каталог в виде меню - левый блок"""
+@register.inclusion_tag('web/tags/catalogue_home.html')
+def catalogue_home(request):
+    """Каталог в виде меню на главной страничке
+       левый блок
+    """
     result = get_catalogue(
         request,
         tag = 'catalogue',
         cache_time = 60,
         force_new = False)
+    result['request'] = request
+    return result
+
+@register.inclusion_tag('web/tags/catalogue.html')
+def catalogue(request, with_count: bool = False):
+    """Каталог в виде меню - левый блок"""
+    result = get_catalogue(
+        request,
+        tag = 'catalogue',
+        cache_time = 60,
+        force_new = False,
+        with_count = with_count)
     result['request'] = request
     return result
 

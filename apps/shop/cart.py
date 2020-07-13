@@ -2,6 +2,7 @@
 from apps.personal.models import Shopper
 from apps.personal.utils import save_user_to_request
 from apps.products.models import Products
+from apps.flatcontent.flatcat import get_costs_types
 from apps.main_functions.string_parser import get_request_ip
 from apps.main_functions.catcher import check_email, check_phone
 
@@ -16,18 +17,27 @@ PRODUCT_FIELDS = (
     'code',
 )
 
-def get_purchase(pk: int, shopper: Shopper, is_purchase: bool = True):
+def get_purchase(pk: int,
+                 shopper: Shopper,
+                 is_purchase: bool = True,
+                 cost_type = None):
     """Вытащить из базы покупку,
        покупка должна быть без заказа,
        принадлежать переданному пользователю
        :param pk: ид покупки или товара
        :param shopper: пользователь
        :param is_purchase: ищем ид покупки, иначе ид товара
+       :param cost_type: тип цены - для доп сравнения по is_purchase=False
        :return: Purchase object
     """
+    result = Purchases.objects.filter(order__isnull=True, shopper=shopper)
     if is_purchase:
-        return Purchases.objects.filter(pk=pk, order__isnull=True, shopper=shopper).first()
-    return Purchases.objects.filter(product_id=pk, order__isnull=True, shopper=shopper).first()
+        result = result.filter(pk=pk)
+    else:
+        result = result.filter(product_id=pk)
+        if cost_type:
+            result = result.filter(cost_type=cost_type)
+    return result.first()
 
 def calc_cart(shopper, min_info: bool = False):
     """Корзинка пользователя
@@ -72,6 +82,7 @@ def calc_cart(shopper, min_info: bool = False):
     # будем делать удаление/обновление в базе при оформлении заказа
     absent = []
     products = Products.objects.filter(pk__in=ids_products.keys())
+
     for product in products:
         ids_products[product.id] = product
     for purchase in purchases:
@@ -124,12 +135,13 @@ def create_shopper(request):
     request.session['shopper'] = shopper.to_dict()
     return shopper
 
-def create_new_order(request, shopper, cart):
+def create_new_order(request, shopper, cart, comments: str = None):
     """Оформление заказа пользователем,
        нажатие кнопки на сайте Оформить заказ
        :param request: HttpRequest
        :param shopper: покупатель
        :param cart: корзинка пользователя
+       :param comments: комментарий к заказу (доп инфа)
     """
     if not shopper or not cart or not shopper.id:
         return {}
@@ -187,6 +199,7 @@ def create_new_order(request, shopper, cart):
             shopper_phone=shopper_data['phone'],
             shopper_address=shopper_data['address'],
             state=2,
+            comments=comments,
         )
         for purchase in purchases:
             Purchases.objects.filter(pk=purchase.id).update(order=new_order)

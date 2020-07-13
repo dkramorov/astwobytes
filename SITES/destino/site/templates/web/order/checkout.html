@@ -2,126 +2,97 @@
 {% load mtags flatcontent_tags %}
 
 {% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/media/css/checkout.css" />
 <style type="text/css">
-  .mistake{
-    font-size: 1.5em;
+  label.error{
+    color: #d20000 !important;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  {% if not cart %}
-    <div class="row">
-      <div class="col-lg-12">
-
+<div class="col-lg-12 col-md-12">
+  <div class="opc-wrapper-opc design_package_sm-destino design_theme_default">
+    <div class="page-title">
+      <h1>{{ page.name }}</h1>
+    </div>
+    {% if not cart %}
         <h2 class="text-center pt-100 pb-100">Ваша корзина пуста, сначала выберите, что хотите купить</h2>
-
-      </div>
-    </div>
-  {% else %}
-  <ul class="checkout-progress-bar">
-    <li>
-      <span>Проверка заказа</span>
-    </li>
-    <li class="active">
-      <span>Подтверждение заказа</span>
-    </li>
-  </ul>
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="order-summary">
-        <h3>Заказ на {{ cart.total|money_format }} ₽</h3>
-        <h4>
-          <a data-toggle="collapse" href="#order-cart-section" class="collapsed" role="button" aria-expanded="false" aria-controls="order-cart-section">{{ cart.items }} {{ cart.items|ends:'наименование,наименований,наименования' }}</a>
-        </h4>
-        <div class="collapse" id="order-cart-section">
-          <table class="table table-mini-cart">
-            <tbody>
-              {% for purchase in cart.purchases %}
-              <tr>
-                <td class="product-col">
-                  <figure class="product-image-container">
-                    <a href="{{ purchase.link }}" class="product-image">
-                      <img src="{{ purchase.thumb }}" alt="{{ purchase.product_name|textize }}">
-                    </a>
-                  </figure>
-                  <div>
-                    <h2 class="product-title">
-                      <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
-                    </h2>
-                    <span class="product-qty">Кол-во: {{ purchase.count }}</span>
-                  </div>
-                </td>
-                <td class="price-col">{{ purchase.total|money_format }} ₽</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+    {% else %}
+      <form action="/shop/checkout/" method="POST" id="confirm_order">
+        {% csrf_token %}
+        <div class="row">
+          <div class="opc-col-left col-lg-4 col-md-4">
+            {% for error in errors %}
+              <label class="error mistake">{{ error }}</label><br />
+            {% endfor %}
+            <div id="co-billing-form">
+              <h3>Контактная информация</h3>
+              <div class="form-group required-field">
+                <label>Как к вам обращаться</label>
+                <input type="text" class="form-control required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}">
+              </div>
+              <div class="form-group">
+                <label>Ваше имя</label>
+                <input type="text" class="form-control" name="first_name" value="{% if shopper_data.first_name %}{{ shopper_data.first_name }}{% endif %}">
+              </div>
+              <div class="form-group">
+                <label>Ваша фамилия</label>
+                <input type="text" class="form-control" name="last_name" value="{% if shopper_data.last_name %}{{ shopper_data.last_name }}{% endif %}">
+              </div>
+              <div class="form-group">
+                <label>Ваше отчество</label>
+                <input type="text" class="form-control" name="middle_name" value="{% if shopper_data.middle_name %}{{ shopper_data.middle_name }}{% endif %}">
+              </div>
+              <div class="form-group required-field">
+                <label>Ваш email</label>
+                <input type="text" class="form-control required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}">
+              </div>
+              <div class="form-group required-field">
+                <label>Ваш телефон</label>
+                <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}">
+              </div>
+              <div class="form-group">
+                <label>Ваш адрес</label>
+                <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}">
+              </div>
+              <div class="clearfix">
+                <input type="submit" class="btn btn-primary" value="Оформить заказ" />
+              </div>
+            </div>
+          </div>
+          <div class="opc-col-center col-lg-4 col-md-4">
+            <div class="shipping-block">
+              <h3>Доставка</h3>
+              <div id="shipping-block-methods">
+                <div id="checkout-shipping-method-load">
+                  <dl class="sp-methods">
+                   <dt>не выбрана</dt>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="opc-col-right col-lg-4 col-md-4">
+            <div class="payment-block ">
+              <h3>Заказ на {{ cart.total|money_format }} ₽</h3>
+              <p>{{ cart.items }} {{ cart.items|ends:'наименование,наименований,наименования' }}</p>
+            </div>
+            <div class="opc-review-actions" id="checkout-review-submit">
+              <h5 class="grand_total">
+                <div>Итого</div>
+                <span class="price">{{ cart.total|money_format }} ₽</span>
+              </h5>
+              <button type="submit" title="Подтвердить заказ" class="button btn-checkout opc-btn-checkout">
+                <span><span>Подтвердить заказ</span></span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="checkout-info-box">
-        <h3 class="step-title">Доставка:
-          <a href="javscript:void(0);" title="Редактировать" class="step-title-edit"><span class="sr-only">Редактировать</span><i class="icon-pencil"></i></a>
-        </h3>
-        <address>
-          Не указан
-        </address>
-      </div>
-      <div class="checkout-info-box">
-        <h3 class="step-title">Метод доставки:
-          <a href="javascript:void(0);" title="Редактировать" class="step-title-edit"><span class="sr-only">Редактировать</span><i class="icon-pencil"></i></a>
-        </h3>
-        <p>Не указан</p>
-      </div>
-    </div>
-
-    <div class="col-lg-8 order-lg-first">
-      <div class="checkout-payment">
-        {% for error in errors %}
-          <label class="error mistake">{{ error }}</label><br />
-        {% endfor %}
-        <form action="/shop/checkout/" method="POST" id="confirm_order">
-          {% csrf_token %}
-          <div class="form-group required-field">
-            <label>Как к вам обращаться</label>
-            <input type="text" class="form-control required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}">
-          </div>
-          <div class="form-group">
-            <label>Ваше имя</label>
-            <input type="text" class="form-control" name="first_name" value="{% if shopper_data.first_name %}{{ shopper_data.first_name }}{% endif %}">
-          </div>
-          <div class="form-group">
-            <label>Ваша фамилия</label>
-            <input type="text" class="form-control" name="last_name" value="{% if shopper_data.last_name %}{{ shopper_data.last_name }}{% endif %}">
-          </div>
-          <div class="form-group">
-            <label>Ваше отчество</label>
-            <input type="text" class="form-control" name="middle_name" value="{% if shopper_data.middle_name %}{{ shopper_data.middle_name }}{% endif %}">
-          </div>
-          <div class="form-group required-field">
-            <label>Ваш email</label>
-            <input type="text" class="form-control required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}">
-          </div>
-          <div class="form-group required-field">
-            <label>Ваш телефон</label>
-            <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}">
-          </div>
-          <div class="form-group">
-            <label>Ваш адрес</label>
-            <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}">
-          </div>
-
-          <div class="clearfix">
-            <input type="submit" class="btn btn-primary" value="Оформить заказ" />
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    {% endif %}
   </div>
-  {% endif %}
 </div>
-
 
 {% for container in page.containers %}
   {% flatcontent request page container.container.tag %}
@@ -129,6 +100,10 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+
 <script type="text/javascript">
   jQuery(document).ready(function($){
     //demo_fill_order();
@@ -141,7 +116,7 @@
         email: "Введите email, чтобы вы могли восстановить доступ к аккаунту",
       },
       submitHandler: function(form) {
-        $("#confirm_order input[type='submit']").val("Ждите...").attr("disabled", "disabled");
+        $("#confirm_order button[type='submit']").html("Ждите...").attr("disabled", "disabled");
         form.submit();
       }
     });

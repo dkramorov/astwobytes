@@ -13,9 +13,20 @@ from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper, ModelHelper
 from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 from apps.main_functions.string_parser import analyze_digit
+from apps.main_functions.views_helper import (show_view,
+                                              edit_view,
+                                              search_view, )
 
 from apps.flatcontent.models import Containers, Blocks
-from .models import Products, ProductsCats, ProductsPhotos, Property, PropertiesValues, ProductsProperties
+from .models import (Products,
+                     ProductsCats,
+                     ProductsPhotos,
+                     Property,
+                     PropertiesValues,
+                     ProductsProperties,
+                     CostsTypes,
+                     Costs,
+                     CURRENCY_CHOICES, )
 
 CUR_APP = 'products'
 products_vars = {
@@ -60,34 +71,14 @@ def import_xlsx(request, action: str = 'vocabulary'):
 @login_required
 def show_products(request, *args, **kwargs):
     """Вывод товаров"""
-    mh_vars = products_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            item['thumb'] = row.thumb()
-            item['imagine'] = row.imagine()
-            result.append(item)
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    context['import_xlsx_url'] = reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
-                              kwargs={'action': 'products'})
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    extra_vars = {
+        'import_xlsx_url': reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
+                                   kwargs={'action': 'products'}),
+    }
+    return show_view(request,
+                     model_vars = products_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = extra_vars, )
 
 def add_photo2gallery(photo, product, context):
     """Добавить фото к товару/услугу в галерею
@@ -204,24 +195,10 @@ def search_products(request, *args, **kwargs):
     """Поиск товаров
        :param request: HttpRequest
     """
-    result = {'results': []}
-    mh = ModelHelper(Products, request)
-    mh_vars = products_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-    mh.search_fields = ('id', 'name')
-    rows = mh.standard_show()
-    for row in rows:
-        name = row.name
-        if row.code:
-            name += ' (%s)' % (row.code, )
-        name += ' #%s' % (row.id, )
-        result['results'].append({'text': name, 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-    return JsonResponse(result, safe=False)
+    return search_view(request,
+                       model_vars = products_vars,
+                       cur_app = CUR_APP,
+                       sfields = None, )
 
 photos_vars = {
     'singular_obj': 'Фото товара',
@@ -238,38 +215,16 @@ photos_vars = {
     #'create_urla': 'create_photo',
     #'edit_urla': 'edit_photo',
     'model': ProductsPhotos,
+    'custom_model_permissions': Products,
 }
 
 @login_required
 def show_photos(request, *args, **kwargs):
     """Вывод фото для товаров/услуг"""
-    mh_vars = photos_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    mh.get_permissions(Products) # Права от товаров/услуг
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            item['thumb'] = row.thumb()
-            item['imagine'] = row.imagine()
-            result.append(item)
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = photos_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_photo(request, action: str, row_id: int = None, *args, **kwargs):
@@ -346,38 +301,16 @@ props_vars = {
     'create_urla': 'create_prop',
     'edit_urla': 'edit_prop',
     'model': Property,
+    'custom_model_permissions': Products,
 }
 
 @login_required
 def show_props(request, *args, **kwargs):
     """Вывод свойств для товаров/услуг"""
-    mh_vars = props_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    mh.get_permissions(Products) # Права от товаров/услуг
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            item['thumb'] = row.thumb()
-            item['imagine'] = row.imagine()
-            result.append(item)
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = props_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
@@ -487,24 +420,10 @@ def search_props(request, *args, **kwargs):
     """Поиск свойств
        :param request: HttpRequest
     """
-    result = {'results': []}
-    mh = ModelHelper(Property, request)
-    mh_vars = props_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-    mh.search_fields = ('id', 'name', 'code')
-    rows = mh.standard_show()
-    for row in rows:
-        name = row.name
-        if row.code:
-            name += ' (%s)' % (row.code, )
-        name += ' #%s' % (row.id, )
-        result['results'].append({'text': name, 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-    return JsonResponse(result, safe=False)
+    return search_view(request,
+                       model_vars = props_vars,
+                       cur_app = CUR_APP,
+                       sfields = None, )
 
 pvalues_vars = {
     'singular_obj': 'Значение свойства',
@@ -521,38 +440,16 @@ pvalues_vars = {
     #'create_urla': 'create_pvalue',
     #'edit_urla': 'edit_pvalue',
     'model': PropertiesValues,
+    'custom_model_permissions': Products,
 }
 
 @login_required
 def show_pvalues(request, *args, **kwargs):
     """Вывод значений свойств для товаров/услуг"""
-    mh_vars = pvalues_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    mh.get_permissions(Products) # Права от товаров/услуг
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            item['thumb'] = row.thumb()
-            item['imagine'] = row.imagine()
-            result.append(item)
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = pvalues_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def pvalues_positions(request, *args, **kwargs):
@@ -607,35 +504,16 @@ products_pvalues_vars = {
     'create_urla': 'create_product_pvalue',
     'edit_urla': 'edit_product_pvalue',
     'model': ProductsProperties,
+    'custom_model_permissions': Products,
 }
 
 @login_required
 def show_product_pvalues(request, *args, **kwargs):
     """Вывод привязанных свойств для товаров/услуг"""
-    mh_vars = products_pvalues_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    mh.get_permissions(Products) # Права от товаров/услуг
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            result.append(item)
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = products_pvalues_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_product_pvalue(request, action: str, row_id: int = None, *args, **kwargs):
@@ -694,3 +572,59 @@ def edit_product_pvalue(request, action: str, row_id: int = None, *args, **kwarg
                     context['error'] = 'Недостаточно прав'
 
     return JsonResponse(context, safe=False)
+
+costs_vars = {
+    'singular_obj': 'Тип цены',
+    'plural_obj': 'Типы цен',
+    'rp_singular_obj': 'типа цены',
+    'rp_plural_obj': 'типов цен',
+    'template_prefix': 'costs_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'products',
+    'submenu': 'costs',
+    'show_urla': 'show_costs',
+    'create_urla': 'create_cost',
+    'edit_urla': 'edit_cost',
+    'model': CostsTypes,
+    'custom_model_permissions': Products,
+}
+
+@login_required
+def show_costs(request, *args, **kwargs):
+    """Вывод типов цен"""
+    return show_view(request,
+                     model_vars = costs_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
+
+@login_required
+def edit_cost(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование типа цены"""
+    extra_vars = {'currency_choices': CURRENCY_CHOICES}
+    return edit_view(request,
+                     model_vars = costs_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = extra_vars, )
+
+def search_costs(request, *args, **kwargs):
+    """Поиск типов цен
+       :param request: HttpRequest
+    """
+    return search_view(request,
+                       model_vars = costs_vars,
+                       cur_app = CUR_APP,
+                       sfields = None, )
+
+@login_required
+def costs_positions(request, *args, **kwargs):
+    """Изменение позиций типов цен"""
+    result = {}
+    mh_vars = costs_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+

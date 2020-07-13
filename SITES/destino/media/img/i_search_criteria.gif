@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>404 Not Found</title>
+<meta name="description" content="Page description" />
+<meta name="keywords" content="Page keywords" />
+<meta name="robots" content="INDEX,FOLLOW" />
+<link rel="icon" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/favicon.ico" type="image/x-icon" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+
+	<link rel="author" href="https://plus.google.com/u/0/+Smartaddons" />
+
+
+
+<!--[if lt IE 7]>
+<script type="text/javascript">
+//<![CDATA[
+    var BLANK_URL = 'http://demo.flytheme.net/themes/sm_destino/js/blank.html';
+    var BLANK_IMG = 'http://demo.flytheme.net/themes/sm_destino/js/spacer.gif';
+//]]>
+</script>
+<![endif]-->
+<!--group: nogroup-->
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/js/calendar/calendar-win2k-1.css" />
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/base/default/css/widgets.css" media="all" />
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/css/bootstrap/bootstrap.css" media="all" />
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/css/bootstrap/bootstrap-theme.min.css" media="all" />
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/css/theme-default.css" media="all" />
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/css/css_fix.css" media="all" />
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/css/font-awesome/css/font-awesome.css" media="all" />
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/css/print.css" media="print" />
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/prototype/prototype.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/lib/ccard.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/prototype/validation.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/scriptaculous/builder.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/scriptaculous/effects.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/scriptaculous/dragdrop.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/scriptaculous/controls.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/scriptaculous/slider.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/varien/js.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/varien/form.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/varien/menu.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/mage/translate.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/mage/cookies.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/varien/product.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/calendar/calendar.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/calendar/calendar-setup.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/varien/configurable.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/varien/product_options.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/sm/jquery/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/js/sm/jquery/jquery.noconflict.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/base/default/js/bundle.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/base/default/js/msrp.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/sm/cartpro/js/cartpro.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/sm/cartpro/js/cartpro_update.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/owl.carousel.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/jquery.lightSlider.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/easyResponsiveTabs.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/jquery.elevatezoom.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/jquery.fancybox.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/configurableswatches/product-media.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/configurableswatches/swatches-list.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/configurableswatches/swatches-product.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/app.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/lib/imagesloaded.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/js/yt-theme.js"></script>
+<link href="http://demo.flytheme.net/themes/sm_destino/blog/rss/index/store_id/1/" title="Blog" rel="alternate" type="application/rss+xml" />
+<!--[if IE]>
+<link rel="stylesheet" type="text/css" href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/base/default/css/ie_hack.css" media="all" />
+<![endif]-->
+
+<script type="text/javascript">
+//<![CDATA[
+Mage.Cookies.path     = '/themes/sm_destino';
+Mage.Cookies.domain   = '.demo.flytheme.net';
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+optionalZipCountries = ["HK","IE","MO","PA"];
+//]]>
+</script>
+            <!-- BEGIN GOOGLE ANALYTICS CODE -->
+        <script type="text/javascript">
+        //<![CDATA[
+            var _gaq = _gaq || [];
+            
+_gaq.push(['_setAccount', 'UA-34732571-1']);
+
+_gaq.push(['_trackPageview']);
+            
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+
+        //]]>
+        </script>
+        <!-- END GOOGLE ANALYTICS CODE -->
+    
+<script type="text/javascript">
+//<![CDATA[
+	var enable_ajax_cart = 1;
+	var enable_ajax_compare = 1;
+	var enable_ajax_wishlist = 1;
+	var confirm_countdown_number = 5;
+	var effect = 'hover'
+	var cartpro_baseurl = 'http://demo.flytheme.net/themes/sm_destino/';
+	var isLoggedIn = 0;
+	var currencyCode = '$';
+	var formKeyJS = 'Erngjz2YrHvVsSKU'
+//]]>    
+</script>
+<script type="text/javascript">//<![CDATA[
+        var Translator = new Translate([]);
+        //]]></script>
+<script type="text/javascript">
+//<![CDATA[
+	var SKIN_URL = 'http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm_destino/default';
+	var TMPL_NAME = 'sm_destino';
+	var TMPL_COOKIE = ["layoutstyle","menustyle"];
+//]]>
+</script>
+
+<!--THEME CONFIG-->
+
+<!--GENERAL GOOGLE FONT-->
+
+<!--GENERAL MAIN GOOGLE FONT-->
+	<link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Poppins:400,600' />
+
+<!--BACKGROUND IMAGE-->
+
+<style>
+	
+	/*==GENERAL==*/
+	
+	body{
+					font-family:Poppins;
+				
+		
+		font-size: 12px;
+		color: #666666;
+		background-color: #FFFFFF;
+		background-repeat: ;
+		background-position: ;
+
+			}
+	
+	body a{
+		color: #333333;
+	}
+	
+	body a:hover{
+		color: #0083C1;
+	}
+	
+	/*===GOOGLE FONT ELEMENT===*/
+	
+			{
+			font-family:;
+		}
+		
+		
+	/*==HIDDEN BUTTON ADD TO CART, WISHLIST, COMPARE==*/
+	
+		
+		
+		
+		
+	/*==CUSTOM CSS==*/
+		
+</style>
+
+	
+
+<!--LISTING PRODUCT-->
+
+<style>
+@media (min-width: 1200px) {
+
+    .wide-style .container{
+        max-width: 1200px;
+        width: 100%;
+    }
+
+	/*==1 COLUMN==*/
+	
+	.col1-layout .category-products .products-grid .item{
+		width: 20%	}
+
+    .col1-layout .category-products .products-grid .item:nth-child(5n+1){
+        clear: both;
+    }
+
+	/*==2 COLUMNS==*/
+	
+	.col2-left-layout .category-products .products-grid .item,
+	.col2-right-layout .category-products .products-grid .item{
+		width: 33.333333333333%	}
+
+    .col2-left-layout .category-products .products-grid .item:nth-child(3n+1),
+    .col2-right-layout .category-products .products-grid .item:nth-child(3n+1){
+       clear: both;
+    }
+
+	/*==3 COLUMNS==*/
+	
+	.col3-layout .category-products .products-grid .item{
+		width: 50%	}
+
+    .col3-layout .category-products .products-grid .item:nth-child(2n+1){
+        clear: both;
+    }
+
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+
+	/*==1 COLUMN==*/
+	
+	.col1-layout .category-products .products-grid .item{
+		width: 25%	}
+
+    .col1-layout .category-products .products-grid .item:nth-child(4n+1){
+        clear: both;
+    }
+
+	/*==2 COLUMNS==*/
+	
+	.col2-left-layout .category-products .products-grid .item,
+	.col2-right-layout .category-products .products-grid .item{
+		width: 33.333333333333%	}
+
+    .col2-left-layout .category-products .products-grid .item:nth-child(3n+1),
+    .col2-right-layout .category-products .products-grid .item:nth-child(3n+1){
+        clear: both;
+    }
+
+	/*==3 COLUMNS==*/
+	
+	.col3-layout .category-products .products-grid .item{
+		width: 50%	}
+
+    .col3-layout .category-products .products-grid .item:nth-child(2n+1){
+        clear: both;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+
+	/*==1 COLUMN==*/
+	
+	.col1-layout .category-products .products-grid .item{
+		width: 33.333333333333%	}
+
+    .col1-layout .category-products .products-grid .item:nth-child(3n+1){
+        clear: both;
+    }
+
+	/*==2 COLUMNS==*/
+	
+	.col2-left-layout .category-products .products-grid .item,
+	.col2-right-layout .category-products .products-grid .item{
+		width: 33.333333333333%	}
+
+    .col2-left-layout .category-products .products-grid .item:nth-child(3n+1),
+    .col2-right-layout .category-products .products-grid .item:nth-child(3n+1){
+        clear: both;
+    }
+
+	/*==3 COLUMNS==*/
+	
+	.col3-layout .category-products .products-grid .item{
+		width: 33.333333333333%	}
+
+    .col3-layout .category-products .products-grid .item:nth-child(3n+1){
+        clear: both;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+
+	/*==1 COLUMN==*/
+	
+	.col1-layout .category-products .products-grid .item{
+		width: 50%	}
+
+    .col1-layout .category-products .products-grid .item:nth-child(2n+1){
+        clear: both;
+    }
+
+	/*==2 COLUMNS==*/
+	
+	.col2-left-layout .category-products .products-grid .item,
+	.col2-right-layout .category-products .products-grid .item{
+		width: 50%	}
+
+    .col2-left-layout .category-products .products-grid .item:nth-child(2n+1),
+    .col2-right-layout .category-products .products-grid .item:nth-child(2n+1){
+        clear: both;
+    }
+
+	/*==3 COLUMNS==*/
+	
+	.col3-layout .category-products .products-grid .item{
+		width: 50%	}
+
+    .col3-layout .category-products .products-grid .item:nth-child(2n+1){
+        clear: both;
+    }
+}
+
+@media (max-width: 480px) {
+
+	/*==1 COLUMN==*/
+	
+	.col1-layout .category-products .products-grid .item{
+		width: 100%	}
+
+    .col1-layout .category-products .products-grid .item:nth-child(1n+1){
+        clear: both;
+    }
+
+	/*==2 COLUMNS==*/
+	
+	.col2-left-layout .category-products .products-grid .item,
+	.col2-right-layout .category-products .products-grid .item{
+		width: 100%	}
+
+    .col2-left-layout .category-products .products-grid .item:nth-child(1n+1),
+    .col2-right-layout .category-products .products-grid .item:nth-child(1n+1){
+        clear: both;
+    }
+
+	/*==3 COLUMNS==*/
+	
+	.col3-layout .category-products .products-grid .item{
+		width: 100%	}
+
+    .col3-layout .category-products .products-grid .item:nth-child(1n+1){
+        clear: both;
+    }
+}
+</style>
+
+
+<!--SLIDER THUMB IMAGE WHEN HOVER PRODUCT-->
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $(".slider-img-thumb").lightSlider({
+            loop: false,
+            vertical:false,
+            slideMargin: 0,
+            item: 1,
+
+                            controls : true, // Show next and prev buttons
+            
+                            pager: true,
+                    });
+		
+		
+    });
+</script></head>
+
+<body class=" cms-index-noroute cms-no-route wide-style home-page-1 header-1 ">
+<div class="wrapper">
+        <noscript>
+        <div class="global-site-notice noscript">
+            <div class="notice-inner">
+                <p>
+                    <strong>JavaScript seems to be disabled in your browser.</strong><br />
+                    You must have JavaScript enabled in your browser to utilize the functionality of this website.                </p>
+            </div>
+        </div>
+    </noscript>
+    <div class="page">
+        
+
+<!--SHOW NEWSLETTER POPUP-->
+
+<!--GO TO TOP-->
+	<a id="yt-totop" href="javascript:void(0)" title="Go to Top"></a>
+	<script type="text/javascript">
+		jQuery(document).ready(function($){  
+			$("#yt-totop").hide();
+			$(function () {
+				var wh = $(window).height();
+				var whtml =  $(document).height();
+				$(window).scroll(function () {
+					if ($(this).scrollTop() > whtml/10) {
+						$('#yt-totop').fadeIn();
+					} else {
+						$('#yt-totop').fadeOut();
+					}
+				});
+				$('#yt-totop').click(function () {
+					$('body,html').animate({
+						scrollTop: 0
+					}, 800);
+					return false;
+				});
+			});
+		});
+	</script>
+
+<!--REMOVE PADDING TOP-->
+<script type="text/javascript">
+	jQuery(document).ready(function($){  
+		if($('.breadcrumbs').length > 0){
+			$('.sidebar, .col-main').css({'padding-top':'0'});
+		}
+	});
+</script>
+
+
+<div class="header-container header-style-1">
+    <div class="header">
+		<div class="header-inner">
+			<div class="header-top">
+				<div class="container">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-5 setting-container">
+                            <div class="header-top-left">
+                                	
+    <div class="dropdown-block">
+		<div class="lang-switcher">
+			<div class="dropdown-toggle">
+				<div class="value flag" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/default.png)">English</div>
+			</div>
+			<ul class="dropdown-list"><li class="current"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/default.png);">&nbsp;English</span></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=french&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/french.png);">&nbsp;French</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=german&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/german.png);">&nbsp;German</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=argentina&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/argentina.png);">&nbsp;Argentina</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=bolivia&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/bolivia.png);">&nbsp;Bolivia</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=andorra&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/andorra.png);">&nbsp;Andorra</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=belgium&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/belgium.png);">&nbsp;Belgium</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=somaliland&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/somaliland.png);">&nbsp;Somaliland</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=benin&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/benin.png);">&nbsp;Benin</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=barbados&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/barbados.png);">&nbsp;Barbados</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=australia&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/australia.png);">&nbsp;Australia</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=hungary&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/hungary.png);">&nbsp;Hungary</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=italia&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/italia.png);">&nbsp;Italia</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=japan&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/japan.png);">&nbsp;Japan</span></a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/i_search_criteria.gif?___store=vietnam&amp;___from_store=default"><span class="dropdown-icon" style="background-image:url(http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/flags/vietnam.png);">&nbsp;Vietnam</span></a></li></ul>		</div>
+    </div>
+								
+	
+    <div class="dropdown-block currency-block">
+		<div class="currency-switcher">
+			<div class="dropdown-toggle">
+				<div class="value">USD</div>
+			</div>
+			<ul class="dropdown-list"><li><a href="http://demo.flytheme.net/themes/sm_destino/directory/currency/switch/currency/EGP/uenc/aHR0cDovL2RlbW8uZmx5dGhlbWUubmV0L3RoZW1lcy9zbV9kZXN0aW5vL3NraW4vZnJvbnRlbmQvc20tZGVzdGluby9kZWZhdWx0L2ltYWdlcy9pX3NlYXJjaF9jcml0ZXJpYS5naWY,/">EGP</a></li><li><a href="http://demo.flytheme.net/themes/sm_destino/directory/currency/switch/currency/EUR/uenc/aHR0cDovL2RlbW8uZmx5dGhlbWUubmV0L3RoZW1lcy9zbV9kZXN0aW5vL3NraW4vZnJvbnRlbmQvc20tZGVzdGluby9kZWZhdWx0L2ltYWdlcy9pX3NlYXJjaF9jcml0ZXJpYS5naWY,/">EUR</a></li><li class="current">USD</li></ul>		</div>
+    </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-8 col-md-8 col-sm-7 customer-container">
+                            <div class="header-top-right">
+                                <div class="welcome-text notloggedin">
+                                    <span>Welcome to our store! </span>
+									
+									                                </div>
+
+                                                                <div class="customer-links">
+                                    <ul>
+                                        <li><a href="http://demo.flytheme.net/themes/sm_destino/customer/account/login/">Sign In</a></li>
+                                        <li><a href="http://demo.flytheme.net/themes/sm_destino/customer/account/create/">Create an Account</a></li>
+                                    </ul>
+                                </div>
+                                                            </div>
+                        </div>
+                    </div>
+				</div>
+			</div>
+
+			<div class="header-middle">
+				<div class="container">
+					<div class="row">
+                        <div class="col-sm-3 logo-container">
+                            <h1 class="logo">
+								<a href="http://demo.flytheme.net/themes/sm_destino/" title="Destino - Responsive Magento Multipurpose Theme" class="logo">
+									<img src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/images/blue/logo.png" alt="Destino - Responsive Magento Multipurpose Theme" />
+								</a>
+							</h1>
+                        </div>
+
+                        <div class="col-sm-9 right-container">
+                            <div class="search-wrapper">
+								<form id="search_mini_form" action="http://demo.flytheme.net/themes/sm_destino/catalogsearch/result/" method="get">
+    <div class="form-search">
+        <input id="search" type="text" name="q" value="" class="input-text" maxlength="128" />
+        <button type="submit" title="Search" class="button-search fa fa-search"><span><span>Search</span></span></button>
+        <div id="search_autocomplete" class="search-autocomplete"></div>
+        <script type="text/javascript">
+        //<![CDATA[
+            var searchForm = new Varien.searchForm('search_mini_form', 'search', 'Search entire store here...');
+            searchForm.initAutocomplete('http://demo.flytheme.net/themes/sm_destino/catalogsearch/ajax/suggest/', 'search_autocomplete');
+        //]]>
+        </script>
+    </div>
+</form>
+							</div>
+
+							<div class="phone-header-container">
+                                <p><em class="fa fa-phone"></em> Call Us: (888) 1234 56789</p>
+                            </div>
+                            <div class="minicart-header">
+								
+<div id="sm_cartpro" class="sm-cartpro">
+	<div class="cartpro-title  cartpro-empty ">
+		<div class="info-minicart">
+			<h2 class="cartpro-label">My Cart</h2>
+			<div class="item-info">
+				<span class="cartpro-count">0</span><span class="label-item"> Item(s): </span>
+				<span class="total-price"><span class="price">$0.00</span></span>
+			</div>
+		</div>
+	</div>
+	<div class="cartpro-content">
+		
+<!--
+<div class="cartpro-error cartpro-message"></div>
+<div class="cartpro-success cartpro-message"></div>
+-->
+<div class="cartpro-wrapper">
+                    <p class="empty">You have no items in your shopping cart.</p>
+
+    </div>
+	</div>
+</div>
+							</div>
+                        </div>
+					</div>
+				</div>
+			</div>
+
+			<div class="yt-menu">
+				<div class="menu-under">
+					<div class="container">
+						<div class="menu-larger">
+							<div class="row">
+							                                <div class="col-lg-12 col-md-12">
+										
+		
+	<div class="sm_megamenu_wrapper_horizontal_menu sambar" id="sm_megamenu_menu5eefd6c4482a8" data-sam="4888432881592776388">
+		<div class="sambar-inner">
+			<ul class="css_effect sm-megamenu-hover sm_megamenu_menu sm_megamenu_menu_black" data-jsapi="on">
+									<li class="rw-url home-item-parent other-toggle   
+						sm_megamenu_lv1 sm_megamenu_nodrop   ">
+												<a class="sm_megamenu_head sm_megamenu_nodrop " href="javascript:void(0)"  id="sm_megamenu_2">
+																										<span class="sm_megamenu_icon sm_megamenu_nodesc">		
+																												<span class="sm_megamenu_title">Home</span>
+																	
+														
+													</span>
+																									</a>
+																																	<li class="feature-item-parent other-toggle   
+						sm_megamenu_lv1 sm_megamenu_drop parent   ">
+												<a class="sm_megamenu_head sm_megamenu_drop " href="http://demo.flytheme.net/themes/sm_destino/electronics.html"  id="sm_megamenu_111">
+																										<span class="sm_megamenu_icon sm_megamenu_nodesc">		
+																												<span class="sm_megamenu_title">Features</span>
+																	
+														
+													</span>
+																									</a>
+																																												<div class="sm-megamenu-child sm_megamenu_dropdown_6columns  ">	
+													<div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id111   feature-item"><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id112   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_content"><div class="home-menu-dropdown">
+	<ul class="item-home-store layout-home">
+		<li class="title-menu-home">Layouts</li>
+		<li><a title="Home Style 1" href="http://demo.flytheme.net/themes/sm_destino/?___store=default&amp;___from_store=french/">Home Style 1</a></li>
+		<li><a title="Home Style 2" href="http://demo.flytheme.net/themes/sm_destino/?___store=french&amp;___from_store=default/">Home Style 2</a></li>
+		<li><a title="Home Style 3" href="http://demo.flytheme.net/themes/sm_destino/?___store=german&amp;___from_store=default/">Home Style 3</a></li>
+		<li><a title="Home Style 4" href="http://demo.flytheme.net/themes/sm_destino/?___store=argentina&amp;___from_store=default/">Home Style 4</a></li>
+		<li><a title="Home Style 5" href="http://demo.flytheme.net/themes/sm_destino/?___store=bolivia&amp;___from_store=default/">Home Style 5</a></li>
+		<li><a title="Home Style 6" href="http://demo.flytheme.net/themes/sm_destino/?___store=andorra&amp;___from_store=default/">Home Style 6</a></li>
+		<li><a title="Home Style 7" href="http://demo.flytheme.net/themes/sm_destino/?___store=belgium&amp;___from_store=default/">Home Style 7</a></li>
+		<li><a title="Home Style 8" href="http://demo.flytheme.net/themes/sm_destino/?___store=somaliland&amp;___from_store=default/">Home Style 8</a></li>
+		<li><a title="Layout Boxed" href="http://demo.flytheme.net/themes/sm_destino/?___store=benin&amp;___from_store=default/">Layout Boxed</a></li>
+		<li><a title="Layout Boxed" href="http://demo.flytheme.net/themes/sm_destino/?___store=vietnam&amp;___from_store=default/">Right To Left<span class="hot-label">Hot</span></a></li>
+	</ul>
+	
+	<ul class="item-home-store theme-color">
+		<li class="title-menu-home">Color Styles</li>
+		<li class="red"><a title="Red" href="http://demo.flytheme.net/themes/sm_destino/?___store=barbados&amp;___from_store=default/">Red</a></li>
+		<li class="blue"><a title="Blue" href="http://demo.flytheme.net/themes/sm_destino/?___store=default&amp;___from_store=french/">Blue</a></li>
+		<li class="green"><a title="Green" href="http://demo.flytheme.net/themes/sm_destino/?___store=australia&amp;___from_store=default/">Green</a></li>
+		<li class="cyan"><a title="Cyan" href="http://demo.flytheme.net/themes/sm_destino/?___store=hungary&amp;___from_store=default/">Cyan</a></li>
+		<li class="orange"><a title="Orange" href="http://demo.flytheme.net/themes/sm_destino/?___store=italia&amp;___from_store=default/">Orange</a></li>
+		<li class="violet"><a title="Violet" href="http://demo.flytheme.net/themes/sm_destino/?___store=japan&amp;___from_store=default/">Violet</a></li>
+	</ul>
+	
+	<ul class="item-home-store header-home">
+		<li class="title-menu-home">Headers</li>
+		<li><a title="Header Type 1" href="http://demo.flytheme.net/themes/sm_destino/?___store=default&amp;___from_store=french/">Header Type 1</a></li>
+		<li><a title="Header Type 2" href="http://demo.flytheme.net/themes/sm_destino/?___store=french&amp;___from_store=default/">Header Type 2</a></li>
+		<li><a title="Header Type 3" href="http://demo.flytheme.net/themes/sm_destino/?___store=german&amp;___from_store=default/">Header Type 3</a></li>
+		<li><a title="Header Type 4" href="http://demo.flytheme.net/themes/sm_destino/?___store=argentina&amp;___from_store=default/">Header Type 4</a></li>
+		<li><a title="Header Type 5" href="http://demo.flytheme.net/themes/sm_destino/?___store=bolivia&amp;___from_store=default/">Header Type 5</a></li>
+		<li><a title="Header Type 6" href="http://demo.flytheme.net/themes/sm_destino/?___store=andorra&amp;___from_store=default/">Header Type 6</a></li>
+		<li><a title="Header Type 7" href="http://demo.flytheme.net/themes/sm_destino/?___store=belgium&amp;___from_store=default/">Header Type 7</a></li>
+		<li><a title="Header Type 8" href="http://demo.flytheme.net/themes/sm_destino/?___store=somaliland&amp;___from_store=default/">Header Type 8</a></li>
+	</ul>
+	
+	<ul class="item-home-store detail-home">
+		<li class="title-menu-home">Product Detail Layouts</li>
+		<li><a title="Product Detail - Full" href="http://demo.flytheme.net/themes/sm_destino/consequat-officia-quisnulla.html/?___store=benin&amp;___from_store=default/">Product Detail - Full</a></li>
+		<li><a title="Product Detail - Left Sidebar" href="http://demo.flytheme.net/themes/sm_destino/consequat-officia-quisnulla.html/?___store=german&amp;___from_store=default/">Product Detail - Left Sidebar</a></li>
+		<li><a title="Product Detail - Right Sidebar" href="http://demo.flytheme.net/themes/sm_destino/consequat-officia-quisnulla.html/?___store=australia&amp;___from_store=default/">Product Detail - Right Sidebar</a></li>
+		<li><a title="Thumbnail  - Horizontal" href="http://demo.flytheme.net/themes/sm_destino/consequat-officia-quisnulla.html/?___store=french&amp;___from_store=default/">Thumbnail  - Horizontal</a></li>
+		<li><a title="Thumbnail - Vertical" href="http://demo.flytheme.net/themes/sm_destino/consequat-officia-quisnulla.html/?___store=german&amp;___from_store=default/">Thumbnail - Vertical</a></li>
+	</ul>
+	
+	<ul class="item-home-store detail-home">
+		<li class="title-menu-home">Zoom Types</li>
+		<li><a title="Product Page Inner Zoom" href="http://demo.flytheme.net/themes/sm_destino/dumas-kremas.html/?___store=default&amp;___from_store=french/">Product Page Inner Zoom</a></li>
+		<li><a title="Product Page Outer Zoom" href="http://demo.flytheme.net/themes/sm_destino/dumas-kremas.html/?___store=french&amp;___from_store=default/">Product Page Outer Zoom</a></li>
+		<li><a title="Product Page Lens Zoom" href="http://demo.flytheme.net/themes/sm_destino/dumas-kremas.html/?___store=german&amp;___from_store=default/">Product Page Lens Zoom</a></li>
+	</ul>
+	
+	<div style="clear:both;">&nbsp;</div>
+	
+	<ul class="item-home-store layout-home">
+		<li class="title-menu-home">Listing Layouts</li>
+		<li><a title="Without Sidebar" href="http://demo.flytheme.net/themes/sm_destino/shop.html/?___store=benin&amp;___from_store=default/">Without Sidebar</a></li>
+		<li><a title="Left Sidebar" href="http://demo.flytheme.net/themes/sm_destino/shop.html/?___store=default&amp;___from_store=french/">Left Sidebar</a></li>
+		<li><a title="Right Sidebar" href="http://demo.flytheme.net/themes/sm_destino/shop.html/?___store=hungary&amp;___from_store=default/">Right Sidebar</a></li>
+		<li><a title="Left - Right Sidebar" href="http://demo.flytheme.net/themes/sm_destino/shop.html/?___store=barbados&amp;___from_store=default/">Left - Right Sidebar</a></li>
+	</ul>
+	
+	<ul class="item-home-store layout-home">
+		<li class="title-menu-home">About Us Layouts</li>
+		<li><a title="About Us Style 1" href="http://demo.flytheme.net/themes/sm_destino/about-us.html/?___store=default&amp;___from_store=argentina/">About Us Style 1</a></li>
+		<li><a title="About Us Style 2" href="http://demo.flytheme.net/themes/sm_destino/about-us.html/?___store=french&amp;___from_store=default/">About Us Style 2</a></li>
+		<li><a title="About Us Style 3" href="http://demo.flytheme.net/themes/sm_destino/about-us.html/?___store=german&amp;___from_store=default/">About Us Style 3</a></li>
+		<li><a title="About Us Style 4" href="http://demo.flytheme.net/themes/sm_destino/about-us.html/?___store=argentina&amp;___from_store=default/">About Us Style 4</a></li>
+	</ul>
+	
+	<ul class="item-home-store layout-home">
+		<li class="title-menu-home">Contact Us Layouts</li>
+		<li><a title="Contact Us Style 1" href="http://demo.flytheme.net/themes/sm_destino/contact-us.html/?___store=default&amp;___from_store=argentina/">Contact Us Style 1</a></li>
+		<li><a title="Contact Us Style 2" href="http://demo.flytheme.net/themes/sm_destino/contact-us.html/?___store=french&amp;___from_store=default/">Contact Us Style 2</a></li>
+		<li><a title="Contact Us Style 3" href="http://demo.flytheme.net/themes/sm_destino/contact-us.html/?___store=french&amp;___from_store=default/">Contact Us Style 3</a></li>
+		<li><a title="Contact Us Style 4" href="http://demo.flytheme.net/themes/sm_destino/contact-us.html/?___store=argentina&amp;___from_store=default/">Contact Us Style 4</a></li>
+	</ul>
+	
+	<ul class="item-home-store layout-home">
+		<li class="title-menu-home">404 Page Layout</li>
+		<li><a title="404 Page Style 1" href="http://demo.flytheme.net/themes/sm_destino/404page/">404 Page Style 1</a></li>
+	</ul>
+	
+	<ul class="item-home-store detail-home">
+		<li class="title-menu-home">Effect Hover Product</li>
+		<li><a title="Simple" href="http://demo.flytheme.net/themes/sm_destino/shop.html/?___store=default&amp;___from_store=french/">Simple</a></li>
+		<li><a title="Display Second Image" href="http://demo.flytheme.net/themes/sm_destino/shop.html/?___store=japan&amp;___from_store=default/">Display Second Image</a></li>
+		<li><a title="Display Slider Image" href="http://demo.flytheme.net/themes/sm_destino/shop.html/?___store=australia&amp;___from_store=default/">Display Slider Image</a></li>
+	</ul>
+
+</div></div></div></div>												</div>
+												</li>
+									<li class="collection-5-columns-parent other-toggle   
+						sm_megamenu_lv1 sm_megamenu_drop parent   ">
+												<a class="sm_megamenu_head sm_megamenu_drop " href="http://demo.flytheme.net/themes/sm_destino/collection.html"  id="sm_megamenu_3">
+																										<span class="sm_megamenu_icon sm_megamenu_nodesc">		
+																												<span class="sm_megamenu_title">Colletion</span>
+																	
+														
+													</span>
+																									</a>
+																																												<div class="sm-megamenu-child sm_megamenu_dropdown_5columns  ">	
+													<div class="sm_megamenu_col_5 sm_megamenu_firstcolumn  sm_megamenu_id3   collection-5-columns"><div class="sm_megamenu_col_1 sm_megamenu_firstcolumn  sm_megamenu_id6   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id8   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><span class="sm_megamenu_title_lv3">Smartphone</span></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id9   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/apple.html"  ><span class="sm_megamenu_title_lv4">Apple</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id14   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/samsung.html"  ><span class="sm_megamenu_title_lv4">Samsung</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id10   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/lg.html"  ><span class="sm_megamenu_title_lv4">LG</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id11   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/nokia.html"  ><span class="sm_megamenu_title_lv4">Nokia</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id12   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/sony.html"  ><span class="sm_megamenu_title_lv4">Sony</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id13   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/zenphone.html"  ><span class="sm_megamenu_title_lv4">Zenphone</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id165   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/b-phone.html"  ><span class="sm_megamenu_title_lv4">B phone</span></a></div></div></div></div></div><div class="sm_megamenu_col_1  sm_megamenu_id7   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id22   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><span class="sm_megamenu_title_lv3">Fashion</span></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id23   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/men-s.html"  ><span class="sm_megamenu_title_lv4">Men's</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id24   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/women-s.html"  ><span class="sm_megamenu_title_lv4">Women's</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id25   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/kid-s.html"  ><span class="sm_megamenu_title_lv4">Kid's</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id26   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/bags.html"  ><span class="sm_megamenu_title_lv4">Bags</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id27   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/new-arrivals.html"  ><span class="sm_megamenu_title_lv4">New Arrivals</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id166   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/shoes.html"  ><span class="sm_megamenu_title_lv4">Shoes</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id167   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/kotex-style.html"  ><span class="sm_megamenu_title_lv4">Kotex Style</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id168   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/dresses.html"  ><span class="sm_megamenu_title_lv4">Dresses</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id169   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/accessories.html"  ><span class="sm_megamenu_title_lv4">Accessories</span></a></div></div></div></div></div><div class="sm_megamenu_col_1  sm_megamenu_id170   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id172   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><span class="sm_megamenu_title_lv3">Furniture</span></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id173   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/living-room.html"  ><span class="sm_megamenu_title_lv4">Living Room</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id174   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/chair.html"  ><span class="sm_megamenu_title_lv4">Chair</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id175   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/sofa.html"  ><span class="sm_megamenu_title_lv4">Sofa</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id176   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/kitchen.html"  ><span class="sm_megamenu_title_lv4">Kitchen</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id177   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/bathroom.html"  ><span class="sm_megamenu_title_lv4">Bathroom</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id178   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/bedroom.html"  ><span class="sm_megamenu_title_lv4">Bedroom</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id179   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/decor.html"  ><span class="sm_megamenu_title_lv4">Decor</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id180   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/lock-lock.html"  ><span class="sm_megamenu_title_lv4">Lock & Lock</span></a></div></div></div></div></div><div class="sm_megamenu_col_1  sm_megamenu_id34   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id181   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><span class="sm_megamenu_title_lv3">Sport & Gym</span></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id182   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/clothing.html"  ><span class="sm_megamenu_title_lv4">Clothing</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id183   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/shoes.html"  ><span class="sm_megamenu_title_lv4">Shoes</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id184   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/bicycle.html"  ><span class="sm_megamenu_title_lv4">Bicycle</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id185   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/bags.html"  ><span class="sm_megamenu_title_lv4">Bags</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id186   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/equiqment.html"  ><span class="sm_megamenu_title_lv4">Equiqment</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id187   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/headphone.html"  ><span class="sm_megamenu_title_lv4">Headphone</span></a></div></div></div></div></div><div class="sm_megamenu_col_2 sm_megamenu_firstcolumn  sm_megamenu_id171   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_content"><div class="banner-image">
+	<a href="#" title="Banner Image"><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/megamenu/image-5.jpg" alt="Banner" /></a>
+</div></div></div></div>												</div>
+												</li>
+									<li class="shop-two-columns-parent other-toggle   
+						sm_megamenu_lv1 sm_megamenu_drop parent   ">
+												<a class="sm_megamenu_head sm_megamenu_drop " href="http://demo.flytheme.net/themes/sm_destino/shop.html"  id="sm_megamenu_4">
+																										<span class="sm_megamenu_icon sm_megamenu_nodesc">		
+																												<span class="sm_megamenu_title">Shop</span>
+																	
+														
+													</span>
+																									</a>
+																																												<div class="sm-megamenu-child sm_megamenu_dropdown_4columns  ">	
+													<div class="sm_megamenu_col_4 sm_megamenu_firstcolumn  sm_megamenu_id4   shop-two-columns"><div class="sm_megamenu_col_3 sm_megamenu_firstcolumn  sm_megamenu_id35   group-1"><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_3 sm_megamenu_firstcolumn  sm_megamenu_id37   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id61   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_content"><div class="icon-group"><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/megamenu/image-1.jpg" alt="Smart Phone" /></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id62   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><span class="sm_megamenu_title_lv4">Smartphone</span></div></div><div class="sm_megamenu_content"></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id38   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/apple.html"  ><span class="sm_megamenu_title_lv4">Apple</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id42   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/samsung.html"  ><span class="sm_megamenu_title_lv4">Samsung</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id41   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/lg.html"  ><span class="sm_megamenu_title_lv4">LG</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id39   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/nokia.html"  ><span class="sm_megamenu_title_lv4">Nokia</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id40   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/sony.html"  ><span class="sm_megamenu_title_lv4">Sony</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id43   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/zenphone.html"  ><span class="sm_megamenu_title_lv4">Zenphone</span></a></div></div></div></div><div class="sm_megamenu_col_3 sm_megamenu_firstcolumn  sm_megamenu_id44   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id63   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_content"><div class="icon-group"><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/megamenu/image-2.jpg" alt="Fashion" /></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id64   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><span class="sm_megamenu_title_lv4">Fashion</span></div></div><div class="sm_megamenu_content"></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id45   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/men-s.html"  ><span class="sm_megamenu_title_lv4">Men's</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id49   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/women-s.html"  ><span class="sm_megamenu_title_lv4">Women's</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id46   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/kid-s.html"  ><span class="sm_megamenu_title_lv4">Kid's</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id47   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/bags.html"  ><span class="sm_megamenu_title_lv4">Bags</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id48   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/shoes.html"  ><span class="sm_megamenu_title_lv4">Shoes</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id50   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/dresses.html"  ><span class="sm_megamenu_title_lv4">Dresses</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id188   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/accessories.html"  ><span class="sm_megamenu_title_lv4">Accessories</span></a></div></div></div></div></div><div class="sm_megamenu_col_3 sm_megamenu_firstcolumn  sm_megamenu_id36   group-2"><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_3 sm_megamenu_firstcolumn  sm_megamenu_id51   digital-music"><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id65   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_content"><div class="icon-group"><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/megamenu/image-3.jpg" alt="Furniture" /></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id66   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><span class="sm_megamenu_title_lv4">Furniture</span></div></div><div class="sm_megamenu_content"></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id52   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/living-room.html"  ><span class="sm_megamenu_title_lv4">Living Room</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id55   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/chair.html"  ><span class="sm_megamenu_title_lv4">Chair</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id53   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/sofa.html"  ><span class="sm_megamenu_title_lv4">Sofa</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id54   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/kitchen.html"  ><span class="sm_megamenu_title_lv4">Kitchen</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id56   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/bathroom.html"  ><span class="sm_megamenu_title_lv4">Bathroom</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id57   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/bedroom.html"  ><span class="sm_megamenu_title_lv4">Bedroom</span></a></div></div></div></div><div class="sm_megamenu_col_3 sm_megamenu_firstcolumn  sm_megamenu_id58   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id189   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_content"><div class="icon-group"><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/megamenu/image-4.jpg" alt="Sport & Gym" /></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id190   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><span class="sm_megamenu_title_lv4">Sport & Gym</span></div></div><div class="sm_megamenu_content"></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id191   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/clothing.html"  ><span class="sm_megamenu_title_lv4">Clothing</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id192   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/shoes.html"  ><span class="sm_megamenu_title_lv4">Shoes</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id193   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/bags.html"  ><span class="sm_megamenu_title_lv4">Bags</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id194   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/equiqment.html"  ><span class="sm_megamenu_title_lv4">Equiqment</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id195   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/headphone.html"  ><span class="sm_megamenu_title_lv4">Headphone</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id196   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/fitness-yoga.html"  ><span class="sm_megamenu_title_lv4">Fitness & Yoga</span></a></div></div></div><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id197   "><div class="sm_megamenu_head_item ">	<div class="sm_megamenu_title"><a class="sm_megamenu_nodrop " href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/football-tennis.html"  ><span class="sm_megamenu_title_lv4">Football & Tennis</span></a></div></div></div></div></div></div>												</div>
+												</li>
+									<li class="other-toggle   
+						sm_megamenu_lv1 sm_megamenu_drop parent   ">
+												<a class="sm_megamenu_head sm_megamenu_drop " href="http://demo.flytheme.net/themes/sm_destino/about-us.html"  id="sm_megamenu_59">
+																										<span class="sm_megamenu_icon sm_megamenu_nodesc">		
+																												<span class="sm_megamenu_title">About Us</span>
+																	
+														
+													</span>
+																									</a>
+																																												<div class="sm_megamenu_dropdown_1column  ">	
+													<div class="sm_megamenu_col_1 sm_megamenu_firstcolumn  sm_megamenu_id59   "><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id163   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_content"><ul class="item-about-contact">
+		<li><a title="About Us Style 1" href="http://demo.flytheme.net/themes/sm_destino/about-us.html/?___store=default&amp;___from_store=argentina/">About Us Style 1</a></li>
+		<li><a title="About Us Style 2" href="http://demo.flytheme.net/themes/sm_destino/about-us.html/?___store=french&amp;___from_store=default/">About Us Style 2</a></li>
+		<li><a title="About Us Style 3" href="http://demo.flytheme.net/themes/sm_destino/about-us.html/?___store=german&amp;___from_store=default/">About Us Style 3</a></li>
+		<li><a title="About Us Style 4" href="http://demo.flytheme.net/themes/sm_destino/about-us.html/?___store=argentina&amp;___from_store=default/">About Us Style 4</a></li>
+	</ul></div></div></div>												</div>
+												</li>
+									<li class="other-toggle   
+						sm_megamenu_lv1 sm_megamenu_drop parent   ">
+												<a class="sm_megamenu_head sm_megamenu_drop " href="http://demo.flytheme.net/themes/sm_destino/contact-us.html"  id="sm_megamenu_60">
+																										<span class="sm_megamenu_icon sm_megamenu_nodesc">		
+																												<span class="sm_megamenu_title">Contact Us</span>
+																	
+														
+													</span>
+																									</a>
+																																												<div class="sm_megamenu_dropdown_1column  ">	
+													<div class="sm_megamenu_col_1 sm_megamenu_firstcolumn  sm_megamenu_id60   "><div class="sm_megamenu_col_6 sm_megamenu_firstcolumn  sm_megamenu_id164   "><div class="sm_megamenu_head_item ">	</div><div class="sm_megamenu_content"><ul class="item-about-contact">
+		<li><a title="Contact Us Style 1" href="http://demo.flytheme.net/themes/sm_destino/contact-us.html/?___store=default&amp;___from_store=argentina/">Contact Us Style 1</a></li>
+		<li><a title="Contact Us Style 2" href="http://demo.flytheme.net/themes/sm_destino/contact-us.html/?___store=french&amp;___from_store=default/">Contact Us Style 2</a></li>
+		<li><a title="Contact Us Style 3" href="http://demo.flytheme.net/themes/sm_destino/contact-us.html/?___store=german&amp;___from_store=default/">Contact Us Style 3</a></li>
+		<li><a title="Contact Us Style 4" href="http://demo.flytheme.net/themes/sm_destino/contact-us.html/?___store=argentina&amp;___from_store=default/">Contact Us Style 4</a></li>
+	</ul></div></div></div>												</div>
+												</li>
+						</ul>
+		</div>
+	</div>
+	<!--End Module-->
+
+<script type="text/javascript">
+// <![CDATA[ 
+	jQuery(document).ready(function($){
+		var menu_width = $('.sm_megamenu_wrapper_horizontal_menu .sm_megamenu_menu').width();
+
+		$('.sm_megamenu_wrapper_horizontal_menu .sm_megamenu_menu > li').mouseover(function() {
+			$(this).addClass('hover_item');
+			var item_position =  $(this).position().left;
+			var dropdown_item = $(this).children('div').width();
+			if(dropdown_item > (menu_width - item_position)){
+				var dropdown_item = $(this).children('div').css({'right':'0', 'left': 'auto'});
+			}
+		})
+		.mouseout(function() {
+			$('.sm_megamenu_wrapper_horizontal_menu .sm_megamenu_menu > li').removeClass('hover_item');
+		});
+		
+		$('.sm_megamenu_wrapper_horizontal_menu .rw-url > a.sm_megamenu_head').attr('href', 'http://demo.flytheme.net/themes/sm_destino/');
+	});
+// ]]> 
+</script>
+
+
+
+								</div>
+														</div>
+						</div>
+
+						<div class="mobile-menu">
+							<div class="row">
+								<div class="col-lg-12 col-md-12">
+									
+	<div class="mobile-menu-wrapper">
+		<div class="btn-mobile-wrapper">
+			<a class="btn-menu-mobile btn-sidebar" title="Categories"><span>Categories</span></a>
+		</div>
+		<div class="dropdown_sidebar">
+			<ul class="nav-mobile">
+				<li  class="level0 nav-1 first level-top parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics.html"  class="level-top" ><span>Features</span></a><ul class="level0"><li  class="level1 nav-1-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/fashion.html" ><span>Fashion</span></a></li><li  class="level1 nav-1-2 parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic.html" ><span>Electronic</span></a><ul class="level1"><li  class="level2 nav-1-2-1 first parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/camera-photo.html" ><span>Camera &amp; Photo</span></a><ul class="level2"><li  class="level3 nav-1-2-1-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/camera-photo/digital.html" ><span>Digital</span></a></li><li  class="level3 nav-1-2-1-2"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/camera-photo/lenses.html" ><span>Lenses</span></a></li><li  class="level3 nav-1-2-1-3"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/camera-photo/point-and-shoots.html" ><span>Point-and-Shoots</span></a></li><li  class="level3 nav-1-2-1-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/camera-photo/compact-system-cameras.html" ><span>Compact System Cameras</span></a></li><li  class="level3 nav-1-2-1-5"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/camera-photo/camcorders.html" ><span>Camcorders</span></a></li><li  class="level3 nav-1-2-1-6 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/camera-photo/digital-frames.html" ><span>Digital Frames</span></a></li></ul></li><li  class="level2 nav-1-2-2 parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/computer-accessories.html" ><span>Computer &amp; Accessories</span></a><ul class="level2"><li  class="level3 nav-1-2-2-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/computer-accessories/monitors.html" ><span>Monitors</span></a></li><li  class="level3 nav-1-2-2-2"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/computer-accessories/laptops-tablets.html" ><span>Laptops &amp; Tablets</span></a></li><li  class="level3 nav-1-2-2-3"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/computer-accessories/desktops-monitors.html" ><span>Desktops &amp; Monitors</span></a></li><li  class="level3 nav-1-2-2-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/computer-accessories/laptops-netbooks.html" ><span>Laptops &amp; Netbooks</span></a></li><li  class="level3 nav-1-2-2-5"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/computer-accessories/networking.html" ><span>Networking</span></a></li><li  class="level3 nav-1-2-2-6 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/computer-accessories/hdd-ssd.html" ><span>HDD &amp; SSD</span></a></li></ul></li><li  class="level2 nav-1-2-3 last parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/office-electronics.html" ><span>Office Electronics</span></a><ul class="level2"><li  class="level3 nav-1-2-3-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/office-electronics/calculators.html" ><span>Calculators</span></a></li><li  class="level3 nav-1-2-3-2"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/office-electronics/calendars-organizers.html" ><span>Calendars &amp; Organizers</span></a></li><li  class="level3 nav-1-2-3-3"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/office-electronics/drawer-organizers.html" ><span>Drawer Organizers</span></a></li><li  class="level3 nav-1-2-3-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/office-electronics/ink-toner.html" ><span>Ink &amp; Toner</span></a></li><li  class="level3 nav-1-2-3-5"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/office-electronics/paper.html" ><span>Paper</span></a></li><li  class="level3 nav-1-2-3-6 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/electronic/office-electronics/all-accessories.html" ><span>All Accessories</span></a></li></ul></li></ul></li><li  class="level1 nav-1-3 parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts.html" ><span>Gifts</span></a><ul class="level1"><li  class="level2 nav-1-3-1 first parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/mega-sale.html" ><span>Mega Sale</span></a><ul class="level2"><li  class="level3 nav-1-3-1-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/mega-sale/software.html" ><span>Software</span></a></li><li  class="level3 nav-1-3-1-2"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/mega-sale/deals-in-tv-video-audio.html" ><span>Deals in TV, Video &amp; Audio</span></a></li><li  class="level3 nav-1-3-1-3"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/mega-sale/featured-outlet-deals.html" ><span>Featured Outlet Deals</span></a></li><li  class="level3 nav-1-3-1-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/mega-sale/4k-ultra-hd-tv-store.html" ><span>4K Ultra HD TV Store</span></a></li><li  class="level3 nav-1-3-1-5"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/mega-sale/best-selling-tvs.html" ><span>Best-Selling TVs</span></a></li><li  class="level3 nav-1-3-1-6"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/mega-sale/entertainment-collection.html" ><span>Entertainment Collection</span></a></li><li  class="level3 nav-1-3-1-7 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/mega-sale/warehouse-deals.html" ><span>Warehouse Deals</span></a></li></ul></li><li  class="level2 nav-1-3-2 last parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/hot-categories.html" ><span>Hot Categories</span></a><ul class="level2"><li  class="level3 nav-1-3-2-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/hot-categories/laptops-tablets.html" ><span>Laptops &amp; Tablets</span></a></li><li  class="level3 nav-1-3-2-2"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/hot-categories/desktops-monitors.html" ><span>Desktops &amp; Monitors</span></a></li><li  class="level3 nav-1-3-2-3"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/hot-categories/computer-accessories.html" ><span>Computer Accessories</span></a></li><li  class="level3 nav-1-3-2-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/hot-categories/computer-components.html" ><span>Computer &amp; Components</span></a></li><li  class="level3 nav-1-3-2-5 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/gifts/hot-categories/printers-ink.html" ><span>Printers &amp; Ink</span></a></li></ul></li></ul></li><li  class="level1 nav-1-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/health-beauty.html" ><span>Health &amp; Beauty</span></a></li><li  class="level1 nav-1-5"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/headphones.html" ><span>Headphones</span></a></li><li  class="level1 nav-1-6 parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport.html" ><span>Sport</span></a><ul class="level1"><li  class="level2 nav-1-6-1 first parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men.html" ><span>Men</span></a><ul class="level2"><li  class="level3 nav-1-6-1-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men/pants-denim.html" ><span>Pants &amp; Denim</span></a></li><li  class="level3 nav-1-6-1-2"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men/accessories.html" ><span>Accessories</span></a></li><li  class="level3 nav-1-6-1-3"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men/watch-fashion.html" ><span>Watch Fashion</span></a></li><li  class="level3 nav-1-6-1-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men/tees-knits-polos.html" ><span>Tees, Knits &amp; Polos</span></a></li><li  class="level3 nav-1-6-1-5"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men/shoes.html" ><span>Shoes</span></a></li><li  class="level3 nav-1-6-1-6"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men/bags.html" ><span>Bags</span></a></li><li  class="level3 nav-1-6-1-7"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men/autumn-collection.html" ><span>Autumn Collection</span></a></li><li  class="level3 nav-1-6-1-8 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/men/winter-collection.html" ><span>Winter Collection</span></a></li></ul></li><li  class="level2 nav-1-6-2 parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women.html" ><span>Women</span></a><ul class="level2"><li  class="level3 nav-1-6-2-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women/tops-blouses.html" ><span>Tops &amp; Blouses</span></a></li><li  class="level3 nav-1-6-2-2"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women/accessories.html" ><span>Accessories</span></a></li><li  class="level3 nav-1-6-2-3"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women/dresses-skirts.html" ><span>Dresses &amp; Skirts</span></a></li><li  class="level3 nav-1-6-2-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women/shoes-boots.html" ><span>Shoes &amp; Boots</span></a></li><li  class="level3 nav-1-6-2-5"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women/jewelry.html" ><span>Jewelry</span></a></li><li  class="level3 nav-1-6-2-6"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women/handbags.html" ><span>Handbags</span></a></li><li  class="level3 nav-1-6-2-7"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women/autumn-collection.html" ><span>Autumn Collection</span></a></li><li  class="level3 nav-1-6-2-8 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/women/winter-collection.html" ><span>Winter Collection</span></a></li></ul></li><li  class="level2 nav-1-6-3 last parent"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid.html" ><span>Baby &amp; Kid</span></a><ul class="level2"><li  class="level3 nav-1-6-3-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid/city-lights.html" ><span>City Lights</span></a></li><li  class="level3 nav-1-6-3-2"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid/jackets.html" ><span>Jackets</span></a></li><li  class="level3 nav-1-6-3-3"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid/jumpsuits.html" ><span>Jumpsuits</span></a></li><li  class="level3 nav-1-6-3-4"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid/tops.html" ><span>Tops</span></a></li><li  class="level3 nav-1-6-3-5"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid/trousers.html" ><span>Trousers</span></a></li><li  class="level3 nav-1-6-3-6"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid/outdoor.html" ><span>Outdoor</span></a></li><li  class="level3 nav-1-6-3-7"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid/swimwear-collection.html" ><span>Swimwear Collection</span></a></li><li  class="level3 nav-1-6-3-8 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/sport/baby-kid/accessories.html" ><span>Accessories</span></a></li></ul></li></ul></li><li  class="level1 nav-1-7"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/furniture.html" ><span>Furniture</span></a></li><li  class="level1 nav-1-8"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/toys-hobbies.html" ><span>Toys &amp; Hobbies</span></a></li><li  class="level1 nav-1-9 last"><a href="http://demo.flytheme.net/themes/sm_destino/electronics/video-game.html" ><span>Video Game</span></a></li></ul></li><li  class="level0 nav-2 level-top parent"><a href="http://demo.flytheme.net/themes/sm_destino/collection.html"  class="level-top" ><span>Collection</span></a><ul class="level0"><li  class="level1 nav-2-1 first parent"><a href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone.html" ><span>Smartphone</span></a><ul class="level1"><li  class="level2 nav-2-1-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/apple.html" ><span>Apple</span></a></li><li  class="level2 nav-2-1-2"><a href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/samsung.html" ><span>Samsung</span></a></li><li  class="level2 nav-2-1-3"><a href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/lg.html" ><span>LG</span></a></li><li  class="level2 nav-2-1-4"><a href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/nokia.html" ><span>Nokia</span></a></li><li  class="level2 nav-2-1-5"><a href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/sony.html" ><span>Sony</span></a></li><li  class="level2 nav-2-1-6"><a href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/zenphone.html" ><span>Zenphone</span></a></li><li  class="level2 nav-2-1-7 last"><a href="http://demo.flytheme.net/themes/sm_destino/collection/smartphone/b-phone.html" ><span>B phone</span></a></li></ul></li><li  class="level1 nav-2-2 parent"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion.html" ><span>Fashion</span></a><ul class="level1"><li  class="level2 nav-2-2-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/men-s.html" ><span>Men's</span></a></li><li  class="level2 nav-2-2-2"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/women-s.html" ><span>Women's</span></a></li><li  class="level2 nav-2-2-3"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/kid-s.html" ><span>Kid's</span></a></li><li  class="level2 nav-2-2-4"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/bags.html" ><span>Bags</span></a></li><li  class="level2 nav-2-2-5"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/new-arrivals.html" ><span>New Arrivals</span></a></li><li  class="level2 nav-2-2-6"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/shoes.html" ><span>Shoes</span></a></li><li  class="level2 nav-2-2-7"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/kotex-style.html" ><span>Kotex Style</span></a></li><li  class="level2 nav-2-2-8"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/dresses.html" ><span>Dresses</span></a></li><li  class="level2 nav-2-2-9 last"><a href="http://demo.flytheme.net/themes/sm_destino/collection/fashion/accessories.html" ><span>Accessories</span></a></li></ul></li><li  class="level1 nav-2-3 parent"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture.html" ><span>Furniture</span></a><ul class="level1"><li  class="level2 nav-2-3-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/living-room.html" ><span>Living Room</span></a></li><li  class="level2 nav-2-3-2"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/chair.html" ><span>Chair</span></a></li><li  class="level2 nav-2-3-3"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/sofa.html" ><span>Sofa</span></a></li><li  class="level2 nav-2-3-4"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/kitchen.html" ><span>Kitchen</span></a></li><li  class="level2 nav-2-3-5"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/bathroom.html" ><span>Bathroom</span></a></li><li  class="level2 nav-2-3-6"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/bedroom.html" ><span>Bedroom</span></a></li><li  class="level2 nav-2-3-7"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/decor.html" ><span>Decor</span></a></li><li  class="level2 nav-2-3-8 last"><a href="http://demo.flytheme.net/themes/sm_destino/collection/furniture/lock-lock.html" ><span>Lock &amp; Lock</span></a></li></ul></li><li  class="level1 nav-2-4 parent"><a href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym.html" ><span>Sport &amp; Gym</span></a><ul class="level1"><li  class="level2 nav-2-4-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/clothing.html" ><span>Clothing</span></a></li><li  class="level2 nav-2-4-2"><a href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/shoes.html" ><span>Shoes</span></a></li><li  class="level2 nav-2-4-3"><a href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/bicycle.html" ><span>Bicycle</span></a></li><li  class="level2 nav-2-4-4"><a href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/bags.html" ><span>Bags</span></a></li><li  class="level2 nav-2-4-5"><a href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/equiqment.html" ><span>Equiqment</span></a></li><li  class="level2 nav-2-4-6 last"><a href="http://demo.flytheme.net/themes/sm_destino/collection/sport-gym/headphone.html" ><span>Headphone</span></a></li></ul></li><li  class="level1 nav-2-5 last parent"><a href="http://demo.flytheme.net/themes/sm_destino/collection/watches.html" ><span>Watches</span></a><ul class="level1"><li  class="level2 nav-2-5-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/collection/watches/rolex.html" ><span>Rolex</span></a></li><li  class="level2 nav-2-5-2"><a href="http://demo.flytheme.net/themes/sm_destino/collection/watches/seiko.html" ><span>Seiko</span></a></li><li  class="level2 nav-2-5-3"><a href="http://demo.flytheme.net/themes/sm_destino/collection/watches/longines.html" ><span>Longines</span></a></li><li  class="level2 nav-2-5-4"><a href="http://demo.flytheme.net/themes/sm_destino/collection/watches/orient.html" ><span>Orient</span></a></li><li  class="level2 nav-2-5-5"><a href="http://demo.flytheme.net/themes/sm_destino/collection/watches/omega.html" ><span>Omega</span></a></li><li  class="level2 nav-2-5-6 last"><a href="http://demo.flytheme.net/themes/sm_destino/collection/watches/montblanc.html" ><span>Montblanc</span></a></li></ul></li></ul></li><li  class="level0 nav-3 level-top parent"><a href="http://demo.flytheme.net/themes/sm_destino/shop.html"  class="level-top" ><span>Shop</span></a><ul class="level0"><li  class="level1 nav-3-1 first parent"><a href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone.html" ><span>Smartphone</span></a><ul class="level1"><li  class="level2 nav-3-1-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/apple.html" ><span>Apple</span></a></li><li  class="level2 nav-3-1-2"><a href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/samsung.html" ><span>Samsung</span></a></li><li  class="level2 nav-3-1-3"><a href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/lg.html" ><span>LG</span></a></li><li  class="level2 nav-3-1-4"><a href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/nokia.html" ><span>Nokia</span></a></li><li  class="level2 nav-3-1-5"><a href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/sony.html" ><span>Sony</span></a></li><li  class="level2 nav-3-1-6 last"><a href="http://demo.flytheme.net/themes/sm_destino/shop/smartphone/zenphone.html" ><span>Zenphone</span></a></li></ul></li><li  class="level1 nav-3-2 parent"><a href="http://demo.flytheme.net/themes/sm_destino/shop/fashion.html" ><span>Fashion</span></a><ul class="level1"><li  class="level2 nav-3-2-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/men-s.html" ><span>Men's</span></a></li><li  class="level2 nav-3-2-2"><a href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/women-s.html" ><span>Women's</span></a></li><li  class="level2 nav-3-2-3"><a href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/kid-s.html" ><span>Kid's</span></a></li><li  class="level2 nav-3-2-4"><a href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/bags.html" ><span>Bags</span></a></li><li  class="level2 nav-3-2-5"><a href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/shoes.html" ><span>Shoes</span></a></li><li  class="level2 nav-3-2-6"><a href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/dresses.html" ><span>Dresses</span></a></li><li  class="level2 nav-3-2-7 last"><a href="http://demo.flytheme.net/themes/sm_destino/shop/fashion/accessories.html" ><span>Accessories</span></a></li></ul></li><li  class="level1 nav-3-3 parent"><a href="http://demo.flytheme.net/themes/sm_destino/shop/furniture.html" ><span>Furniture</span></a><ul class="level1"><li  class="level2 nav-3-3-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/living-room.html" ><span>Living Room</span></a></li><li  class="level2 nav-3-3-2"><a href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/chair.html" ><span>Chair</span></a></li><li  class="level2 nav-3-3-3"><a href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/sofa.html" ><span>Sofa</span></a></li><li  class="level2 nav-3-3-4"><a href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/kitchen.html" ><span>Kitchen</span></a></li><li  class="level2 nav-3-3-5"><a href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/bathroom.html" ><span>Bathroom</span></a></li><li  class="level2 nav-3-3-6 last"><a href="http://demo.flytheme.net/themes/sm_destino/shop/furniture/bedroom.html" ><span>Bedroom</span></a></li></ul></li><li  class="level1 nav-3-4 last parent"><a href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym.html" ><span>Sport &amp; Gym</span></a><ul class="level1"><li  class="level2 nav-3-4-1 first"><a href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/clothing.html" ><span>Clothing</span></a></li><li  class="level2 nav-3-4-2"><a href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/shoes.html" ><span>Shoes</span></a></li><li  class="level2 nav-3-4-3"><a href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/bags.html" ><span>Bags</span></a></li><li  class="level2 nav-3-4-4"><a href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/equiqment.html" ><span>Equiqment</span></a></li><li  class="level2 nav-3-4-5"><a href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/headphone.html" ><span>Headphone</span></a></li><li  class="level2 nav-3-4-6"><a href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/fitness-yoga.html" ><span>Fitness &amp; Yoga</span></a></li><li  class="level2 nav-3-4-7 last"><a href="http://demo.flytheme.net/themes/sm_destino/shop/sport-gym/football-tennis.html" ><span>Football &amp; Tennis</span></a></li></ul></li></ul></li><li  class="level0 nav-4 level-top"><a href="http://demo.flytheme.net/themes/sm_destino/about-us.html"  class="level-top" ><span>About Us</span></a></li><li  class="level0 nav-5 last level-top"><a href="http://demo.flytheme.net/themes/sm_destino/contact-us.html"  class="level-top" ><span>Contact Us</span></a></li>			</ul>
+		</div>
+		
+		<script>
+			jQuery(document).ready(function($) {
+				$('.dropdown_sidebar .nav-mobile > li').has('ul').append( '<span class="touch-button"><span>open</span></span>' );
+
+				$('.btn-sidebar').click(function(){
+					$('.dropdown_sidebar').toggleClass('active');
+					$(this).toggleClass('active active_btn');
+					$('body').toggleClass('active_sidebar');
+				});
+				
+				$('.touch-button').click(function(){
+					$(this).prev().slideToggle(200);
+					$(this).toggleClass('active');
+					$(this).parent().toggleClass('parent-active');
+				});
+				
+			});
+		</script>
+		
+	</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+            </div>
+</div>
+
+
+
+
+
+        <div class="main-container col1-layout">
+            <div class="main">
+                                <div class="col-main">
+										<div class="container">
+						<div class="row">
+							<div class="col-lg-12 col-md-12">
+																<div class="std"><div class="wrapper_404page">
+	<div class="col-lg-7 col-md-7">
+		<div class="content-404page">
+			<p class="top-text">Don't worry you will be back on track in no time!</p>
+			<p class="img-404"><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/404image/404-img-text.png" alt="" /></p>
+			<p class="bottom-text">Page doesn't exist or some other error occured. Go to our home page or go back previous page</p>
+			<div class="button-404">
+				<a href="javascript:void(0);" onclick="goBack()" class="btn-404 prev-page-btn" title="PREVIOUS PAGE">PREVIOUS PAGE</a>
+				<a href="http://demo.flytheme.net/themes/sm_destino/" class="btn-404 back2home" title="BACK TO HOMEPAGE">BACK TO HOMEPAGE</a>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-lg-5 col-md-5">
+		<div class="img-right-404">
+            <img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/404image/404-image.png" alt="" />
+		</div>
+	</div>
+	<div style="clear:both; height:0px">&nbsp;</div>
+	<script>
+	function goBack() {
+		window.history.back()
+	}
+	</script>
+</div></div>							</div>
+						</div>
+					</div>
+					                </div>
+            </div>
+        </div>
+        
+
+<div class="footer-container footer-style-1">
+    <div class="footer">
+		<div class="footer-top">
+			<div class="container">
+                <div class="row">
+                    <div class="col-lg-5 col-md-5">
+                        <div class="block-footer block-footer-contact">
+                            <h4 class="title-footer">Contact Us</h4>
+                            <ul>
+                                <li><span><em class="fa fa-home"></em><b>Address:</b></span> No 40 Baria Sreet 133/2 NewYork City, NY, USD</li>
+                                <li><span><em class="fa fa-paper-plane"></em><b>Mail Us:</b></span> sm-destino@magentech.com</li>
+                                <li><span><em class="fa fa-phone"></em><b>Phone:</b></span> (888) 1234 56789</li>
+                            </ul>
+                        </div>
+
+						<div class="socials-block">
+	<div class="title-follow">
+		Follow Us	</div>
+	
+	<ul>
+					<li class="li-social facebook-social">
+				<a title="Facebook" href="#" target="_blank">
+					<span class="fa fa-facebook icon-social"></span>
+					<span class="name-social">Facebook</span>
+				</a>
+			</li>
+				
+					<li class="li-social twitter-social">
+				<a title="Twitter" href="#" target="_blank">
+					<span class="fa fa-twitter icon-social"></span>
+					<span class="name-social">Twitter</span>
+				</a>
+			</li>
+				
+					<li class="li-social google-social">
+				<a title="Google+" href="#" target="_blank">
+					<span class="fa fa-google-plus icon-social"></span>
+					<span class="name-social">Google+</span>
+				</a>
+			</li>
+				
+					<li class="li-social linkedin-social">
+				<a title="Linkedin" href="#" target="_blank">
+					<span class="fa fa-linkedin icon-social"></span>
+					<span class="name-social">Linkedin</span>
+				</a>
+			</li>
+				
+					<li class="li-social pinterest-social">
+				<a title="Pinterest" href="#" target="_blank">
+					<span class="fa fa-pinterest icon-social"></span>
+					<span class="name-social">Pinterest</span>
+				</a>
+			</li>
+			</ul>
+</div>    
+			
+
+                    </div>
+
+                    <div class="col-lg-3 col-md-3">
+                        <div class="block-footer">
+                            <h4 class="title-footer">Our Services</h4>
+                            <ul>
+                                <li><a title="New York" href="#">New York</a></li>
+                                <li><a title="London SF" href="#">London SF</a></li>
+                                <li><a title="Cockfosters BP" href="#">Cockfosters BP</a></li>
+                                <li><a title="Los Angeles" href="#">Los Angeles</a></li>
+                                <li><a title="Chicago" href="#">Chicago</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2">
+                        <div class="block-footer">
+                            <h4 class="title-footer">Extras</h4>
+                            <ul>
+                                <li><a title="About Store" href="#">About Store</a></li>
+                                <li><a title="New Collection" href="#">New Collection</a></li>
+                                <li><a title="Contact Us" href="#">Contact Us</a></li>
+                                <li><a title="Latest News" href="#">Latest News</a></li>
+                                <li><a title="Our Sitemap" href="#">Our Sitemap</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2">
+                        <div class="block-footer">
+                            <h4 class="title-footer">My account</h4>
+                            <ul>
+                                <li><a title="About Store" href="#">About Store</a></li>
+                                <li><a title="New Collection" href="#">New Collection</a></li>
+                                <li><a title="Contact Us" href="#">Contact Us</a></li>
+                                <li><a title="Latest News" href="#">Latest News</a></li>
+                                <li><a title="Our Sitemap" href="#">Our Sitemap</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>			</div>
+		</div>
+		
+		<div class="footer-middle">
+			<div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="newsletter-info-footer">
+							<div class="title-footer">NEED HELP? CALL OUR AWARD-WINNING</div>
+                            <p>SUPPORT TEAM 24/7 AT (844) 555-8386</p>
+                        </div>                    </div>
+
+                    <div class="col-lg-6 col-md-6">
+                        <div class="block-subscribe-footer">
+    <form action="http://demo.flytheme.net/themes/sm_destino/newsletter/subscriber/new/" method="post" id="newsletter-validate-detail">
+        <div class="block-content-subscribe">
+            <div class="form-subscribe-footer">
+                <div class="title-subscribe">Sign up for email</div>
+				
+				<div class="input-box">
+				   <input type="text" name="email" id="newsletter" title="Sign up for our newsletter" class="input-text required-entry validate-email" value="Enter your email..." onFocus="if(this.value != '') {this.value = '';}" onBlur="if (this.value == '') {this.value = 'Enter your email...';}"/>
+				</div>
+				
+				<button type="submit" title="Subscribe" class="button"><span><span>Subscribe</span></span></button>
+            </div>
+        </div>
+    </form>
+
+    <script type="text/javascript">
+    //<![CDATA[
+        var newsletterSubscriberFormDetail = new VarienForm('newsletter-validate-detail');
+    //]]>
+    </script>
+</div>
+                    </div>
+                </div>
+			</div>
+		</div>
+		
+		<div class="footer-bottom">
+			<div class="container">
+                <div class="row">
+					<div class="col-lg-6 col-md-12">
+						<div class="app-block">
+                            <div class="title-footer">Download Our App</div>
+                            <ul>
+                                <li><a title="AppStore" href="#"><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/footer-image/appstore.png" alt="App Store" /></a></li>
+                                <li><a title="PlayStore" href="#"><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/footer-image/playstore.png" alt="Play Store" /></a></li>
+                            </ul>
+                        </div>                    </div>
+
+					<div class="col-lg-6 col-md-12">
+						<div class="payment-coppyright">
+							<p><img src="http://demo.flytheme.net/themes/sm_destino/media/wysiwyg/footer-image/payment.png" alt="Payment" /></p>
+							SM Destino &copy; 2017
+Demo Store. All Rights Reserved. Designed by
+<a title="MagenTech.Com" target="_blank" href="http://www.MagenTech.Com">MagenTech.Com</a>						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+
+
+
+
+
+                
+<div id="cartpro_process" class="cartpro-process">
+	<div class="cartpro-loadmark">
+		<div class="cartpro-imageload">
+			<img alt="Loading..." src="http://demo.flytheme.net/themes/sm_destino/skin/frontend/sm-destino/default/sm/cartpro/images/ajax_loading.gif">
+			<div class="cartpro-text">
+				Please wait...			</div>
+		</div>
+	</div>
+</div>
+<div id="cartpro_modal" class="cartpro-modal ">
+	<div class="cpmodal-wrapper">
+		<a href="javascript:void(0)" title="Close" class="cpmodal-close cp-close"><span class="fa fa-times"></span></a>
+		<div class="cpmodal-message"></div>
+		<div class="cpmodal-iframe"></div>
+		<div class="cpmodal-action">
+			<a class="cpmodal-button cp-close" title="Continue"  href="#">
+				Continue<span class="cpmodal-time  ">10</span></a>
+			<a class="cpmodal-button cp-close cpmodal-viewcart cpmodal-display  cartpro-hidden" title="View cart & checkout" href="http://demo.flytheme.net/themes/sm_destino/checkout/cart/">
+				View cart & checkout			</a>
+			<button type="button" title="Compare" class="cp-close cpmodal-button cartpro-compare cpmodal-display  cartpro-hidden" onclick="popWin('http://demo.flytheme.net/themes/sm_destino/catalog/product_compare/index/uenc/aHR0cDovL2RlbW8uZmx5dGhlbWUubmV0L3RoZW1lcy9zbV9kZXN0aW5vL3NraW4vZnJvbnRlbmQvc20tZGVzdGluby9kZWZhdWx0L2ltYWdlcy9pX3NlYXJjaF9jcml0ZXJpYS5naWY,/','compare','top:0,left:0,width=820,height=600,resizable=yes,scrollbars=yes')"><span><span>Compare</span></span></button>
+			<a  class="cpmodal-button cp-close cartpro-wishlist cpmodal-display  cartpro-hidden " href="http://demo.flytheme.net/themes/sm_destino/wishlist/">Go to Wishlist</a>
+		</div>
+		<div class="cpmodal-form">
+		</div>
+	</div>
+</div>
+
+
+ 
+<script type="text/javascript">
+	//<![CDATA[
+	jQuery(document).ready(function ($) {
+	   function _SmQuickView(){	
+			var	pathbase = 'quickview/index/view',
+				_item_cls = $('.products-grid .item-inner .box-image .button-top, .products-grid .item .item-inner .box-image .button-bottom-action, .products-list .box-image-list .button-top'),
+				_base_url = 'http://demo.flytheme.net/themes/sm_destino/',
+				pathbase = 'quickview/index/view';
+			var baseUrl = _base_url + pathbase;
+			if(_item_cls.length > 0){
+				_item_cls.each(function(index, el) {
+					var $this = $(this)
+					if($this.find("a.sm_quickview_handler").length <= 0){
+						if( $this.find('a').length > 0 ){
+							var _href =	$($this.find('a')[0]);				
+							var	producturlpath = _href.attr('href').replace(_base_url,"");
+								producturlpath = ( producturlpath.indexOf('index.php') >= 0 ) ? producturlpath.replace('index.php/','') : producturlpath;
+							var	reloadurl = baseUrl+ ("/path/"+producturlpath).replace(/\/\//g,"/"),
+								_quickviewbutton = "<a  class='btn-action sm_quickview_handler' title='Quick View' href='"+reloadurl+"'><span class=''></span><span class='btn-text'>Quick View</span></a>";
+							$(el).append(_quickviewbutton);	
+						}
+					}
+				});
+			}
+		}
+		
+		$('.sm_quickview_handler').fancybox({
+			 width				: '960',
+			 height				: '500',
+			 autoSize			:  0,
+			 title				: 'null',
+			 scrolling          : 'auto',
+			 type				: 'iframe',
+			 openEffect		    : 'fade',
+			 closeEffect		: 'fade',
+  			 helpers		    :{
+					title:  null,
+										overlay : {
+						showEarly : true
+					}
+								},
+			beforeShow : function(){
+			},
+			afterShow		: function(){
+			},
+			beforeClose : function () {
+			},
+			afterClose : function(){
+			}
+		});
+		
+		setInterval(function(){ _SmQuickView(); } ,1000);
+	});
+	//]]>
+</script>    </div>
+</div>
+</body>
+</html>

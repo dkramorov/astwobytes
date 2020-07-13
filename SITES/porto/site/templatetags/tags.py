@@ -2,9 +2,11 @@
 from django import template
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models import Count
 
 from apps.flatcontent.flatcat import get_catalogue
 from apps.products.models import Products, ProductsCats
+from apps.shop.models import Purchases
 from apps.shop.cart import calc_cart, get_shopper
 
 register = template.Library()
@@ -12,6 +14,16 @@ register = template.Library()
 @register.simple_tag
 def test_tag():
     return "test_tag"
+
+@register.filter(name='is_wrestbands')
+def is_wrestbands(request):
+    shopper = request.session.get('shopper')
+    if shopper:
+        ids_products = Purchases.objects.filter(order__isnull=True, shopper=shopper['id']).values_list('product_id', flat=True)
+        wrestband_cats = ProductsCats.objects.filter(product__in=ids_products, cat__link__icontains='braslety').aggregate(Count('id'))['id__count']
+        if wrestband_cats > 0:
+            return True
+    return False
 
 @register.inclusion_tag('web/order/ajax_cart.html')
 def ajax_cart(request):

@@ -16,7 +16,7 @@ urlpatterns = [
     url('^admin/(?P<action>create)/$', views.edit_robot, name='create_robot'),
     url('^admin/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_robot, name='edit_robot'),
     path('admin/positions/', views.robots_positions, name='robots_positions'),
-    # аякс-поиск демона
+    # аякс-поиск робота
     path('robots/search/', views.search_robots, name='search_robots'),
 
     # Апи для робота

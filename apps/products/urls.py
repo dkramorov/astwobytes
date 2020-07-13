@@ -38,4 +38,12 @@ urlpatterns = [
     path('admin/product_pvalues/', views.show_product_pvalues, name='show_product_pvalues'),
     url('^admin/product_pvalues/(?P<action>create)/$', views.edit_product_pvalue, name='create_product_pvalue'),
     url('^admin/product_pvalues/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_product_pvalue, name='edit_product_pvalue'),
+
+    # типы цен товаров/услуг
+    path('admin/costs/', views.show_costs, name='show_costs'),
+    url('^admin/costs/(?P<action>create)/$', views.edit_cost, name='create_cost'),
+    url('^admin/costs/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_cost, name='edit_cost'),
+    path('admin/costs/positions/', views.costs_positions, name='costs_positions'),
+    # аякс-поиск свойств
+    path('costs/search/', views.search_costs, name='search_costs'),
 ]

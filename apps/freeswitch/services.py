@@ -10,7 +10,7 @@ from apps.main_functions.date_time import str_to_date, date_plus_days
 from apps.main_functions.files import (ListDir, isForD, open_file, drop_file)
 
 from .backend import FreeswitchBackend
-from .models import CdrCsv, PersonalUsers, PhonesWhiteList
+from .models import CdrCsv, PersonalUsers, PhonesWhiteList, Redirects
 
 logger = logging.getLogger('simple')
 CDR_VARS = ('cid', 'cid_name', 'dest', 'context',
@@ -20,15 +20,18 @@ CDR_VARS = ('cid', 'cid_name', 'dest', 'context',
             'read_codec', 'write_codec',
             'ip', 'user_agent', )
 
-def parse_log_line(line: list):
+def parse_log_line(line: list, redirects: list):
     """Анализ линии из логов записей звонков
-       :param line: линия для парсинга"""
+       :param line: линия для парсинга
+       :param redirects: переадресации 10 знаков (без 7/8)
+    """
     line_array = line.split('","')
     line_array_len = len(line_array)
     if not line_array_len in (15, 16, 17):
         logger.error('line length not in 15,16,17: %s' % (line, ))
         return
     cur_cdr = {}
+
     for i in range(line_array_len):
         line_array[i] = kill_quotes(line_array[i], 'quotes')
         line_array[i] = line_array[i].replace('\n', '').strip()
@@ -91,10 +94,16 @@ def parse_log_line(line: list):
                     #if len(value) == 11:
                         #value = '8%s' % (value[1:], )
                         # В случае с колцентром, первая семерка
-
+                    # переадресации начинаются с 7
+                    if len(value) == 11 and value[1:] in redirects:
+                        value = '7%s' % value[1:]
         setattr(new_cdr, key, value)
 
-    search_by_phone = PhonesWhiteList.objects.filter(tag__isnull=False, phone=new_cdr.dest).first()
+    # Передаресация к нам придет с 7,
+    # в PhonesWhiteList у нас все телефоны на 8
+    # телефонов колцентра не должно быть в переадресациях
+    dest_arr = ('8%s' % (new_cdr.dest[1:], ), '7%s' % (new_cdr.dest[1:], ))
+    search_by_phone = PhonesWhiteList.objects.filter(tag__isnull=False, phone__in=dest_arr).first()
     if search_by_phone:
         new_cdr.client_id = search_by_phone.tag
         new_cdr.client_name = search_by_phone.name
@@ -109,6 +118,9 @@ def analyze_logs():
        Перезапуск модуля reload mod_cdr_csv
        Освободить файл логов cdr_csv rotate
     """
+    redirects = Redirects.objects.all().values_list('phone', flat=True)
+    redirects = [kill_quotes(redirect, 'int') for redirect in redirects]
+    redirects = [redirect[1:] for redirect in redirects if len(redirect) == 11]
     FreeswitchBackend(settings.FREESWITCH_URI).cdr_csv_rotate() # перезагрузжаем логи
     path = 'cdr-csv' # На папку должна быть символическая ссылка в media
     content = ListDir(path)
@@ -127,7 +139,7 @@ def analyze_logs():
             with open_file(cur_path) as f:
                 lines = f.readlines()
         for line in lines:
-            parse_log_line(line.decode('utf-8'))
+            parse_log_line(line.decode('utf-8'), redirects)
         search_date = item.split('.')[-1]
         cur_item_date = '%s %s' % (search_date[:10], search_date[11:].replace('-', ':'))
         date = str_to_date(cur_item_date)

@@ -55,9 +55,14 @@ def copy_file(fname, dest):
     dest = os.path.join(DEFAULT_FOLDER, dest)
     if not dest.startswith(DEFAULT_FOLDER):
         return False
+    # Перед копированием, убедимся, что папка есть
+    dest_folder = os.path.split(dest)[0]
+    if dest_folder:
+        make_folder(dest_folder)
     try:
         shutil.copy2(fname, dest)
-    except:
+    except Exception:
+        logger.exception('copy_file from %s to %s failed' % (fname, dest))
         return False
     return True
 
@@ -213,9 +218,11 @@ def make_folder(fname):
     if not path.startswith(DEFAULT_FOLDER):
         return 0
     # Проверяем - возможно надо создать структуру
-    if "/" in fname:
-        fname_array = fname.split("/")
-        middle_folder = ""
+    if '/' in fname:
+        if fname.startswith(DEFAULT_FOLDER):
+            fname = fname.replace(DEFAULT_FOLDER, '').lstrip('/')
+        fname_array = fname.split('/')
+        middle_folder = ''
         for item in fname_array:
             if item:
                 middle_folder = os.path.join(middle_folder, item)

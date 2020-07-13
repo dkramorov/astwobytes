@@ -1,3 +1,4 @@
+{% load tags %}
 <div class="minicart-header">
   <div id="sm_cartpro" class="sm-cartpro">
     <div class="cartpro-title cartpro-empty">
@@ -12,14 +13,12 @@
         </div>
       </div>
     </div>
-    <div class="cartpro-content">
+    <div class="cartpro-content" id="mini-cart">
       <!--
       <div class="cartpro-error cartpro-message"></div>
       <div class="cartpro-success cartpro-message"></div>
       -->
-      <div class="cartpro-wrapper">
-        <p class="empty">Вы еще ничего не выбрали</p>
-      </div>
+      {% ajax_cart request %}
     </div>
   </div>
 </div>

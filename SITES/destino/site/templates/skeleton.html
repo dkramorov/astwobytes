@@ -2,12 +2,16 @@
 {% include "skeleton_header.html" %}
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-
+<!--
 <link rel="stylesheet" type="text/css" href="/media/css/calendar-win2k-1.css" />
+-->
 <link rel="stylesheet" type="text/css" href="/media/css/widgets.css" media="all" />
 <link rel="stylesheet" type="text/css" href="/media/css/bootstrap.css" media="all" />
 <link rel="stylesheet" type="text/css" href="/media/css/bootstrap-theme.min.css" media="all" />
 <link rel="stylesheet" type="text/css" href="/media/css/theme-default.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/ion.rangeSlider.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/ion.rangeSlider.skinFlat.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/media/css/css_fix.css" media="all" />
 <link rel="stylesheet" type="text/css" href="/media/css/custom.css" media="all" />
 <link rel="stylesheet" type="text/css" href="/media/css/font-awesome.css" media="all" />
 <link rel="stylesheet" type="text/css" href="/media/css/print.css" media="print" />
@@ -28,26 +32,13 @@
         </div>
       </div>
     </div>
-    <div class="main-container col1-layout">
+    <div class="main-container col2-left-layout">
       <div class="main">
+        {% include "web/breadcrumbs.html" %}
         <div class="col-main">
           <div class="container">
             <div class="row">
-              <div class="col-lg-12 col-md-12">
-                <div class="std">
-                  <div class="home-default homestyle1">
-                    <div class="row">
-                      <div class="col-lg-3 col-md-12 hidden-sm hidden-xs wrapper-megamenu-vertical">
-                        {% block left %}{% catalogue request %}{% endblock %}
-                      </div>
-                      <div class="col-lg-9 col-md-12">
-                        {% block right %}{% endblock %}
-                      </div>
-                    </div>
-                    {% block content %}{% endblock %}
-                  </div>
-                </div>
-              </div>
+              {% block content %}{% endblock %}
             </div>
           </div>
         </div>
@@ -61,48 +52,11 @@
   </div>
 {% endblock %}
 </div>
-<script type="text">var cart = "#sm_cartpro";</script>
 <script type="text/javascript" src="/media/js/jquery-2.1.3.min.js"></script>
-<!--
-<script type="text/javascript" src="/media/js/prototype.js"></script>
-<script type="text/javascript" src="/media/js/ccard.js"></script>
-<script type="text/javascript" src="/media/js/validation.js"></script>
-<script type="text/javascript" src="/media/js/builder.js"></script>
-<script type="text/javascript" src="/media/js/effects.js"></script>
-<script type="text/javascript" src="/media/js/dragdrop.js"></script>
-<script type="text/javascript" src="/media/js/controls.js"></script>
-<script type="text/javascript" src="/media/js/slider.js"></script>
-<script type="text/javascript" src="/media/js/js.js"></script>
-<script type="text/javascript" src="/media/js/form.js"></script>
-<script type="text/javascript" src="/media/js/menu.js"></script>
-<script type="text/javascript" src="/media/js/translate.js"></script>
-<script type="text/javascript" src="/media/js/cookies.js"></script>
-<script type="text/javascript" src="/media/js/product.js"></script>
-<script type="text/javascript" src="/media/js/calendar.js"></script>
-<script type="text/javascript" src="/media/js/calendar-setup.js"></script>
-<script type="text/javascript" src="/media/js/configurable.js"></script>
-<script type="text/javascript" src="/media/js/product_options.js"></script>
-<script type="text/javascript" src="/media/js/jquery.noconflict.js"></script>
-<script type="text/javascript" src="/media/js/bundle.js"></script>
-<script type="text/javascript" src="/media/js/msrp.js"></script>
-<script type="text/javascript" src="/media/js/cartpro.js"></script>
-<script type="text/javascript" src="/media/js/cartpro_update.js"></script>
-
-<script type="text/javascript" src="/media/js/jquery.lightSlider.js"></script>
-<script type="text/javascript" src="/media/js/easyResponsiveTabs.js"></script>
-<script type="text/javascript" src="/media/js/jquery.elevatezoom.js"></script>
-<script type="text/javascript" src="/media/js/jquery.fancybox.js"></script>
-<script type="text/javascript" src="/media/js/product-media.js"></script>
-<script type="text/javascript" src="/media/js/swatches-list.js"></script>
-<script type="text/javascript" src="/media/js/swatches-product.js"></script>
-<script type="text/javascript" src="/media/js/app.js"></script>
-<script type="text/javascript" src="/media/js/imagesloaded.js"></script>
-<script type="text/javascript" src="/media/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/media/js/jquery.cookie.min.js"></script>
--->
+<script type="text/javascript" src="/media/js/ion.rangeSlider.min.js"></script>
+{% include "shop_js.html" %}
 <script type="text/javascript" src="/media/js/owl.carousel.js"></script>
 <script type="text/javascript" src="/media/js/custom.js"></script>
 {% block extrascripts %}{% endblock %}
-
 </body>
 </html>

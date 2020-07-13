@@ -72,12 +72,13 @@ def cat_on_site(request, link: str = None):
     """Странички каталога
        :param link: ссылка на рубрику (без /cat/ префикса)
     """
+    q_string = {'by': 12}
+    containers = {}
+
     mh_vars = cat_vars.copy()
-    context = get_cat_for_site(request, link)
+    context = get_cat_for_site(request, link, q_string=q_string)
     if not context.get('catalogue'):
         raise Http404
-    q_string = {}
-    containers = {}
 
     if request.is_ajax():
         return JsonResponse(context, safe=False)

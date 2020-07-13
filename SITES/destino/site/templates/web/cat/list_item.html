@@ -1,74 +1,56 @@
 {% load tags mtags %}
-<div class="prodlist-i listview">
-  <a class="prodlist-i-img" href="{{ product.link }}">
-    <img src="{{ product.thumb }}" alt="{{ product.name|textize }}">
-  </a>
-  <div class="prodlist-i-cont">
-    <h3><a href="{{ product.link }}">{{ product.name }}</a></h3>
-    {% if product.mini_info %}
-      <div class="prodlist-i-txt">{{ product.mini_info|safe }}</div>
-    {% endif %}
-{% comment %}<!-- Цвет/размер
-    <div class="prodlist-i-skuwrap">
-      <div class="prodlist-i-skuitem">
-        <p class="prodlist-i-skuttl">Color</p>
-        <ul class="prodlist-i-skucolor">
-          <li class="active"><img src="img/color/blue.jpg" alt=""></li>
-          <li><img src="img/color/red.jpg" alt=""></li>
-          <li><img src="img/color/yellow.jpg" alt=""></li>
-          <li><img src="img/color/purple.jpg" alt=""></li>
-          <li><img src="img/color/green.jpg" alt=""></li>
+<li class="item respl-item-list">
+  <div class="item-inner">
+    <div class="box-image-list">
+      <div class="effect-default">
+        <a href="{{ product.link }}" title="{{ product.name|textize }}" class="product-image">
+          <img src="{% imagine product.img '600x400' product.get_folder True %}" alt="{{ product.name|textize }}" />
+        </a>
+      </div>
+      <div class="button-top">
+        <a class="hidden" href="{{ product.link }}"></a>
+        <ul class="add-to-links">
+          <li>
+            <a class="btn-action link-wishlist" title="В избранное" href="javascript:void(0);" >
+              <span class="btn-text">В избранное</span>
+            </a>
+          </li>
+          <li>
+            <a class="btn-action link-compare" title="Сравнить" href="javascript:void(0);" >
+              <span>Сравнить</span>
+            </a>
+          </li>
         </ul>
       </div>
-      <div class="prodlist-i-skuitem">
-        <p class="prodlist-i-skuttl">Clothes sizes</p>
-        <div class="offer-props-select">
-          <p>XS</p>
-          <ul>
-            <li><a href="#">S</a></li>
-            <li><a href="#">M</a></li>
-            <li><a href="#">L</a></li>
-            <li class="active"><a href="#">XS</a></li>
-            <li><a href="#">XL</a></li>
-            <li><a href="#">XXL</a></li>
-            <li><a href="#">XXXL</a></li>
-          </ul>
+    </div>
+    <div class="box-info-list">
+      <h2 class="product-name">
+      <a href="{{ product.link }}" title="{{ product.name|textize }}">{{ product.name }}</a>
+      </h2>
+      <div class="ratings" >
+        <div class="rating-box">
+          <div class="rating" style="width:90%"></div>
         </div>
+        <span class="amount"><a href="javascript:void(0);">Нет отзывов</a></span>
+      </div>
+      <div class="desc std">{{ product.mini_info|safe }}</div>
+      <div class="price-box">
+        {% with "list" as view %}
+          {% include "web/cat/costs_types.html" %}
+        {% endwith %}
+        <div class="clearfix"></div>
+        <span class="regular-price">
+          <span class="price product_price_{{ product.id }}">{{ product.price|money_format }} ₽</span>
+        </span>
+      </div>
+      <div class="button-bottom">
+        <p class="btn-wrapper">
+          <button type="button" title="Добавить в корзину" class="button btn-cart add_to_cart_btn" data-product_id="{{ product.id }}">
+            <span>В корзину</span>
+          </button>
+        </p>
       </div>
     </div>
--->{% endcomment %}
-    <div class="prodlist-i-action">
-      <p class="prodlist-i-qnt">
-        <input value="1" type="text" id="list_quantity_{{ product.id }}">
-        <a href="javascript:void(0);" class="prodlist-i-plus"><i class="fa fa-angle-up"></i></a>
-        <a href="javascript:void(0);" class="prodlist-i-minus"><i class="fa fa-angle-down"></i></a>
-      </p>
-      <p class="prodlist-i-addwrap">
-        <a href="javascript:void(0);" class="prodlist-i-add add_to_cart_btn" data-product_id="{{ product.id }}">В корзину</a>
-      </p>
-      <span class="prodlist-i-price">
-        <b>{{ product.price|money_format }} ₽</b>
-      </span>
-    </div>
-    <p class="prodlist-i-info">
-      <a href="#" class="prodlist-i-favorites"><i class="fa fa-heart"></i> В избранное</a>
-      <a href="#" class="qview-btn prodlist-i-qview"><i class="fa fa-search"></i> Быстрый просмотр</a>
-      <a class="prodlist-i-compare" href="#"><i class="fa fa-bar-chart"></i> Сравнить</a>
-    </p>
+    <div class="clearer"></div>
   </div>
-  <div class="prodlist-i-props-wrap">
-    <ul class="prodlist-i-props">
-      {% for item in product.props %}
-        {% if forloop.counter < 5 %}
-          <li>
-            <b>{{ item.prop.name }}</b>
-            {% for pvalue in item.values %}
-              {{ pvalue.str_value }}
-              {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
-            {% endfor %}
-          </li>
-        {% endif %}
-      {% endfor %}
-    </ul>
-  </div>
-</div>
+</li>

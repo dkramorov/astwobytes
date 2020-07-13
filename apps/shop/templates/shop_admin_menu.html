@@ -17,6 +17,11 @@
         <span class="item-text">Покупки</span>
       </a>
     </li>
+    <li{% ifequal submenu 'transactions' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'shop:show_transactions' %}">
+        <span class="item-text">Транзакции</span>
+      </a>
+    </li>
   </ul>
 </li>
 {% endif %}

@@ -5194,3 +5194,6 @@ fieldset[disabled] .fc-button.active {
 .tabulator_img{
   height: 150px;
 }
+.tabulator-cell img{
+  max-width: 150px;
+}

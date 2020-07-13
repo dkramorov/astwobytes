@@ -1,28 +1,52 @@
-<nav class="toolbox toolbox-pagination">
-  <div class="toolbox-item toolbox-show">
-    <label>{{ paginator.total_records }} {{ ends }}</label>
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="sorter">
+      <p class="view-mode">
+        <a href="javascript:void(0);" title="Сетка" class="grid gridview active"><span>Сетка</span></a>
+        <a href="javascript:void(0);" title="Список" class="list listview"><span>Список</span></a>
+      </p>
+      <p class="amount">{{ paginator.total_records }} {{ ends }}</p>
+    </div>
+    <div class="sortby-limiter">
+      <form class="limiter">
+        <label>Кол-во</label>
+        <select class="set_count_by">
+          <option value="12"{% ifequal q_string.by 12 %} selected{% endifequal %}>12</option>
+          <option value="24"{% ifequal q_string.by 24 %} selected{% endifequal %}>24</option>
+          <option value="36"{% ifequal q_string.by 36 %} selected{% endifequal %}>36</option>
+        </select>
+        <label>на страничке</label>
+      </form>
+      <form class="sort-by">
+        <label>Сортировка</label>
+        <select class="set_sort_by">
+          <option value="" selected="selected">Без сортировки</option>
+          <option value="price"{% ifequal q_string.q.sort "price" %} selected{% endifequal %}>Цена по возрастанию</option>
+          <option value="-price"{% ifequal q_string.q.sort "-price" %} selected{% endifequal %}>Цена по убыванию</option>
+        </select>
+      </form>
+    </div>
+    <div class="pager">
+      <div class="pages">
+        <ol>
+          {% if paginator.prev_link %}
+            <li><a class="prev i-prev" href="{{ paginator.prev_link }}" title="Назад"><span>Назад</span></a></li>
+          {% endif %}
+          {% for page in pages %}
+            {% if page.ellipsis %}
+              <li><span>...</span></li>
+            {% else %}
+              <li class="{% if page.active %}current{% endif %}">
+                {% if page.active %}
+                  {{ page.content }}
+                {% else %}
+                  <a href="{{ page.link }}">{{ page.content }}</a>
+                {% endif %}
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
   </div>
-  {% if not paginator.onepage %}
-    <ul class="pagination">
-      <li class="page-item{% if not paginator.prev_link %} disabled{% else %} page-link-btn{% endif %}">
-        <a class="page-link page-link-btn" href="{{ paginator.prev_link }}"><i class="icon-angle-left"></i></a>
-      </li>
-      {% for page in pages %}
-        {% if page.ellipsis %}
-          <li class="page-item"><span>...</span></li>
-        {% else %}
-          <li class="page-item{% if page.active %} active{% endif %}">
-            <a class="page-link" href="{{ page.link }}">{{ page.content }}{% if page.active %} <span class="sr-only">(выбрана)</span>{% endif %}</a>
-          </li>
-        {% endif %}
-      {% endfor %}
-      <li class="page-item">
-        <a class="page-link{% if not paginator.next_link %} disabled{% else %} page-link-btn{% endif %}" href="{{ paginator.next_link }}"><i class="icon-angle-right"></i></a>
-      </li>
-    </ul>
-  {% endif %}
-</nav>
-
-
-
-
+</div>

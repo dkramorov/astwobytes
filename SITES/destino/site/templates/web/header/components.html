@@ -11,9 +11,9 @@
       </div>
       <div class="col-sm-9 right-container">
         <div class="search-wrapper">
-          <form id="search_mini_form" action="" method="get">
+          <form id="search_mini_form" action="/cat/" method="get">
             <div class="form-search">
-              <input id="search" type="text" name="q" value="" class="input-text" maxlength="128" />
+              <input id="search" type="text" name="q" value="{{ q_string.q.q }}" class="input-text" />
               <button type="submit" title="Поиск" class="button-search fa fa-search"><span><span>Поиск</span></span></button>
               <div id="search_autocomplete" class="search-autocomplete"></div>
             </div>

@@ -13,6 +13,9 @@ from django.core.cache import cache
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
 from apps.main_functions.api_helper import ApiHelper
+from apps.main_functions.views_helper import (show_view,
+                                              edit_view,
+                                              search_view, )
 
 from .models import Redirects, CdrCsv, FSUser, PhonesWhiteList, PersonalUsers
 from .backend import FreeswitchBackend
@@ -45,92 +48,20 @@ def api(request, action: str = 'redirects'):
 @login_required
 def show_redirects(request, *args, **kwargs):
     """Вывод переадресаций"""
-    mh_vars = redirects_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            result.append(item)
-
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = redirects_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_redirect(request, action:str, row_id:int = None, *args, **kwargs):
     """Создание/редактирование переадресации"""
-    mh_vars = redirects_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
-
-    row = mh.get_row(row_id)
-    if mh.error:
-        return redirect('%s?error=not_found' % (mh.root_url, ))
-
-    if request.method == 'GET':
-        if action == 'create':
-            mh.breadcrumbs_add({
-                'link': mh.url_create,
-                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
-            })
-        elif action == 'edit' and row:
-            mh.breadcrumbs_add({
-                'link': mh.url_edit,
-                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
-            })
-        elif action == 'drop' and row:
-            if mh.permissions['drop']:
-                row.delete()
-                mh.row = None
-                context['success'] = '%s удален' % (mh.singular_obj, )
-            else:
-                context['error'] = 'Недостаточно прав'
-
-    elif request.method == 'POST':
-        pass_fields = ()
-        mh.post_vars(pass_fields=pass_fields)
-
-        if action == 'create' or (action == 'edit' and row):
-            if action == 'create':
-                if mh.permissions['create']:
-                    mh.row = mh.model()
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-            if action == 'edit':
-                if mh.permissions['edit']:
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-
-    if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
-        context['row'] = object_fields(mh.row, pass_fields=('password', ))
-        context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
-
-    if request.is_ajax() or action == 'img':
-        return JsonResponse(context, safe=False)
-    template = '%sedit.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return edit_view(request,
+                     model_vars = costs_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
 
 @login_required
 def redirects_positions(request, *args, **kwargs):
@@ -492,92 +423,22 @@ phones_white_list_vars = {
 @login_required
 def show_phones_white_list(request, *args, **kwargs):
     """Вывод белого списка телефонов для динамического диалплана"""
-    mh_vars = phones_white_list_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            result.append(item)
-
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = phones_white_list_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_phones_white_list(request, action:str, row_id:int = None, *args, **kwargs):
-    """Создание/редактирование белого списка телефонов для динамического диалплана"""
-    mh_vars = phones_white_list_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
-
-    row = mh.get_row(row_id)
-    if mh.error:
-        return redirect('%s?error=not_found' % (mh.root_url, ))
-
-    if request.method == 'GET':
-        if action == 'create':
-            mh.breadcrumbs_add({
-                'link': mh.url_create,
-                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
-            })
-        elif action == 'edit' and row:
-            mh.breadcrumbs_add({
-                'link': mh.url_edit,
-                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
-            })
-        elif action == 'drop' and row:
-            if mh.permissions['drop']:
-                row.delete()
-                mh.row = None
-                context['success'] = '%s удален' % (mh.singular_obj, )
-            else:
-                context['error'] = 'Недостаточно прав'
-
-    elif request.method == 'POST':
-        pass_fields = ()
-        mh.post_vars(pass_fields=pass_fields)
-
-        if action == 'create' or (action == 'edit' and row):
-            if action == 'create':
-                if mh.permissions['create']:
-                    mh.row = mh.model()
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-            if action == 'edit':
-                if mh.permissions['edit']:
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-
-    if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
-        context['row'] = object_fields(mh.row, pass_fields=('password', ))
-        context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
-
-    if request.is_ajax() or action == 'img':
-        return JsonResponse(context, safe=False)
-    template = '%sedit.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    """Создание/редактирование белого списка телефонов
+       для динамического диалплана
+    """
+    return edit_view(request,
+                     model_vars = phones_white_list_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
 
 @login_required
 def phones_white_list_positions(request, *args, **kwargs):
@@ -609,93 +470,23 @@ personal_users_vars = {
 @login_required
 def show_personal_users(request, *args, **kwargs):
     """Вывод белого списка телефонов для динамического диалплана"""
-    mh_vars = personal_users_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            result.append(item)
-
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = personal_users_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_personal_user(request, action:str, row_id:int = None, *args, **kwargs):
-    """Создание/редактирование пользвателей с сайта для динамического диалплана
-       Они загружаются автоматом, поэтому смысла мало"""
-    mh_vars = personal_users_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
-
-    row = mh.get_row(row_id)
-    if mh.error:
-        return redirect('%s?error=not_found' % (mh.root_url, ))
-
-    if request.method == 'GET':
-        if action == 'create':
-            mh.breadcrumbs_add({
-                'link': mh.url_create,
-                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
-            })
-        elif action == 'edit' and row:
-            mh.breadcrumbs_add({
-                'link': mh.url_edit,
-                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
-            })
-        elif action == 'drop' and row:
-            if mh.permissions['drop']:
-                row.delete()
-                mh.row = None
-                context['success'] = '%s удален' % (mh.singular_obj, )
-            else:
-                context['error'] = 'Недостаточно прав'
-
-    elif request.method == 'POST':
-        pass_fields = ()
-        mh.post_vars(pass_fields=pass_fields)
-
-        if action == 'create' or (action == 'edit' and row):
-            if action == 'create':
-                if mh.permissions['create']:
-                    mh.row = mh.model()
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-            if action == 'edit':
-                if mh.permissions['edit']:
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-
-    if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
-        context['row'] = object_fields(mh.row, pass_fields=('password', ))
-        context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
-
-    if request.is_ajax() or action == 'img':
-        return JsonResponse(context, safe=False)
-    template = '%sedit.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    """Создание/редактирование пользвателей
+       с сайта для динамического диалплана
+       Они загружаются автоматом,
+       поэтому вьюха декоративная"""
+    return edit_view(request,
+                     model_vars = personal_users_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
 
 @login_required
 def personal_users_positions(request, *args, **kwargs):
@@ -709,20 +500,10 @@ def personal_users_positions(request, *args, **kwargs):
 
 def search_personal_users(request, *args, **kwargs):
     """Поиск пользователей сайта"""
-    result = {'results': []}
-    mh = ModelHelper(PersonalUsers, request)
-    mh_vars = personal_users_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-    mh.search_fields = ('username', 'userid')
-    rows = mh.standard_show()
-    for row in rows:
-        result['results'].append({'text': '%s (%s)' % (row.username, row.userid), 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-    return JsonResponse(result, safe=False)
+    return search_view(request,
+                       model_vars = personal_users_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('username', 'userid'), )
 
 def is_phone_in_white_list(request):
     """Апи-метод, чтобы узнать,

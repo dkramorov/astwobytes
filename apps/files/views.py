@@ -12,6 +12,9 @@ from apps.main_functions.files import check_path, full_path, file_size
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper
+from apps.main_functions.views_helper import (show_view,
+                                              edit_view,
+                                              search_view, )
 
 from .models import Files
 
@@ -43,31 +46,10 @@ def api(request, action: str = 'files'):
 @login_required
 def show_files(request, *args, **kwargs):
     """Вывод файлов"""
-    mh_vars = files_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            result.append(item)
-
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = files_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_file(request, action:str, row_id:int = None, *args, **kwargs):

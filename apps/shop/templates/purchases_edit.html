@@ -65,6 +65,17 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-lg-2 control-label">Тип цены</label>
+            <div class="col-lg-10">
+              <select name="cost_type" id="costs_types_select2">
+                <option value="">Выберите из списка</option>
+                {% for cost_type in costs_types %}
+                  <option value="{{ cost_type.id }}"{% ifequal cost_type.id row.cost_type.id %} selected{% endifequal %}>{{ cost_type.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-2 control-label">Информация о скидке на базовую цену</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Информация о скидке на базовую цену" class="form-control" name="discount_info" value="{% if row.discount_info %}{{ row.discount_info }}{% endif %}" autocomplete="off">
@@ -138,8 +149,8 @@
           });
         });
       });
-
-      $('#shopper_select2').select2({
+      $("#costs_types_select2").select2();
+      $("#shopper_select2").select2({
         placeholder: 'Покупатель',
         width: '100%',
         tags: true,
@@ -157,7 +168,7 @@
           dataType: 'json',
         }
       });
-      $('#order_select2').select2({
+      $("#order_select2").select2({
         placeholder: 'Заказ',
         width: '100%',
         tags: true,

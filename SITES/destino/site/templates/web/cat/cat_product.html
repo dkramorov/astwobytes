@@ -1,271 +1,211 @@
 {% extends "skeleton.html" %}
 {% load tags mtags %}
 
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css" media="all" />
+{% endblock %}
+
 {% block extracontent %}{% endblock %}
 
 {% block page_title %}{{ product.name }}{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-lg-{% comment %}9{% endcomment %}12">
-      <div class="product-single-container product-single-default">
-        <div class="row">
-          <div class="col-lg-5 col-md-6 product-single-gallery">
-            <div class="product-slider-container product-item">
-              <div class="product-single-carousel owl-carousel owl-theme">
-
-                <div class="product-item">
-                  <img class="product-single-image" src="{% imagine product.img '600x400' product.get_folder True %}" data-zoom-image="{{ product.imagine }}"/>
-                </div>
-                {% for photo in photos %}
-                  <div class="product-item">
-                    <img class="product-single-image" src="{% imagine photo.img '600x400' photo.get_folder True %}" data-zoom-image="{{ photo.imagine }}"/>
-                  </div>
-                {% endfor %}
-              </div>
-              <span class="prod-full-screen">
-                <i class="icon-plus"></i>
-              </span>
-            </div>
-            <div class="prod-thumbnail row owl-dots" id='carousel-custom-dots'>
-              <div class="col-3 owl-dot">
-                <img src="{{ product.thumb }}"/>
-              </div>
-              {% for photo in photos %}
-                <div class="col-3 owl-dot">
-                  <img src="{{ photo.thumb }}"/>
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-          <div class="col-lg-7 col-md-6">
-            <div class="product-single-details">
-              <h1 class="product-title">{{ product.name }}</h1>
-{% comment %}<!--
-              <div class="ratings-container">
-                <div class="product-ratings">
-                  <span class="ratings" style="width:100%"></span>
-                </div>
-                <a href="#" class="rating-link">( 0 Отзывов )</a>
-              </div>
--->{% endcomment %}
-
-              <div class="product-desc">
-                {% if product.mini_info %}{{ product.mini_info|safe }}{% endif %}
-              </div>
-              <div class="product-desc">
-                {% if product.info %}{{ product.info|safe }}{% endif %}
-              </div>
-
-              <div class="price-box">
-                {% if product.old_price %}<span class="old-price">{{ product.old_prirce|money_format }} ₽</span>{% endif %}
-                <span class="product-price">{{ product.price }} ₽</span>
-              </div>
-
-              <a href="javascript:void(0);" class="btn btn-secondary add_to_cart_btn" data-product_id="{{ product.id }}" title="В корзину">
-                <span>В корзину</span>
-              </a>
-
-
-{% comment %}<!--
-              <div class="product-filters-container">
-                <div class="product-single-filter">
-                  <label>Colors:</label>
-                  <ul class="config-swatch-list">
-                    <li class="active">
-                      <a href="#" style="background-color: #6085a5;"></a>
-                    </li>
-                    <li>
-                      <a href="#" style="background-color: #ab6e6e;"></a>
-                    </li>
-                    <li>
-                      <a href="#" style="background-color: #b19970;"></a>
-                    </li>
-                    <li>
-                      <a href="#" style="background-color: #11426b;"></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
--->{% endcomment %}
-
-{% comment %}<!--
-              <div class="product-action product-all-icons">
-                <div class="product-single-qty">
-                  <input class="horizontal-quantity form-control" type="text" value="1" id="quantity_{{ product.id }}" />
-                </div>
-                <a href="javascript:void(0);" class="paction add-cart add_to_cart_btn" data-product_id="{{ product.id }}" title="В корзину">
-                  <span>В корзину</span>
-                </a>
-                <a href="javascript:void(0);" class="paction add-wishlist" title="В избранное">
-                  <span>В избранное</span>
-                </a>
-                <a href="javascript:void(0);" class="paction add-compare" title="Сравнить">
-                  <span>Сравнить</span>
-                </a>
-              </div>
-              {% if product.manufacturer %}
-                <div class="product-single-share">
-                  <label>Производство:</label>
-                  <p>{{ product.manufacturer }}</p>
-                </div>
-              {% endif %}
--->{% endcomment %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-{% comment %}<!--
-      <div class="product-single-tabs">
-        <ul class="nav nav-tabs" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="product-tab-desc" data-toggle="tab" href="#product-desc-content" role="tab" aria-controls="product-desc-content" aria-selected="true">Описание</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="product-tab-reviews" data-toggle="tab" href="#product-reviews-content" role="tab" aria-controls="product-reviews-content" aria-selected="false">Отзывы</a>
-          </li>
-        </ul>
-        <div class="tab-content">
-          <div class="tab-pane fade show active" id="product-desc-content" role="tabpanel" aria-labelledby="product-tab-desc">
-            <div class="product-desc-content">
-              <ul>
-                {% for item in product.props %}
-                  <li>
-                    <b>{{ item.prop.name }}</b>
-                    {% for pvalue in item.values %}
-                      {{ pvalue.str_value }}
-                      {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
+<div class="col-lg-9 col-md-9 col-main">
+  <div id="messages_product_view"></div>
+  <div class="product-view" itemscope itemtype="http://schema.org/Product">
+    <div class="product-essential">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="product-img-box">
+            <div class="case-option-vertical">
+              <div class="product-image product-image-zoom">
+                <div class="product-image-gallery">
+                  <img id="image-0" class="gallery-image visible" src="{{ product.imagine }}" alt="{{ product.name|textize }}" title="{{ product.name|textize }}" />
+                  {% for photo in photos %}
+                    <img id="image-{{ forloop.counter }}" class="gallery-image" src="{{ photo.imagine }}" data-zoom-image="{{ photo.imagine }}" />
+                  {% endfor %}
+                  <div class="btn-lightbox">
+                    <a id="lightbox_btn" data-placement="top" data-toggle="tooltip" title="Галерея" class="fancybox-buttons" data-fancybox="thumb" href="{{ product.imagine }}"></a>
+                    {% for photo in photos %}
+                      <a data-placement="top" data-toggle="tooltip" title="Галерея" class="fancybox-buttons" data-fancybox="thumb" href="{{ photo.imagine }}"></a>
                     {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <div class="more-views">
+                <ul class="product-image-thumbs">
+                  <li>
+                    <a class="thumb-link" href="javascript:void(0);" data-src-img="{{ product.imagine }}" title="{{ product.name|textize }}" data-image-index="0">
+                      <img src="{{ product.thumb }}" alt="{{ product.name|textize }}" />
+                    </a>
                   </li>
-                {% endfor %}
-
-              {{ product.info|safe }}
-            </div>
-          </div>
-          <div class="tab-pane fade" id="product-reviews-content" role="tabpanel" aria-labelledby="product-tab-reviews">
-            <div class="product-reviews-content">
-              <div class="collateral-box">
-                <ul>
-                  <li>Оставьте отзыв</li>
+                  {% for photo in photos %}
+                    <li>
+                      <a class="thumb-link" href="javascript:void(0);" data-src-img="{{ photo.imagine }}" title="Галерея" data-image-index="{{ forloop.counter }}">
+                        <img src="{{ photo.thumb }}" alt="Галерея" />
+                      </a>
+                    </li>
+                  {% endfor %}
                 </ul>
               </div>
-              <div class="add-product-review">
-                <h3 class="text-uppercase heading-text-color font-weight-semibold">Напишите отзыв</h3>
-                <p>Оцените товар</p>
-                <form action="#">
-                  <table class="ratings-table">
-                    <thead>
-                      <tr>
-                        <th>&nbsp;</th>
-                        <th>1 звезд</th>
-                        <th>2 звезды</th>
-                        <th>3 звезды</th>
-                        <th>4 звезды</th>
-                        <th>5 звезд</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Качество</td>
-                        <td>
-                          <input type="radio" name="ratings[1]" id="Quality_1" value="1" class="radio">
-                        </td>
-                        <td>
-                          <input type="radio" name="ratings[1]" id="Quality_2" value="2" class="radio">
-                        </td>
-                        <td>
-                          <input type="radio" name="ratings[1]" id="Quality_3" value="3" class="radio">
-                        </td>
-                        <td>
-                          <input type="radio" name="ratings[1]" id="Quality_4" value="4" class="radio">
-                        </td>
-                        <td>
-                          <input type="radio" name="ratings[1]" id="Quality_5" value="5" class="radio">
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Цены</td>
-                        <td>
-                          <input type="radio" name="price[1]" id="Price_1" value="1" class="radio">
-                        </td>
-                        <td>
-                          <input type="radio" name="price[1]" id="Price_2" value="2" class="radio">
-                        </td>
-                        <td>
-                          <input type="radio" name="price[1]" id="Price_3" value="3" class="radio">
-                        </td>
-                        <td>
-                          <input type="radio" name="price[1]" id="Price_4" value="4" class="radio">
-                        </td>
-                        <td>
-                          <input type="radio" name="price[1]" id="Price_5" value="5" class="radio">
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div class="form-group">
-                    <label>Ваше имя <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-sm" required>
-                  </div>
-                  <div class="form-group mb-2">
-                    <label>Отзыв <span class="required">*</span></label>
-                    <textarea cols="5" rows="6" class="form-control form-control-sm"></textarea>
-                  </div>
-                  <input type="submit" class="btn btn-primary" value="Оставить отзыв">
-                </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="product-shop">
+            <div class="product-name" itemprop="name">
+              <h1>{{ product.name }}</h1>
+            </div>
+            <div class="ratings" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+              <meta itemprop="ratingValue" content="4"/>
+              <meta itemprop="reviewCount" content="1"/>
+              <div class="rating-box">
+                <div class="rating" style="width:90%"></div>
               </div>
+              <p class="rating-links">
+                <a href="javascript:void(0);">Нет отзывов</a>
+                <span class="separator">|</span>
+                <a href="javascript:void(0);">Написать отзыв</a>
+              </p>
+            </div>
+            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+              <div class="price-box">
+                {% with "product" as view %}
+                  {% include "web/cat/costs_types.html" %}
+                {% endwith %}
+                <span class="regular-price">
+                  <span class="hidden" itemprop="priceCurrency" content="RUB">₽</span>
+                  <span class="price product_price_{{ product.id }}" itemprop="price" content="{{ product.price }}">{{ product.price|money_format }} ₽</span>
+                </span>
+              </div>
+{% comment %}<!--
+              <p class="availability in-stock">Возможность заказа:
+                <span>
+                  <link itemprop="availability" href="http://schema.org/InStock" />Да
+                </span>
+              </p>
+-->{% endcomment %}
+            </div>
+            <div class="add-to-box">
+              <div class="add-to-cart">
+                <label for="qty">Кол-во:</label>
+                <div class="control-qty" id="qbuttons_{{ product.id }}">
+                  <input type="text" id="quantity_{{ product.id }}" maxlength="3" value="1" title="Количество" class="input-text qty" />
+                  <div class="qty-action">
+                    <span type="button" class="quantity-controls quantity-plus"></span>
+                    <span type="button" class="quantity-controls quantity-minus"></span>
+                  </div>
+                </div>
+                <button type="button" title="Добавить в корзину" class="button btn-cart add_to_cart_btn" data-product_id="{{ product.id }}">
+                  <span><span>В корзину</span></span>
+                </button>
+              </div>
+              <span class="or">или</span>
+              <ul class="add-to-links">
+                <li><a href="javascript:void(0);" title="Добавить в избранное" class="link-wishlist"><span>В избранное</span></a></li>
+                <li><a href="javascript:void(0);" title="Добавить к сравнению" class="link-compare"><span>Сравнить</span></a></li>
+              </ul>
+            </div>
+            <div class="short-description">
+              <div class="std">{{ product.mini_info|safe }}</div>
             </div>
           </div>
         </div>
       </div>
--->{% endcomment %}
+      <div class="clearer"></div>
     </div>
-{% comment %}<!--
-    <div class="sidebar-overlay"></div>
-    <div class="sidebar-toggle"><i class="icon-sliders"></i></div>
-    <aside class="sidebar-product col-lg-3 padding-left-lg mobile-sidebar">
-      <div class="sidebar-wrapper">
-        <div class="widget widget-info">
-          <ul>
-            <li>
-              <i class="icon-shipping"></i>
-              <h4>Доставка</h4>
-            </li>
-            <li>
-              <i class="icon-us-dollar"></i>
-              <h4>Гарантия возврата</h4>
-            </li>
-            <li>
-              <i class="icon-online-support"></i>
-              <h4>Поддержка</h4>
-            </li>
-          </ul>
-        </div>
-
-        <div class="widget widget-banner">
-          <div class="banner banner-image">
-            <a href="#">
-              <img src="assets/images/banners/banner-sidebar.jpg" alt="Banner Desc">
-            </a>
+    <div class="product-collateral">
+      <div class="tab-product-info" id="tab-product-view">
+        <ul class="resp-tabs-list">
+          <li>Описание</li>
+        </ul>
+        <div class="resp-tabs-container">
+          <div>
+            {% if product.info %}
+              <h2>Описание</h2>
+              <div class="std" itemprop="description">
+                {{ product.info|safe }}
+              </div>
+            {% endif %}
           </div>
         </div>
-
-        {% products_sidebar_slider product %}
       </div>
-    </aside>
--->{% endcomment %}
+    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/media/js/jquery.elevatezoom.js"></script>
+<script type="text/javascript" src="/media/js/easyResponsiveTabs.js"></script>
+<script type="text/javascript" src="/media/js/jquery.lightSlider.js"></script>
+<script type="text/javascript" src="/static/fancybox/jquery.fancybox.min.js"></script>
+
 <script type="text/javascript">
   $(document).ready(function(){
+    function zoom() {
+      $(".product-image-gallery .visible").elevateZoom({
+        easing: true,
+        loadingIcon: true,
+        zoomType: "inner",
+        cursor: "crosshair"
+      });
+    }
+    zoom();
+    $(".more-views .thumb-link").click(function () {
+      var ind = $(this).attr("data-image-index");
+      $(".product-image-gallery img").removeClass("visible");
+      $("#image-" + ind).addClass("visible");
+      setTimeout(function () {
+        zoom();
+      }, 100);
+    });
+    var slider_thumbs_main = $(".product-image-thumbs").lightSlider({
+      //prevHtml: '',
+      //nextHtml: '',
+      //slideMove: 1,
+      easing: 'cubic-bezier(0.25, 0, 0.25, 1)',
+      speed: 600,
+      auto: false,
+      loop: false,
+      rtl: false,
+      pager: false,
+      // Vertical
+      vertical: true,
+      item: 4,
+      slideMargin: 0,
+      verticalHeight: 260,
+    });
+    $(window).resize(function () {
+      zoom();
+      $('.zoomContainer').css({'left':'-9999px'});
+    });
+
+    $('.fancybox-buttons').fancybox();
+
+    $(".col-main .more-views .thumb-link").click(function () {
+      //add active class
+      $(".col-main .more-views li").removeClass('active_thumbs');
+      $(this).parent().addClass('active_thumbs');
+    });
+
+    $(".quickview-main .more-views .thumb-link").click(function () {
+      //add active class
+      $(".quickview-main .more-views li").removeClass('active_thumbs');
+      $(this).parent().addClass('active_thumbs');
+    });
+    $('#tab-product-view').easyResponsiveTabs({
+      type: 'default', //Types: default, vertical, accordion
+      width: 'auto', //auto or any width like 600px
+      fit: true,   // 100% fit in a container
+      closed: 'accordion', // Start closed if in accordion view
+      /* activate: function(event) {
+        console.log('actived');
+      } */
+    });
     quantity_listener("{{ product.id }}",
-                      $("#qbuttons_{{ product.id }} .prod-plus"),
-                      $("#qbuttons_{{ product.id }} .prod-minus"),
+                      $("#qbuttons_{{ product.id }} .quantity-plus"),
+                      $("#qbuttons_{{ product.id }} .quantity-minus"),
     );
   });
 </script>

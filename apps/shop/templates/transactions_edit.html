@@ -1,0 +1,149 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<!-- START row-->
+<div class="row">
+  <div class="col-sm-12">
+    <!-- START panel-->
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Номер заказа</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Номер заказа" class="form-control" name="number" value="{% if row.number %}{{ row.number }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Сумма заказа</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Сумма заказа" class="form-control" name="total" value="{% if row.total %}{{ row.total }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Комментарий</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Комментарий" class="form-control" name="comments" value="{% if row.comments %}{{ row.comments }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Покупатель</label>
+            <div class="col-lg-10">
+              <select id="shopper_select2" name="shopper" autocomplete="off" data-parsley-required>
+                {% if row.shopper %}
+                  <option value="{{ row.shopper.id }}" selected>{{ row.shopper.name }} #{{ row.shopper.id }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Имя покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Имя покупателя" class="form-control" name="shopper_name" value="{% if row.shopper_name %}{{ row.shopper_name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Email покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Email покупателя" class="form-control email" name="shopper_email" value="{% if row.shopper_email %}{{ row.shopper_email }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Телефон покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Телефон покупателя" class="form-control phone" name="shopper_phone" value="{% if row.shopper_phone %}{{ row.shopper_phone }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Адрес покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Адрес покупателя" class="form-control" name="shopper_address" value="{% if row.shopper_address %}{{ row.shopper_address }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">IP покупателя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="IP покупателя" class="form-control" name="shopper_ip" value="{% if row.shopper_ip %}{{ row.shopper_ip }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+    <!-- END panel-->
+  </div>
+</div>
+<!-- END row-->
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+      $('#shopper_select2').select2({
+        placeholder: 'Покупатель',
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'personal:search_shoppers' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+    });
+  </script>
+{% endblock %}

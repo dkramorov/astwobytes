@@ -1,0 +1,29 @@
+{% load mtags %}
+<div class="home-slider-container">
+  <div class="home-slider owl-carousel owl-theme">
+    {% for block in blocks %}
+      <div class="home-slide">
+        <div class="slide-bg owl-lazy" data-src="{{ container.imagine }}">
+        </div>
+        <div class="home-slide-content container">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="slider_text">
+                <h4>{{ block.html|safe }}</h4>
+                <h2>{{ block.description }}</h2>
+                <h1>{{ block.name }}</h1>
+                {% if block.link %}
+                  <a href="{{ block.link }}" class="btn btn-primary">Подробнее</a>
+                {% endif %}
+              </div>
+            </div>
+            {% if block.img %}
+              <div class="slider_img">{% imagine block.img '1920x1080' block.get_folder %}</div>
+            {% endif %}
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

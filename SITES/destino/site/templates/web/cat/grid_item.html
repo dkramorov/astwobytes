@@ -1,18 +1,38 @@
 {% load tags mtags %}
-<div class="prod-i gridview">
-  <div class="prod-i-top">
-    <a href="{{ product.link }}" class="prod-i-img">
-      <img src="{{ product.thumb }}" alt="{{ product.name|textize }}">
-    </a>
-    <p class="prod-i-info">
-      <a href="#" class="prod-i-favorites"><span>Избранное</span><i class="fa fa-heart"></i></a>
-      <a href="#" class="qview-btn prod-i-qview"><span>Быстрый просмотр</span><i class="fa fa-search"></i></a>
-      <a class="prod-i-compare" href="#"><span>Сравнить</span><i class="fa fa-bar-chart"></i></a>
-    </p>
-    <a href="javascript:void(0);" class="prod-i-buy add_to_cart_btn" data-product_id="{{ product.id }}">В корзину</a>
-    <p class="prod-i-properties-label"><i class="fa fa-info"></i></p>
-    <div class="prod-i-properties">
-      <dl>
+<li class="item">
+  <div class="item-inner">
+    <div class="box-image">
+      <div class="effect-default">
+        <a href="{{ product.link }}" title="{{ product.name|textize }}" class="product-image">
+          <img src="{% imagine product.img '600x400' product.get_folder True %}" alt="{{ product.name|textize }}" />
+        </a>
+      </div>
+      <div class="button-top">
+        <a class="hidden" href="{{ product.link }}"></a>
+        <ul class="add-to-links">
+          <li>
+            <a class="btn-action link-wishlist" title="В избранное" href="javascript:void(0);">
+              <span class="btn-text">В избранное</span>
+            </a>
+          </li>
+          <li>
+            <a class="btn-action link-compare" title="Сравнить" href="javascript:void(0);">
+              <span>Сравнить</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+{% comment %}<!--
+      <div class="label-product label-new">
+        <span class="new-product-icon">New</span>
+      </div>
+-->{% endcomment %}
+    </div>
+    <div class="box-info">
+      <h2 class="product-name">
+        <a href="{{ product.link }}" title="Consequat officia quisnulla">{{ product.name }}</a>
+      </h2>
+{% comment %}<!-- Нет шаблона для свойств товара
         {% for item in product.props %}
           {% if forloop.counter < 5 %}
             <d{% cycle 't' 'd' %}>{{ item.prop.name }}
@@ -23,15 +43,30 @@
             </d{% cycle 't' 'd' %}>
           {% endif %}
         {% endfor %}
-      </dl>
-    </div>
-{% comment %}<!--
-    <div class="prod-sticker">
-      <p class="prod-sticker-1">NEW</p>
-      <br><p class="prod-sticker-2">HIT</p>
-    </div>
 -->{% endcomment %}
+      <div class="ratings">
+        <div class="rating-box">
+          <div class="rating" style="width:90%"></div>
+        </div>
+        <span class="amount"><a href="javascript:void(0);">Нет отызвов</a></span>
+      </div>
+      <div class="desc std">{{ product.mini_info|safe }}</div>
+      <div class="price-box">
+        {% with "grid" as view %}
+          {% include "web/cat/costs_types.html" %}
+        {% endwith %}
+        <div class="clearfix"></div>
+        <span class="regular-price">
+          <span class="price product_price_{{ product.id }}">{{ product.price|money_format }} ₽</span>
+        </span>
+      </div>
+      <div class="button-bottom">
+        <button class="btn-action btn-cart add_to_cart_btn" data-product_id="{{ product.id }}" type="button" title="Добавить в корзину">
+          <span>
+            <span>В корзину</span>
+          </span>
+        </button>
+      </div>
+    </div>
   </div>
-  <h3><a href="{{ product.link }}">{{ product.name }}</a></h3>
-  <p class="prod-i-price"><b>{{ product.price|money_format }} ₽</b></p>
-</div>
+</li>

@@ -1,0 +1,33 @@
+{% load mtags %}
+{% if breadcrumbs %}
+<div class="breadcrumbs">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 col-md-12">
+        <ul itemscope itemtype="http://schema.org/BreadcrumbList">
+          <li class="home" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <a itemprop="item" href="/" title="Главная" class="has-link">
+              <span itemprop="name">Главная</span>
+            </a>
+            <!--<span class="separator">&nbsp</span>-->
+          </li>
+          {% for crumb in breadcrumbs %}
+            {% if not forloop.last %}
+              <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                <a itemprop="item" href="{{ crumb.link }}" title="{{ crumb.name|textize }}" class="has-link">
+                  <span itemprop="name">{{ crumb.name }}</span>
+                </a>
+                <!--<span class="separator">&nbsp</span>-->
+              </li>
+            {% else %}
+              <li class="last" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                <span itemprop="name">{{ crumb.name }}</span>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

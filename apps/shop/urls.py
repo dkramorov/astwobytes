@@ -25,4 +25,13 @@ urlpatterns = [
     path('shop/search/purchases/', views.search_purchases, name='search_purchases'),
     # корзинка пользователя
     url('^cart/(?P<action>show|add|quantity|drop)/', views.cart, name='cart'),
+
+    # Транзакции
+    path('admin/transactions/', views.show_transactions, name='show_transactions'),
+    url('^admin/transactions/(?P<action>create)/$', views.edit_transaction, name='create_transaction'),
+    url('^admin/transactions/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_transaction, name='edit_transaction'),
+    path('admin/transactions/positions/', views.transactions_positions, name='transactions_positions'),
+    # аякс-поиск
+    path('shop/search/transactions/', views.search_transactions, name='search_transactions'),
+
 ]

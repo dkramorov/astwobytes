@@ -1,17 +1,29 @@
 {% extends "skeleton.html" %}
-{% load flatcontent_tags %}
+{% load tags flatcontent_tags %}
 
 {% block extrahead %}
 <style type="text/css">
 </style>
 {% endblock %}
 
-{% block right %}
-  {% flatcontent request page "slider" %}
-{% endblock %}
-
 {% block content %}
-  {% for container in page.containers %}
-    {% flatcontent request page container.container.tag %}
-  {% endfor %}
+<div class="col-lg-12 col-md-12">
+  <div class="std">
+    <div class="home-default homestyle1">
+      <div class="row">
+        <div class="col-lg-3 col-md-12 hidden-sm hidden-xs wrapper-megamenu-vertical">
+          {% block left %}{% catalogue_home request %}{% endblock %}
+        </div>
+        <div class="col-lg-9 col-md-12">
+          {% block right %}
+            {% flatcontent request page "slider" %}
+          {% endblock %}
+        </div>
+      </div>
+      {% for container in page.containers %}
+        {% flatcontent request page container.container.tag %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -47,6 +47,7 @@
               </tr>
             {% endfor %}
           </tbody>
+{% comment %}<!--
           <tfoot>
             <tr>
               <td colspan="4" class="clearfix">
@@ -56,10 +57,12 @@
               </td>
             </tr>
           </tfoot>
+-->{% endcomment %}
         </table>
       </div>
+{% comment %}<!--
       <div class="cart-discount">
-        <h4>Скидочный купон</h4>
+        <h4>Промокод</h4>
         <form action="#">
           <div class="input-group">
             <input type="text" class="form-control form-control-sm" placeholder="Введите код купона"  required>
@@ -69,10 +72,12 @@
           </div>
         </form>
       </div>
+-->{% endcomment %}
     </div>
     <div class="col-lg-4">
       <div class="cart-summary">
         <h3>Итого</h3>
+{% comment %}<!--
         <h4>
           <a data-toggle="collapse" href="#total-estimate-section" class="collapsed" role="button" aria-expanded="false" aria-controls="total-estimate-section">Доставка</a>
         </h4>
@@ -98,7 +103,7 @@
               <label>Индекс</label>
               <input type="text" class="form-control form-control-sm">
             </div>
-{% comment %}<!--
+
             <div class="form-group form-group-custom-control">
               <label>Flat Way</label>
               <div class="custom-control custom-checkbox">
@@ -113,9 +118,10 @@
                 <label class="custom-control-label" for="best-rate">Table Rate $15.00</label>
               </div>
             </div>
--->{% endcomment %}
+
           </form>
         </div>
+-->{% endcomment %}
         <table class="table table-totals">
           <tbody>
             <tr>

@@ -1513,6 +1513,16 @@
       $(this).parent().parent().find('.img_block').css('background-color', value);
     }
   });
+
+  $(document).on("keypress", function(e) {
+    if(e.which == 13) {
+      if($("#ajax_drop_obj").hasClass("in")){
+        $("#ajax_drop_obj").modal('hide');
+        $("#ajax_drop_obj_button").click();
+      }
+    }
+  });
+
 }(jQuery, window, document));
 
 // для аякс форм: {csrfmiddlewaretoken: getCookie('csrftoken')}

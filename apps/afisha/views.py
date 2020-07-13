@@ -10,6 +10,9 @@ from django.contrib.auth.decorators import login_required
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
 from apps.main_functions.api_helper import ApiHelper
+from apps.main_functions.views_helper import (show_view,
+                                              edit_view,
+                                              search_view, )
 
 from .models import Rubrics, RGenres, REvents, Places, RSeances
 
@@ -48,113 +51,27 @@ def api(request, action: str = 'rubrics'):
 @login_required
 def show_rubrics(request, *args, **kwargs):
     """Вывод рубрик мест Афиши"""
-    mh_vars = rubrics_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            result.append(item)
-
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = rubrics_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_rubric(request, action:str, row_id:int = None, *args, **kwargs):
     """Создание/редактирование рубрики места Афиши"""
-    mh_vars = rubrics_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
-
-    row = mh.get_row(row_id)
-    if mh.error:
-        return redirect('%s?error=not_found' % (mh.root_url, ))
-
-    if request.method == 'GET':
-        if action == 'create':
-            mh.breadcrumbs_add({
-                'link': mh.url_create,
-                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
-            })
-        elif action == 'edit' and row:
-            mh.breadcrumbs_add({
-                'link': mh.url_edit,
-                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
-            })
-        elif action == 'drop' and row:
-            if mh.permissions['drop']:
-                row.delete()
-                mh.row = None
-                context['success'] = '%s удалена' % (mh.singular_obj, )
-            else:
-                context['error'] = 'Недостаточно прав'
-
-    elif request.method == 'POST':
-        pass_fields = ()
-        mh.post_vars(pass_fields=pass_fields)
-
-        if action == 'create' or (action == 'edit' and row):
-            if action == 'create':
-                if mh.permissions['create']:
-                    mh.row = mh.model()
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-            if action == 'edit':
-                if mh.permissions['edit']:
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-
-    if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
-        context['row'] = object_fields(mh.row, pass_fields=('password', ))
-        context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
-
-    if request.is_ajax() or action == 'img':
-        return JsonResponse(context, safe=False)
-    template = '%sedit.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return edit_view(request,
+                     model_vars = rubrics_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
 
 def search_rubrics(request, *args, **kwargs):
     """Поиск рубрик мест"""
-    result = {'results': []}
-
-    mh = ModelHelper(Rubrics, request)
-    mh_vars = rubrics_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-
-    mh.search_fields = ('name', )
-    rows = mh.standard_show()
-
-    for row in rows:
-        result['results'].append({'text': row.name, 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-
-    return JsonResponse(result, safe=False)
+    return search_view(request,
+                       model_vars = rubrics_vars,
+                       cur_app = CUR_APP,
+                       sfields = None, )
 
 genres_vars = {
     'singular_obj': 'Жанр Афиши',
@@ -176,113 +93,27 @@ genres_vars = {
 @login_required
 def show_genres(request, *args, **kwargs):
     """Вывод жанров"""
-    mh_vars = genres_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
-
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        rows = mh.standard_show()
-        result = []
-        for row in rows:
-            item = object_fields(row)
-            item['actions'] = row.id
-            item['folder'] = row.get_folder()
-            result.append(item)
-
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return show_view(request,
+                     model_vars = genres_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
 
 @login_required
 def edit_genre(request, action:str, row_id:int = None, *args, **kwargs):
     """Создание/редактирование жанра Афиши"""
-    mh_vars = genres_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
-
-    row = mh.get_row(row_id)
-    if mh.error:
-        return redirect('%s?error=not_found' % (mh.root_url, ))
-
-    if request.method == 'GET':
-        if action == 'create':
-            mh.breadcrumbs_add({
-                'link': mh.url_create,
-                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
-            })
-        elif action == 'edit' and row:
-            mh.breadcrumbs_add({
-                'link': mh.url_edit,
-                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
-            })
-        elif action == 'drop' and row:
-            if mh.permissions['drop']:
-                row.delete()
-                mh.row = None
-                context['success'] = '%s удален' % (mh.singular_obj, )
-            else:
-                context['error'] = 'Недостаточно прав'
-
-    elif request.method == 'POST':
-        pass_fields = ()
-        mh.post_vars(pass_fields=pass_fields)
-
-        if action == 'create' or (action == 'edit' and row):
-            if action == 'create':
-                if mh.permissions['create']:
-                    mh.row = mh.model()
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-            if action == 'edit':
-                if mh.permissions['edit']:
-                    mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
-                else:
-                    context['error'] = 'Недостаточно прав'
-
-    if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
-        context['row'] = object_fields(mh.row, pass_fields=('password', ))
-        context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
-
-    if request.is_ajax() or action == 'img':
-        return JsonResponse(context, safe=False)
-    template = '%sedit.html' % (mh.template_prefix, )
-    return render(request, template, context)
+    return edit_view(request,
+                     model_vars = genres_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
 
 def search_genres(request, *args, **kwargs):
     """Поиск жанров"""
-    result = {'results': []}
-
-    mh = ModelHelper(RGenres, request)
-    mh_vars = genres_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-
-    mh.search_fields = ('name', 'altname')
-    rows = mh.standard_show()
-
-    for row in rows:
-        result['results'].append({'text': row.name, 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-
-    return JsonResponse(result, safe=False)
+    return search_view(request,
+                       model_vars = genres_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('name', 'altname'))
 
 events_vars = {
     'singular_obj': 'События Афиши',
@@ -406,24 +237,10 @@ def edit_event(request, action:str, row_id:int = None, *args, **kwargs):
 
 def search_events(request, *args, **kwargs):
     """Поиск событий"""
-    result = {'results': []}
-
-    mh = ModelHelper(REvents, request)
-    mh_vars = events_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-
-    mh.search_fields = ('name', )
-    rows = mh.standard_show()
-
-    for row in rows:
-        result['results'].append({'text': row.name, 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-
-    return JsonResponse(result, safe=False)
+    return search_view(request,
+                       model_vars = events_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('name', ))
 
 places_vars = {
     'singular_obj': 'Место для Афиши',
@@ -538,24 +355,10 @@ def edit_place(request, action:str, row_id:int = None, *args, **kwargs):
 
 def search_places(request, *args, **kwargs):
     """Поиск мест событий"""
-    result = {'results': []}
-
-    mh = ModelHelper(Places, request)
-    mh_vars = places_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-
-    mh.search_fields = ('name', )
-    rows = mh.standard_show()
-
-    for row in rows:
-        result['results'].append({'text': row.name, 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-
-    return JsonResponse(result, safe=False)
+    return search_view(request,
+                       model_vars = places_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('name', ))
 
 seances_vars = {
     'singular_obj': 'Сеансы для Афиши',

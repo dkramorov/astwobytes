@@ -1,0 +1,102 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+
+  var pathFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var data = cell.getRow().getData();
+    var value = cell.getValue();
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      result += " <a style='white-space:normal;' class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
+    }
+    result += "</div>";
+    return result;
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+/*
+      {
+        formatter: "responsiveCollapse",
+        width: 30,
+        minWidth: 30,
+        align: "center",
+        resizable: false,
+        headerSort: false,
+      },
+*/
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Дата",
+        field: "created",
+        headerFilterPlaceholder: "Дата",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 150,
+      },
+      {
+        title: "Сумма",
+        field: "total",
+        headerFilterPlaceholder: "Сумма",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Телефон покупателя",
+        field: "shopper_phone",
+        headerFilterPlaceholder: "Телефон покупателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "created"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "right top",
+        todayButton: new Date(),
+      });
+    }else if($(this).attr("tabulator-field") === "created"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+    }
+  });
+
+});
+</script>
+{% endblock %}

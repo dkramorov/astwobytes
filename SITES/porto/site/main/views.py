@@ -14,6 +14,9 @@ from apps.products.models import Products
 from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import remove_user_from_request
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
+from apps.shop.models import Transactions
+
+from .yandex_kassa import YandexKassa
 
 CUR_APP = 'main'
 main_vars = {
@@ -235,8 +238,49 @@ def checkout(request):
     context['cart'] = cart
 
     # Оформление заказа
-    context.update(**create_new_order(request, shopper, cart))
+    comments = None
+    wrist_size = request.POST.get('wrist_size')
+    birthday = request.POST.get('birthday')
+    if wrist_size or birthday:
+        comments = []
+        if wrist_size:
+            comments.append('Размер запястья %s' % wrist_size)
+        if birthday:
+            comments.append('День рождения %s' % birthday)
+        comments = ', '.join(comments)
+
+    context.update(**create_new_order(request, shopper, cart, comments))
     if 'order' in context and context['order']:
         template = 'web/order/confirmed.html'
+        payment = YandexKassa().create_payment(
+            domain = '%s%s' % ('https://' if request.is_secure() else 'http://',
+                               request.META['HTTP_HOST']),
+            summa = '%s' % context['order'].total,
+            desc = 'Оплата заказа №%s' % context['order'].id,
+        )
+        context['yandex_payment_link'] = payment['confirmation']['confirmation_url']
+        Transactions.objects.create(order=context['order'], uuid=payment['id'], ptype=1)
+
+    return render(request, template, context)
+
+def transaction_success(request):
+    """Оформление заказа - Успешная оплата"""
+    mh_vars = order_vars.copy()
+    context = {}
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=order_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Заказ оплачен',
+        'link': reverse('%s:%s' % (CUR_APP, 'transaction_success')),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+    template = 'web/order/transaction_success.html'
 
     return render(request, template, context)

@@ -11,42 +11,143 @@ from .models import Containers, Blocks, get_ftype
 is_products = False
 if 'apps.products' in settings.INSTALLED_APPS:
     is_products = True
-    from apps.products.models import Products, ProductsCats, ProductsPhotos, Property, PropertiesValues, ProductsProperties
+    from apps.products.models import (Products,
+                                      ProductsCats,
+                                      ProductsPhotos,
+                                      Property,
+                                      PropertiesValues,
+                                      ProductsProperties,
+                                      CostsTypes,
+                                      Costs, )
+
+def get_costs_types(products):
+    """Разные типы цен
+       :param products: Товары/услуги
+    """
+    costs_types = CostsTypes.objects.filter(is_active=1)
+    if not costs_types:
+        return
+    ids_costs_types = {}
+    for cost_type in costs_types:
+        ids_costs_types[cost_type.id] = cost_type
+
+    ids_products = {product.id: product for product in products}
+    costs_values = Costs.objects.filter(product__in=[product.id for product in products]).order_by('cost_type__position')
+
+    for cost_value in costs_values:
+        cost_type = ids_costs_types.get(cost_value.cost_type_id)
+
+        if not cost_type:
+            continue
+        if not cost_type.is_active:
+            continue
+
+        if not hasattr(ids_products[cost_value.product_id], 'costs'):
+            ids_products[cost_value.product_id].costs = []
+
+        cost = {
+            'cost_type': cost_type,
+            'measure': cost_value.get_measure_display(),
+            'cost': cost_value.cost,
+        }
+
+        if cost_type.tag:
+            if not hasattr(ids_products[cost_value.product_id], 'costs_by_tag'):
+                ids_products[cost_value.product_id].costs_by_tag = {}
+            ids_products[cost_value.product_id].costs_by_tag[cost_type.tag] = cost
+        ids_products[cost_value.product_id].costs.append(cost)
 
 def get_product_for_site(request, price_id: int):
     """Получить товар/услугу для сайта"""
     page = None
     photos = None
-    cat = None
+    rubric = None
     breadcrumbs = []
     product = Products.objects.filter(pk=price_id).first()
     if product:
         page = Blocks(name=product.name)
         photos = product.productsphotos_set.all()
-        cat = ProductsCats.objects.select_related('cat').filter(product=product).first()
-        if cat and cat.cat.parents:
-            ids_parents = [int(parent) for parent in cat.cat.parents.split('_') if parent]
-            cats = Blocks.objects.filter(pk__in=ids_parents)
+        # ---------------------------
+        # достаем рубрики товара
+        # рассчитываем хлебные крошки
+        # ---------------------------
+        pcat = product.productscats_set.all().values_list('cat', 'cat__parents').first()
+        if pcat:
+            cond = Q()
+            cond.add(Q(pk=pcat[0]), Q.OR)
+            parents = []
+            if pcat[1]:
+                parents_arr = pcat[1].slit('_')
+                for parent in parents_arr:
+                    if not parent:
+                        continue
+                    cond.add(Q(pk=parent), Q.OR)
+                    parents.append(int(parent))
+
+            cats = Blocks.objects.filter(cond)
             ids_cats = {cat.id: cat for cat in cats}
-            for item in ids_parents:
-                parent = ids_cats[item]
-                breadcrumbs.append({'name': parent.name, 'link': parent.link})
-        breadcrumbs.append({'name': product.name, 'link': '/product/%s/' % product.id})
+            for parent in parents:
+                if not parent in ids_cats:
+                    continue
+                cat = ids_cats[parent]
+                breadcrumbs.append({
+                    'name': cat.name,
+                    'link': cat.link,
+                })
+            cat = ids_cats.get(pcat[0])
+            if cat:
+                rubric = cat
+                breadcrumbs.append({
+                    'name': cat.name,
+                    'link': cat.link,
+                })
+        breadcrumbs.append({
+            'name': product.name,
+            'link': product.link(),
+        })
     get_props_for_products([product])
+    get_costs_types([product])
     result = {
         'breadcrumbs': breadcrumbs,
-        'cat': cat,
+        'cat': rubric,
         'photos': photos,
         'page': page,
         'product': product,
     }
     return result
 
-def get_catalogue(request, tag: str = 'catalogue',
-                  cache_time: int = 300, force_new: bool = False):
+def get_catalogue_products_count(tag: str,
+                                 cache_time: int = 300,
+                                 force_new: bool = False):
+    """Получение кол-ва товара по каждой из рубрик контейнера
+       :param tag: тег контейнера с рубриками
+       :param cache_time: кэш
+       :param force_new: получить каталог без кэша
+    """
+    cache_var = '%s_%s_pcats' % (
+        settings.DATABASES['default']['NAME'],
+        tag,
+    )
+    inCache = cache.get(cache_var)
+    if inCache and not force_new:
+        return inCache
+
+    # получаем список из (ид категории, кол-во товаров)
+    # <QuerySet [(53, 42), (54, 7), (55, 7)]>
+    pcats = ProductsCats.objects.filter(container__tag=tag).values_list('cat').annotate(products_count=Count('product', distinct=True))
+    pcats = list(pcats)
+    cache.set(cache_var, pcats, cache_time)
+    return pcats
+
+def get_catalogue(request,
+                  tag: str = 'catalogue',
+                  with_count: bool = False,
+                  cache_time: int = 300,
+                  force_new: bool = False):
     """Получить каталог для сайта
        :param request: HttpRequest
        :param tag: тег Containers с каталогом
+       :param with_count: вытащить по каждой рубрике кол-во товара
        :param cache_time: кэш
        :param force_new: получить каталог без кэша
     """
@@ -56,6 +157,8 @@ def get_catalogue(request, tag: str = 'catalogue',
     )
     inCache = cache.get(cache_var)
     if inCache and not force_new:
+        if with_count:
+            inCache['products_count'] = get_catalogue_products_count(tag)
         return inCache
     container = Containers.objects.filter(
         tag = tag,
@@ -73,6 +176,8 @@ def get_catalogue(request, tag: str = 'catalogue',
         'menus': menus,
     }
     cache.set(cache_var, result, cache_time)
+    if with_count:
+        result['products_count'] = get_catalogue_products_count(tag)
     return result
 
 def search_products(q: str):
@@ -123,7 +228,7 @@ def get_cat_for_site(request, link: str = None,
     containers = {}
     catalogue = None
     breadcrumbs = []
-    q_string = {}
+    q_string = kwargs.get('q_string', {})
     is_search = False
     search_terms = []
 
@@ -190,11 +295,11 @@ def get_cat_for_site(request, link: str = None,
     # Сортировка
     sort = request.GET.get('sort')
     if sort == 'price':
-        query = query.order_by('%sprice' % prefix)
+        query = query.order_by('%smin_price' % prefix)
         q_string['q']['sort'] = 'price'
         q_string['sort_name_filter'] = 'Цена по возрастанию'
     elif sort == '-price':
-        query = query.order_by('-%sprice' % prefix)
+        query = query.order_by('-%smax_price' % prefix)
         q_string['q']['sort'] = '-price'
         q_string['sort_name_filter'] = 'Цена по убыванию'
 
@@ -221,7 +326,7 @@ def get_cat_for_site(request, link: str = None,
         products = [product.product for product in cat_products]
     if with_props:
         get_props_for_products(products)
-
+    get_costs_types(products)
     # TODO: кэшировать по ссылке
     return {
         'page': page,

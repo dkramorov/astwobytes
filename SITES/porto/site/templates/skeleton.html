@@ -6,8 +6,10 @@
 <link rel="stylesheet" href="/media/css/style.min.css">
 <link rel="stylesheet" type="text/css" href="/media/css/all.min.css">
 <link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css">
+<link rel="stylesheet" href="/media/css/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" href="/media/css/custom.css">
 {% block extrahead %}{% endblock %}
+<meta name="yandex-verification" content="7cacae91804ab114" />
 </head>
 <body>
 {% block body %}
@@ -120,15 +122,12 @@
               </ul>
             </div>
           </div>
-          
           <div class="col-lg-7">
             <div class="row">
-           
               <div class="col-lg-9">
                 <div class="col-lg-8 widget-social"><span class="contact-info-label">ИП Чеснокова Дарья Владимировна<br>
 
 ИНН: 772478189280 ОГРНИП: 320774600033152</span></div>
-                          
               </div>
             </div>
             <div class="footer-bottom">
@@ -140,12 +139,11 @@
             <div class="social-icons">
               {% for block in containers.main.tags.social.sub %}
                 <a href="{{ block.link }}" class="social-icon" target="_blank">
-                  <i class="icon-{{ block.tag }}"></i>
+                  <i class="fa fa-{{ block.tag }}"></i>
                 </a>
               {% endfor %}
             </div>
           </div>
-          
         </div>
       </div>
     </div>
@@ -178,6 +176,7 @@
 
 <a id="scroll-top" href="#top" title="Вверх" role="button"><i class="icon-angle-up"></i></a>
 {% endblock %}
+{% include "web/modals/feedback.html" %}
 <script src="/media/js/jquery.min.js"></script>
 {% include "shop_js.html" %}
 <script src="/media/js/bootstrap.bundle.min.js"></script>
@@ -203,6 +202,23 @@
         var fb = new FeedBack($(this).attr('id'));
         $("input.phone").mask("8(999)9 999-999");
       }
+    });
+/*
+    $('.open_feedback_widget').magnificPopup({
+      type:'inline',
+      items:{
+        src:"#feedback_widget"
+      },
+    });
+*/
+    $('.open_feedback_widget').each(function(){
+      var container_id = $(this).attr("data-widget");
+      $(this).magnificPopup({
+        type:'inline',
+        items:{
+          src:"#feedback_widget_" + container_id,
+        },
+      });
     });
   });
 </script>

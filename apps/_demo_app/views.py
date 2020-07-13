@@ -12,6 +12,10 @@ from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper
 
+from apps.main_functions.views_helper import (show_view,
+                                              edit_view,
+                                              search_view, )
+
 from .models import DemoModel
 
 CUR_APP = 'demo_app'
@@ -30,6 +34,7 @@ demo_app_vars = {
     'create_urla': 'create_demo_app',
     'edit_urla': 'edit_demo_app',
     'model': DemoModel,
+    #'custom_model_permissions': DemoModel,
 }
 
 def api(request, action: str = 'demo_app'):
@@ -47,6 +52,11 @@ def show_demo_app(request, *args, **kwargs):
     """Вывод объектов
        :param request: HttpRequest
     """
+    return show_view(request,
+                     model_vars = demo_app_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
+
     mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
@@ -81,6 +91,13 @@ def edit_demo_app(request, action: str, row_id: int = None, *args, **kwargs):
        :param action: действие над объектом (создание/редактирование/удаление)
        :param row_id: ид записи
     """
+    return edit_view(request,
+                     model_vars = demo_app_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
+
     mh_vars = demo_app_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     context = mh.context
@@ -152,6 +169,11 @@ def search_demo_app(request, *args, **kwargs):
     """Поиск объектов
        :param request: HttpRequest
     """
+    return search_view(request,
+                       model_vars = demo_app_vars,
+                       cur_app = CUR_APP,
+                       sfields = None, )
+
     result = {'results': []}
     mh = ModelHelper(DemoModel, request)
     mh_vars = demo_app_vars.copy()

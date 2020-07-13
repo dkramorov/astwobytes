@@ -17,6 +17,11 @@
         <span class="item-text">Свойства товаров</span>
       </a>
     </li>
+    <li{% ifequal submenu 'costs' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'products:show_costs' %}">
+        <span class="item-text">Типы цен</span>
+      </a>
+    </li>
   </ul>
   <!-- END SubMenu item-->
 </li>
