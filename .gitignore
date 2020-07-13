@@ -111,11 +111,11 @@ dump.rdb
 /media
 !SITES/*/media
 SITES/*/media/*
-!SITES/*/media/css
-!SITES/*/media/js
-!SITES/*/media/img
-!SITES/*/media/misc
-!SITES/*/media/favicons
+!SITES/*/media/css/
+!SITES/*/media/js/
+!SITES/*/media/img/
+!SITES/*/media/misc/
+!SITES/*/media/favicons/
 static/themeforest
 
 # xapian
