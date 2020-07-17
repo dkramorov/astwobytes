@@ -12,14 +12,19 @@
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
+
+{% include "core/excel/xlsx_form_import.html" %}
+
 {% include "core/tabulator_table.html" %}
 {% endblock %}
 
 {% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
 <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
 
 <script type="text/javascript">
 var main_table = null;
+var excel_table = null;
 $(document).ready(function(){
 
   var actionsUserFormatter = function(cell, formatterParams, onRendered){
@@ -34,21 +39,9 @@ $(document).ready(function(){
     return actions;
   };
 
-  main_table = new Tabulator("#main-table", {
-    {% include "core/tabulator_table_params.html" %}
-
+  excel_table = new Tabulator("#excel-table", {
+    layout: "fitColumns",
     columns:[
-/*
-      {
-        formatter: "responsiveCollapse",
-        width: 30,
-        minWidth: 30,
-        align: "center",
-        resizable: false,
-        headerSort: false,
-      },
-*/
-      {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
       {
         title: "Логин",
@@ -57,34 +50,6 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 120,
-      },
-      {
-        title: "Изображение",
-        field: "thumb",
-        headerSort: false,
-        formatter: imgFormatter,
-        minWidth: 120,
-      },
-      {
-        title: "Входил",
-        field: "last_login",
-        headerFilterPlaceholder: "Последний вход",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        minWidth: 150,
-      },
-      {
-        title: "Админ",
-        field: "is_superuser",
-        editor: "select",
-        headerFilterPlaceholder: "Админ?",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: {"": "Без фильтра", true: "Да", false: "Нет"},
-        },
-        formatter: booleanFormatter,
-        width: 110,
       },
       {
         title: "Имя",
@@ -132,6 +97,126 @@ $(document).ready(function(){
         width: 110,
       },
       {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+    ],
+  });
+  // Настройка отправки формы (файла) через аякс
+  set_ajax_form("#import_excel_file_form", function(r){
+    // success callback
+    // Строим таблицу с данными
+    $("#excel-table").removeClass("hidden");
+    $("#save_excel_table").removeClass("hidden");
+    excel_table.clearData();
+    excel_table.addData(r.resp.data);
+  }, function(r){
+    // error callback
+    console.log(r);
+  }, true);
+  set_ajax_form_save_xlsx("#save_excel_table", excel_table, function(r){
+    // success callback
+  }, function(r){
+    // error callback
+  }, 'save');
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Логин",
+        field: "username",
+        headerFilterPlaceholder: "Логин",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "username",
+        minWidth: 120,
+      },
+      {
+        title: "Изображение",
+        field: "thumb",
+        headerSort: false,
+        formatter: imgFormatter,
+        download: false,
+        minWidth: 120,
+      },
+      {
+        title: "Входил",
+        field: "last_login",
+        headerFilterPlaceholder: "Последний вход",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        download: false,
+        minWidth: 150,
+      },
+      {
+        title: "Админ",
+        field: "is_superuser",
+        editor: "select",
+        headerFilterPlaceholder: "Админ?",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        formatter: booleanFormatter,
+        downloadTitle: "is_superuser",
+        accessorDownload: accessor_is_active,
+        width: 110,
+      },
+      {
+        title: "Имя",
+        field: "first_name",
+        headerFilterPlaceholder: "Имя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "first_name",
+        minWidth: 120,
+      },
+      {
+        title: "Фамилия",
+        field: "last_name",
+        headerFilterPlaceholder: "Фамилия",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "last_name",
+        minWidth: 120,
+      },
+      {
+        title: "Телефон",
+        field: "customuser__phone",
+        headerFilterPlaceholder: "Телефон",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "customuser__phone",
+        minWidth: 120,
+      },
+      {
+        title: "Email",
+        field: "email",
+        headerFilterPlaceholder: "Email",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "email",
+        minWidth: 180,
+      },
+      {
+        title: "В штате",
+        field: "is_staff",
+        editor: "select",
+        headerFilterPlaceholder: "В штате?",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values:{"": "Без фильтра", true: "Да", false: "Нет"}
+        },
+        formatter: booleanFormatter,
+        downloadTitle: "is_staff",
+        accessorDownload: accessor_is_active,
+        width: 110,
+      },
+      {% include "core/tabulator_cell/is_active.html" %}
 /*
       {
         title: "Создан",
@@ -149,6 +234,7 @@ $(document).ready(function(){
         headerSort: false,
         formatter: actionsUserFormatter,
         width: 120,
+        download: false,
       },
     ],
   });

@@ -5,7 +5,6 @@
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Пользователи</span>
   </a>
-  <!-- START SubMenu item-->
   <ul class="nav collapse{% ifequal menu 'users' %} in{% endifequal %}">
     <li{% ifequal submenu 'users' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'login:show_users' %}">
@@ -17,8 +16,12 @@
         <span class="item-text">Группы</span>
       </a>
     </li>
+    <li{% ifequal submenu 'extra_fields' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'login:show_extra_fields' %}">
+        <span class="item-text">Доп. поля пользователей</span>
+      </a>
+    </li>
   </ul>
-  <!-- END SubMenu item-->
 </li>
 {% endif %}
 {% if request.user.is_superuser %}

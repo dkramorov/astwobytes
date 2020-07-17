@@ -10,10 +10,14 @@ from django.contrib.auth.decorators import login_required
 
 from apps.main_functions.catcher import defiz_phone
 from apps.main_functions.functions import object_fields
+from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 from apps.main_functions.model_helper import create_model_helper, ModelHelper
 from apps.main_functions.string_parser import analyze_digit
 from apps.main_functions.tabulator import tabulator_filters_and_sorters
-from apps.login.models import customUser
+from apps.main_functions.views_helper import (show_view,
+                                              edit_view,
+                                              search_view, )
+from apps.login.models import customUser, ExtraFields
 
 # Максимальное кол-во попыток ввести пароль без санкций
 MAX_ATTEMPTS = 3
@@ -65,6 +69,18 @@ def api(request, action: str = 'users'):
               'cur_page': mh.raw_paginator['cur_page'],
               'by': mh.raw_paginator['by'], }
     return JsonResponse(result, safe=False)
+
+def import_xlsx(request, action: str = 'user'):
+    """Апи-метод для сохранения данных из excel-файла
+                     удаления данных по excel-файлу
+       :param request: HttpRequest
+       :param action: какую модель использовать
+    """
+    #if action == 'user':
+    #    result = XlsxHelper(request, users_vars, CUR_APP)
+    result = XlsxHelper(request, users_vars, CUR_APP,
+                        cond_fields = ['username'])
+    return result
 
 def welcome(request, *args, **kwargs):
     """Страничка входа в админку - авторизация или приветствие"""
@@ -147,6 +163,8 @@ def show_users(request, *args, **kwargs):
                       'cur_page': mh.raw_paginator['cur_page'],
                       'by': mh.raw_paginator['by'], }
         return JsonResponse(result, safe=False)
+    context['import_xlsx_url'] = reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
+                                         kwargs={'action': 'users'})
     template = '%stable.html' % (mh.template_prefix, )
     return render(request, template, context)
 
@@ -359,13 +377,15 @@ def search_users(request, *args, **kwargs):
     """Поиск пользователей"""
     result = {'results': []}
     mh = ModelHelper(User, request)
+    mh.select_related_add('customuser')
     mh_vars = users_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
     mh.search_fields = ('first_name', 'last_name', 'username', 'customuser__phone')
     rows = mh.standard_show()
     for row in rows:
-        result['results'].append({'text': '%s' % (row, ), 'id': row.id})
+        name = '%s (%s id=%s)' % (str(row.customuser), row.username, row.id)
+        result['results'].append({'text': name, 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:
@@ -411,9 +431,19 @@ def show_groups(request, *args, **kwargs):
     if request.is_ajax():
         rows = mh.standard_show()
         result = []
+        ids_groups = {row.id: {} for row in rows}
+        # Достаем пользователей групп
+        users = User.objects.select_related('customuser').filter(groups__in=ids_groups.keys())
+        for user in users:
+            groups = user.groups.all().values_list('id', flat=True)
+            for group in groups:
+                if not user.id in ids_groups[group]:
+                    ids_groups[group][user.id] = '%s (%s id=%s)' % (str(user.customuser), user.username, user.id)
+
         for row in rows:
             item = object_fields(row)
             item['actions'] = row.id
+            item['users'] = '<br>'.join(ids_groups[row.id].values())
             result.append(item)
 
         if request.GET.get('page'):
@@ -549,15 +579,25 @@ def group_perms(request, row_id: int):
     template = '%sperms.html' % (mh.template_prefix, )
     return render(request, template, context)
 
+def search_groups(request, *args, **kwargs):
+    """Поиск групп пользователей"""
+    return search_view(request,
+                       model_vars = groups_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('name', ), )
 
 def prepare_perm_list(cur_perms):
     """Подготовить список всех разрешений,
        проставить имеющиеся разрешения для пользователя/группы
-       permissions = """
+       :param cur_perms: список id разрешений
+    """
     perms = {}
     pass_perms = ('content type', 'session', 'custom user', 'permission')
     permissions = Permission.objects.select_related('content_type').all()
     for perm in permissions:
+        if not perm.content_type.model_class()._meta.default_permissions:
+            continue
+
         if not perm.content_type.id in perms:
             perms[perm.content_type.id] = {'content_type': perm.content_type, 'perms': []}
         perms[perm.content_type.id]['perms'].append(perm)
@@ -610,6 +650,61 @@ def prepare_perm_list(cur_perms):
     perm_list.sort(key=lambda x:x['name'])
     return perm_list
 
+extra_fields_vars = {
+    'singular_obj': 'Доп. поле пользователя',
+    'plural_obj': 'Доп. поля пользователя',
+    'rp_singular_obj': 'доп. поля пользователя',
+    'rp_plural_obj': 'доп. полей пользователей',
+    'template_prefix': 'extra_fields_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'users',
+    'submenu': 'extra_fields',
+    'show_urla': 'show_extra_fields',
+    'create_urla': 'create_extra_field',
+    'edit_urla': 'edit_extra_field',
+    'model': ExtraFields,
+    'custom_model_permissions': User,
+    'select_related_list': ('group', ),
+}
+
+@login_required
+def show_extra_fields(request, *args, **kwargs):
+    """Вывод дополнительных полей пользователя/группы"""
+    extra_vars = {}
+    return show_view(request,
+                     model_vars = extra_fields_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = extra_vars, )
+
+@login_required
+def edit_extra_field(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование дополнительного поля пользователя/группы"""
+    return edit_view(request,
+                     model_vars = extra_fields_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
+
+@login_required
+def extra_fields_positions(request, *args, **kwargs):
+    """Изменение позиций доп. полей пользователей/групп"""
+    result = {}
+    mh_vars = extra_fields_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_extra_fields(request, *args, **kwargs):
+    """Поиск в доп. полей пользователей/групп"""
+    return search_view(request,
+                       model_vars = extra_fields_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('name', 'field'), )
+
+
 @login_required
 def demo(request, action='panels'):
     """Демонстрация возможностей дизайна админки"""
@@ -647,6 +742,4 @@ def demo(request, action='panels'):
 
     return render(request, template, context)
 
-def check_sentry(request):
-    """Просто проверка, что сентри работает - пЁхаем туда ошибку"""
-    division_by_zero = 1 / 0
+

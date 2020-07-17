@@ -1,0 +1,71 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+var groupNameFormatter = function(cell, formatterParams, onRendered){
+  var data = cell.getRow().getData();
+  return data['group']['name'];
+};
+$(document).ready(function(){
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {% include "core/tabulator_cell/name.html" %}
+      {
+        title: "Системное имя",
+        field: "field",
+        headerFilterPlaceholder: "Системное имя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+        downloadTitle: "field",
+      },
+      {
+        title: "В главной таблице",
+        field: "show_in_table",
+        headerFilterPlaceholder: "В главной таблице",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+            values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        editable: false,
+        editor: "select",
+        formatter: booleanFormatter,
+        width: 90,
+        downloadTitle: "show_in_table",
+      },
+      {
+        title: "Группа",
+        field: "group__name",
+        headerFilterPlaceholder: "Группа",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+        formatter: groupNameFormatter,
+        downloadTitle: "group__name",
+      },
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+});
+</script>
+{% endblock %}

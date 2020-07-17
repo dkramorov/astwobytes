@@ -7,10 +7,8 @@
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
-<!-- START row-->
 <div class="row">
   <div class="col-sm-12">
-    <!-- START panel-->
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
         <div class="panel-heading">{{ singular_obj }}</div>
@@ -18,68 +16,24 @@
           {% csrf_token %}
           {% include "core/forms/row_name.html" %}
           <div class="form-group">
-            <label class="col-lg-2 control-label">Ссылка</label>
+            <label class="col-lg-2 control-label">Линия</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Ссылка" class="form-control" name="link" value="{% if row.link %}{{ row.link }}{% endif %}" autocomplete="off" id="form-field-link">
+              <select id="line_select2" name="line" autocomplete="off">
+                {% if row.line %}
+                  <option value="{{ row.line.id }}" selected>{{ row.line.name }}</option>
+                {% endif %}
+              </select>
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Описание</label>
-            <div class="col-lg-10">
-              <textarea placeholder="Описание" class="form-control" name="desc" autocomplete="off">{% if row.desc %}{{ row.desc }}{% endif %}</textarea>
-            </div>
-          </div>
+          {% include "core/forms/row_image.html" %}
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
-
-          <div class="panel widget">
-            <img class="img-responsive file-img">
-            <div class="panel-body">
-              <div class="row row-table text-center">
-                <div class="col-xs-4">
-                  <p>Mime-тип</p>
-                  <h3 class="m0 text-primary file-mime-type">{% if row.mime %}{{ row.mime }}{% endif %}</h3>
-                </div>
-                <div class="col-xs-4">
-                  <p>Путь</p>
-                  <p class="m0 text-primary file-path">{% if row.path %}<a href='/media/{{ row.folder }}{{ row.path }}' target='_blank'>Служебная ссылка на файл</a>{% endif %}</p>
-                </div>
-                <div class="col-xs-4">
-                  <p>Ссылка</p>
-                  <p class="m0 text-primary file-link">{% if row.path %}<a href='{{ row.link }}' target='_blank'>Пользовательская ссылка на файл</a>{% endif %}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {% if row %}
-          <fieldset>
-            <div class="form-group">
-              <label class="col-sm-2 control-label"><small>Загрузка файла</small></label>
-              <div class="col-sm-10">
-                <div id="upload-drop-files" class="box-placeholder text-center">
-                  <p>
-                    <em class="fa fa-cloud-upload fa-2x"></em>
-                  </p>Перетащите файл сюда или
-                  <div class="btn-link form-file">выберите файл для загрузки
-                    <input id="upload-select-files" type="file" name="path">
-                  </div>
-                </div>
-                <div id="progressbar-files" class="progress hidden">
-                  <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-          {% endif %}
         </div>
         {% include "core/forms/footer_buttons.html" %}
       </form>
     </div>
-    <!-- END panel-->
   </div>
 </div>
-<!-- END row-->
 {% endblock %}
 
 {% block extrascripts %}
@@ -123,22 +77,44 @@
         e.preventDefault();
       });
 
+      $('#line_select2').select2({
+        placeholder: 'Линия узла',
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_lines' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              without_templates: 1,
+              without_menus: 1,
+              without_main: 1,
+              page: params.page || 1,
+            }
+            return query;
+          },
+
+          //data: "without_templates=1&without_menus=1&without_main=1",
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
       function update_links(r){
-        $(".file-mime-type").html(r['row']['mime']);
-        var path = "/media/" + r['row']['folder'] + r['row']['path'];
-        var link = "<a href='" + path + "' target='_blank'>Служебная ссылка на файл</a>";
-        $(".file-path").html(link);
-        var link = "<a href='" + r['row']['link'] + "' target='_blank'>Пользовательская ссылка на файл</a>";
-        $(".file-link").html(link);
-        $("#form-field-link").val(r['row']['link']);
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
       }
       {% if row %}
         var progressbar = $('#progressbar-files'),
           bar         = progressbar.find('.progress-bar-files'),
           settings    = {
-            action: '{% url "files:edit_file" "img" row.id %}', // upload url
+            action: '{% url "welding:edit_joint" "img" row.id %}', // upload url
             allow : '*.*',
-            param: 'path',
+            param: 'img',
             params: {csrfmiddlewaretoken: getCookie('csrftoken')},
             loadstart: function() {
               bar.css('width', '0%').text('0%');

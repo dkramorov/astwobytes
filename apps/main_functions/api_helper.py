@@ -141,10 +141,15 @@ def import_from_excel(model, excel_file, required_names: list = None):
 
     for row in sheet.rows:
         item = {}
+        is_empty = True
         # В первой записи будут названия полей
         for name, ind in indexes.items():
-            item[name] = row[ind].value
-        data.append(item)
+            value = row[ind].value
+            if value:
+                is_empty = False
+            item[name] = value
+        if not is_empty:
+            data.append(item)
     result['data'] = data[1:]
     return result
 

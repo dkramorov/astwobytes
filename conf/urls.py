@@ -111,6 +111,11 @@ if 'apps.shop' in settings.INSTALLED_APPS:
     urlpatterns += [
         re_path(r'^shop/', include('apps.shop.urls')),
     ]
+if 'apps.weld' in settings.INSTALLED_APPS:
+    # Модуль сварки стыков
+    urlpatterns += [
+        re_path(r'^weld/', include('apps.weld.urls')),
+    ]
 if 'djapian' in settings.INSTALLED_APPS:
     # DJAPIAN SEARCH
     from djapian.utils import load_indexes

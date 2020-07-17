@@ -1,7 +1,6 @@
 {% extends "core/base.html" %}
 
 {% block extrahead %}
-<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -16,8 +15,6 @@
 {% endblock %}
 
 {% block extrascripts %}
-<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
-
 <script type="text/javascript">
 var main_table = null;
 $(document).ready(function(){
@@ -41,6 +38,13 @@ $(document).ready(function(){
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
       {% include "core/tabulator_cell/name.html" %}
+      {
+        title: "Пользователи",
+        field: "users",
+        headerSort: false,
+        formatter: wordwrapFormatter,
+        width: 180,
+      },
       {
         title: "Действия",
         field: "actions",

@@ -44,16 +44,6 @@ $(document).ready(function(){
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
-/*
-      {
-        formatter: "responsiveCollapse",
-        width: 30,
-        minWidth: 30,
-        align: "center",
-        resizable: false,
-        headerSort: false,
-      },
-*/
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
       {% include "core/tabulator_cell/name.html" %}

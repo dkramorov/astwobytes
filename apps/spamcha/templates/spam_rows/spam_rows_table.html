@@ -22,16 +22,6 @@ $(document).ready(function(){
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
-/*
-      {
-        formatter: "responsiveCollapse",
-        width: 30,
-        minWidth: 30,
-        align: "center",
-        resizable: false,
-        headerSort: false,
-      },
-*/
       {
         rowHandle:true,
         formatter:"handle",

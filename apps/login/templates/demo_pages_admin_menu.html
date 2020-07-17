@@ -4,7 +4,6 @@
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Демо-странички</span>
   </a>
-  <!-- START SubMenu item-->
   <ul class="nav collapse{% ifequal menu 'demo' %} in{% endifequal %}">
     <li{% ifequal submenu "dashboard" %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='dashboard' %}">
@@ -107,5 +106,4 @@
       </a>
     </li>
   </ul>
-  <!-- END SubMenu item-->
 </li>

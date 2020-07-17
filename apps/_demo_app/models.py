@@ -16,6 +16,7 @@ class DemoModel(Standard):
         #    ('edit_obj', 'Редактирование объектов'),
         #    ('drop_obj', 'Удаление объектов'),
         #)
+        #default_permissions = []
 
     def save(self, *args, **kwargs):
         super(DemoModel, self).save(*args, **kwargs)

@@ -13,10 +13,8 @@
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
-<!-- START row-->
 <div class="row">
   <div class="col-sm-12">
-    <!-- START panel-->
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
         <div class="panel-heading">{{ singular_obj }}</div>
@@ -94,10 +92,8 @@
       </form>
       <div class="clearfix"></div>
     </div>
-    <!-- END panel-->
   </div>
 </div>
-<!-- END row-->
 {% endblock %}
 
 {% block extrascripts %}

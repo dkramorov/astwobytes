@@ -2,13 +2,19 @@
     <label class="col-lg-2 control-label">Изображение
     </label>
     <div class="col-lg-8 img_block">
-        <a href="{{ row.imagine }}" target="_blank" id="preview_img_full">
-            <img src="{{ row.thumb }}" class="img-responsive" id="preview_img">
-        </a>
+        {% if not row %}
+            <p>добавляется после создания</p>
+        {% else %}
+            <a href="{{ row.imagine }}" target="_blank" id="preview_img_full">
+                <img src="{{ row.thumb }}" class="img-responsive" id="preview_img">
+            </a>
+        {% endif %}
     </div>
-    <div class="col-lg-2">
-      <input type="text" class="bg-color-for-img" value="#fff" />
-    </div>
+    {% if row %}
+        <div class="col-lg-2">
+          <input type="text" class="bg-color-for-img" value="#fff" />
+        </div>
+    {% endif %}
 </div>
 
 {% if row %}

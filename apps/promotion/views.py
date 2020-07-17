@@ -69,7 +69,7 @@ def show_vocabulary(request, *args, **kwargs):
                                   kwargs={'action': 'vocabulary'}),
     }
     return show_view(request,
-                     model_vars = costs_vars,
+                     model_vars = vocabulary_vars,
                      cur_app = CUR_APP,
                      extra_vars = extra_vars, )
 
@@ -77,7 +77,7 @@ def show_vocabulary(request, *args, **kwargs):
 def edit_vocabulary(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование словаря"""
     return edit_view(request,
-                     model_vars = costs_vars,
+                     model_vars = vocabulary_vars,
                      cur_app = CUR_APP,
                      action = action,
                      row_id = row_id,
@@ -95,7 +95,7 @@ def vocabulary_positions(request, *args, **kwargs):
 def search_vocabulary(request, *args, **kwargs):
     """Поиск в словаре"""
     return search_view(request,
-                       model_vars = costs_vars,
+                       model_vars = vocabulary_vars,
                        cur_app = CUR_APP,
                        sfields = ('name', ), )
 
@@ -162,7 +162,7 @@ def show_svisits(request, *args, **kwargs):
 def edit_svisit(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование визита"""
     return edit_view(request,
-                     model_vars = costs_vars,
+                     model_vars = svisits_vars,
                      cur_app = CUR_APP,
                      action = action,
                      row_id = row_id,

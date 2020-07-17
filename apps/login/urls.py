@@ -8,6 +8,7 @@ app_name = 'login'
 urlpatterns = [
     # получение по апи всех данных
     url('^(?P<action>users)/api/$', views.api, name='api'),
+    url('^(?P<action>users)/import_xlsx/$', views.import_xlsx, name='import_xlsx'),
 
     # Авторизация/ПНХ(выход)
     path('', views.welcome, name='welcome'),
@@ -25,9 +26,15 @@ urlpatterns = [
     path('groups/', views.show_groups, name='show_groups'),
     url('^groups/(?P<action>create)/$', views.edit_group, name='create_group'),
     url('^groups/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_group, name='edit_group'),
+    path('groups/search/', views.search_groups, name='search_groups'),
     url('^groups/perms/(?P<row_id>[0-9]{1,11})/$', views.group_perms, name='group_perms'),
+    # Дополнительные поля пользователей
+    path('extra_fields/', views.show_extra_fields, name='show_extra_fields'),
+    url('^extra_fields/(?P<action>create)/$', views.edit_extra_field, name='create_extra_field'),
+    url('^extra_fields/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_extra_field, name='edit_extra_field'),
+    path('extra_fields/positions/', views.extra_fields_positions, name='extra_fields_positions'),
+    path('extra_fields/search/', views.search_extra_fields, name='search_extra_fields'),
+
     # Демо-странички
     url('^demo/(?P<action>[a-z_]{1,20})/$', views.demo, name='demo'),
-    # Проверка сентряка
-    path('check_sentry/', views.check_sentry, name='check_sentry'),
 ]

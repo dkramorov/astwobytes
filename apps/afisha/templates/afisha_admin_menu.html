@@ -5,7 +5,6 @@
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Афиша</span>
   </a>
-  <!-- START SubMenu item-->
   <ul class="nav collapse{% ifequal menu 'afisha' %} in{% endifequal %}">
     <li{% ifequal submenu 'rubrics' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_rubrics' %}">
@@ -33,6 +32,5 @@
       </a>
     </li>
   </ul>
-  <!-- END SubMenu item-->
 </li>
 {% endif %}

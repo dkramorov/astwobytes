@@ -1,0 +1,309 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+
+  var pathFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var data = cell.getRow().getData();
+    var value = cell.getValue();
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      result += " <a style='white-space:normal;' class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
+    }
+    result += "</div>";
+    return result;
+  };
+
+  var baseFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['base'] ? data['base']['name'] : '';
+  };
+  var contractFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['contract'] ? data['contract']['name'] : '';
+  };
+  var titulFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['titul'] ? data['titul']['name'] : '';
+  };
+  var lineFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint'] ? data['joint']['line']['name']  : '';
+  };
+  var jointFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint'] ? data['joint']['name']  : '';
+  };
+  var schemeFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['scheme'] ? data['scheme']['name']  : '';
+  };
+  var materialFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['material'] ? data['material']['name']  : '';
+  };
+  var joinTypeFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['join_type'] ? data['join_type']['name']  : '';
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Установка",
+        field: "base__name",
+        headerFilterPlaceholder: "Установка",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: baseFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Договор",
+        field: "contract__name",
+        headerFilterPlaceholder: "Договор",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: contractFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Титул",
+        field: "titul__name",
+        headerFilterPlaceholder: "Титул",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: titulFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Линия",
+        field: "joint__line__name",
+        headerFilterPlaceholder: "Линия",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: lineFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Узел",
+        field: "joint__name",
+        headerFilterPlaceholder: "Узел",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: jointFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Изом. схема",
+        field: "scheme__name",
+        headerFilterPlaceholder: "Изом. схема",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: schemeFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Ремонт",
+        field: "repair",
+        headerFilterPlaceholder: "Ремонт",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Вырез",
+        field: "cutout",
+        headerFilterPlaceholder: "Вырез",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+         values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        editable: false,
+        editor: "select",
+        formatter: booleanFormatter,
+        width: 90,
+        downloadTitle: "cutout",
+        accessorDownload: accessor_is_active,
+        //accessorDownloadParams: {test: 'test'},
+      },
+      {
+        title: "Диаметр",
+        field: "diameter",
+        headerFilterPlaceholder: "Диаметр",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 90,
+      },
+      {
+        title: "Толщина стенки",
+        field: "side_thickness",
+        headerFilterPlaceholder: "Толщина стенки",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 90,
+      },
+      {
+        title: "Материал (сталь)",
+        field: "material__name",
+        headerFilterPlaceholder: "Материал (сталь)",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: materialFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Свар. элементы",
+        field: "join_type__name",
+        headerFilterPlaceholder: "Свар. элементы",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: joinTypeFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Дата сварки",
+        field: "welding_date",
+        headerFilterPlaceholder: "Дата сварки",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 120,
+      },
+      {
+        title: "Смена",
+        field: "workshift",
+        headerFilterPlaceholder: "Смена",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "№ заявки на НК",
+        field: "request_number",
+        headerFilterPlaceholder: "№ заявки на НК",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Дата заявки на НК",
+        field: "request_control_date",
+        headerFilterPlaceholder: "Дата заявки на НК",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 120,
+      },
+      {
+        title: "Вид контроля",
+        field: "request_number",
+        headerFilterPlaceholder: "Вид контроля",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 90,
+      },
+      {
+        title: "Вид сварного соединения",
+        field: "welding_conn_view",
+        headerFilterPlaceholder: "Вид сварного соединения",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 90,
+      },
+      {
+        title: "Тип сварки",
+        field: "welding_type",
+        headerFilterPlaceholder: "Тип сварки",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 90,
+      },
+      {
+        title: "Категория",
+        field: "category",
+        headerFilterPlaceholder: "Категория",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Результат контроля",
+        field: "control_result",
+        headerFilterPlaceholder: "Результат контроля",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 90,
+      },
+      {
+        title: "Номер заключения",
+        field: "conclusion_number",
+        headerFilterPlaceholder: "Номер заключения",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Дата заключения",
+        field: "conclusion_date",
+        headerFilterPlaceholder: "Дата заключения",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 120,
+      },
+      {
+        title: "Примечание",
+        field: "notice",
+        headerFilterPlaceholder: "Примечание",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 120,
+      },
+      {
+        title: "D-inc на человека или стык",
+        field: "dinc",
+        headerFilterPlaceholder: "D-inc на человека или стык",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 120,
+      },
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "welding_date" || $(this).attr("tabulator-field") === "request_control_date" || $(this).attr("tabulator-field") === "conclusion_date"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "left top",
+        todayButton: new Date(),
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

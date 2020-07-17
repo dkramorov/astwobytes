@@ -9,11 +9,8 @@
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
-<!-- START row-->
 <div class="row">
   <div class="col-sm-12">
-    <!-- START panel-->
-
     {% if row %}
       <div class="panel panel-default">
         <div class="panel-heading">Действия {{ rp_plural_obj }}</div>
@@ -61,10 +58,8 @@
         {% include "core/forms/footer_buttons.html" %}
       </form>
     </div>
-    <!-- END panel-->
   </div>
 </div>
-<!-- END row-->
 {% endblock %}
 
 {% block extrascripts %}

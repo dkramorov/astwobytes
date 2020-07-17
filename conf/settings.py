@@ -104,10 +104,15 @@ if env('YANDEX_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.yandex')
 if env('SHOP_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.shop')
+if env('UPLOAD_TASKS_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.upload_tasks')
+if env('WELD_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.weld')
 
-CUSTOM_APPS += [
-    'apps.upload_tasks',
-]
+#CUSTOM_APPS += [
+#    'apps.upload_tasks',
+#]
+
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 # Email settings
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', cast=bool, default=True)

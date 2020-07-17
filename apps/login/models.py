@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.dispatch import receiver
 
 from apps.main_functions.string_parser import kill_quotes
@@ -53,6 +53,49 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(models.signals.post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.customuser.save()
+
+class ExtraFields(Standard):
+    """Дополнительные поля к модели пользователя
+       Вспомогательная модель (использовать для personal?),
+       чтобы руками не вводить, а просто заполнять
+       Если прописана группа, значит выводим доп. поля только
+       если пользователь принадлежит к группе
+    """
+    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    field = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    show_in_table = models.BooleanField(blank=True, null=True, db_index=True, default=False, verbose_name='Показывать в таблице принудительно')
+    group = models.ForeignKey(Group, blank=True, null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Доп. поле пользователя'
+        verbose_name_plural = 'Доп. поля пользователей'
+        default_permissions = []
+
+class ExtraValues(Standard):
+    """Значения к дополнительным полям модели пользователя
+       Вспомогательная модель (использовать для personal?),
+       чтобы руками не вводить значения, а выбирать (если есть список)
+    """
+    field = models.ForeignKey(ExtraFields, blank=True, null=True, on_delete=models.CASCADE)
+    value = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Значение на доп. поле пользователя'
+        verbose_name_plural = 'Значниея на доп. поля пользователей'
+        default_permissions = []
+
+class ExtraInfo(models.Model):
+    """Поля и значения дополнительных полей для модели пользователя
+       (использовать для personal?)
+    """
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    field = models.ForeignKey(ExtraFields, blank=True, null=True, on_delete=models.CASCADE)
+    value = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Доп. поле пользователя'
+        verbose_name_plural = 'Доп. поля пользователей'
+        default_permissions = []
 
 #myuser.groups.set([group_list])
 #myuser.groups.add(group, group, ...)

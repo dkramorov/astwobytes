@@ -8,9 +8,31 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import create_model_helper, ModelHelper
 
 logger = logging.getLogger('main')
+
+def special_model_vars(mh, mh_vars, context):
+    """Вспомогательная функция на show_view, edit_view
+       Обработка специфических ключей в model_vars
+       :param mh: ModelHelper
+       :param mh_vars: словарь со всеми ключами для работы
+       :param context: словарь контекста из mh
+    """
+    # ----------------------
+    # Права от другой модели
+    # ----------------------
+    if 'custom_model_permissions' in mh_vars:
+        mh.get_permissions(mh_vars['custom_model_permissions'])
+        del context['custom_model_permissions']
+    # -------------------
+    # select_related_list
+    # -------------------
+    if 'select_related_list' in mh_vars:
+        for sr in mh_vars['select_related_list']:
+            mh.select_related_add(sr)
+        del context['select_related_list']
+
 
 def show_view(request,
               model_vars: dict,
@@ -45,12 +67,7 @@ def show_view(request,
     mh_vars = model_vars.copy()
     mh = create_model_helper(mh_vars, request, cur_app)
     context = mh.context
-    # ----------------------
-    # Права от другой модели
-    # ----------------------
-    if 'custom_model_permissions' in mh_vars:
-        mh.get_permissions(mh_vars['custom_model_permissions'])
-        del context['custom_model_permissions']
+    special_model_vars(mh, mh_vars, context)
 
     if extra_vars:
         context.update(extra_vars)
@@ -93,12 +110,7 @@ def edit_view(request,
     mh_vars = model_vars.copy()
     mh = create_model_helper(mh_vars, request, cur_app, action)
     context = mh.context
-    # ----------------------
-    # Права от другой модели
-    # ----------------------
-    if 'custom_model_permissions' in mh_vars:
-        mh.get_permissions(mh_vars['custom_model_permissions'])
-        del context['custom_model_permissions']
+    special_model_vars(mh, mh_vars, context)
 
     if extra_vars:
         context.update(extra_vars)
