@@ -32,7 +32,13 @@ def special_model_vars(mh, mh_vars, context):
         for sr in mh_vars['select_related_list']:
             mh.select_related_add(sr)
         del context['select_related_list']
-
+    # ------------------
+    # insert_breadcrumbs
+    # ------------------
+    if 'insert_breadcrumbs' in context:
+        for i, crumb in enumerate(context['insert_breadcrumbs']):
+            mh.breadcrumbs.insert(i, crumb)
+        del context['insert_breadcrumbs']
 
 def show_view(request,
               model_vars: dict,
@@ -58,19 +64,20 @@ def show_view(request,
                    'edit_urla': 'edit_cost',
                    'model': CostsTypes,
                    'custom_model_permissions': Products,
+                   'select_related_list': ('user', ),
                }
        :param cur_app: CUR_APP во view.py,
-           например, CUR_APP='products'
+           например,
+               CUR_APP='products'
     """
     if not extra_vars:
         extra_vars = {}
     mh_vars = model_vars.copy()
     mh = create_model_helper(mh_vars, request, cur_app)
     context = mh.context
-    special_model_vars(mh, mh_vars, context)
-
     if extra_vars:
         context.update(extra_vars)
+    special_model_vars(mh, mh_vars, context)
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -110,10 +117,9 @@ def edit_view(request,
     mh_vars = model_vars.copy()
     mh = create_model_helper(mh_vars, request, cur_app, action)
     context = mh.context
-    special_model_vars(mh, mh_vars, context)
-
     if extra_vars:
         context.update(extra_vars)
+    special_model_vars(mh, mh_vars, context)
     row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
@@ -216,7 +222,9 @@ def search_view(request,
     for row in rows:
         name = []
         for field in exists_fields:
-            name.append('%s=%s' % (field, getattr(row, field)))
+            value = getattr(row, field)
+            if value:
+                name.append(str(value))
         result['results'].append({'text': ', '.join(name), 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}

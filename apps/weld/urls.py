@@ -2,7 +2,7 @@
 from django.urls import path
 from django.conf.urls import url
 
-from . import views
+from . import views, welder_views, company_views, material_views
 
 app_name = 'welding'
 urlpatterns = [
@@ -15,6 +15,14 @@ urlpatterns = [
     path('admin/positions/', views.welding_positions, name='welding_positions'),
     # аякс-поиск
     path('welding/search/', views.search_welding, name='search_welding'),
+
+    # компании (company_views)
+    path('admin/companies/', company_views.show_companies, name='show_companies'),
+    url('^admin/companies/(?P<action>create)/$', company_views.edit_company, name='create_company'),
+    url('^admin/companies/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', company_views.edit_company, name='edit_company'),
+    path('admin/companies/positions/', company_views.companies_positions, name='companies_positions'),
+    # аякс-поиск
+    path('welding/companies/search/', company_views.search_companies, name='search_companies'),
 
     # установки
     path('admin/bases/', views.show_bases, name='show_bases'),
@@ -64,13 +72,13 @@ urlpatterns = [
     # аякс-поиск
     path('welding/joints/search/', views.search_joints, name='search_joints'),
 
-    # материалы
-    path('admin/materials/', views.show_materials, name='show_materials'),
-    url('^admin/materials/(?P<action>create)/$', views.edit_material, name='create_material'),
-    url('^admin/materials/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_material, name='edit_material'),
-    path('admin/materials/positions/', views.materials_positions, name='materials_positions'),
+    # материалы (material_views)
+    path('admin/materials/', material_views.show_materials, name='show_materials'),
+    url('^admin/materials/(?P<action>create)/$', material_views.edit_material, name='create_material'),
+    url('^admin/materials/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', material_views.edit_material, name='edit_material'),
+    path('admin/materials/positions/', material_views.materials_positions, name='materials_positions'),
     # аякс-поиск
-    path('welding/materials/search/', views.search_materials, name='search_materials'),
+    path('welding/materials/search/', material_views.search_materials, name='search_materials'),
 
     # типы соединений
     path('admin/join_types/', views.show_join_types, name='show_join_types'),
@@ -80,12 +88,35 @@ urlpatterns = [
     # аякс-поиск
     path('welding/join_types/search/', views.search_join_types, name='search_join_types'),
 
-    # сварщики
-    path('admin/welders/', views.show_welders, name='show_welders'),
-    url('^admin/welders/(?P<action>create)/$', views.edit_welder, name='create_welder'),
-    url('^admin/welders/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_welder, name='edit_welder'),
-    path('admin/welders/positions/', views.welders_positions, name='welders_positions'),
+    # сварщики (welder_views)
+    path('admin/welders/', welder_views.show_welders, name='show_welders'),
+    url('^admin/welders/(?P<action>create)/$', welder_views.edit_welder, name='create_welder'),
+    url('^admin/welders/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_welder, name='edit_welder'),
+    path('admin/welders/positions/', welder_views.welders_positions, name='welders_positions'),
     # аякс-поиск
-    path('welding/welders/search/', views.search_welders, name='search_welders'),
+    path('welding/welders/search/', welder_views.search_welders, name='search_welders'),
 
+    # сварщики - гарантийные письма (welder_views)
+    path('admin/letters_of_guarantee/', welder_views.show_letters_of_guarantee, name='show_letters_of_guarantee'),
+    url('^admin/letters_of_guarantee/(?P<action>create)/$', welder_views.edit_letter_of_guarantee, name='create_letter_of_guarantee'),
+    url('^admin/letters_of_guarantee/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_letter_of_guarantee, name='edit_letter_of_guarantee'),
+    path('admin/letters_of_guarantee/positions/', welder_views.letters_of_guarantee_positions, name='letters_of_guarantee_positions'),
+    # аякс-поиск
+    path('welding/letters_of_guarantee/search/', welder_views.search_letters_of_guarantee, name='search_letters_of_guarantee'),
+
+    # сварщики - акты ВИК (welder_views)
+    path('admin/viks/', welder_views.show_viks, name='show_viks'),
+    url('^admin/viks/(?P<action>create)/$', welder_views.edit_vik, name='create_vik'),
+    url('^admin/viks/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_vik, name='edit_vik'),
+    path('admin/viks/positions/', welder_views.viks_positions, name='viks_positions'),
+    # аякс-поиск
+    path('welding/viks/search/', welder_views.search_viks, name='search_viks'),
+
+    # сварщики - УЗК/РК контроль (welder_views)
+    path('admin/controlk/', welder_views.show_controlk, name='show_controlk'),
+    url('^admin/controlk/(?P<action>create)/$', welder_views.edit_controlk, name='create_controlk'),
+    url('^admin/controlk/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_controlk, name='edit_controlk'),
+    path('admin/controlk/positions/', welder_views.controlk_positions, name='controlk_positions'),
+    # аякс-поиск
+    path('welding/controlk/search/', welder_views.search_controlk, name='search_controlk'),
 ]

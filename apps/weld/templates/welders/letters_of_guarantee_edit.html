@@ -14,13 +14,20 @@
         <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
-          {% include "core/forms/row_name.html" %}
           <div class="form-group">
-            <label class="col-lg-2 control-label">Линия</label>
+            <label class="col-lg-2 control-label">Гарантийное письмо</label>
             <div class="col-lg-10">
-              <select id="line_select2" name="line" autocomplete="off">
-                {% if row.line %}
-                  <option value="{{ row.line.id }}" selected>{{ row.line.name }}</option>
+              <input type="text" placeholder="Гарантийное письмо" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Сварщик</label>
+            <div class="col-lg-10">
+              <select id="welder_select2" name="welder" autocomplete="off"  data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.welder %}
+                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
                 {% endif %}
               </select>
             </div>
@@ -37,17 +44,16 @@
 {% endblock %}
 
 {% block extrascripts %}
-  <script src="/static/admin/js/parsley.min.js"></script>
   <script type="text/javascript">
-    var upload_img_url = '{% url "welding:edit_joint" "img" row.id %}';
+    var upload_img_url = '{% url "welding:edit_letter_of_guarantee" "img" row.id %}';
     $(document).ready(function(){
-      $('#line_select2').select2({
-        placeholder: 'Линия узла',
+      $('#welder_select2').select2({
+        placeholder: 'Выберите объект',
+        allowClear: true,
         width: '100%',
         tags: true,
         ajax: {
-          url: "{% url 'welding:search_lines' %}",
-
+          url: "{% url 'welding:search_welders' %}",
           data: function (params) {
             var query = {
               q: params.term,
@@ -58,8 +64,6 @@
             }
             return query;
           },
-
-          //data: "without_templates=1&without_menus=1&without_main=1",
           cache: false,
           dataType: 'json',
         }

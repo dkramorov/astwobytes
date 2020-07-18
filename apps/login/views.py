@@ -276,7 +276,8 @@ def edit_user(request, action: str, row_id: int = None, *args, **kwargs):
         # -------------------------------------
         if hasattr(mh.row, 'customuser'):
             context['row']['customuser'] = object_fields(mh.row.customuser, pass_fields=('user', ))
-            context['row']['customuser']['thumb'] = mh.row.customuser.thumb()
+            context['row']['thumb'] = mh.row.customuser.thumb()
+            context['row']['imagine'] = mh.row.customuser.imagine()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)

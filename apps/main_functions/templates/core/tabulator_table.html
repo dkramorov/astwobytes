@@ -1,6 +1,35 @@
 <!-- START panel-->
 <div class="panel panel-default">
-  <div class="panel-heading">{{ plural_obj }}
+  <div class="panel-heading">{{ plural_obj }} - действия
+    <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
+      <em class="fa fa-times"></em>
+    </a>
+    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть/Развернуть" class="pull-right">
+      <em class="fa fa-plus"></em>
+    </a>
+  </div>
+  <div class="clearfix"></div>
+  <div class="panel-wrapper collapse">
+    <div class="panel-body">
+      {% block tabulator_actions %}
+        <button class="mb-sm btn btn-primary" type="button" id="download-csv">
+          <em class="fa fa-file-text fa-fw mr-sm"></em>Скачать csv
+        </button>
+        <button class="mb-sm btn btn-primary" type="button" id="download-json">
+          <em class="fa fa-file-text-o fa-fw mr-sm"></em>Скачать json
+        </button>
+        <button class="mb-sm btn btn-primary" type="button" id="download-xlsx">
+          <em class="fa fa-files-o fa-fw mr-sm"></em>Скачать xlsx
+        </button>
+        <a class="mb-sm btn btn-primary" id="main-table-link">
+          <em class="fa fa-link fa-fw mr-sm"></em>Ссылка на таблицу
+        </a>
+      {% endblock %}
+    </div>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading"><strong>{{ plural_obj }}</strong>
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
       <em class="fa fa-times"></em>
     </a>
@@ -8,22 +37,6 @@
       <em class="fa fa-minus"></em>
     </a>
   </div>
-  <!-- Скачивание таблицы -->
-  <div class="panel-body">
-    <button class="mb-sm btn btn-primary" type="button" id="download-csv">
-      <em class="fa fa-file-text fa-fw mr-sm"></em>Скачать csv
-    </button>
-    <button class="mb-sm btn btn-primary" type="button" id="download-json">
-      <em class="fa fa-file-text-o fa-fw mr-sm"></em>Скачать json
-    </button>
-    <button class="mb-sm btn btn-primary" type="button" id="download-xlsx">
-      <em class="fa fa-files-o fa-fw mr-sm"></em>Скачать xlsx
-    </button>
-    <a class="mb-sm btn btn-primary" id="main-table-link">
-      <em class="fa fa-link fa-fw mr-sm"></em>Ссылка на таблицу
-    </a>
-  </div>
-
   <div class="clearfix"></div>
   <div id="main-table"></div>
   <div id="main-table-footer">

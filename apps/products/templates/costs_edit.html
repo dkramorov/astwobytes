@@ -34,7 +34,6 @@
               </select>
             </div>
           </div>
-          {% include "core/forms/row_image.html" %}
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
         </div>
@@ -72,9 +71,6 @@
           },{
             status: status,
           });
-          // Обновление ссылок
-          update_links(r);
-
         }).fail(function() {
           $.notify({
             message: msg,
@@ -86,61 +82,7 @@
         e.preventDefault();
       });
 
-      function update_links(r){
-        // Обновление фотки
-        if(r['row']['is_gallery']){
-          // Добавление фотки в галерею
-          var photo = r['photo'];
-          var html = '';
-          html += '<div class="col-masonry" id="photo_index_' + photo['id'] + '">';
-          html += '<img src="' + photo['thumb'] + '" class="img-thumbnail img-responsive">';
-          html += '<br /><a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_photo" onclick="prepare_for_drop_photo(' + photo['id'] + ')">';
-          html += '<i class="fa fa-trash"></i></a>';
-          html += '</div>'
-          $("#product_gallery").append($(html));
-          return;
-        }else{
-          var thumb = r['row']['thumb'];
-          if(thumb === ''){
-            thumb = '/static/img/empty.png';
-          }
-          $("#preview_img").attr("src", thumb + "?_=" + Date.now());
-        }
-      }
       $("#currency_select2").select2();
-      {% if row %}
-        var progressbar = $('#progressbar-files'),
-          bar         = progressbar.find('.progress-bar-files'),
-          settings    = {
-            action: '{% url "products:edit_cost" "img" row.id %}', // upload url
-            allow : '*.*',
-            param: 'img',
-            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
-            loadstart: function() {
-              bar.css('width', '0%').text('0%');
-              progressbar.removeClass('hidden');
-            },
-            progress: function(percent) {
-              percent = Math.ceil(percent);
-              bar.css('width', percent+'%').text(percent+'%');
-            },
-            allcomplete: function(response) {
-              bar.css('width', '100%').text('100%');
-              setTimeout(function(){
-                progressbar.addClass('hidden');
-              }, 750);
-              // Upload Completed
-              //alert(response);
-            },
-            complete: function(response) {
-              // Обновление ссылок
-              var r = JSON.parse(response);
-              update_links(r);
-            }
-          };
-        var select = new $.upload.select($('#upload-select-files'), settings),
-        drop   = new $.upload.drop($('#upload-drop-files'), settings);
-      {% endif %}
     });
   </script>
 {% endblock %}

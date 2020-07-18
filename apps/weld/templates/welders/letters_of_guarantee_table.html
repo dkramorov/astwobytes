@@ -18,18 +18,30 @@
 <script type="text/javascript">
 var main_table = null;
 $(document).ready(function(){
+  var welderFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['welder'] ? data['welder']['name']  : '';
+  };
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
-      {% include "core/tabulator_cell/name.html" %}
       {
-        title: "Клеймо",
-        field: "stigma",
-        headerFilterPlaceholder: "Клеймо",
+        title: "Гарантийное письмо",
+        field: "name",
+        headerFilterPlaceholder: "Гарантийное письмо",
         headerFilter: "input",
         headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Сварщик",
+        field: "welder__name",
+        headerFilterPlaceholder: "Сварщик",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: welderFormatter,
         minWidth: 150,
       },
       {% include "core/tabulator_cell/is_active.html" %}

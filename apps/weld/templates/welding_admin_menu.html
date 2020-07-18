@@ -1,3 +1,65 @@
+<li{% ifequal menu 'directories' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'welding:show_companies' %}">
+    <em class="fa fa-book"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Справочники</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'directories' %} in{% endifequal %}">
+    {% if perms.weld.view_company %}
+      <li{% ifequal submenu 'companies' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_companies' %}">
+          <span class="item-text">Объекты</span>
+        </a>
+      </li>
+    {% endif %}
+    {% if perms.weld.view_material %}
+      <li{% ifequal submenu 'directories' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_materials' %}">
+          <span class="item-text">Материалы (сталь)</span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</li>
+
+<li{% ifequal menu 'welders' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'welding:show_companies' %}">
+    <em class="fa fa-male"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Сварщики</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'welders' %} in{% endifequal %}">
+    {% if perms.weld.view_welder %}
+      <li{% ifequal submenu 'welders' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welders' %}">
+          <span class="item-text">Сварщики</span>
+        </a>
+      </li>
+    {% endif %}
+    {% if perms.weld.view_letter_of_guarantee %}
+      <li{% ifequal submenu 'letters_of_guarantee' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_letters_of_guarantee' %}">
+          <span class="item-text">Гарантийные письма</span>
+        </a>
+      </li>
+    {% endif %}
+    {% if perms.weld.view_vik %}
+      <li{% ifequal submenu 'viks' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_viks' %}">
+          <span class="item-text">Акты ВИК</span>
+        </a>
+      </li>
+    {% endif %}
+    {% if perms.weld.view_controlk %}
+      <li{% ifequal submenu 'controlk' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_controlk' %}">
+          <span class="item-text">УЗК/РК контроль</span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</li>
+
 <li{% ifequal menu 'welding' %} class="active"{% endifequal %}>
   <a class="has-submenu" data-toggle="collapse-next" href="{% url 'welding:show_welding' %}">
     <em class="fa fa-unlink"></em>
@@ -5,13 +67,6 @@
     <span class="item-text">Сварочн. соединен.</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'welding' %} in{% endifequal %}">
-{% comment %}<!--
-    <li{% ifequal submenu 'welding' %} class="active"{% endifequal %}>
-      <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' %}">
-        <span class="item-text">Стыки</span>
-      </a>
-    </li>
--->{% endcomment %}
     {% if perms.weld.view_welding %}
       <li{% ifequal submenu 'welding' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' %}">
@@ -19,6 +74,7 @@
         </a>
       </li>
     {% endif %}
+
     {% if perms.weld.view_base %}
       <li{% ifequal submenu 'bases' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_bases' %}">
@@ -61,24 +117,10 @@
         </a>
       </li>
     {% endif %}
-    {% if perms.weld.view_material %}
-      <li{% ifequal submenu 'materials' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_materials' %}">
-          <span class="item-text">Материалы (сталь)</span>
-        </a>
-      </li>
-    {% endif %}
     {% if perms.weld.view_jointype %}
       <li{% ifequal submenu 'join_types' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_join_types' %}">
           <span class="item-text">Типы соединений</span>
-        </a>
-      </li>
-    {% endif %}
-    {% if perms.weld.view_welder %}
-      <li{% ifequal submenu 'welders' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welders' %}">
-          <span class="item-text">Сварщики</span>
         </a>
       </li>
     {% endif %}

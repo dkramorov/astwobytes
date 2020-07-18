@@ -5,13 +5,15 @@ from openpyxl import load_workbook
 from io import BytesIO
 
 from django.core.management.base import BaseCommand
-
-from django.contrib.auth.models import User
 from django.conf import settings
 
 from apps.main_functions.date_time import str_to_date
 from apps.main_functions.string_parser import kill_quotes
-from apps.main_functions.files import open_file, full_path
+from apps.main_functions.api_helper import open_wb, search_header, accumulate_data
+from apps.weld.enums import WELDING_TYPES
+from apps.weld.welder_model import Welder
+from apps.weld.company_model import Company
+from apps.weld.material_model import Material
 from apps.weld.models import (WeldingJoint,
                               Base,
                               Contract,
@@ -19,9 +21,7 @@ from apps.weld.models import (WeldingJoint,
                               Line,
                               Scheme,
                               Joint,
-                              Material,
                               JoinType,
-                              Welder,
                               JointWelder, )
 
 logger = logging.getLogger(__name__)
@@ -29,43 +29,6 @@ logger = logging.getLogger(__name__)
 # Файлы excel для анализа
 daily_report_weldings = 'daily_report_weldings.xlsx'
 statement_joints = 'statement_joints.xlsx'
-
-def open_wb(path):
-    """Загружаем книжку
-       :param path: путь до эксельки
-    """
-    with open_file(path, 'rb') as excel_file:
-        wb = load_workbook(BytesIO(excel_file.read()))
-    logger.info(wb.sheetnames)
-    return wb
-
-def search_header(rows):
-    """Поиск строки заголовков
-       обход по генератору
-       :param rows: генератор для строк
-    """
-    for row in rows:
-        i = 0
-        for cell in row:
-            value = cell.value
-            if value and '№' in value:
-                return i, row
-            i += 1
-    return None, None
-
-def accumulate_data(row, i, data):
-    """Добавление ячейки в массив данных
-       :param row: строка эксельки
-       :param i: номер ячейки в строке эксельки
-       :param data: массив данных
-    """
-    value = row[i].value
-    if value:
-        value = '%s' % value
-        value = value.strip()
-        if value and not value in data:
-            data.append(value)
-    return value
 
 def analyze_statement_joints():
     """Заполнение базы уникальными значениями из эксельки"""
@@ -277,7 +240,7 @@ def analyze_statement_joints():
                     welding_conn_view = choice[0]
         welding_type = None
         if item['welding_type']:
-            for choice in WeldingJoint.welding_type_choices:
+            for choice in WELDING_TYPES:
                 if choice[1] == item['welding_type'].upper():
                     welding_type = choice[0]
         category = None

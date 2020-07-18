@@ -16,6 +16,9 @@ from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 
+from apps.weld.enums import WELDING_TYPES
+from apps.weld.welder_model import (Welder,
+                                    LetterOfGuarantee, )
 from .models import (WeldingJoint,
                      Base,
                      Contract,
@@ -23,9 +26,7 @@ from .models import (WeldingJoint,
                      Line,
                      Scheme,
                      Joint,
-                     Material,
-                     JoinType,
-                     Welder, )
+                     JoinType, )
 
 CUR_APP = 'welding'
 welding_vars = {
@@ -76,7 +77,7 @@ def show_welding(request, *args, **kwargs):
     context['workshift_choices'] = mh.model.workshift_choices
     context['control_choices'] = mh.model.control_choices
     context['welding_conn_view_choices'] = mh.model.welding_conn_view_choices
-    context['welding_type_choices'] = mh.model.welding_type_choices
+    context['welding_type_choices'] = WELDING_TYPES
     context['category_choices'] = mh.model.category_choices
     context['control_result_choices'] = mh.model.control_result_choices
 
@@ -530,59 +531,6 @@ def search_joints(request, *args, **kwargs):
                        cur_app = CUR_APP,
                        sfields = ('name', 'line__name'), )
 
-
-materials_vars = {
-    'singular_obj': 'Материал',
-    'plural_obj': 'Материалы',
-    'rp_singular_obj': 'материала',
-    'rp_plural_obj': 'материалов',
-    'template_prefix': 'materials_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'materials',
-    'show_urla': 'show_materials',
-    'create_urla': 'create_material',
-    'edit_urla': 'edit_material',
-    'model': Material,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_materials(request, *args, **kwargs):
-    """Вывод материалов"""
-    return show_view(request,
-                     model_vars = materials_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_material(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование материалов"""
-    return edit_view(request,
-                     model_vars = materials_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def materials_positions(request, *args, **kwargs):
-    """Изменение позиций материалов"""
-    result = {}
-    mh_vars = materials_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_materials(request, *args, **kwargs):
-    """Поиск материалов"""
-    return search_view(request,
-                       model_vars = materials_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', ), )
-
 join_types_vars = {
     'singular_obj': 'Тип соединения',
     'plural_obj': 'Типы соединений',
@@ -634,57 +582,3 @@ def search_join_types(request, *args, **kwargs):
                        model_vars = join_types_vars,
                        cur_app = CUR_APP,
                        sfields = ('name', ), )
-
-
-welders_vars = {
-    'singular_obj': 'Сварщик',
-    'plural_obj': 'Сварщики',
-    'rp_singular_obj': 'сварщика',
-    'rp_plural_obj': 'сварщиков',
-    'template_prefix': 'welders_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'welders',
-    'show_urla': 'show_welders',
-    'create_urla': 'create_welder',
-    'edit_urla': 'edit_welder',
-    'model': Welder,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_welders(request, *args, **kwargs):
-    """Вывод сварщиков"""
-    return show_view(request,
-                     model_vars = welders_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_welder(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование сварщиков"""
-    return edit_view(request,
-                     model_vars = welders_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def welders_positions(request, *args, **kwargs):
-    """Изменение позиций сварщиков"""
-    result = {}
-    mh_vars = welders_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_welders(request, *args, **kwargs):
-    """Поиск сварщиков"""
-    return search_view(request,
-                       model_vars = welders_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', 'stigma'), )
-

@@ -1,0 +1,88 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Номер УЗК/РК контроля</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Номер акта ВИК" class="form-control" name="number" value="{% if row.number %}{{ row.number }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Дата</label>
+            <div class="col-lg-10">
+              <input id="vik_date" type="text" placeholder="Дата" class="form-control" name="date" value="{% if row.date %}{{ row.date }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Сварщик</label>
+            <div class="col-lg-10">
+              <select id="welder_select2" name="welder" autocomplete="off"  data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.welder %}
+                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          {% include "core/forms/row_image.html" %}
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+  <script type="text/javascript">
+    var upload_img_url = '{% url "welding:edit_controlk" "img" row.id %}';
+    $(document).ready(function(){
+      $("#vik_date").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+
+      $('#welder_select2').select2({
+        placeholder: 'Выберите объект',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_welders' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              without_templates: 1,
+              without_menus: 1,
+              without_main: 1,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+    });
+  </script>
+  {% include "core/forms/row_js.html" %}
+{% endblock %}

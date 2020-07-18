@@ -2,6 +2,10 @@
 from django.db import models
 
 from apps.main_functions.models import Standard
+from apps.weld.enums import WELDING_TYPES
+from apps.weld.welder_model import Welder
+from apps.weld.company_model import Company
+from apps.weld.material_model import Material
 
 class Base(Standard):
     """Установка"""
@@ -64,17 +68,6 @@ class Scheme(Standard):
         verbose_name_plural = 'Сварочные соединения - Схемы'
         #default_permissions = []
 
-class Material(Standard):
-    """Материал, сталь,
-       например, 09Г2С
-    """
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
-    class Meta:
-        verbose_name = 'Сварочные соединения - Материал (сталь)'
-        verbose_name_plural = 'Сварочные соединения - Материалы (сталь)'
-        #default_permissions = []
-
 class JoinType(Standard):
     """Свариваемые элементы, например, трубы/отвод"""
     name = models.CharField(max_length=255,
@@ -82,29 +75,6 @@ class JoinType(Standard):
     class Meta:
         verbose_name = 'Сварочные соединения - Свариваемый элемент'
         verbose_name_plural = 'Сварочные соединения - Свариваемые элементы'
-        #default_permissions = []
-
-class Welder(Standard):
-    """Сварщик, Сейтниязов"""
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
-    stigma = models.CharField(max_length=255,
-        blank=True, null=True,
-        verbose_name='Клеймо, например, 9SZN')
-    class Meta:
-        verbose_name = 'Сварочные соединения - Сварщик'
-        verbose_name_plural = 'Сварочные соединения - Сварщики'
-        #default_permissions = []
-
-class Company(Standard):
-    """Компания, на чьем балансе находятся работы,
-       например, ООО "ИНК" или ЛНК
-    """
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
-    class Meta:
-        verbose_name = 'Сварочные соединения - Компания'
-        verbose_name_plural = 'Сварочные соединения - Компании'
         #default_permissions = []
 
 class WeldingJoint(Standard):
@@ -132,12 +102,6 @@ class WeldingJoint(Standard):
         (2, 'У20'),
         (4, 'С17/У20'),
         (5, 'У19'),
-    )
-    # Тип сварки
-    welding_type_choices = (
-        (1, 'РАД'),
-        (2, 'РД'),
-        (3, 'РАД/РД'),
     )
     # Категория
     category_choices = (
@@ -202,7 +166,7 @@ class WeldingJoint(Standard):
     welding_conn_view = models.IntegerField(choices=welding_conn_view_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Вид сварного соединения, например, C17')
-    welding_type = models.IntegerField(choices=welding_type_choices,
+    welding_type = models.IntegerField(choices=WELDING_TYPES,
         blank=True, null=True, db_index=True,
         verbose_name='Тип сварки, например, РД')
     category = models.IntegerField(choices=category_choices,

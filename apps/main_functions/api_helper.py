@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 
 from apps.main_functions.functions import object_fields
+from apps.main_functions.files import open_file, full_path
 from apps.main_functions.model_helper import create_model_helper
 
 def ApiHelper(request, model_vars: dict, CUR_APP: str):
@@ -102,6 +103,51 @@ def XlsxHelper(request, model_vars: dict, CUR_APP: str,
     if job['errors']:
         result['error'] = '<br>'.join(job['errors'])
     return JsonResponse(result, safe=False)
+
+def open_wb(path):
+    """Загружаем эксельку
+       :param path: путь до эксельки
+    """
+    with open_file(path, 'rb') as excel_file:
+        wb = load_workbook(BytesIO(excel_file.read()))
+    # Посмотреть листы эксельки: logger.info(wb.sheetnames)
+    return wb
+
+def search_header(rows, symbols: str = '№'):
+    """Поиск строки заголовков
+       обход по генератору, необходимо помнить,
+       что после вызова мы будем находиться на строк заголовка
+       :param rows: генератор для строк
+       :param symbols: символы с которых начинается заголовок таблицы
+    """
+    for row in rows:
+        i = 0
+        for cell in row:
+            value = cell.value
+            if value and symbols in str(value):
+                return i, row
+            i += 1
+    return None, None
+
+def accumulate_data(row, i, data):
+    """Добавление ячейки в массив данных
+       USAGE: data_arr = accumulate_data(row, i+1, result)
+
+       где row - строка, где находимся генератором,
+       i + 1 - номер ячейки по которой аккумулируем данные
+       result - накопленные данные
+
+       :param row: строка эксельки
+       :param i: номер ячейки в строке эксельки
+       :param data: массив данных
+    """
+    value = row[i].value
+    if value:
+        value = '%s' % value
+        value = value.strip()
+        if value and not value in data:
+            data.append(value)
+    return value
 
 def import_from_excel(model, excel_file, required_names: list = None):
     """Импорт данных из excel

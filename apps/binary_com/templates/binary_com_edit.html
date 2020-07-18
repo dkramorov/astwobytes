@@ -124,9 +124,6 @@
           },{
             status: status,
           });
-          // Обновление ссылок
-          update_links(r);
-
         }).fail(function() {
           $.notify({
             message: msg,
@@ -138,13 +135,6 @@
         e.preventDefault();
       });
 
-      function update_links(r){
-        var thumb = r['row']['thumb'];
-        if(thumb === ''){
-          thumb = '/static/img/empty.png';
-        }
-        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
-      }
       $('#daemon_select2').select2({
         placeholder: 'Выберите сервис-робота',
         width: '100%',
