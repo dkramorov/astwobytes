@@ -52,7 +52,9 @@
 {% block extrascripts %}
   <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
   <script type="text/javascript">
-    var upload_img_url = '{% url "welding:edit_vik" "img" row.id %}';
+    {% if row %}
+      var upload_img_url = '{% url "welding:edit_vik" "img" row.id %}';
+    {% endif %}
     $(document).ready(function(){
       $("#vik_date").datepicker({
         onSelect: function (fd, d, calendar) {
@@ -62,7 +64,7 @@
       });
 
       $('#welder_select2').select2({
-        placeholder: 'Выберите объект',
+        placeholder: 'Выберите сварщика',
         allowClear: true,
         width: '100%',
         tags: true,
@@ -71,9 +73,6 @@
           data: function (params) {
             var query = {
               q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
               page: params.page || 1,
             }
             return query;

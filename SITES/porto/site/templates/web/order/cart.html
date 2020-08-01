@@ -60,19 +60,17 @@
 -->{% endcomment %}
         </table>
       </div>
-{% comment %}<!--
+
       <div class="cart-discount">
         <h4>Промокод</h4>
-        <form action="#">
-          <div class="input-group">
-            <input type="text" class="form-control form-control-sm" placeholder="Введите код купона"  required>
-            <div class="input-group-append">
-              <button class="btn btn-sm btn-primary" type="submit">Применить скидку</button>
-            </div>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="activate_promocode" placeholder="Введите код купона">
+          <div class="input-group-append">
+            <button class="btn btn-sm btn-primary" id="activate_promocode_btn" type="button">Применить скидку</button>
           </div>
-        </form>
+        </div>
       </div>
--->{% endcomment %}
+
     </div>
     <div class="col-lg-4">
       <div class="cart-summary">
@@ -129,14 +127,14 @@
               <td>{{ cart.total|money_format }} ₽</td>
             </tr>
             <tr>
-              <td>Скидка</td>
-              <td>0</td>
+              <td>Скидка{% if cart.promocode %} (промокод <strong>{{ cart.promocode }}</strong>){% endif %}</td>
+              <td>{{ cart.discount|money_format }} ₽</td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
               <td>Итого</td>
-              <td>{{ cart.total|money_format }} ₽</td>
+              <td>{{ cart.total_with_discount|money_format }} ₽</td>
             </tr>
           </tfoot>
         </table>
@@ -165,6 +163,7 @@
       purchase_drop_listener("{{ purchase.id }}",
                              $("#purchase_drop_{{ purchase.id }}")
       );
+      promocode_activate_listener($("#activate_promocode"), $("#activate_promocode_btn"));
     {% endfor %}
   });
 </script>

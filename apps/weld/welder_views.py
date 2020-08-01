@@ -17,7 +17,11 @@ from apps.weld.enums import WELDING_TYPES
 from apps.weld.welder_model import (Welder,
                                     LetterOfGuarantee,
                                     Vik,
-                                    ControlK, )
+                                    ControlK,
+                                    HoldingKSS,
+                                    MechTest,
+                                    NAX,
+                                    AdmissionSheet, )
 from apps.weld.views import CUR_APP
 
 welders_vars = {
@@ -195,7 +199,7 @@ def search_viks(request, *args, **kwargs):
     return search_view(request,
                        model_vars = viks_vars,
                        cur_app = CUR_APP,
-                       sfields = ('name', ), )
+                       sfields = ('number', ), )
 
 controlk_vars = {
     'singular_obj': 'УЗК/РК контроль',
@@ -254,4 +258,248 @@ def search_controlk(request, *args, **kwargs):
     return search_view(request,
                        model_vars = controlk_vars,
                        cur_app = CUR_APP,
-                       sfields = ('name', ), )
+                       sfields = ('number', ), )
+
+holding_kss_vars = {
+    'singular_obj': 'Проведение КСС',
+    'plural_obj': 'Проведения КСС',
+    'rp_singular_obj': 'Проведения КСС',
+    'rp_plural_obj': 'Проведений КСС',
+    'template_prefix': 'welders/holding_kss_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'welders',
+    'submenu': 'holding_kss',
+    'show_urla': 'show_holding_kss',
+    'create_urla': 'create_holding_kss',
+    'edit_urla': 'edit_holding_kss',
+    'model': HoldingKSS,
+    #'custom_model_permissions': WeldingJoint,
+    'select_related_list': ('welder', 'material'),
+}
+
+@login_required
+def show_holding_kss(request, *args, **kwargs):
+    """Вывод проведений КСС"""
+    extra_vars = {
+        'insert_breadcrumbs': insert_breadcrumbs,
+        'holding_choices': HoldingKSS.holding_choices,
+        'spent_length_choices': HoldingKSS.spent_length_choices,
+    }
+    return show_view(request,
+                     model_vars = holding_kss_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = extra_vars, )
+
+@login_required
+def edit_holding_kss(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование проведений КСС"""
+    extra_vars = {
+        'insert_breadcrumbs': insert_breadcrumbs,
+        'spent_length_choices': HoldingKSS.spent_length_choices,
+        'holding_choices': HoldingKSS.holding_choices,
+    }
+    return edit_view(request,
+                     model_vars = holding_kss_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = extra_vars, )
+
+@login_required
+def holding_kss_positions(request, *args, **kwargs):
+    """Изменение позиций проведений КСС"""
+    result = {}
+    mh_vars = holding_kss_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_holding_kss(request, *args, **kwargs):
+    """Поиск проведений КСС"""
+    return search_view(request,
+                       model_vars = holding_kss_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('number', ), )
+
+mechtest_vars = {
+    'singular_obj': 'Мехиспытание',
+    'plural_obj': 'Мехиспытания',
+    'rp_singular_obj': 'мехиспытания',
+    'rp_plural_obj': 'мехиспытаний',
+    'template_prefix': 'welders/mechtest_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'welders',
+    'submenu': 'mechtest',
+    'show_urla': 'show_mechtest',
+    'create_urla': 'create_mechtest',
+    'edit_urla': 'edit_mechtest',
+    'model': MechTest,
+    #'custom_model_permissions': WeldingJoint,
+    'select_related_list': ('welder', ),
+}
+
+@login_required
+def show_mechtest(request, *args, **kwargs):
+    """Вывод мехиспытаний"""
+    extra_vars = {
+        'insert_breadcrumbs': insert_breadcrumbs,
+    }
+    return show_view(request,
+                     model_vars = mechtest_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = extra_vars, )
+
+@login_required
+def edit_mechtest(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование мехиспытаний"""
+    extra_vars = {
+        'insert_breadcrumbs': insert_breadcrumbs,
+    }
+    return edit_view(request,
+                     model_vars = mechtest_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = extra_vars, )
+
+@login_required
+def mechtest_positions(request, *args, **kwargs):
+    """Изменение позиций мехиспытаний"""
+    result = {}
+    mh_vars = mechtest_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_mechtest(request, *args, **kwargs):
+    """Поиск мехиспытаний"""
+    return search_view(request,
+                       model_vars = mechtest_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('number', ), )
+
+nax_vars = {
+    'singular_obj': 'Аттестат НАКС',
+    'plural_obj': 'Аттестаты НАКС',
+    'rp_singular_obj': 'аттестата НАКС',
+    'rp_plural_obj': 'аттестатов НАКС',
+    'template_prefix': 'welders/nax_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'welders',
+    'submenu': 'nax',
+    'show_urla': 'show_nax',
+    'create_urla': 'create_nax',
+    'edit_urla': 'edit_nax',
+    'model': NAX,
+    #'custom_model_permissions': WeldingJoint,
+    'select_related_list': ('welder', ),
+}
+
+@login_required
+def show_nax(request, *args, **kwargs):
+    """Вывод аттестатов НАКС"""
+    extra_vars = {
+        'insert_breadcrumbs': insert_breadcrumbs,
+        'welding_type_choices': WELDING_TYPES,
+        'identification_choices': NAX.identification_choices,
+    }
+    return show_view(request,
+                     model_vars = nax_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = extra_vars, )
+
+@login_required
+def edit_nax(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование аттестатов НАКС"""
+    extra_vars = {
+        'insert_breadcrumbs': insert_breadcrumbs,
+        'welding_type_choices': WELDING_TYPES,
+        'identification_choices': NAX.identification_choices,
+    }
+    return edit_view(request,
+                     model_vars = nax_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = extra_vars, )
+
+@login_required
+def nax_positions(request, *args, **kwargs):
+    """Изменение позиций аттестатов НАКС"""
+    result = {}
+    mh_vars = nax_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_nax(request, *args, **kwargs):
+    """Поиск аттестатов НАКС"""
+    return search_view(request,
+                       model_vars = nax_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('number', ), )
+
+admission_sheet_vars = {
+    'singular_obj': 'Лист допуска',
+    'plural_obj': 'Листы допуска',
+    'rp_singular_obj': 'листа допуска',
+    'rp_plural_obj': 'листов допуска',
+    'template_prefix': 'welders/admission_sheet_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'welders',
+    'submenu': 'admission_sheet',
+    'show_urla': 'show_admission_sheet',
+    'create_urla': 'create_admission_sheet',
+    'edit_urla': 'edit_admission_sheet',
+    'model': AdmissionSheet,
+    #'custom_model_permissions': WeldingJoint,
+    'select_related_list': ('welder', ),
+}
+
+@login_required
+def show_admission_sheet(request, *args, **kwargs):
+    """Вывод листов допуска"""
+    extra_vars = {
+        'insert_breadcrumbs': insert_breadcrumbs,
+    }
+    return show_view(request,
+                     model_vars = admission_sheet_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = extra_vars, )
+
+@login_required
+def edit_admission_sheet(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование листов допуска"""
+    extra_vars = {
+        'insert_breadcrumbs': insert_breadcrumbs,
+    }
+    return edit_view(request,
+                     model_vars = admission_sheet_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = extra_vars, )
+
+@login_required
+def admission_sheet_positions(request, *args, **kwargs):
+    """Изменение позиций листов допуска"""
+    result = {}
+    mh_vars = admission_sheet_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_admission_sheet(request, *args, **kwargs):
+    """Поиск листов допуска"""
+    return search_view(request,
+                       model_vars = admission_sheet_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('number', ), )

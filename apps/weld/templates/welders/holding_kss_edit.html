@@ -1,0 +1,142 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Номер КСС</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Номер КСС" class="form-control" name="number" value="{% if row.number %}{{ row.number }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Типоразмер</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Типоразмер" class="form-control" name="standard_size" value="{% if row.standard_size %}{{ row.standard_size }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Материал (сталь)</label>
+            <div class="col-lg-10">
+              <select id="material_select2" name="material" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.material %}
+                  <option value="{{ row.material.id }}" selected>{{ row.material.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Затрачиваемая длина 150мм*2</label>
+            <div class="col-lg-10">
+              <select id="spent_length_select2" name="spent_length" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for spent_length in spent_length_choices %}
+                  <option value="{{ spent_length.0 }}"{% ifequal spent_length.0 row.spent_length %} selected{% endifequal %}>{{ spent_length.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">ТТ/МК</label>
+            <div class="col-lg-10">
+              <select id="state_select2" name="state" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for holding_choice in holding_choices %}
+                  <option value="{{ holding_choice.0 }}"{% ifequal holding_choice.0 row.state %} selected{% endifequal %}>{{ holding_choice.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Сварщик</label>
+            <div class="col-lg-10">
+              <select id="welder_select2" name="welder" autocomplete="off"  data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.welder %}
+                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          {% include "core/forms/row_image.html" %}
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script type="text/javascript">
+    {% if row %}
+      var upload_img_url = '{% url "welding:edit_holding_kss" "img" row.id %}';
+    {% endif %}
+    $(document).ready(function(){
+
+      $('#welder_select2').select2({
+        placeholder: 'Выберите сварщика',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_welders' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+      $('#material_select2').select2({
+        placeholder: 'Выберите материал',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_materials' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+      $('#spent_length_select2').select2({
+          placeholder: 'Выберите затрачиваемую длину 150мм*2',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#state_select2').select2({
+          placeholder: 'Выберите ТТ/МК',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+    });
+  </script>
+  {% include "core/forms/row_js.html" %}
+{% endblock %}

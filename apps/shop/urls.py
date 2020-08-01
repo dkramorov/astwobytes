@@ -8,6 +8,8 @@ app_name = 'shop'
 urlpatterns = [
     # получение по апи всех данных (т/к не секретно)
     url('^(?P<action>orders)/api/$', views.api, name='api'),
+    url('^(?P<action>promocodes)/import_xlsx/$', views.import_xlsx, name='import_xlsx'),
+
     # Заказы
     path('admin/orders/', views.show_orders, name='show_orders'),
     url('^admin/orders/(?P<action>create)/$', views.edit_order, name='create_order'),
@@ -24,7 +26,7 @@ urlpatterns = [
     # аякс-поиск
     path('shop/search/purchases/', views.search_purchases, name='search_purchases'),
     # корзинка пользователя
-    url('^cart/(?P<action>show|add|quantity|drop)/', views.cart, name='cart'),
+    url('^cart/(?P<action>show|add|quantity|drop|promocode)/', views.cart, name='cart'),
 
     # Транзакции
     path('admin/transactions/', views.show_transactions, name='show_transactions'),
@@ -34,4 +36,11 @@ urlpatterns = [
     # аякс-поиск
     path('shop/search/transactions/', views.search_transactions, name='search_transactions'),
 
+    # Промокоды
+    path('admin/promocodes/', views.show_promocodes, name='show_promocodes'),
+    url('^admin/promocodes/(?P<action>create)/$', views.edit_promocode, name='create_promocode'),
+    url('^admin/promocodes/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_promocode, name='edit_promocode'),
+    path('admin/promocodes/positions/', views.promocodes_positions, name='promocodes_positions'),
+    # аякс-поиск
+    path('shop/search/promocodes/', views.search_promocodes, name='search_promocodes'),
 ]

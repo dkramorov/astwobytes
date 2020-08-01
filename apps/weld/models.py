@@ -2,88 +2,16 @@
 from django.db import models
 
 from apps.main_functions.models import Standard
-from apps.weld.enums import WELDING_TYPES
+from apps.weld.enums import WELDING_TYPES, MATERIALS, JOIN_TYPES
 from apps.weld.welder_model import Welder
-from apps.weld.company_model import Company
-from apps.weld.material_model import Material
-
-class Base(Standard):
-    """Установка"""
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True,
-        verbose_name='Установка, например, БНТК-2 ТХ-18')
-    class Meta:
-        verbose_name = 'Сварочные соединения - Установка'
-        verbose_name_plural = 'Сварочные соединения - Установки'
-        #default_permissions = []
-
-class Contract(Standard):
-    """Договор"""
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True,
-        verbose_name='Договор, например, UOP')
-    class Meta:
-        verbose_name = 'Сварочные соединения - Договор'
-        verbose_name_plural = 'Сварочные соединения - Договоры'
-        #default_permissions = []
-
-class Titul(Standard):
-    """Титул, например, У800"""
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
-    class Meta:
-        verbose_name = 'Сварочные соединения - Титул'
-        verbose_name_plural = 'Сварочные соединения - Титулы'
-        #default_permissions = []
-
-class Line(Standard):
-    """Линия, например, 677-А2-LT-150"""
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
-    class Meta:
-        verbose_name = 'Сварочные соединения - Линия'
-        verbose_name_plural = 'Сварочные соединения - Линии'
-        #default_permissions = []
-
-class Joint(Standard):
-    """Стык, например, 26А"""
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
-    line = models.ForeignKey(Line,
-        blank=True, null=True, on_delete=models.SET_NULL,
-        verbose_name='Номер линии, например, 913A')
-    class Meta:
-        verbose_name = 'Сварочные соединения - Стык'
-        verbose_name_plural = 'Сварочные соединения - Стыки'
-        #default_permissions = []
-
-class Scheme(Standard):
-    """Схема,
-       например, 229-ВО-304SS-6" 2,5" C
-    """
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
-    class Meta:
-        verbose_name = 'Сварочные соединения - Схема'
-        verbose_name_plural = 'Сварочные соединения - Схемы'
-        #default_permissions = []
-
-class JoinType(Standard):
-    """Свариваемые элементы, например, трубы/отвод"""
-    name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
-    class Meta:
-        verbose_name = 'Сварочные соединения - Свариваемый элемент'
-        verbose_name_plural = 'Сварочные соединения - Свариваемые элементы'
-        #default_permissions = []
+from apps.weld.company_model import Company, Titul, Base, Line, Joint
 
 class WeldingJoint(Standard):
-    """Сварочные соединения"""
+    """Заявки на стыки"""
     # Смена
     workshift_choices = (
         (1, '1'),
         (2, '2'),
-        (3, '-'),
     )
     # Вид контроля
     control_choices = (
@@ -94,21 +22,19 @@ class WeldingJoint(Standard):
         (5, 'РК/УЗК'),
         (6, 'УК'),
         (7, 'ПВК'),
-        (8, '*'),
     )
     # Вид сварного соединения
     welding_conn_view_choices = (
         (1, 'С17'),
-        (2, 'У20'),
+        (2, 'У19'),
+        (3, 'У20'),
         (4, 'С17/У20'),
-        (5, 'У19'),
     )
     # Категория
     category_choices = (
         (1, 'I'),
         (2, 'II'),
         (3, 'III'),
-        (4, '*'),
     )
     # Результат контроля
     control_result_choices = (
@@ -119,22 +45,27 @@ class WeldingJoint(Standard):
         (5, 'Пересвет'),
         (6, 'Брак'),
     )
-    base = models.ForeignKey(Base,
-        blank=True, null=True, on_delete=models.SET_NULL,
-        verbose_name='Установка, где размещен стык, например, БНТК-2 ТХ-18')
-    contract = models.ForeignKey(Contract,
-        blank=True, null=True, on_delete=models.SET_NULL,
-        verbose_name='Договор, например, UOP')
+    # Номер ремонта
+    repair_choices = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+    )
+    state_choices = (
+        (1, 'Новый стык'),
+        (2, 'В работе'),
+        (3, 'Готовый стык'),
+        (4, 'В ремонте'),
+    )
+
     titul = models.ForeignKey(Titul,
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Титул, например, У101')
     joint = models.ForeignKey(Joint,
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Номер стыка, например, 26А')
-    scheme = models.ForeignKey(Scheme,
-        blank=True, null=True, on_delete=models.SET_NULL,
-        verbose_name='Номер изом. схемы, например, 229-ВО-304SS-6" 2,5" C')
-    repair = models.IntegerField(blank=True, null=True, db_index=True,
+    repair = models.IntegerField(choices=repair_choices,
+        blank=True, null=True, db_index=True,
         verbose_name='Ремонт, например, 2 (второй ремонт)')
     cutout = models.BooleanField(blank=True, null=True, db_index=True,
         verbose_name='Вырез')
@@ -144,12 +75,15 @@ class WeldingJoint(Standard):
     side_thickness = models.DecimalField(blank=True, null=True, db_index=True,
         max_digits=9, decimal_places=2,
         verbose_name='Толщина стенки, например, 4,78')
-    material = models.ForeignKey(Material,
-        blank=True, null=True, on_delete=models.SET_NULL,
-        verbose_name='Материал - сталь, например, 12Х18Н10Т')
-    join_type = models.ForeignKey(JoinType,
-        blank=True, null=True, on_delete=models.SET_NULL,
+    material = models.IntegerField(choices=MATERIALS,
+        blank=True, null=True, db_index=True,
+        verbose_name='Материал - сталь, например, 09Г2С')
+    join_type_from = models.IntegerField(choices=JOIN_TYPES,
+        blank=True, null=True, db_index=True,
         verbose_name='Свариваемые элементы, например, тройник/переходник')
+    join_type_to = models.IntegerField(choices=JOIN_TYPES,
+        blank=True, null=True, db_index=True,
+        verbose_name='Свариваемые элементы, например, тройник/труба')
     welding_date = models.DateField(blank=True, null=True, db_index=True,
         verbose_name='Дата сварки, например, 12.03.2020')
     workshift = models.IntegerField(choices=workshift_choices,
@@ -175,9 +109,6 @@ class WeldingJoint(Standard):
     control_result = models.IntegerField(choices=control_result_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Результат контроля, например, Вырезать')
-    #company = models.ForeignKey(Company,
-    #    blank=True, null=True, on_delete=models.SET_NULL,
-    #    verbose_name='На чьем балансе, например, ЛНК')
     conclusion_number = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Номер заключения, например, ТПС-БНТК-1 ТХ-18-875-РК-23')
@@ -186,9 +117,12 @@ class WeldingJoint(Standard):
     notice = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Примечание, например, только Вик')
-    dinc = models.DecimalField(blank=True, null=True, db_index=True,
-        max_digits=17, decimal_places=15,
-        verbose_name='D-inc на человека или стык, например, 10,748031496063')
+    #dinc = models.DecimalField(blank=True, null=True, db_index=True,
+    #    max_digits=9, decimal_places=2,
+    #    verbose_name='D-inc, например, 6.30, нужен для отчетов, рассчитывается динамически, например, диаметр(160)/константа(25.4)=6.30')
+    state = models.IntegerField(choices=state_choices,
+        blank=True, null=True, db_index=True,
+        verbose_name='Статус заявки, например, в работе')
 
     class Meta:
         verbose_name = 'Сварочное соединение - Бланк-заявка'
@@ -214,7 +148,9 @@ class JointWelder(models.Model):
         verbose_name='Сварщик')
     welding_joint = models.ForeignKey(WeldingJoint,
         blank=True, null=True, on_delete=models.CASCADE,
-        verbose_name='Сварочное соединение')
+        verbose_name='Заявка на стык')
+    actually = models.BooleanField(blank=True, null=True, db_index=True,
+        verbose_name='Фактический сварщик (тот, кто проводит работы), другие сващики могут быть указаны в заявках, потому что у фактических нет допуска')
 
     class Meta:
         verbose_name = 'Сварочные соединения - Сварщик стыка'

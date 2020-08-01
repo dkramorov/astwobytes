@@ -20,7 +20,12 @@ def create_default_user():
 
 class customUser(Standard):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Номер телефона')
+    phone = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Номер телефона')
+    function = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Должность')
 
     def save(self, *args, **kwargs):
         if self.phone:

@@ -16,28 +16,6 @@
         <div class="panel-body">
           {% csrf_token %}
           <div class="form-group">
-            <label class="col-lg-2 control-label">Установка</label>
-            <div class="col-lg-10">
-              <select id="base_select2" name="base" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% if row.base %}
-                  <option value="{{ row.base.id }}" selected>{{ row.base.name }}</option>
-                {% endif %}
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Договор</label>
-            <div class="col-lg-10">
-              <select id="contract_select2" name="contract" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% if row.contract %}
-                  <option value="{{ row.contract.id }}" selected>{{ row.contract.name }}</option>
-                {% endif %}
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
             <label class="col-lg-2 control-label">Титул</label>
             <div class="col-lg-10">
               <select id="titul_select2" name="titul" autocomplete="off">
@@ -59,21 +37,16 @@
               </select>
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Номер изом. схемы</label>
-            <div class="col-lg-10">
-              <select id="scheme_select2" name="scheme" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% if row.scheme %}
-                  <option value="{{ row.scheme.id }}" selected>{{ row.scheme.name }}</option>
-                {% endif %}
-              </select>
-            </div>
-          </div>
+
           <div class="form-group">
             <label class="col-lg-2 control-label">Номер ремонта</label>
             <div class="col-lg-10">
-              <input type="number" step="1" placeholder="Номер ремонта" class="form-control" name="repair" value="{% if row.repair %}{{ row.repair }}{% endif %}" autocomplete="off">
+              <select id="repair_select2" name="repair" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for repair in repair_choices %}
+                  <option value="{{ repair.0 }}"{% ifequal repair.0 row.repair %} selected{% endifequal %}>{{ repair.1 }}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
           <div class="form-group">
@@ -103,20 +76,28 @@
             <div class="col-lg-10">
               <select id="material_select2" name="material" autocomplete="off">
                 <option value="">Не выбрано</option>
-                {% if row.material %}
-                  <option value="{{ row.material.id }}" selected>{{ row.material.name }}</option>
-                {% endif %}
+                {% for material in material_choices %}
+                  <option value="{{ material.0 }}"{% ifequal material.0 row.material %} selected{% endifequal %}>{{ material.1 }}</option>
+                {% endfor %}
               </select>
             </div>
           </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">Свариваемые элементы</label>
-            <div class="col-lg-10">
-              <select id="join_type_select2" name="join_type" autocomplete="off">
+            <div class="col-lg-5">
+              <select id="join_type_from_select2" name="join_type_from" autocomplete="off">
                 <option value="">Не выбрано</option>
-                {% if row.join_type %}
-                  <option value="{{ row.join_type.id }}" selected>{{ row.join_type.name }}</option>
-                {% endif %}
+                {% for join_type in join_types %}
+                  <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_from %} selected{% endifequal %}>{{ join_type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-lg-5">
+              <select id="join_type_to_select2" name="join_type_to" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for join_type in join_types %}
+                  <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_to %} selected{% endifequal %}>{{ join_type.1 }}</option>
+                {% endfor %}
               </select>
             </div>
           </div>
@@ -223,15 +204,18 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">D-inc на человека или стык</label>
+            <label class="col-lg-2 control-label">Статус</label>
             <div class="col-lg-10">
-              <input type="number" step="0.00000000000001" placeholder="D-inc на человека или стык" class="form-control" name="dinc" value="{% if row.dinc %}{{ row.dinc }}{% endif %}" autocomplete="off">
+              <select id="state_select2" name="state" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for state in state_choices %}
+                  <option value="{{ state.0 }}"{% ifequal state.0 row.state %} selected{% endifequal %}>{{ state.1 }}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
-
           {% include "core/forms/row_image.html" %}
-          {% include "core/forms/row_position.html" %}
-          {% include "core/forms/row_is_active.html" %}
+          {% include "core/forms/hidden_fields.html" %}
         </div>
         {% include "core/forms/footer_buttons.html" %}
       </form>
@@ -243,7 +227,9 @@
 {% block extrascripts %}
   <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
   <script type="text/javascript">
-    var upload_img_url = '{% url "welding:edit_welding" "img" row.id %}';
+    {% if row %}
+      var upload_img_url = '{% url "welding:edit_welding" "img" row.id %}';
+    {% endif %}
     $(document).ready(function(){
       $("#welding_date").datepicker({
         onSelect: function (fd, d, calendar) {
@@ -274,30 +260,6 @@
           data: function (params) {
             var query = {
               q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
-        }
-      });
-      $('#contract_select2').select2({
-        placeholder: 'Выберите договор',
-        allowClear: true,
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_contracts' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
               page: params.page || 1,
             }
             return query;
@@ -316,9 +278,6 @@
           data: function (params) {
             var query = {
               q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
               page: params.page || 1,
             }
             return query;
@@ -337,9 +296,6 @@
           data: function (params) {
             var query = {
               q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
               page: params.page || 1,
             }
             return query;
@@ -348,68 +304,11 @@
           dataType: 'json',
         }
       });
-      $('#scheme_select2').select2({
-        placeholder: 'Выберите изом. схему',
-        allowClear: true,
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_schemes' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
-        }
-      });
-      $('#material_select2').select2({
-        placeholder: 'Выберите материал',
-        allowClear: true,
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_materials' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
-        }
-      });
-      $('#join_type_select2').select2({
-        placeholder: 'Выберите свариваемые элементы',
-        allowClear: true,
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_join_types' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
-        }
+      $('#repair_select2').select2({
+          placeholder: 'Выберите номер ремонта',
+          allowClear: true,
+          width: '100%',
+          tags: true,
       });
       $('#workshift_select2').select2({
           placeholder: 'Выберите смену',
@@ -443,6 +342,30 @@
       });
       $('#control_result_select2').select2({
           placeholder: 'Выберите результат контроля',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#material_select2').select2({
+          placeholder: 'Выберите материал',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#join_type_from_select2').select2({
+          placeholder: 'Свариваемый элемент',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#join_type_to_select2').select2({
+          placeholder: 'Свариваемый элемент',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#state_select2').select2({
+          placeholder: 'Статус',
           allowClear: true,
           width: '100%',
           tags: true,

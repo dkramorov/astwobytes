@@ -3,20 +3,20 @@ import json
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.urls import reverse, resolve
+from django.urls import reverse, reverse_lazy, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
-from apps.main_functions.api_helper import ApiHelper
+from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 from apps.products.models import Products, CostsTypes, Costs
 
-from .models import Orders, Purchases, Transactions
+from .models import Orders, Purchases, Transactions, PromoCodes
 from .cart import calc_cart, get_shopper, create_shopper, get_purchase
 
 CUR_APP = 'shop'
@@ -47,6 +47,18 @@ def api(request, action: str = 'orders'):
     result = ApiHelper(request, shop_vars, CUR_APP)
     return result
 
+def import_xlsx(request, action: str = 'promocodes'):
+    """Апи-метод для сохранения данных из excel-файла
+                     удаления данных по excel-файлу
+       :param request: HttpRequest
+       :param action: какую модель использовать
+    """
+    #if action == 'user':
+    #    result = XlsxHelper(request, promocodes_vars, CUR_APP)
+    result = XlsxHelper(request, promocodes_vars, CUR_APP,
+                        cond_fields = ['code'])
+    return result
+
 @login_required
 def show_orders(request, *args, **kwargs):
     """Вывод заказов
@@ -55,6 +67,7 @@ def show_orders(request, *args, **kwargs):
     mh_vars = orders_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     mh.select_related_add('shopper')
+    mh.select_related_add('promocode')
     context = mh.context
 
     # -----------------------------
@@ -90,6 +103,7 @@ def edit_order(request, action: str, row_id: int = None, *args, **kwargs):
     mh_vars = orders_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.select_related_add('shopper')
+    mh.select_related_add('promocode')
     context = mh.context
     row = mh.get_row(row_id)
     if mh.error:
@@ -441,6 +455,63 @@ def search_transactions(request, *args, **kwargs):
                        cur_app = CUR_APP,
                        sfields = ('uuid', 'order__id', 'order__number'), )
 
+promocodes_vars = {
+    'singular_obj': 'Промокод',
+    'plural_obj': 'Промокоды',
+    'rp_singular_obj': 'промокода',
+    'rp_plural_obj': 'промокодов',
+    'template_prefix': 'promocodes_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'shop',
+    'submenu': 'promocodes',
+    'show_urla': 'show_promocodes',
+    'create_urla': 'create_promocode',
+    'edit_urla': 'edit_promocode',
+    'model': PromoCodes,
+    #'custom_model_permissions': Orders,
+    'select_related_list': ('personal', ),
+}
+
+@login_required
+def show_promocodes(request, *args, **kwargs):
+    """Вывод промокодов"""
+    extra_vars = {
+        'import_xlsx_url': reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
+                                             kwargs={'action': 'promocodes'}),
+    }
+    return show_view(request,
+                     model_vars = promocodes_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = extra_vars, )
+
+@login_required
+def edit_promocode(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование промокодов"""
+    return edit_view(request,
+                     model_vars = promocodes_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
+
+@login_required
+def promocodes_positions(request, *args, **kwargs):
+    """Изменение позиций промокодов"""
+    result = {}
+    mh_vars = promocodes_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_promocodes(request, *args, **kwargs):
+    """Поиск промокодов"""
+    return search_view(request,
+                       model_vars = promocodes_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('name', 'code'), )
+
 def cart(request, action):
     """Взаимодействие пользователя с корзинкой
        :param request: HttpRequest
@@ -474,7 +545,7 @@ def cart(request, action):
             count = 1
         product = Products.objects.filter(pk=product_id).first()
         # Проверяем передан ли тип цены
-        if cost_type_id:
+        if cost_type_id and product:
             cost_type = CostsTypes.objects.filter(pk=cost_type_id).first()
             if not cost_type:
                 result['error'] = 'Тип цены не найден'
@@ -483,7 +554,7 @@ def cart(request, action):
                 if not cost:
                     result['error'] = 'Цена не найдена'
         # Если цены нет, тогда и товара нет :) ибо - пысу!
-        if not product.price and not cost:
+        if product and not product.price and not cost:
             product = None
 
         purchase = None
@@ -532,6 +603,21 @@ def cart(request, action):
             result['success'] = 'Покупка удалена'
         else:
             result['error'] = not_found
+    elif shopper and action == 'promocode':
+        code = method.get('promocode')
+        if not code:
+            result['error'] = 'Вы не ввели промокод'
+        else:
+            code = code.strip()
+            promocodes = PromoCodes.objects.filter(code=code)
+            for promocode in promocodes:
+                if not promocode.is_valid(shopper_id=shopper.id):
+                    continue
+                request.session['promocode'] = promocode.id
+                result['success'] = 'Промокод успешно применен'
+                break
+            if not 'promocode' in request.session:
+                result['error'] = 'Промокод не найден или истек срок действия'
     else:
         result['error'] = 'Произошла ошибка'
 

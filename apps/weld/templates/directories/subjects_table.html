@@ -18,14 +18,26 @@
 <script type="text/javascript">
 var main_table = null;
 $(document).ready(function(){
+  var companyFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['company'] ? data['company']['name']  : '';
+  };
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
       {% include "core/tabulator_cell/name.html" %}
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
+      {
+        title: "Компания",
+        field: "company__name",
+        headerFilterPlaceholder: "Компания",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: companyFormatter,
+        minWidth: 90,
+      },
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });

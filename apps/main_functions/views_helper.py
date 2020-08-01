@@ -31,7 +31,8 @@ def special_model_vars(mh, mh_vars, context):
     if 'select_related_list' in mh_vars:
         for sr in mh_vars['select_related_list']:
             mh.select_related_add(sr)
-        del context['select_related_list']
+        if 'select_related_list' in context:
+            del context['select_related_list']
     # ------------------
     # insert_breadcrumbs
     # ------------------
@@ -149,19 +150,25 @@ def edit_view(request,
                 if mh.permissions['create']:
                     mh.row = mh.model()
                     mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
+                    if mh.error:
+                        context['error'] = mh.error
+                    else:
+                        context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
             if action == 'edit':
                 if mh.permissions['edit']:
                     mh.save_row()
-                    context['success'] = 'Данные успешно записаны'
+                    if mh.error:
+                        context['error'] = mh.error
+                    else:
+                        context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
 
-        elif action == 'img' and request.FILES:
+        elif not mh.error and action == 'img' and request.FILES:
             mh.uploads()
-    if mh.row:
+    if not mh.error and mh.row:
         mh.url_edit = reverse('%s:%s' % (cur_app, mh_vars['edit_urla']),
                               kwargs={'action': 'edit', 'row_id': mh.row.id})
         if not 'row' in context:
@@ -189,6 +196,23 @@ def positions_view(request,
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
+def get_deep_attr(row, field):
+    """Получение поля модели,
+       нужно если значение поля находится
+       во вложенной модели foreign_key
+       :param row: экземелпяр модели
+       :param field: поле модели
+    """
+    if '__' in field:
+        subrow = row
+        subfields = field.split('__')
+        for subfield in subfields:
+            if hasattr(subrow, subfield):
+                subrow = getattr(subrow, subfield)
+        if subrow:
+            return subrow
+    return getattr(row, field)
+
 def search_view(request,
                 model_vars: dict,
                 cur_app: str,
@@ -199,8 +223,10 @@ def search_view(request,
        :param cur_app: CUR_APP во view.py
        :param sfields: список полей для поиска
 
-       TODO: сделать шаблон для вывода результатов, например,
-       '{name} ({id})'.format({'name': row.name, 'id': row.id})
+       search_result_format, например, ('{} (id={})', 'name id')
+       указывается в model_vars
+       шаблон для вывода результатов, например,
+       результат будет такой '{} ({})'.format(row.name, row.id)
     """
     result = {'results': []}
     model = model_vars['model']
@@ -218,14 +244,27 @@ def search_view(request,
             exists_fields.append(sfield)
     mh.search_fields = (sfield)
 
+    voca = None
+    search_result_format = mh_vars.get('search_result_format')
+    if search_result_format:
+        voca = [field for field in search_result_format[1].split()]
+        mh.search_fields = voca
+
+    special_model_vars(mh, mh_vars, {})
+
     rows = mh.standard_show()
+
     for row in rows:
-        name = []
-        for field in exists_fields:
-            value = getattr(row, field)
-            if value:
-                name.append(str(value))
-        result['results'].append({'text': ', '.join(name), 'id': row.id})
+        if voca:
+            name = search_result_format[0].format(*[get_deep_attr(row, field) for field in voca])
+            result['results'].append({'text': name, 'id': row.id})
+        else:
+            name = []
+            for field in exists_fields:
+                value = getattr(row, field)
+                if value:
+                    name.append(str(value))
+            result['results'].append({'text': ', '.join(name), 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:

@@ -5,8 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<a class="btn btn-primary pull-right" href="{{ url_create }}">
-  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+{% if request.user.is_superuser %}
+  <a class="btn btn-primary pull-right mr-sm" href="{{ url_create }}">
+    <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+  </a>
+{% endif %}
+<a class="btn btn-primary pull-right mr-sm" href="{{ url_form }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> Заявка на стык
 </a>
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
@@ -21,26 +26,61 @@
 var main_table = null;
 $(document).ready(function(){
 
-  var pathFormatter = function(cell, formatterParams, onRendered){
-    //console.log(cell.getRow().getData());
-    var data = cell.getRow().getData();
-    var value = cell.getValue();
-    var result = "<div class='padding-rl5 text-center'>";
-    if(value){
-      result += " <a style='white-space:normal;' class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
-    }
-    result += "</div>";
-    return result;
+  var repair_choices = {
+    "": "Без фильтра",
+    {% for repair_choice in repair_choices %}
+      {{ repair_choice.0 }}: "{{ repair_choice.1 }}",
+    {% endfor %}
+  };
+  var workshift_choices = {
+    "": "Без фильтра",
+    {% for workshift_choice in workshift_choices %}
+      {{ workshift_choice.0 }}: "{{ workshift_choice.1 }}",
+    {% endfor %}
+  };
+  var control_type_choices = {
+    "": "Без фильтра",
+    {% for control_choice in control_choices %}
+      {{ control_choice.0 }}: "{{ control_choice.1 }}",
+    {% endfor %}
+  };
+  var conn_view_choices = {
+    "": "Без фильтра",
+    {% for conn_view_choice in welding_conn_view_choices %}
+      {{ conn_view_choice.0 }}: "{{ conn_view_choice.1 }}",
+    {% endfor %}
+  };
+  var welding_type_choices = {
+    "": "Без фильтра",
+    {% for welding_type_choice in welding_type_choices %}
+      {{ welding_type_choice.0 }}: "{{ welding_type_choice.1 }}",
+    {% endfor %}
+  };
+  var category_choices = {
+    "": "Без фильтра",
+    {% for category_choice in category_choices %}
+      {{ category_choice.0 }}: "{{ category_choice.1 }}",
+    {% endfor %}
+  };
+  var control_result_choices = {
+    "": "Без фильтра",
+    {% for control_result_choice in control_result_choices %}
+      {{ control_result_choice.0 }}: "{{ control_result_choice.1 }}",
+    {% endfor %}
+  };
+  var material_choices = {
+    "": "Без фильтра",
+    {% for material in material_choices %}
+      {{ material.0 }}: "{{ material.1 }}",
+    {% endfor %}
+  };
+  var state_choices = {
+    "": "Без фильтра",
+    {% for state in state_choices %}
+      {{ state.0 }}: "{{ state.1 }}",
+    {% endfor %}
   };
 
-  var baseFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['base'] ? data['base']['name'] : '';
-  };
-  var contractFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['contract'] ? data['contract']['name'] : '';
-  };
   var titulFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['titul'] ? data['titul']['name'] : '';
@@ -53,17 +93,45 @@ $(document).ready(function(){
     var data = cell.getRow().getData();
     return data['joint'] ? data['joint']['name']  : '';
   };
-  var schemeFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['scheme'] ? data['scheme']['name']  : '';
-  };
-  var materialFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['material'] ? data['material']['name']  : '';
+  var repairFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return repair_choices[pk];
   };
   var joinTypeFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['join_type'] ? data['join_type']['name']  : '';
+  };
+  var workshiftFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return workshift_choices[pk];
+  };
+  var controlTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return control_type_choices[pk];
+  };
+  var connViewFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return conn_view_choices[pk];
+  };
+  var weldingTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return welding_type_choices[pk];
+  };
+  var categoryFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return category_choices[pk];
+  };
+  var controlResultFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return control_result_choices[pk];
+  };
+  var materialFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return material_choices[pk];
+  };
+  var stateFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return state_choices[pk];
   };
 
   main_table = new Tabulator("#main-table", {
@@ -71,24 +139,6 @@ $(document).ready(function(){
     columns:[
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
-      {
-        title: "Установка",
-        field: "base__name",
-        headerFilterPlaceholder: "Установка",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: baseFormatter,
-        minWidth: 120,
-      },
-      {
-        title: "Договор",
-        field: "contract__name",
-        headerFilterPlaceholder: "Договор",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: contractFormatter,
-        minWidth: 90,
-      },
       {
         title: "Титул",
         field: "titul__name",
@@ -117,21 +167,19 @@ $(document).ready(function(){
         minWidth: 90,
       },
       {
-        title: "Изом. схема",
-        field: "scheme__name",
-        headerFilterPlaceholder: "Изом. схема",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: schemeFormatter,
-        minWidth: 120,
-      },
-      {
         title: "Ремонт",
         field: "repair",
         headerFilterPlaceholder: "Ремонт",
-        headerFilter: "input",
+        headerFilter: true,
         headerFilterFunc: "=",
-        minWidth: 90,
+        headerFilterParams: {
+          values: repair_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: repairFormatter,
+        width: 90,
+        downloadTitle: "repair",
       },
       {
         title: "Вырез",
@@ -167,13 +215,19 @@ $(document).ready(function(){
         minWidth: 90,
       },
       {
-        title: "Материал (сталь)",
-        field: "material__name",
-        headerFilterPlaceholder: "Материал (сталь)",
-        headerFilter: "input",
-        headerFilterFunc: "like",
+        title: "Материал",
+        field: "material",
+        headerFilterPlaceholder: "Материал",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: material_choices,
+        },
+        editable: false,
+        editor: "select",
         formatter: materialFormatter,
-        minWidth: 120,
+        width: 90,
+        downloadTitle: "material",
       },
       {
         title: "Свар. элементы",
@@ -196,9 +250,16 @@ $(document).ready(function(){
         title: "Смена",
         field: "workshift",
         headerFilterPlaceholder: "Смена",
-        headerFilter: "input",
+        headerFilter: true,
         headerFilterFunc: "=",
-        minWidth: 90,
+        headerFilterParams: {
+          values: workshift_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: workshiftFormatter,
+        width: 90,
+        downloadTitle: "workshift",
       },
       {
         title: "№ заявки на НК",
@@ -218,43 +279,78 @@ $(document).ready(function(){
       },
       {
         title: "Вид контроля",
-        field: "request_number",
+        field: "control_type",
         headerFilterPlaceholder: "Вид контроля",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 90,
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: control_type_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: controlTypeFormatter,
+        width: 90,
+        downloadTitle: "control_type",
       },
       {
         title: "Вид сварного соединения",
         field: "welding_conn_view",
         headerFilterPlaceholder: "Вид сварного соединения",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 90,
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: conn_view_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: connViewFormatter,
+        width: 90,
+        downloadTitle: "welding_conn_view",
       },
       {
         title: "Тип сварки",
         field: "welding_type",
         headerFilterPlaceholder: "Тип сварки",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 90,
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: welding_type_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: weldingTypeFormatter,
+        width: 90,
+        downloadTitle: "welding_type",
       },
       {
         title: "Категория",
         field: "category",
         headerFilterPlaceholder: "Категория",
-        headerFilter: "input",
+        headerFilter: true,
         headerFilterFunc: "=",
-        minWidth: 90,
+        headerFilterParams: {
+          values: category_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: categoryFormatter,
+        width: 90,
+        downloadTitle: "category",
       },
       {
         title: "Результат контроля",
         field: "control_result",
         headerFilterPlaceholder: "Результат контроля",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 90,
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: control_result_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: controlResultFormatter,
+        width: 90,
+        downloadTitle: "control_result",
       },
       {
         title: "Номер заключения",
@@ -281,15 +377,20 @@ $(document).ready(function(){
         minWidth: 120,
       },
       {
-        title: "D-inc на человека или стык",
-        field: "dinc",
-        headerFilterPlaceholder: "D-inc на человека или стык",
-        headerFilter: "input",
+        title: "Статус",
+        field: "state",
+        headerFilterPlaceholder: "Статус",
+        headerFilter: true,
         headerFilterFunc: "=",
-        minWidth: 120,
+        headerFilterParams: {
+          values: state_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: stateFormatter,
+        width: 90,
+        downloadTitle: "state",
       },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });

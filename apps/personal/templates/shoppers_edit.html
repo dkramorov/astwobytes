@@ -112,7 +112,9 @@
 
 {% block extrascripts %}
   <script type="text/javascript">
-    var upload_img_url = '{% url "personal:edit_shopper" "img" row.id %}';
+    {% if row %}
+      var upload_img_url = '{% url "personal:edit_shopper" "img" row.id %}';
+    {% endif %}
     $(document).ready(function(){
       $("#oauth_type").select2();
 
@@ -126,15 +128,10 @@
           data: function (params) {
             var query = {
               q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
               page: params.page || 1,
             }
             return query;
           },
-
-          //data: "without_templates=1&without_menus=1&without_main=1",
           cache: false,
           dataType: 'json',
         }

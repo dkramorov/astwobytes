@@ -6,7 +6,9 @@
     <div data-toggle="play-animation" data-play="fadeIn" data-offset="0" class="panel panel-dark panel-flat">
       <div class="panel-heading text-center penguins">
         <a href="{% url 'login:login_view' %}">
-          <img src="/static/admin/misc/logo.png" alt="Logo" class="block-center img-rounded">
+          {% block logo %}
+            <img src="/static/admin/misc/logo.png" alt="Админочка Пингвиня" class="block-center img-rounded">
+          {% endblock %}
         </a>
         <p class="text-center mt-lg">
           <strong>Авторизация</strong>

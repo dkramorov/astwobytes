@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import json
+import datetime
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -11,22 +12,14 @@ from django.conf import settings
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper
-
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 
-from apps.weld.enums import WELDING_TYPES
+from apps.weld.enums import WELDING_TYPES, MATERIALS, JOIN_TYPES, get_welding_joint_state
 from apps.weld.welder_model import (Welder,
                                     LetterOfGuarantee, )
-from .models import (WeldingJoint,
-                     Base,
-                     Contract,
-                     Titul,
-                     Line,
-                     Scheme,
-                     Joint,
-                     JoinType, )
+from .models import WeldingJoint, Joint
 
 CUR_APP = 'welding'
 welding_vars = {
@@ -62,24 +55,32 @@ def show_welding(request, *args, **kwargs):
     """Вывод бланк-заявок
        :param request: HttpRequest
     """
+    state = kwargs.get('state')
+
     mh_vars = welding_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
-    mh.select_related_add('base')
-    mh.select_related_add('contract')
     mh.select_related_add('titul')
     mh.select_related_add('joint')
     mh.select_related_add('joint__line')
-    mh.select_related_add('scheme')
-    mh.select_related_add('material')
-    mh.select_related_add('join_type')
-
+    mh.select_related_add('joint__line__titul')
+    mh.select_related_add('joint__line__titul__subject')
+    mh.select_related_add('joint__line__titul__subject__company')
     context = mh.context
-    context['workshift_choices'] = mh.model.workshift_choices
-    context['control_choices'] = mh.model.control_choices
-    context['welding_conn_view_choices'] = mh.model.welding_conn_view_choices
+
+    context['repair_choices'] = WeldingJoint.repair_choices
+    context['workshift_choices'] = WeldingJoint.workshift_choices
+    context['control_choices'] = WeldingJoint.control_choices
+    context['welding_conn_view_choices'] = WeldingJoint.welding_conn_view_choices
     context['welding_type_choices'] = WELDING_TYPES
-    context['category_choices'] = mh.model.category_choices
-    context['control_result_choices'] = mh.model.control_result_choices
+    context['category_choices'] = WeldingJoint.category_choices
+    context['control_result_choices'] = WeldingJoint.control_result_choices
+    context['material_choices'] = MATERIALS
+    context['join_types'] = JOIN_TYPES
+    context['state_choices'] = WeldingJoint.state_choices
+
+    if state and not 'state' in context['fas']['filters']:
+        context['fas']['filters']['state'] = get_welding_joint_state(state)
+        context['submenu'] = '%s_%s' % (mh_vars['submenu'], state)
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -93,12 +94,6 @@ def show_welding(request, *args, **kwargs):
             item['folder'] = row.get_folder()
             item['thumb'] = row.thumb()
             item['imagine'] = row.imagine()
-            item['workshift'] = row.get_workshift_display()
-            item['control_type'] = row.get_control_type_display()
-            item['welding_conn_view'] = row.get_welding_conn_view_display()
-            item['welding_type'] = row.get_welding_type_display()
-            item['category'] = row.get_category_display()
-            item['control_result'] = row.get_control_result_display()
             result.append(item)
         if request.GET.get('page'):
             result = {'data': result,
@@ -108,6 +103,8 @@ def show_welding(request, *args, **kwargs):
                       'by': mh.raw_paginator['by'], }
         return JsonResponse(result, safe=False)
     template = '%stable.html' % (mh.template_prefix, )
+    context['url_form'] = reverse('%s:%s' % (CUR_APP, mh_vars['create_urla']),
+                                  kwargs={'action': 'form'})
     return render(request, template, context)
 
 @login_required
@@ -119,32 +116,47 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
     """
     mh_vars = welding_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    mh.select_related_add('base')
-    mh.select_related_add('contract')
     mh.select_related_add('titul')
     mh.select_related_add('joint')
-    mh.select_related_add('scheme')
-    mh.select_related_add('material')
-    mh.select_related_add('join_type')
+    mh.select_related_add('joint__line')
+    mh.select_related_add('joint__line__titul')
+    mh.select_related_add('joint__line__titul__subject')
+    mh.select_related_add('joint__line__titul__subject__company')
 
     context = mh.context
-    context['workshift_choices'] = mh.model.workshift_choices
-    context['control_choices'] = mh.model.control_choices
-    context['welding_conn_view_choices'] = mh.model.welding_conn_view_choices
-    context['welding_type_choices'] = mh.model.welding_type_choices
-    context['category_choices'] = mh.model.category_choices
-    context['control_result_choices'] = mh.model.control_result_choices
+    context['repair_choices'] = WeldingJoint.repair_choices
+    context['workshift_choices'] = WeldingJoint.workshift_choices
+    context['control_choices'] = WeldingJoint.control_choices
+    context['welding_conn_view_choices'] = WeldingJoint.welding_conn_view_choices
+    context['welding_type_choices'] = WELDING_TYPES
+    context['category_choices'] = WeldingJoint.category_choices
+    context['control_result_choices'] = WeldingJoint.control_result_choices
+    context['material_choices'] = MATERIALS
+    context['join_types'] = JOIN_TYPES
+    context['state_choices'] = WeldingJoint.state_choices
+    context['today'] = datetime.datetime.today().strftime('%d.%m.%Y')
 
     row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
+        # Вытаскиваем узел, по которому создается заявка
+        joint_str = request.GET.get('joint')
+        if joint_str:
+            context['joint'] = Joint.objects.select_related(
+                'line',
+                'line__titul',
+                'line__base',
+                'line__titul__subject',
+                'line__titul__subject__company',
+            ).filter(pk=joint_str).first()
+
         if action == 'create':
             mh.breadcrumbs_add({
                 'link': mh.url_create,
                 'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
             })
-        elif action == 'edit' and row:
+        elif action in ('edit', 'form') and row:
             mh.breadcrumbs_add({
                 'link': mh.url_edit,
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
@@ -178,14 +190,25 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
     if mh.row:
         mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
                               kwargs={'action': 'edit', 'row_id': mh.row.id})
+        mh.url_form = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
+                              kwargs={'action': 'form', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
         context['redirect'] = mh.url_edit
+    else:
+        mh.url_form = reverse('%s:%s' % (CUR_APP, mh_vars['create_urla']),
+                              kwargs={'action': 'form'})
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
+    if action == 'form':
+        mh.breadcrumbs_add({
+            'link': mh.url_form,
+            'name': '%s' % (mh.singular_obj, ),
+        })
+        template = '%sform.html' % (mh.template_prefix, )
     return render(request, template, context)
 
 @login_required
@@ -217,368 +240,3 @@ def search_welding(request, *args, **kwargs):
     else:
         result['pagination'] = {'more': True}
     return JsonResponse(result, safe=False)
-
-bases_vars = {
-    'singular_obj': 'Установка',
-    'plural_obj': 'Установки',
-    'rp_singular_obj': 'установки',
-    'rp_plural_obj': 'установок',
-    'template_prefix': 'bases_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'bases',
-    'show_urla': 'show_bases',
-    'create_urla': 'create_base',
-    'edit_urla': 'edit_base',
-    'model': Base,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_bases(request, *args, **kwargs):
-    """Вывод установок"""
-    return show_view(request,
-                     model_vars = bases_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_base(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование установок"""
-    return edit_view(request,
-                     model_vars = bases_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def bases_positions(request, *args, **kwargs):
-    """Изменение позиций установок"""
-    result = {}
-    mh_vars = bases_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_bases(request, *args, **kwargs):
-    """Поиск установок"""
-    return search_view(request,
-                       model_vars = bases_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', ), )
-
-contracts_vars = {
-    'singular_obj': 'Договор',
-    'plural_obj': 'Договоры',
-    'rp_singular_obj': 'договора',
-    'rp_plural_obj': 'договоров',
-    'template_prefix': 'bases_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'contracts',
-    'show_urla': 'show_contracts',
-    'create_urla': 'create_contract',
-    'edit_urla': 'edit_contract',
-    'model': Contract,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_contracts(request, *args, **kwargs):
-    """Вывод контрактов"""
-    return show_view(request,
-                     model_vars = contracts_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_contract(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование контрактов"""
-    return edit_view(request,
-                     model_vars = contracts_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def contracts_positions(request, *args, **kwargs):
-    """Изменение позиций контрактов"""
-    result = {}
-    mh_vars = contracts_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_contracts(request, *args, **kwargs):
-    """Поиск контрактов"""
-    return search_view(request,
-                       model_vars = contracts_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', ), )
-
-tituls_vars = {
-    'singular_obj': 'Титул',
-    'plural_obj': 'Титулы',
-    'rp_singular_obj': 'титула',
-    'rp_plural_obj': 'титулов',
-    'template_prefix': 'tituls_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'tituls',
-    'show_urla': 'show_tituls',
-    'create_urla': 'create_titul',
-    'edit_urla': 'edit_titul',
-    'model': Titul,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_tituls(request, *args, **kwargs):
-    """Вывод титулов"""
-    return show_view(request,
-                     model_vars = tituls_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_titul(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование титулов"""
-    return edit_view(request,
-                     model_vars = tituls_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def tituls_positions(request, *args, **kwargs):
-    """Изменение позиций титулов"""
-    result = {}
-    mh_vars = tituls_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_tituls(request, *args, **kwargs):
-    """Поиск титулов"""
-    return search_view(request,
-                       model_vars = tituls_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', ), )
-
-lines_vars = {
-    'singular_obj': 'Линия',
-    'plural_obj': 'Линии',
-    'rp_singular_obj': 'линии',
-    'rp_plural_obj': 'линий',
-    'template_prefix': 'lines_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'lines',
-    'show_urla': 'show_lines',
-    'create_urla': 'create_line',
-    'edit_urla': 'edit_line',
-    'model': Line,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_lines(request, *args, **kwargs):
-    """Вывод линий"""
-    return show_view(request,
-                     model_vars = lines_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_line(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование линий"""
-    return edit_view(request,
-                     model_vars = lines_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def lines_positions(request, *args, **kwargs):
-    """Изменение позиций линий"""
-    result = {}
-    mh_vars = lines_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_lines(request, *args, **kwargs):
-    """Поиск линий"""
-    return search_view(request,
-                       model_vars = lines_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', ), )
-
-schemes_vars = {
-    'singular_obj': 'Изом. схема',
-    'plural_obj': 'Изом. схемы',
-    'rp_singular_obj': 'изом. схемы',
-    'rp_plural_obj': 'изом. схем',
-    'template_prefix': 'schemes_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'schemes',
-    'show_urla': 'show_schemes',
-    'create_urla': 'create_scheme',
-    'edit_urla': 'edit_scheme',
-    'model': Scheme,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_schemes(request, *args, **kwargs):
-    """Вывод изометрических схем"""
-    return show_view(request,
-                     model_vars = schemes_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_scheme(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование изометрических схем"""
-    return edit_view(request,
-                     model_vars = schemes_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def schemes_positions(request, *args, **kwargs):
-    """Изменение позиций изометрических схем"""
-    result = {}
-    mh_vars = schemes_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_schemes(request, *args, **kwargs):
-    """Поиск изометрических схем"""
-    return search_view(request,
-                       model_vars = schemes_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', ), )
-
-joints_vars = {
-    'singular_obj': 'Стык',
-    'plural_obj': 'Стыки',
-    'rp_singular_obj': 'стыка',
-    'rp_plural_obj': 'стыков',
-    'template_prefix': 'joints_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'joints',
-    'show_urla': 'show_joints',
-    'create_urla': 'create_joint',
-    'edit_urla': 'edit_joint',
-    'model': Joint,
-    #'custom_model_permissions': WeldingJoint,
-    'select_related_list': ('line', ),
-}
-
-@login_required
-def show_joints(request, *args, **kwargs):
-    """Вывод стыков"""
-    return show_view(request,
-                     model_vars = joints_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_joint(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование стыков"""
-    return edit_view(request,
-                     model_vars = joints_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def joints_positions(request, *args, **kwargs):
-    """Изменение позиций стыков"""
-    result = {}
-    mh_vars = joints_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_joints(request, *args, **kwargs):
-    """Поиск стыков"""
-    return search_view(request,
-                       model_vars = joints_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', 'line__name'), )
-
-join_types_vars = {
-    'singular_obj': 'Тип соединения',
-    'plural_obj': 'Типы соединений',
-    'rp_singular_obj': 'типа соединения',
-    'rp_plural_obj': 'типов соединений',
-    'template_prefix': 'join_types_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'welding',
-    'submenu': 'join_types',
-    'show_urla': 'show_join_types',
-    'create_urla': 'create_join_type',
-    'edit_urla': 'edit_join_type',
-    'model': JoinType,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_join_types(request, *args, **kwargs):
-    """Вывод типов соединений"""
-    return show_view(request,
-                     model_vars = join_types_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
-
-@login_required
-def edit_join_type(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование типов соединений"""
-    return edit_view(request,
-                     model_vars = join_types_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
-
-@login_required
-def join_types_positions(request, *args, **kwargs):
-    """Изменение позиций типов соединений"""
-    result = {}
-    mh_vars = join_types_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_join_types(request, *args, **kwargs):
-    """Поиск типов соединений"""
-    return search_view(request,
-                       model_vars = join_types_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('name', ), )

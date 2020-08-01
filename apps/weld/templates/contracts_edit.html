@@ -28,7 +28,9 @@
 
 {% block extrascripts %}
   <script type="text/javascript">
-    var upload_img_url = '{% url "welding:edit_contract" "img" row.id %}';
+    {% if row %}
+      var upload_img_url = '{% url "welding:edit_contract" "img" row.id %}';
+    {% endif %}
     $(document).ready(function(){
 
     });

@@ -8,8 +8,6 @@ def get_user_name(user):
     """
     if not isinstance(user, dict):
         user = user.to_dict()
-    if user['name']:
-        return user['name']
     if user['first_name'] and user['middle_name']:
         return '%s %s' % (user['first_name'], user['middle_name'])
     if user['first_name'] and user['last_name']:
@@ -18,6 +16,8 @@ def get_user_name(user):
         return user['first_name']
     if user['last_name']:
         return user['last_name']
+    if user['name']:
+        return user['name']
     if user['email']:
         return user['email']
     return 'Ваше Вашество'

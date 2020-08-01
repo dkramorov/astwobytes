@@ -7,5 +7,7 @@
 #notification .icon{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAAsTAAALEwEAmpwYAAABhUlEQVRIx8WWsUoDQRCGv4MlYBUIpLINRAKCYHWQwkawEnyntILvEVCwCohyVqkEQQiKQVFSCFapJCHw22zkSC53O3dgfljYW27mu73ZnZlIkijWE3AF3AA/wKNfPwB2gGPgDNgv9KR8XUpqSyJwtCX18xxuAn5Iig2g1RF7H0HARFKjAmw5Gt5XLjCRVMtx0sv4wF7O+7VVaBr4JqlZ8NWzDOCswKbpfa8BuwG/Ke8s5I3uKrAfGJeyQJanN/L3cA94CbiPm+5sFGDbBp7xQQ09eZOM3U0M9okDBoTrHdjNWAvVwAFDI7BbATh0wMhgkBXnscF+5ICpweBzw65DNXXYNK64QxxQB74NMayyw7oDOsB9oMEXMAdq/nnu10LVcUBsAALcASepuUVxJCkBjvgf3VpTWxX9pTZL8kbSuS9JMz/Hkryt5QlJi5TNwtByrNXD14ACXAbY9L5LtRhIuvCghZ9TtsXYShO1lTYxrb6klgHUKmqEo8BW/wG4Lmj1T4HDIke/HavGn/RzAR0AAAAASUVORK5CYII=');float:left;width:28px;height:28px;margin:3px 10px 3px 0;padding:0;}
 #notification .success .icon{background-color:#41a6d9}
 #notification .warning .icon{background-color:#d94c4c}
-#notification .attention .icon{background-color:#e5a422}#notification .information .icon{background-color:#a6d941}
+#notification .attention .icon{background-color:#e5a422}
+#notification .information .icon{background-color:#a6d941}
+#notification .error .icon{background-color:#ff0000;}
 label.error{color:brown;}

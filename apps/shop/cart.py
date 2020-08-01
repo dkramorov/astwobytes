@@ -6,7 +6,7 @@ from apps.flatcontent.flatcat import get_costs_types
 from apps.main_functions.string_parser import get_request_ip
 from apps.main_functions.catcher import check_email, check_phone
 
-from .models import Orders, Purchases
+from .models import Orders, Purchases, PromoCodes
 
 PRODUCT_FIELDS = (
     'name',
@@ -45,10 +45,14 @@ def calc_cart(shopper, min_info: bool = False):
        :param min_info: с товарами или без
     """
     shopper_id = None
+    promocode = None
     if isinstance(shopper, dict):
         shopper_id = shopper.get('id')
+        promocode = shopper.get('promocode')
     elif isinstance(shopper, Shopper):
         shopper_id = shopper.id
+        if hasattr(shopper, 'promocode'):
+            promocode = shopper.promocode
     if not shopper_id:
         return {}
 
@@ -60,6 +64,7 @@ def calc_cart(shopper, min_info: bool = False):
     total = 0
     items = 0 # Количество наименований
     items_count = 0 # Количество товаров
+    discount = 0 # Скидка
 
     ids_products = {}
     for purchase in purchases:
@@ -70,12 +75,31 @@ def calc_cart(shopper, min_info: bool = False):
 
     result = {
         'total': total,
+        'discount': discount,
+        'total_with_discount': total - discount,
         'items': items,
         'items_count': items_count,
         # окончания через шаблон лучше
         #'ends': analyze_digit(items, end=('наименование', 'наименований', 'наименования')),
         #'ends_count': analyze_digit(items_count, end=('товар', 'товаров', 'товара'))
     }
+
+    # -------------------
+    # Скидка по промокоду
+    # -------------------
+    if promocode:
+        pcode = PromoCodes.objects.filter(pk=promocode, is_active=True).first()
+        if pcode and pcode.is_valid(shopper_id=shopper_id):
+            if pcode.percent and pcode.percent > 0 and pcode.percent < 100:
+                one_percent = total / 100
+                discount = int(one_percent * pcode.percent)
+            elif pcode.value and total > pcode.value:
+                discount = pcode.value
+            result['promocode'] = pcode.code
+    if discount:
+        result['discount'] = discount
+        result['total_with_discount'] = total - discount
+
     # Достаем товары,
     # актуализируем информацию
     # в базу обновление не производим, удаление тоже
@@ -105,12 +129,17 @@ def get_shopper(request, guest_enter: bool = False):
        :return: Shopper, не надо возвращать dict
     """
     shopper = request.session.get('shopper')
+    promocode = request.session.get('promocode')
     if not guest_enter:
         if isinstance(shopper, dict):
             user = Shopper()
             for k, v in shopper.items():
                 setattr(user, k, v)
+            if promocode:
+                user.promocode = promocode
             return user
+        if shopper:
+            shopper.promocode = promocode
         return shopper
 
     # Создаем виртуального пользователя
@@ -123,6 +152,7 @@ def get_shopper(request, guest_enter: bool = False):
         if not shopper:
             shopper = Shopper(name='Гость', ip=ip)
             request.session['shopper'] = shopper.to_dict()
+    shopper.promocode = promocode
     return shopper
 
 def create_shopper(request):
@@ -189,9 +219,14 @@ def create_new_order(request, shopper, cart, comments: str = None):
         errors.append('Укажите как к вам обращаться')
     if not errors:
         # Оформление заказа
-        purchases = cart.get('purchases')
+        promocode = None
+        if cart.get('promocode'):
+            promocode_id = request.session.get('promocode')
+            promocode = PromoCodes.objects.filter(pk=promocode_id).first()
         new_order = Orders.objects.create(
-            total=cart['total'],
+            total=cart['total_with_discount'],
+            discount=cart['discount'],
+            promocode=promocode,
             shopper=shopper,
             shopper_ip=get_request_ip(request),
             shopper_name=shopper_data['name'],
@@ -201,8 +236,11 @@ def create_new_order(request, shopper, cart, comments: str = None):
             state=2,
             comments=comments,
         )
+        purchases = cart.get('purchases')
         for purchase in purchases:
             Purchases.objects.filter(pk=purchase.id).update(order=new_order)
+        if 'promocode' in request.session:
+            del request.session['promocode']
     return {
         'order': new_order,
         'errors': errors,

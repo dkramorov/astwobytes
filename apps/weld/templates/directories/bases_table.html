@@ -1,0 +1,72 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+  var titulFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['titul'] ? data['titul']['name']  : '';
+  };
+  var subjectFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['titul']['subject'] ? data['titul']['subject']['name']  : '';
+  };
+  var companyFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['titul']['subject']['company'] ? data['titul']['subject']['company']['name']  : '';
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {% include "core/tabulator_cell/name.html" %}
+      {
+        title: "Титул",
+        field: "titul__name",
+        headerFilterPlaceholder: "Титул",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: titulFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Объект",
+        field: "titul__subject__name",
+        headerFilterPlaceholder: "Объект",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: subjectFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Компания",
+        field: "titul__subject__company__name",
+        headerFilterPlaceholder: "Компания",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: companyFormatter,
+        minWidth: 90,
+      },
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+});
+</script>
+{% endblock %}

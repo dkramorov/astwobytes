@@ -1,8 +1,10 @@
 <script src="/static/admin/js/parsley.min.js"></script>
 <script type="text/javascript">
-if(typeof(upload_img_url) !== "string"){
-    alert("upload_img_url not set");
-}
+{% if row %}
+    if(typeof(upload_img_url) !== "string"){
+        alert("upload_img_url not set");
+    }
+{% endif %}
 function update_links(r){
     var thumb = r['row']['thumb'];
     if(thumb === ''){

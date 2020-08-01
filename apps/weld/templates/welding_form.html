@@ -1,0 +1,514 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+<style type="text/css">
+  #current_edit_form .bordered{
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post"{% comment %} action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}"{% endcomment %} id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>{% if joint %}{{ joint.line.titul.subject.company.location }}{% else %}-{% endif %}</p>
+              <p>место строительства предприятия</p>
+            </div>
+            <div class="col-lg-6">
+              <p>{% if joint %}{{ joint.line.titul.subject.company.contractor }}{% else %}-{% endif %}</p>
+              <p>наименование генподрядной и строильеной оргганизации и ее ведомственная принадлежность</p>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>{% if joint %}{{ joint.line.titul.subject.company.name }}{% else %}-{% endif %}</p>
+              <p>наименование предприятия-заказчика</p>
+            </div>
+            <div class="col-lg-6">
+              <p>{% if joint %}{{ joint.line.titul.subject.company.fitter }}{% else %}-{% endif %}</p>
+              <p>наименование монтажной организации</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>{% if joint %}{{ joint.line.titul.subject.name }}{% else %}-{% endif %}</p>
+              <p>наименование сооружаемого объекта</p>
+            </div>
+            <div class="col-lg-6">
+
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Дата заявки на НК</p>
+            </div>
+            <div class="col-lg-6">
+              <input type="text" placeholder="Дата заявки на НК" class="form-control" name="request_control_date" value="{% if row.request_control_date %}{{ row.request_control_date }}{% else %}{{ today }}{% endif %}" autocomplete="off" readonly>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Наименование технологического узла</p>
+            </div>
+            <div class="col-lg-6">
+              <input type="text" placeholder="Наименование технологического узла" class="form-control" name="tech_joint_name" value="{% if row.line.base %}{{ row.line.base.name }}{% endif %}" autocomplete="off" readonly>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Заявка №</p>
+            </div>
+            <div class="col-lg-6">
+              <input type="text" placeholder="Номер заявки на НК" class="form-control" name="request_number" value="{% if row.request_number %}{{ row.request_number }}{% endif %}" autocomplete="off" readonly>
+            </div>
+            <div class="col-lg-12">
+              <p class="text-center">на выполнение контроля качества сварных соединений</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-12">
+              <ul>
+                <li>Сварные стыки зачищены и не имеют наружных дефектов</li>
+                <li>Исполнительная схема (чертеж) сварных соединений предоставлена</li>
+                <li>Рабочее место соответствует требованиям СНиП по технике безопасности (леса, ограждения), доступ людей на радиационно-опасную зону исключен</li>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Свариваемые элементы</p>
+            </div>
+            <div class="col-lg-3">
+              <select id="join_type_from_select2" name="join_type_from" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for join_type in join_types %}
+                  <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_from %} selected{% endifequal %}>{{ join_type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-lg-3">
+              <select id="join_type_to_select2" name="join_type_to" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for join_type in join_types %}
+                  <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_to %} selected{% endifequal %}>{{ join_type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Номер сварного соединения</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="joint_select2" name="joint" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% if row.joint %}
+                  <option value="{{ row.joint.id }}" selected>{{ row.joint.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Материал (сталь)</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="material_select2" name="material" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for material in material_choices %}
+                  <option value="{{ material.0 }}"{% ifequal material.0 row.material %} selected{% endifequal %}>{{ material.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Толщина стенки, мм</p>
+            </div>
+            <div class="col-lg-6">
+              <input type="number" step="0.01" placeholder="Толщина стенки" class="form-control" name="side_thickness" value="{% if row.side_thickness %}{{ row.side_thickness }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Диаметр трубопровода, мм</p>
+            </div>
+            <div class="col-lg-6">
+              <input type="number" step="0.01" placeholder="Диаметр" class="form-control" name="diameter" value="{% if row.diameter %}{{ row.diameter }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Сварщик 1</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="welder1_select2" name="welder" autocomplete="off"  data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.welder %}
+                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Сварщик 2</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="welder2_select2" name="welder" autocomplete="off"  data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.welder %}
+                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Сварщик 3</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="welder3_select2" name="welder" autocomplete="off"  data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.welder %}
+                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Вид сварного соединения</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="welding_conn_view_select2" name="welding_conn_view" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for welding_conn_view in welding_conn_view_choices %}
+                  <option value="{{ welding_conn_view.0 }}"{% ifequal welding_conn_view.0 row.welding_conn_view %} selected{% endifequal %}>{{ welding_conn_view.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Тип сварки</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="welding_type_select2" name="welding_type" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for welding_type in welding_type_choices %}
+                  <option value="{{ welding_type.0 }}"{% ifequal welding_type.0 row.welding_type %} selected{% endifequal %}>{{ welding_type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Дата сварки</p>
+            </div>
+            <div class="col-lg-6">
+              <input id="welding_date" type="text" placeholder="Дата сварки" class="form-control" name="welding_date" value="{% if row.welding_date %}{{ row.welding_date }}{% else %}{{ today }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Вид контроля</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="control_type_select2" name="control_type" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for control_type in control_choices %}
+                  <option value="{{ control_type.0 }}"{% ifequal control_type.0 row.control_type %} selected{% endifequal %}>{{ control_type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Категория трубопровода</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="category_select2" name="category" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for category in category_choices %}
+                  <option value="{{ category.0 }}"{% ifequal category.0 row.category %} selected{% endifequal %}>{{ category.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Заявку подал</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="sender_select2" name="sender" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% if row.sender %}
+                  <option value="{{ row.sender.id }}" selected>{{ row.sender.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Заявку принял</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="receiver_select2" name="receiver" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% if row.receiver %}
+                  <option value="{{ row.receiver.id }}" selected>{{ row.receiver.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-lg-6">
+              <p class="text-right">Примечание</p>
+            </div>
+            <div class="col-lg-6">
+              <input type="text" placeholder="Примечание" class="form-control" name="notice" value="{% if row.notice %}{{ row.notice }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="hidden">
+            {% include "core/forms/row_position.html" %}
+            {% include "core/forms/row_is_active.html" %}
+          </div>
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#welding_date").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+
+      $("#conclusion_date").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+
+      $('#base_select2').select2({
+        placeholder: 'Выберите установку',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_bases' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+      $('#titul_select2').select2({
+        placeholder: 'Выберите титул',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_tituls' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+      $('#joint_select2').select2({
+        placeholder: 'Выберите стык',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_joints' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
+      for(var i=1; i<=3; i++){
+        $('#welder' + i + '_select2').select2({
+          placeholder: 'Выберите сварщика',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+          ajax: {
+            url: "{% url 'welding:search_welders' %}",
+            data: function (params) {
+              var query = {
+                q: params.term,
+                page: params.page || 1,
+              }
+              return query;
+            },
+            cache: false,
+            dataType: 'json',
+          }
+        });
+      }
+
+      $('#sender_select2').select2({
+        placeholder: 'Выберите пользователя',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'login:search_users' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+      $('#receiver_select2').select2({
+        placeholder: 'Выберите поьзователя',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'login:search_users' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
+      $('#repair_select2').select2({
+          placeholder: 'Выберите номер ремонта',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#workshift_select2').select2({
+          placeholder: 'Выберите смену',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#control_type_select2').select2({
+          placeholder: 'Выберите вид контроля',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#welding_conn_view_select2').select2({
+          placeholder: 'Выберите вид сварного соединения',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#welding_type_select2').select2({
+          placeholder: 'Выберите тип сварки',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#category_select2').select2({
+          placeholder: 'Выберите категорию',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#control_result_select2').select2({
+          placeholder: 'Выберите результат контроля',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#material_select2').select2({
+          placeholder: 'Выберите материал',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#join_type_from_select2').select2({
+          placeholder: 'Свариваемый элемент',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+      $('#join_type_to_select2').select2({
+          placeholder: 'Свариваемый элемент',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+    });
+  </script>
+{% endblock %}

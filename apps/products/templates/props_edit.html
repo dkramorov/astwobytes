@@ -53,7 +53,9 @@
 
 {% block extrascripts %}
   <script type="text/javascript">
-    var upload_img_url = '{% url "products:edit_prop" "img" row.id %}';
+    {% if row %}
+      var upload_img_url = '{% url "products:edit_prop" "img" row.id %}';
+    {% endif %}
     $(document).ready(function(){
 
       $("#prop_ptype").select2();

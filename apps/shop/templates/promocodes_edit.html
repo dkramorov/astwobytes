@@ -1,0 +1,186 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          {% include "core/forms/row_name.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Промокод</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Промокод" class="form-control" name="code" value="{% if row.code %}{{ row.code }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Дата начала</label>
+            <div class="col-lg-10">
+              <input id="start_date" type="text" placeholder="Дата начала" class="form-control" name="start_date" value="{% if row.start_date %}{{ row.start_date }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Дата окончания</label>
+            <div class="col-lg-10">
+              <input id="end_date" type="text" placeholder="Дата окончания" class="form-control" name="end_date" value="{% if row.end_date %}{{ row.end_date }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Процент скидки</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Процент скидки" class="form-control" name="percent" value="{% if row.percent %}{{ row.percent }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Скидка в рублях</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Скидка в рублях" class="form-control" name="value" value="{% if row.value %}{{ row.value }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Покупатель (персональный промокод)</label>
+            <div class="col-lg-10">
+              <select id="shopper_select2" name="personal" autocomplete="off">
+                {% if row.personal %}
+                  <option value="{{ row.personal.id }}" selected>{{ row.personal.name }} #{{ row.personal.id }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Ограничение на кол-во использований</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Ограничение на кол-во использований" class="form-control" name="use_count" value="{% if row.use_count %}{{ row.use_count }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    function get_user_name(user){
+      /* Вывести имя пользователя
+         :param user: словарь с полями пользователя
+         :return: имя пользователя
+      */
+      if(user['first_name'] && user['middle_name']){
+        return user['first_name'] + " " + user['middle_name'] + " #" + user['id'];
+      }
+      if(user['first_name'] && user['last_name']){
+        return user['last_name'] + " " + user['first_name'] + " #" + user['id'];
+      }
+      if(user['first_name']){
+        return user['first_name'] + " #" + user['id'];
+      }
+      if(user['last_name']){
+        return user['last_name'] + " #" + user['id'];
+      }
+      if(user['name']){
+        return user['name'] + " #" + user['id'];
+      }
+      if(user['email']){
+        return user['email'] + " #" + user['id'];
+      }
+      return 'Ваше Вашество' + " #" + user['id']
+    }
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+      $("#start_date").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+      $("#end_date").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+      {% if row.personal %}
+        var user = {
+          "id": "{{ row.personal.id }}",
+          {% if row.personal.name %}"name": "{{ row.personal.name }}",{% endif %}
+          {% if row.personal.first_name %}"first_name": "{{ row.personal.first_name }}",{% endif %}
+          {% if row.personal.last_name %}"last_name": "{{ row.personal.last_name }}",{% endif %}
+          {% if row.personal.middle_name %}"middle_name": "{{ row.personal.middle_name }}",{% endif %}
+          {% if row.personal.login %}"login": "{{ row.personal.login }}",{% endif %}
+          {% if row.personal.email %}"email": "{{ row.personal.email }}",{% endif %}
+          {% if row.personal.phone %}"phone": "{{ row.personal.phone }}",{% endif %}
+        };
+        $("#shopper_select2 option:selected").text(get_user_name(user));
+      {% endif %}
+      $('#shopper_select2').select2({
+        placeholder: 'Покупатель',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'personal:search_shoppers' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+    });
+  </script>
+{% endblock %}

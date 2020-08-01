@@ -74,7 +74,7 @@ class Command(BaseCommand):
             source_folder = os.path.split(source)[0]
             logger.info('source folder %s' % source_folder)
             folders = os.listdir(source_folder)
-            for folder in folders:
+            for folder in sorted(folders):
                 fname = os.path.join(source_folder, folder)
                 if not os.path.islink(fname):
                     print('python manage.py move_records --source=%s --dest=%s' % (folder, folder))

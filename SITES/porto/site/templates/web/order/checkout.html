@@ -34,7 +34,7 @@
   <div class="row">
     <div class="col-lg-4">
       <div class="order-summary">
-        <h3>Заказ на {{ cart.total|money_format }} ₽</h3>
+        <h3>Заказ на {{ cart.total_with_discount|money_format }} ₽</h3>
         <h4>
           <a data-toggle="collapse" href="#order-cart-section" class="collapsed" role="button" aria-expanded="false" aria-controls="order-cart-section">{{ cart.items }} {{ cart.items|ends:'наименование,наименований,наименования' }}</a>
         </h4>
@@ -60,6 +60,15 @@
               </tr>
               {% endfor %}
             </tbody>
+            <tfoot>
+              <tr>
+                <th>
+                  {% if cart.discount %}
+                    Скидка: {{ cart.discount|money_format }} ₽
+                  {% endif %}
+                </th>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

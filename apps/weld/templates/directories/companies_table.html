@@ -18,12 +18,6 @@
 <script type="text/javascript">
 var main_table = null;
 $(document).ready(function(){
-
-  var lineFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['line']['name'];
-  };
-
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -31,16 +25,29 @@ $(document).ready(function(){
       {% include "core/tabulator_cell/id.html" %}
       {% include "core/tabulator_cell/name.html" %}
       {
-        title: "Линия",
-        field: "line__name",
-        headerFilterPlaceholder: "Линия",
+        title: "Место строительства",
+        field: "location",
+        headerFilterPlaceholder: "Место строительства",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: lineFormatter,
-        minWidth: 150,
+        minWidth: 120,
       },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
+      {
+        title: "Подрядчик",
+        field: "contractor",
+        headerFilterPlaceholder: "Подрядчик",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "Монтажник",
+        field: "fitter",
+        headerFilterPlaceholder: "Монтажник",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });

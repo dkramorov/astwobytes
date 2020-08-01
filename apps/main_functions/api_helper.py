@@ -5,9 +5,10 @@ from io import BytesIO
 from django.http import JsonResponse
 from django.db.models import Q
 
-from apps.main_functions.functions import object_fields
+from apps.main_functions.functions import object_fields, object_fields_types
 from apps.main_functions.files import open_file, full_path
 from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.date_time import str_to_date
 
 def ApiHelper(request, model_vars: dict, CUR_APP: str):
     """Апи-метод для получения всех данных
@@ -104,12 +105,13 @@ def XlsxHelper(request, model_vars: dict, CUR_APP: str,
         result['error'] = '<br>'.join(job['errors'])
     return JsonResponse(result, safe=False)
 
-def open_wb(path):
+def open_wb(path, data_only: bool = True):
     """Загружаем эксельку
        :param path: путь до эксельки
+       :param data_only: без формул - только значения
     """
     with open_file(path, 'rb') as excel_file:
-        wb = load_workbook(BytesIO(excel_file.read()))
+        wb = load_workbook(BytesIO(excel_file.read()), data_only=data_only)
     # Посмотреть листы эксельки: logger.info(wb.sheetnames)
     return wb
 
@@ -185,7 +187,7 @@ def import_from_excel(model, excel_file, required_names: list = None):
     indexes = {name: names.index(name) for name in names if name in template}
     data = []
 
-    for row in sheet.rows:
+    for row in rows:
         item = {}
         is_empty = True
         # В первой записи будут названия полей
@@ -214,14 +216,34 @@ def save_from_excel(model, data, cond_fields: list = None):
         return result
     created = 0
     updated = 0
+
+    field_types = object_fields_types(model())
+
     for item in data:
         cond = Q()
         # id обновлять - плохая затея
-        if 'id' in item:
-            del item['id']
+        for key in ('id', 'img', 'created', 'updated'):
+            if key in item:
+                del item[key]
+
         for k, v in item.items():
+            if not k in field_types:
+                continue
+            field_type = field_types[k]
+            # Некоторые типы полей пока пропускаем
+            if field_type in ('foreign_key', ):
+                continue
             if v:
                 item[k] = v.strip()
+            if field_type in ('date', 'datetime'):
+                item[k] = str_to_date(item[k])
+            elif field_type in ('int', ):
+                try:
+                    item[k] = int(item[k])
+                except ValueError:
+                    item[k] = None
+            elif field_type in ('boolean', ):
+                item[k] = True if item[k] in (1, '1') else False
         for cond_field in cond_fields:
             cond.add(Q(**{cond_field: item.get(cond_field)}), Q.AND)
         analog = model.objects.filter(cond).first()

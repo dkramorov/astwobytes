@@ -357,6 +357,25 @@ class ModelHelper:
             #    logger.warning('Update related %s {%s: %s}' % (foreign_obj, foreign_field, value))
             #    continue
             setattr(self.row, key, value)
+        # ---------------------------
+        # Проверка на unique_together
+        # ---------------------------
+        unique_together = self.model._meta.unique_together
+        for pair in unique_together:
+            cond = {field: getattr(self.row, field) for field in pair}
+            analogs = self.model.objects.filter(**cond)
+            # самого себя то не надо считать дубликатом
+            if self.row.id:
+                analogs = analogs.exclude(id=self.row.id)
+            analog = analogs.values_list('id', flat=True)
+            # ------------
+            # Пишем ошибку
+            # ------------
+            if analog:
+                self.error = 'Вы создаете дубль'
+                if self.row.id:
+                    self.error = 'Нельзя сделать дубль'
+                return None
         self.row.save()
         # ---------------
         # Загружаем файлы
@@ -455,7 +474,7 @@ class ModelHelper:
                 for field in self.search_fields:
                     if field in types:
                         # ---------------------------
-                        # По целому цислу, возможно,
+                        # По целому числу, возможно,
                         # стоит сделать строгий поиск
                         # ("primary_key", "int")
                         # ---------------------------
@@ -470,11 +489,17 @@ class ModelHelper:
                             continue
                         else:
                             key = "%s__icontains" % field
-                            tmp_cond.add(Q(**{key:item}), Q.OR)
+                            tmp_cond.add(Q(**{key: item}), Q.OR)
+                            raw_qqize.append(item)
+                    elif '__' in field:
+                        # Похоже ищем foreign_key
+                        fkey = field.rsplit('__', 1)[0]
+                        if fkey in self.select_related:
+                            key = "%s__icontains" % field
+                            tmp_cond.add(Q(**{key: item}), Q.OR)
                             raw_qqize.append(item)
                 if tmp_cond:
                     cond.add(tmp_cond, Q.AND)
-
             # -----------------------------------------------------
             # Заполняем слова для подсветки (если они не заполнены,
             # что гарантировано, если мы не юзаем поиск по индексу)

@@ -46,7 +46,8 @@ function add_to_cart(id, cost_type){
     data: "product_id=" + id + params,
     success: function(result){
       if(result['error']){
-        alert("Произошла ошибка");
+        //alert("Произошла ошибка");
+        Notification("Произошла ошибка: " + result['error'], "error");
       }else{
         cart_details();
         result['success'] += "<br><a href='/shop/cart/'>Перейти в корзину</a>";
@@ -160,6 +161,41 @@ function purchase_drop_listener(purchase_id, drop_btn){
   }
   drop_btn.click(function(){
     purchase_drop(purchase_id);
+  });
+}
+function promocode_activate(inp){
+  /* Активация промокода
+     :param inp: поле ввода промокода
+  */
+  jQuery.ajax({
+    type: "GET",
+    url: "/shop/cart/promocode/",
+    data: "promocode=" + inp.val(),
+    success: function(result){
+      if(result['error']){
+        Notification(result['error'], "error");
+        return;
+      }
+      if(window.location.href.indexOf("/shop/cart/") > -1){
+        window.location.reload();
+      }else{
+        cart_details();
+        Notification(result['success'], "success");
+      }
+    }
+  });
+}
+function promocode_activate_listener(promocode_inp, promocode_btn){
+  /* Слушалка на активацию промокода
+     :param promocode_inp: Поле ввода промокода
+     :param promocode_btn: Кнопка активации промокода
+  */
+  if(promocode_btn.hasClass("touched")){
+    console.log("[WARNING]: promocode_btn already touched");
+    return;
+  }
+  promocode_btn.click(function(){
+    promocode_activate(promocode_inp);
   });
 }
 function quantity_listener(purchase_id, plus, minus, send_event){

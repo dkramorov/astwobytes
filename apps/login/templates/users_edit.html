@@ -50,7 +50,12 @@
               <input type="text" placeholder="Email" class="form-control" name="email" value="{% if row.email %}{{ row.email }}{% endif %}" autocomplete="off" data-parsley-type="email">
             </div>
           </div>
-
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Должность</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Должность" class="form-control" name="customuser.function" value="{% if row.customuser.function %}{{ row.customuser.function }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
           {% include "core/forms/row_image.html" %}
 
           <div class="form-group">
@@ -97,9 +102,10 @@
 {% endblock %}
 
 {% block extrascripts %}
-  <script src="/static/admin/js/parsley.min.js"></script>
   <script type="text/javascript">
-    var upload_img_url = '{% url "login:edit_user" "img" row.id %}';
+    {% if row %}
+      var upload_img_url = '{% url "login:edit_user" "img" row.id %}';
+    {% endif %}
     $(document).ready(function(){
 
     });

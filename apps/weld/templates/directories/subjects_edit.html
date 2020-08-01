@@ -1,0 +1,69 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">
+            {{ singular_obj }}
+            {% if row %}, компания {{ row.company.name }}{% endif %}
+        </div>
+        <div class="panel-body">
+          {% csrf_token %}
+          {% include "core/forms/row_name.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Компания</label>
+            <div class="col-lg-10">
+              <select id="company_select2" name="company" autocomplete="off"  data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.company %}
+                  <option value="{{ row.company.id }}" selected>{{ row.company.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          {% include "core/forms/row_image.html" %}
+          {% include "core/forms/hidden_fields.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script type="text/javascript">
+    {% if row %}
+      var upload_img_url = '{% url "welding:edit_subject" "img" row.id %}';
+    {% endif %}
+    $(document).ready(function(){
+      $('#company_select2').select2({
+        placeholder: 'Выберите компанию',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_companies' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+    });
+  </script>
+  {% include "core/forms/row_js.html" %}
+{% endblock %}

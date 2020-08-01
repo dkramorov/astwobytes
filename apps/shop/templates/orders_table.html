@@ -33,6 +33,11 @@ $(document).ready(function(){
     return result;
   };
 
+  var promocodeFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['promocode'] ? data['promocode']['code']  : '';
+  };
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -55,12 +60,29 @@ $(document).ready(function(){
         minWidth: 90,
       },
       {
+        title: "Скидка",
+        field: "discount",
+        headerFilterPlaceholder: "Скидка",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
         title: "Телефон покупателя",
         field: "shopper_phone",
         headerFilterPlaceholder: "Телефон покупателя",
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 150,
+      },
+      {
+        title: "Промокод",
+        field: "promocode__code",
+        headerFilterPlaceholder: "Промокод",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: promocodeFormatter,
+        minWidth: 90,
       },
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}

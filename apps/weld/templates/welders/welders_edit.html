@@ -56,7 +56,9 @@
 
 {% block extrascripts %}
   <script type="text/javascript">
-    var upload_img_url = '{% url "welding:edit_welder" "img" row.id %}';
+    {% if row %}
+      var upload_img_url = '{% url "welding:edit_welder" "img" row.id %}';
+    {% endif %}
     $(document).ready(function(){
       $('#company_select2').select2({
         placeholder: 'Выберите объект',
@@ -68,9 +70,6 @@
           data: function (params) {
             var query = {
               q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
               page: params.page || 1,
             }
             return query;

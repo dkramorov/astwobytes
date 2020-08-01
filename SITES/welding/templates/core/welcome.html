@@ -10,19 +10,236 @@
   <div class="panel widget">
     <div class="panel-body">
       <div class="row row-table">
+        <h3 class="mt0">29/07 Изменения в создании заявки на стык</h3>
+        <p>Заявка на стык теперь создается из таблицы узлов, по нажатию на кнопку <a class="btn-xs btn btn-info" href="javascript:void(0);" title="Заявка на стык"><i class="fa fa-file"></i></a> что позволяет сразу знать данные по узлу, линии, титулу, объекту</p>
+        <div class="mb-sm mr-sm">
+          <a href="{% url 'welding:show_joints' %}" class="btn btn-success">Таблица стыков</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">28/07 Изменение моделей</h3>
+        <p>Заявки на стыки разбиты на 5 разделов: все, новые, в работе, выполененные, на ремонт</p>
+        <div class="clearfix"></div>
+        <div class="pull-left mb-sm mr-sm">
+          <a href="{% url 'welding:show_welding' %}" class="btn btn-success">Все заявки</a>
+        </div>
+        <div class="pull-left mb-sm mr-sm">
+          <a href="{% url 'welding:show_welding' 'new' %}" class="btn btn-success">Новые заявки</a>
+        </div>
+        <div class="pull-left mb-sm mr-sm">
+          <a href="{% url 'welding:show_welding' 'in_progress' %}" class="btn btn-success">Заявки в работе</a>
+        </div>
+        <div class="pull-left mb-sm mr-sm">
+          <a href="{% url 'welding:show_welding' 'done' %}" class="btn btn-success">Выполненные заявки</a>
+        </div>
+        <div class="pull-left mb-sm mr-sm">
+          <a href="{% url 'welding:show_welding' 'in_repair' %}" class="btn btn-success">Заявки на ремонт</a>
+        </div>
+        <div class="clearfix"></div><hr>
+        <ul>
+          <li>Проверка на создание дублей по объектам, титулам, установкам, линиям, стыкам</li>
+          <li>Компания - верхний уровень иерархии, добавлены поля: место строительства, подрядчик, монтажник
+            <div class="mb-sm mr-sm">
+              <a href="{% url 'welding:show_companies' %}" class="btn btn-success">Компании</a>
+            </div>
+          </li>
+          <li>Объекты - второй уровень иерархии, добавлено поле: компания (связь с уровнем иерархии выше)
+            <div class="mb-sm mr-sm">
+              <a href="{% url 'welding:show_subjects' %}" class="btn btn-success">Объекты</a>
+            </div>
+          </li>
+          <li>Титулы - третий уровень иерархии, добавлено поле: объект (связь с уровнем иерархии выше)
+            <div class="mb-sm mr-sm">
+              <a href="{% url 'welding:show_tituls' %}" class="btn btn-success">Титулы</a>
+            </div>
+          </li>
+          <li>Устновки - четвертый уровень иерархии, добавлено поле: титул (связь с уровнем иерархии выше)
+            <div class="mb-sm mr-sm">
+              <a href="{% url 'welding:show_bases' %}" class="btn btn-success">Установки</a>
+            </div>
+          </li>
+          <li>Убраны лишние поля в таблицах и в формах редактирования (позиция, активен)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">27/07 Изменена связь моделей</h3>
+        <ul>
+          <li>
+            Материалы перенесены в статическую модель, которую нельзя редактировать
+            <pre>
+              Материалы
+                (1, '09Г2С'),
+                (2, '12Х18Н10Т'),
+                (3, '08Х18Н10Т'),
+            </pre>
+          </li>
+          <li>
+            Типы соединений перенесены в статическую модель, которую нельзя редактировать
+            <pre>
+              Типы соединений
+                (1, 'труба'),
+                (2, 'отвод'),
+                (3, 'тройник')
+                (4, 'переходник'),
+                (5, 'тройник'),
+                (6, 'заглушка'),
+                (7, 'фланец'),
+                (8, 'штуцер'),
+                (9, 'бобышка'),
+            </pre>
+          </li>
+          <li>Справочники заменены структурой, т/к теперь объекты связаны</li>
+          <li>Сделана иерархия от компании до узла</li>
+          <li>Удалена модель Договоров</li>
+          <li>Удалена модель Изометрические схемы (раширена модель линии)</li>
+          <li>
+            Добавлен объект верхнего уровня - компания
+            <div class="mb-sm mr-sm">
+              <a href="{% url 'welding:show_companies' %}" class="btn btn-success">Компании</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">22/07 Загружены данные по заявкам на сварку</h3>
+        Добавлена форма для сварщика исполнителя<br>
+        <div>
+          <a href="{% url 'welding:create_welding' 'form' %}" class="btn btn-success">Бланк-заявка для сварщика</a>
+        </div>
+        <div>Добавлено поле должности для пользователя панели управления</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">22/07 Загружены данные по заявкам на сварку</h3>
+        Добавлена форма для сварщика исполнителя<br>
+        <div>
+          <a href="{% url 'welding:create_welding' 'form' %}" class="btn btn-success">Бланк-заявка для сварщика</a>
+        </div>
+        <div>Добавлено поле должности для пользователя панели управления</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">20/07 Добавление моделей к сварщикам. Изменение структуры с общей на разделы</h3>
+        <fieldset>
+          <h4>Раздел справочники:<h4>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_companies' %}" class="btn btn-success">Объекты</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="javascript:void(0);" class="btn btn-success">Материалы</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_bases' %}" class="btn btn-success">Установки</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="javascript:void(0)" class="btn btn-success">Изом. схемы</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="javascript:void(0);" class="btn btn-success">Типы соединений</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="javascript:void(0);" class="btn btn-success">Договоры</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_tituls' %}" class="btn btn-success">Титулы</a>
+          </div>
+        </fieldset>
+        <fieldset>
+          <h4>Раздел сварщики:<h4>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_welders' %}" class="btn btn-success">Сварщики</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_letters_of_guarantee' %}" class="btn btn-success">Гарантийные письма</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_viks' %}" class="btn btn-success">Акты ВИК</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_controlk' %}" class="btn btn-success">УЗК/РК контроль</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_holding_kss' %}" class="btn btn-success">Проведение КСС</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_mechtest' %}" class="btn btn-success">Мехиспытания</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_nax' %}" class="btn btn-success">Аттестаты НАКС</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_admission_sheet' %}" class="btn btn-success">Листы допуска</a>
+          </div>
+        </fieldset>
+        <fieldset>
+          <h4>Сварочные соединения:<h4>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_welding' %}" class="btn btn-success">Заявки на сварку</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_lines' %}" class="btn btn-success">Линии</a>
+          </div>
+          <div class="pull-left mb-sm mr-sm">
+            <a href="{% url 'welding:show_joints' %}" class="btn btn-success">Стыки</a>
+          </div>
+        </fieldset>
+        <p>Загружены данные по моделям сварщиков: сами сварщики, гарантийные письма, акты ВИК, УЗК/РК контроль, Проведение КСС, Мехиспытания, Аттестаты (НАКС), листы допуска</p>
+        <p>По всем моделям сварщиков добавлены права доступа на просмотр, создание, редактирование, удаление</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
         <h3 class="mt0">16/07 Договоры и заявки на сварку для сварочных соединений</h3>
-          Добавлены и заполнены модели:<br>
-          <div>
-            Договоры<br>
-            <a href="{% url 'welding:show_contracts' %}" class="btn btn-success">Перейти к договорам</a>
-          </div>
-          <div>
-            Заявки на сварку<br>
-            <a href="{% url 'welding:show_welding' %}" class="btn btn-success">Перейти к заявкам на сварку</a><br>
-          </div>
-          <div>
-            Добавлены права на модели: просмотр, создание, редактирование, удаление
-          </div>
+        Добавлены и заполнены модели:<br>
+        <div>
+          Договоры<br>
+          <a href="javascript:void(0);" class="btn btn-success">Перейти к договорам</a>
+        </div>
+        <div>
+          Заявки на сварку<br>
+          <a href="{% url 'welding:show_welding' %}" class="btn btn-success">Перейти к заявкам на сварку</a><br>
+        </div>
+        <div>
+          Добавлены права на модели: просмотр, создание, редактирование, удаление
+        </div>
       </div>
     </div>
   </div>
@@ -33,45 +250,44 @@
     <div class="panel-body">
       <div class="row row-table">
         <h3 class="mt0">15/07 Модели для модуля сварочных соединений</h3>
-          <p>Добавлен список изменений</p>
-
-          Заполнены модели:<br>
-          <div>
-            Установки<br>
-            <a href="{% url 'welding:show_bases' %}" class="btn btn-success">Перейти к установкам</a>
-          </div>
-          <div>
-            Титулы<br>
-            <a href="{% url 'welding:show_tituls' %}" class="btn btn-success">Перейти к титулам</a><br>
-          </div>
-          <div>
-            Линии<br>
-            <a href="{% url 'welding:show_lines' %}" class="btn btn-success">Перейти к линиям</a><br>
-          </div>
-          <div>
-            Изометрические схемы<br>
-            <a href="{% url 'welding:show_schemes' %}" class="btn btn-success">Перейти к изометрическим схемам</a><br>
-          </div>
-          <div>
-            Стыки<br>
-            <a href="{% url 'welding:show_joints' %}" class="btn btn-success">Перейти к стыкам</a><br>
-          </div>
-          <div>
-            Материалы (сталь)<br>
-            <a href="{% url 'welding:show_materials' %}" class="btn btn-success">Перейти к материалам (сталь)</a><br>
-          </div>
-          <div>
-            Типы соединений<br>
-            <a href="{% url 'welding:show_join_types' %}" class="btn btn-success">Перейти к типам соединений</a><br>
-          </div>
-          <div>
-            Сварщики<br>
-            <a href="{% url 'welding:show_welders' %}" class="btn btn-success">Перейти к сварщикам</a><br>
-            <br>
-          </div>
-          <div>
-            Добавлены права на каждую из моделей: просмотр, создание, редактирование, удаление
-          </div>
+        <p>Добавлен список изменений</p>
+        Заполнены модели:<br>
+        <div>
+          Установки<br>
+          <a href="{% url 'welding:show_bases' %}" class="btn btn-success">Перейти к установкам</a>
+        </div>
+        <div>
+          Титулы<br>
+          <a href="{% url 'welding:show_tituls' %}" class="btn btn-success">Перейти к титулам</a><br>
+        </div>
+        <div>
+          Линии<br>
+          <a href="{% url 'welding:show_lines' %}" class="btn btn-success">Перейти к линиям</a><br>
+        </div>
+        <div>
+          Изометрические схемы<br>
+          <a href="javascript:void(0);" class="btn btn-success">Перейти к изометрическим схемам</a><br>
+         </div>
+        <div>
+          Стыки<br>
+          <a href="{% url 'welding:show_joints' %}" class="btn btn-success">Перейти к стыкам</a><br>
+        </div>
+        <div>
+          Материалы (сталь)<br>
+          <a href="javascript:void(0);" class="btn btn-success">Перейти к материалам (сталь)</a><br>
+        </div>
+        <div>
+          Типы соединений<br>
+          <a href="javascript:void(0);" class="btn btn-success">Перейти к типам соединений</a><br>
+        </div>
+        <div>
+          Сварщики<br>
+          <a href="{% url 'welding:show_welders' %}" class="btn btn-success">Перейти к сварщикам</a><br>
+          <br>
+        </div>
+        <div>
+          Добавлены права на каждую из моделей: просмотр, создание, редактирование, удаление
+        </div>
       </div>
     </div>
   </div>
@@ -151,43 +367,43 @@
     <div class="panel-body">
       <div class="row row-table">
         <h3 class="mt0">12/07 Модели для модуля сварочных соединений</h3>
-          Добавлены модели:<br>
-          <div>
-            Установки<br>
-            <a href="{% url 'welding:show_bases' %}" class="btn btn-success">Перейти к установкам</a>
-          </div>
-          <div>
-            Титулы<br>
-            <a href="{% url 'welding:show_tituls' %}" class="btn btn-success">Перейти к титулам</a><br>
-          </div>
-          <div>
-            Линии<br>
-            <a href="{% url 'welding:show_lines' %}" class="btn btn-success">Перейти к линиям</a><br>
-          </div>
-          <div>
-            Изометрические схемы<br>
-            <a href="{% url 'welding:show_schemes' %}" class="btn btn-success">Перейти к изометрическим схемам</a><br>
-          </div>
-          <div>
-            Стыки<br>
-            <a href="{% url 'welding:show_joints' %}" class="btn btn-success">Перейти к стыкам</a><br>
-          </div>
-          <div>
-            Материалы (сталь)<br>
-            <a href="{% url 'welding:show_materials' %}" class="btn btn-success">Перейти к материалам (сталь)</a><br>
-          </div>
-          <div>
-            Типы соединений<br>
-            <a href="{% url 'welding:show_join_types' %}" class="btn btn-success">Перейти к типам соединений</a><br>
-          </div>
-          <div>
-            Сварщики<br>
-            <a href="{% url 'welding:show_welders' %}" class="btn btn-success">Перейти к сварщикам</a><br>
-            <br>
-          </div>
-          <div>
-            Добавлены права на каждую из моделей: просмотр, создание, редактирование, удаление
-          </div>
+        Добавлены модели:<br>
+        <div>
+          Установки<br>
+          <a href="{% url 'welding:show_bases' %}" class="btn btn-success">Перейти к установкам</a>
+        </div>
+        <div>
+          Титулы<br>
+          <a href="{% url 'welding:show_tituls' %}" class="btn btn-success">Перейти к титулам</a><br>
+        </div>
+        <div>
+          Линии<br>
+          <a href="{% url 'welding:show_lines' %}" class="btn btn-success">Перейти к линиям</a><br>
+        </div>
+        <div>
+          Изометрические схемы<br>
+          <a href="javascript:void(0);" class="btn btn-success">Перейти к изометрическим схемам</a><br>
+        </div>
+        <div>
+          Стыки<br>
+          <a href="{% url 'welding:show_joints' %}" class="btn btn-success">Перейти к стыкам</a><br>
+        </div>
+        <div>
+          Материалы (сталь)<br>
+          <a href="javascript:void(0);" class="btn btn-success">Перейти к материалам (сталь)</a><br>
+        </div>
+        <div>
+          Типы соединений<br>
+          <a href="javascript:void(0);" class="btn btn-success">Перейти к типам соединений</a><br>
+        </div>
+        <div>
+          Сварщики<br>
+          <a href="{% url 'welding:show_welders' %}" class="btn btn-success">Перейти к сварщикам</a><br>
+          <br>
+        </div>
+        <div>
+          Добавлены права на каждую из моделей: просмотр, создание, редактирование, удаление
+        </div>
       </div>
     </div>
   </div>

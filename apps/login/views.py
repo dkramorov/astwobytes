@@ -61,6 +61,7 @@ def api(request, action: str = 'users'):
         item['thumb'] = row.customuser.thumb()
         item['name'] = str(row.customuser)
         item['phone'] = row.customuser.phone
+        item['function'] = row.customuser.function
         result.append(item)
 
     result = {'data': result,
@@ -148,10 +149,11 @@ def show_users(request, *args, **kwargs):
             item['actions'] = row.id
             if row.customuser.phone:
                 item['customuser__phone'] = defiz_phone(row.customuser.phone)
+            item['customuser__function'] = row.customuser.function
             # -------------------------------------
             # OneToOneField связь User с customUser
             # -------------------------------------
-            item['customuser'] = object_fields(row.customuser, only_fields=('phone', ))
+            item['customuser'] = object_fields(row.customuser, only_fields=('phone', 'function'))
             item['thumb'] = row.customuser.thumb()
             item['position'] = row.customuser.position
             result.append(item)
@@ -382,7 +384,11 @@ def search_users(request, *args, **kwargs):
     mh_vars = users_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
-    mh.search_fields = ('first_name', 'last_name', 'username', 'customuser__phone')
+    mh.search_fields = ('first_name',
+                        'last_name',
+                        'username',
+                        'customuser__phone',
+                        'customuser__function', )
     rows = mh.standard_show()
     for row in rows:
         name = '%s (%s id=%s)' % (str(row.customuser), row.username, row.id)

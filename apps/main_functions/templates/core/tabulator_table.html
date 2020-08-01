@@ -71,8 +71,8 @@ var actionsFormatter = function(cell, formatterParams, onRendered){
   var rowIndex = row.getIndex();
   var pk = cell.getValue();
   var actions = "<div class='padding-rl5'>";
-  actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
-  actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+  actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/' title='Редактировать'><i class='fa fa-edit'></i></a> ";
+  actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");' title='Удалить'><i class='fa fa-trash'></i></a> ";
   actions += "</div>";
   return actions;
 };

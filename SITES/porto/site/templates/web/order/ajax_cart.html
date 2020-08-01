@@ -25,7 +25,7 @@
   </div>
   <div class="dropdown-cart-total">
     <span>Итого</span>
-    <span class="cart-total-price">{% if cart %}{{ cart.total|money_format }}{% else %}0{% endif %} ₽</span>
+    <span class="cart-total-price">{% if cart %}{{ cart.total_with_discount|money_format }}{% else %}0{% endif %} ₽</span>
   </div>
   <div class="dropdown-cart-action">
     <a href="/shop/cart/" class="btn">Оформить заказ</a>

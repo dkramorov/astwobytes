@@ -25,16 +25,7 @@
 {% block body %}
   <div class="wrapper">
     <nav class="navbar navbar-default navbar-top navbar-fixed-top" role="navigation">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="/admin/">
-          <div class="brand-logo">
-            <img alt="Admin Panel" src="/static/admin/misc/logo.png"/>
-          </div>
-          <div class="brand-logo-collapsed">
-            <img alt="Admin Panel" src="/static/admin/misc/logo-single.png"/>
-          </div>
-        </a>
-      </div>
+      {% include "core/logo.html" %}
 
       <div class="nav-wrapper">
         <ul class="nav navbar-nav">
@@ -110,7 +101,7 @@
           <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
           <h4 id="myModalLabel" class="modal-title">{{ action_drop }} {{ rp_singular_obj }}</h4>
         </div>
-        <div class="modal-body">Вы уверены, что хотите удалить {{ rp_singular_obj }} id=<span id="ajax_drop_obj_id"></span><span class="hidden" id="ajax_drop_obj_ind"></span>?</div>
+        <div class="modal-body">Вы уверены, что хотите выполнить удаление {{ rp_singular_obj }} id=<span id="ajax_drop_obj_id"></span><span class="hidden" id="ajax_drop_obj_ind"></span>?</div>
         <div class="modal-footer">
           <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
           <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_obj_button">Да</button>

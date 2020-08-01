@@ -18,14 +18,39 @@
 <script type="text/javascript">
 var main_table = null;
 $(document).ready(function(){
+  var subjectFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['subject'] ? data['subject']['name']  : '';
+  };
+  var companyFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['subject']['company'] ? data['subject']['company']['name']  : '';
+  };
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
       {% include "core/tabulator_cell/drag.html" %}
       {% include "core/tabulator_cell/id.html" %}
       {% include "core/tabulator_cell/name.html" %}
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
+      {
+        title: "Объект",
+        field: "subject__name",
+        headerFilterPlaceholder: "Объект",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: subjectFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Компания",
+        field: "subject__company__name",
+        headerFilterPlaceholder: "Компания",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: companyFormatter,
+        minWidth: 90,
+      },
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });

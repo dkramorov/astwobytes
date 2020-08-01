@@ -10,6 +10,8 @@ from apps.flatcontent.models import Blocks
 from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
 from apps.main_functions.views import DefaultFeedback
+from apps.main_functions.api_helper import open_wb, search_header
+from apps.main_functions.catcher import check_email
 from apps.products.models import Products
 from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import remove_user_from_request
@@ -258,8 +260,9 @@ def checkout(request):
             summa = '%s' % context['order'].total,
             desc = 'Оплата заказа №%s' % context['order'].id,
         )
-        context['yandex_payment_link'] = payment['confirmation']['confirmation_url']
-        Transactions.objects.create(order=context['order'], uuid=payment['id'], ptype=1)
+        if 'confirmation' in payment:
+            context['yandex_payment_link'] = payment['confirmation']['confirmation_url']
+            Transactions.objects.create(order=context['order'], uuid=payment['id'], ptype=1)
 
     return render(request, template, context)
 
@@ -284,3 +287,39 @@ def transaction_success(request):
     template = 'web/order/transaction_success.html'
 
     return render(request, template, context)
+
+def promocode_by_email(request):
+    """Промокод по емайлу из эксель файла
+       :param request: HttpRequest
+    """
+    context = {}
+
+    method = request.GET
+    if request.method == 'POST':
+        method = request.POST
+    search_email = check_email(method.get('email'))
+    if not search_email:
+        return JsonResponse(context, safe=False)
+
+    wb = open_wb('promocodes.xlsx')
+    sheet = wb.active
+
+    i, row = search_header(sheet.rows, symbols='email')
+    icode = None
+    iemail = None
+    j = 0
+    for cell in row:
+        if cell.value == 'code':
+            icode = j
+        elif cell.value == 'email':
+            iemail = j
+        j += 1
+    for row in sheet.rows:
+       code = row[icode].value
+       email = row[iemail].value
+       if not code and not email:
+           break
+       if email == search_email:
+           context['code'] = code
+
+    return JsonResponse(context, safe=False)
