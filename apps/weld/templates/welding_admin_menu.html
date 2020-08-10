@@ -5,34 +5,11 @@
     <span class="item-text">Структура</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'directories' %} in{% endifequal %}">
-    {% if perms.weld.view_company %}
-      <li{% ifequal submenu 'companies' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_companies' %}">
-          <span class="item-text">Компании</span>
-        </a>
-      </li>
-    {% endif %}
 
-    {% if perms.weld.view_subject %}
-      <li{% ifequal submenu 'subjects' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_subjects' %}">
-          <span class="item-text">Объекты</span>
-        </a>
-      </li>
-    {% endif %}
-
-    {% if perms.weld.view_titul %}
-      <li{% ifequal submenu 'tituls' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_tituls' %}">
-          <span class="item-text">Титулы</span>
-        </a>
-      </li>
-    {% endif %}
-
-    {% if perms.weld.view_base %}
-      <li{% ifequal submenu 'bases' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_bases' %}">
-          <span class="item-text">Устновки</span>
+    {% if perms.weld.view_joint %}
+      <li{% ifequal submenu 'joints' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_joints' %}">
+          <span class="item-text">Стыки</span>
         </a>
       </li>
     {% endif %}
@@ -45,15 +22,86 @@
       </li>
     {% endif %}
 
-    {% if perms.weld.view_joint %}
-      <li{% ifequal submenu 'joints' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_joints' %}">
-          <span class="item-text">Стыки</span>
+    {% if perms.weld.view_base %}
+      <li{% ifequal submenu 'bases' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_bases' %}">
+          <span class="item-text">Устновки</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {% if perms.weld.view_titul %}
+      <li{% ifequal submenu 'tituls' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_tituls' %}">
+          <span class="item-text">Титулы</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {% if perms.weld.view_subject %}
+      <li{% ifequal submenu 'subjects' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_subjects' %}">
+          <span class="item-text">Объекты</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {% if perms.weld.view_company %}
+      <li{% ifequal submenu 'companies' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_companies' %}">
+          <span class="item-text">Компании</span>
+        </a>
+      </li>
+    {% endif %}
+
+  </ul>
+</li>
+
+<li{% ifequal menu 'welding' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'welding:show_welding' %}">
+    <em class="fa fa-unlink"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Заявки на стыки</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'welding' %} in{% endifequal %}">
+    {% if perms.weld.view_weldingjoint %}
+      <li{% ifequal submenu 'welding_new' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'new' %}">
+          <span class="item-text">Новые заявки</span>
+        </a>
+      </li>
+      <li{% ifequal submenu 'welding_in_progress' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'in_progress' %}">
+          <span class="item-text">Заявки в работе</span>
+        </a>
+      </li>
+      <li{% ifequal submenu 'welding_in_repair' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'in_repair' %}">
+          <span class="item-text">Заявки на ремонт</span>
+        </a>
+      </li>
+      <li{% ifequal submenu 'welding_complete' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'complete' %}">
+          <span class="item-text">Выполненные заявки</span>
+        </a>
+      </li>
+      <li{% ifequal submenu 'welding' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' %}">
+          <span class="item-text">Все заявки</span>
         </a>
       </li>
     {% endif %}
   </ul>
 </li>
+
+{% if perms.weld.view_jointconclusion %}
+  <li{% ifequal menu 'conclusions' %} class="active"{% endifequal %}>
+    <a href="{% url 'welding:show_conclusions' %}">
+      <em class="fa fa-check-square-o"></em>
+      <span class="item-text">Заключения (акты)</span>
+    </a>
+  </li>
+{% endif %}
 
 <li{% ifequal menu 'welders' %} class="active"{% endifequal %}>
   <a class="has-submenu" data-toggle="collapse-next" href="{% url 'welding:show_companies' %}">
@@ -121,39 +169,37 @@
   </ul>
 </li>
 
-<li{% ifequal menu 'welding' %} class="active"{% endifequal %}>
-  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'welding:show_welding' %}">
-    <em class="fa fa-unlink"></em>
+{% include "files_admin_menu.html" %}
+
+<li{% ifequal menu 'logs' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="javascript:void(0);">
+    <em class="fa fa-list-alt"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
-    <span class="item-text">Заявки на стыки</span>
+    <span class="item-text">История действий</span>
   </a>
-  <ul class="nav collapse{% ifequal menu 'welding' %} in{% endifequal %}">
-    {% if perms.weld.view_weldingjoint %}
-      <li{% ifequal submenu 'welding' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' %}">
-          <span class="item-text">Все заявки</span>
-        </a>
-      </li>
-      <li{% ifequal submenu 'welding_new' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'new' %}">
-          <span class="item-text">Новые заявки</span>
-        </a>
-      </li>
-      <li{% ifequal submenu 'welding_in_progress' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'in_progress' %}">
-          <span class="item-text">Заявки в работе</span>
-        </a>
-      </li>
-      <li{% ifequal submenu 'welding_done' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'done' %}">
-          <span class="item-text">Выполненные заявки</span>
-        </a>
-      </li>
-      <li{% ifequal submenu 'welding_in_repair' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'in_repair' %}">
-          <span class="item-text">Заявки на ремонт</span>
+  <ul class="nav collapse{% ifequal menu 'logs' %} in{% endifequal %}">
+
+    {% if perms.weld.view_weldingjointstate %}
+      <li{% ifequal submenu 'welding_joint_state' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding_joint_state' %}">
+          <span class="item-text">Смена статусов заявок на стык</span>
         </a>
       </li>
     {% endif %}
+  </ul>
+</li>
+
+<li{% ifequal menu 'manual' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="javascript:void(0);">
+    <em class="fa fa-book"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Помощь</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'manual' %} in{% endifequal %}">
+    <li{% ifequal submenu 'welder' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'welding:manual' 'welder' %}">
+        <span class="item-text">Сварщик (исполнитель)</span>
+      </a>
+    </li>
   </ul>
 </li>

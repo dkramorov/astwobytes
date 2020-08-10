@@ -4,9 +4,7 @@
 {% endblock %}
 
 {% block content %}
-<a class="btn btn-primary pull-right" href="{{ url_create }}">
-  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
-</a>
+{% include "core/forms/default_create.html" %}
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
@@ -16,6 +14,7 @@
 
 {% block extrascripts %}
 <script type="text/javascript">
+window.disableMovableRows = true;
 var main_table = null;
 $(document).ready(function(){
   var subjectFormatter = function(cell, formatterParams, onRendered){
@@ -30,8 +29,6 @@ $(document).ready(function(){
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
       {% include "core/tabulator_cell/name.html" %}
       {
         title: "Объект",

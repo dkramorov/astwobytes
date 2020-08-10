@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
+from django.contrib.auth.models import User
+
 from apps.main_functions.models import Standard
-from apps.weld.enums import WELDING_TYPES, MATERIALS, JOIN_TYPES
+from apps.weld.enums import WELDING_TYPES, MATERIALS, JOIN_TYPES, WELDING_JOINT_STATES
 from apps.weld.welder_model import Welder
 from apps.weld.company_model import Company, Titul, Base, Line, Joint
+from apps.files.models import Files
 
 class WeldingJoint(Standard):
     """Заявки на стыки"""
@@ -15,13 +18,16 @@ class WeldingJoint(Standard):
     )
     # Вид контроля
     control_choices = (
-        (1, 'РК'),
-        (2, 'УЗК'),
-        (3, 'ВИК'),
+        (1, 'РК'), # Радиографический контроль
+        (2, 'УЗК'), # Ультразвуковой контроль
+        (3, 'ВИК'), # Визуально-измерительный контроль
         (4, 'РК-УЗК-ЦД'),
-        (5, 'РК/УЗК'),
+        (5, 'РК-УЗК'),
         (6, 'УК'),
-        (7, 'ПВК'),
+        (7, 'ПВК'), # Капиллярный метод проверки
+        (8, 'МК'), # Магнитный контроль
+        (9, 'ВК'), # Входной контроль
+        (10, 'СР'), # Скрытые работы
     )
     # Вид сварного соединения
     welding_conn_view_choices = (
@@ -38,7 +44,7 @@ class WeldingJoint(Standard):
     )
     # Результат контроля
     control_result_choices = (
-        (1, 'Вырезать'),
+        (1, 'Вырез'),
         (2, 'Годен'),
         (3, 'Ремонт'),
         (4, 'УЗК'),
@@ -51,23 +57,14 @@ class WeldingJoint(Standard):
         (2, '2'),
         (3, '3'),
     )
-    state_choices = (
-        (1, 'Новый стык'),
-        (2, 'В работе'),
-        (3, 'Готовый стык'),
-        (4, 'В ремонте'),
-    )
-
-    titul = models.ForeignKey(Titul,
-        blank=True, null=True, on_delete=models.SET_NULL,
-        verbose_name='Титул, например, У101')
     joint = models.ForeignKey(Joint,
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Номер стыка, например, 26А')
     repair = models.IntegerField(choices=repair_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Ремонт, например, 2 (второй ремонт)')
-    cutout = models.BooleanField(blank=True, null=True, db_index=True,
+    cutout = models.BooleanField(blank=True, null=True,
+        db_index=True, default=False,
         verbose_name='Вырез')
     diameter = models.DecimalField(blank=True, null=True, db_index=True,
         max_digits=9, decimal_places=2,
@@ -120,9 +117,15 @@ class WeldingJoint(Standard):
     #dinc = models.DecimalField(blank=True, null=True, db_index=True,
     #    max_digits=9, decimal_places=2,
     #    verbose_name='D-inc, например, 6.30, нужен для отчетов, рассчитывается динамически, например, диаметр(160)/константа(25.4)=6.30')
-    state = models.IntegerField(choices=state_choices,
+    state = models.IntegerField(choices=WELDING_JOINT_STATES,
         blank=True, null=True, db_index=True,
         verbose_name='Статус заявки, например, в работе')
+    requester = models.ForeignKey(User, related_name='requester',
+        blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name='Заявку подал')
+    receiver = models.ForeignKey(User, related_name='receiver',
+        blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name='Заявку принял')
 
     class Meta:
         verbose_name = 'Сварочное соединение - Бланк-заявка'
@@ -137,6 +140,50 @@ class WeldingJoint(Standard):
 
     def save(self, *args, **kwargs):
         super(WeldingJoint, self).save(*args, **kwargs)
+        # Номер заявки
+        request_number = ''
+        obj = WeldingJoint.objects.select_related(
+            'joint',
+            'joint__line',
+            'joint__line__base',
+            'joint__line__titul',
+            'joint__line__titul__subject',
+            'joint__line__titul__subject__company',
+        ).filter(pk=self.id).only(
+            'joint__line__titul__subject__company__code',
+            'joint__line__titul__subject__code',
+            'joint__line__titul__name',
+            'joint__line__base__name',
+            'joint__line__name',
+            'joint__name',
+        ).first()
+        if obj.joint and obj.joint.line and obj.joint.line.titul and obj.joint.line.titul.subject and obj.joint.line.titul.subject.company:
+            repair = ''
+            if self.repair:
+                repair = '-%s' % self.repair
+            request_number = '%s-%s-%s-%s-%s-%s%s' % (
+                obj.joint.line.titul.subject.company.code or '',
+                obj.joint.line.titul.subject.code or '',
+                obj.joint.line.titul.name or '',
+                obj.joint.line.name or '',
+                obj.get_control_type_display() or '',
+                obj.joint.name or '',
+                repair,
+            )
+            #print('numbers {} and {}'.format(self.request_number, request_number))
+            if not self.request_number == request_number:
+                WeldingJoint.objects.filter(pk=self.id).update(request_number=request_number)
+
+    def get_files(self):
+        """Получить файлы в виде списка"""
+        files = self.weldingjointfile_set.select_related('file').all()
+        return [{
+            'id': item.id,
+            'path': item.file.path,
+            'name': item.file.name,
+            'mime': item.file.mime,
+            'folder': item.file.get_folder(),
+        } for item in files]
 
 class JointWelder(models.Model):
     """Сварщики, которые назначены на стык
@@ -149,10 +196,103 @@ class JointWelder(models.Model):
     welding_joint = models.ForeignKey(WeldingJoint,
         blank=True, null=True, on_delete=models.CASCADE,
         verbose_name='Заявка на стык')
-    actually = models.BooleanField(blank=True, null=True, db_index=True,
+    actually = models.BooleanField(blank=True, null=True,
+        db_index=True, default=False,
         verbose_name='Фактический сварщик (тот, кто проводит работы), другие сващики могут быть указаны в заявках, потому что у фактических нет допуска')
+    position = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Позиция (от 1 до 4)')
 
     class Meta:
         verbose_name = 'Сварочные соединения - Сварщик стыка'
         verbose_name_plural = 'Сварочные соединения - Сварщики стыков'
         default_permissions = []
+
+class WeldingJointFile(models.Model):
+    """Файлы для заявок на стык, например,
+       изометрическая схема, либо изображение
+    """
+    welding_joint = models.ForeignKey(WeldingJoint,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Заявка на стык')
+    file = models.ForeignKey(Files,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Файл для линии')
+    position = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Позиция файла')
+
+    class Meta:
+        verbose_name = 'Сварочные соединения - Файл заявки на стык'
+        verbose_name_plural = 'Сварочные соединения - Файлы заявок на стык'
+        #default_permissions = []
+
+    def delete(self, *args, **kwargs):
+        """Переопределяем метод удаления,
+           надо похерить файл, который привязан"""
+        if self.file:
+            self.file.delete()
+        super(WeldingJointFile, self).delete(*args, **kwargs)
+
+class WeldingJointState(models.Model):
+    """Смена статуса заявки, так как для этого
+       нужны специальные права,
+       а также логирование
+    """
+    welding_joint = models.ForeignKey(WeldingJoint,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Заявка на стык')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL,
+        blank=True, null=True,
+        verbose_name='Пользователь, сменивший статус')
+    date = models.DateTimeField(blank=True, null=True, db_index=True,
+        auto_now_add=True, verbose_name='Время смены статуса')
+    from_state = models.IntegerField(choices=WELDING_JOINT_STATES,
+        blank=True, null=True, db_index=True,
+        verbose_name='Статус заявки, например, в работе')
+    to_state = models.IntegerField(choices=WELDING_JOINT_STATES,
+        blank=True, null=True, db_index=True,
+        verbose_name='Статус заявки, например, в работе')
+
+    class Meta:
+        verbose_name = 'Сварочные соединения - Смена статуса заявки на стык'
+        verbose_name_plural = 'Сварочные соединения - Смена статусов заявкок на стыки'
+        #default_permissions = []
+
+def recalc_joints(line: Line):
+    """Пересчет количества заявок на линии
+       процент готовности линии
+    """
+    result = {
+        'new_joints': {'state': 1, 'count': 0},
+        'in_progress_joints': {'state': 2, 'count': 0},
+        'repair_joints': {'state': 4, 'count': 0},
+        'complete_joints': {'state': 3, 'count': 0},
+    }
+    query = WeldingJoint.objects.filter(joint__line=line)
+    for key, value in result.items():
+        result[key]['count'] = query.filter(state=value['state']).aggregate(models.Count('id'))['id__count']
+    params = {key: value['count'] for key, value in result.items()}
+    Line.objects.filter(pk=line.id).update(**params)
+
+
+class JointConclusion(Standard):
+    """Заключения (акты) на заявки на сварку (стык)
+    """
+    welding_joint = models.ForeignKey(WeldingJoint,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Заявка на стык')
+    controller = models.ForeignKey(User, related_name='controller',
+        blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name='Пользователь, выполнивший контроль')
+    director = models.ForeignKey(User, related_name='director',
+        blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name='Начальник')
+    date = models.DateTimeField(blank=True, null=True, db_index=True,
+        auto_now_add=True, verbose_name='Время смены статуса')
+    defects = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Выявленные дефекты')
+
+    class Meta:
+        verbose_name = 'Сварочные соединения - Заключение (акт) на стык'
+        verbose_name_plural = 'Сварочные соединения - Заключения (акты) на стыки'
+        #default_permissions = []

@@ -4,9 +4,7 @@
 {% endblock %}
 
 {% block content %}
-<a class="btn btn-primary pull-right" href="{{ url_create }}">
-  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
-</a>
+{% include "core/forms/default_create.html" %}
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
@@ -16,6 +14,7 @@
 
 {% block extrascripts %}
 <script type="text/javascript">
+window.disableMovableRows = true;
 var main_table = null;
 $(document).ready(function(){
   var holding_choices = {
@@ -30,13 +29,19 @@ $(document).ready(function(){
       {{ spent_length_choice.0 }}: "{{ spent_length_choice.1 }}",
     {% endfor %}
   };
+  var material_choices = {
+    "": "Без фильтра",
+    {% for material in material_choices %}
+      {{ material.0 }}: "{{ material.1 }}",
+    {% endfor %}
+  };
   var welderFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['welder'] ? data['welder']['name']  : '';
   };
   var materialFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['material'] ? data['material']['name']  : '';
+    var pk = cell.getValue();
+    return material_choices[pk];
   };
   var holdingFormatter = function(cell, formatterParams, onRendered){
     var pk = cell.getValue();
@@ -49,8 +54,6 @@ $(document).ready(function(){
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
       {
         title: "Типоразмер",
         field: "standard_size",
@@ -60,13 +63,19 @@ $(document).ready(function(){
         minWidth: 120,
       },
       {
-        title: "Материал (сталь)",
-        field: "material__name",
-        headerFilterPlaceholder: "Материал (сталь)",
-        headerFilter: "input",
-        headerFilterFunc: "like",
+        title: "Материал",
+        field: "material",
+        headerFilterPlaceholder: "Материал",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: material_choices,
+        },
+        editable: false,
+        editor: "select",
         formatter: materialFormatter,
-        minWidth: 120,
+        width: 90,
+        downloadTitle: "material",
       },
       {
         title: "Затрачиваемая длина 150мм*2",
@@ -114,8 +123,6 @@ $(document).ready(function(){
         formatter: welderFormatter,
         minWidth: 150,
       },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });

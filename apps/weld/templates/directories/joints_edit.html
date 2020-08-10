@@ -39,7 +39,6 @@
 {% endblock %}
 
 {% block extrascripts %}
-  <script src="/static/admin/js/parsley.min.js"></script>
   <script type="text/javascript">
     {% if row %}
       var upload_img_url = '{% url "welding:edit_joint" "img" row.id %}';

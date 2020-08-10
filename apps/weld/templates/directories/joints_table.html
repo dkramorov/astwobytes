@@ -4,9 +4,7 @@
 {% endblock %}
 
 {% block content %}
-<a class="btn btn-primary pull-right" href="{{ url_create }}">
-  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
-</a>
+{% include "core/forms/default_create.html" %}
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
@@ -16,6 +14,7 @@
 
 {% block extrascripts %}
 <script type="text/javascript">
+window.disableMovableRows = true;
 var main_table = null;
 $(document).ready(function(){
   var actionsJointFormatter = function(cell, formatterParams, onRendered){
@@ -24,8 +23,12 @@ $(document).ready(function(){
     var pk = cell.getValue();
     var actions = "<div class='padding-rl5'>";
     actions += " <a class='btn-xs btn btn-info pull-left' href='{% url 'welding:create_welding' 'form' %}?joint=" + pk + "' title='Заявка на стык'><i class='fa fa-file'></i></a> ";
-    actions += " <a class='btn-xs btn btn-primary pull-left ml' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
-    actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% if permissions.edit %}
+      actions += " <a class='btn-xs btn btn-primary pull-left ml' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% endif %}
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
     actions += "</div>";
     return actions;
   };
@@ -53,8 +56,6 @@ $(document).ready(function(){
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
       {
         title: "Номер узла",
         field: "name",
@@ -81,6 +82,7 @@ $(document).ready(function(){
         formatter: titulFormatter,
         minWidth: 90,
       },
+{% comment %}
       {
         title: "Установка",
         field: "line__base__name",
@@ -90,6 +92,7 @@ $(document).ready(function(){
         formatter: baseFormatter,
         minWidth: 90,
       },
+{% endcomment %}
       {
         title: "Объект",
         field: "line__titul__subject__name",

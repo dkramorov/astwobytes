@@ -137,19 +137,18 @@ def ReturnFile(request, link):
         path = '%s%s' % (search_file.get_folder(), search_file.path)
         if not check_path(path):
             with open(full_path(path), 'rb') as f:
-                name = link.rsplit('/', 1)[-1]
                 response = HttpResponse(f.read(), content_type=search_file.mime)
-                response['Content-Length'] = file_size(path)
-                response['Content-Disposition'] = 'inline; filename=%s' % (path, )
-                return response
+            response['Content-Length'] = file_size(path)
+            response['Content-Disposition'] = 'inline; filename=%s' % (path, )
+            return response
         else: # файл не найден - лучше 404 отдать
             raise Http404
     elif link == '/favicon.ico':
         path = '%s/img/favicon.ico' % settings.STATIC_ROOT.rstrip('/')
         with open(path, 'rb') as f:
             response = HttpResponse(f.read(), content_type='image/x-icon')
-            response['Content-Length'] = file_size(path)
-            response['Content-Disposition'] = 'inline; filename=%s' % (path, )
-            return response
+        response['Content-Length'] = file_size(path)
+        response['Content-Disposition'] = 'inline; filename=%s' % (path, )
+        return response
     return redirect("/")
 

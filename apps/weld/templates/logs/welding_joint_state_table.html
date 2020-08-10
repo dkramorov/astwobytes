@@ -1,0 +1,139 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+{% comment %}<!--
+{% include "core/forms/default_create.html" %}
+-->{% endcomment %}
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script type="text/javascript">
+window.disableMovableRows = true;
+var main_table = null;
+$(document).ready(function(){
+  var actionsWeldingJointStateFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var rowIndex = row.getIndex();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
+    actions += "</div>";
+    return actions;
+  };
+  var state_choices = {
+    "": "Без фильтра",
+    {% for state in state_choices %}
+      {{ state.0 }}: "{{ state.1 }}",
+    {% endfor %}
+  };
+  var weldingJointFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['welding_joint'] ? data['welding_joint']['request_number']  : '';
+  };
+  var userFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['user'] ? data['user']['username']  : '';
+  };
+  var stateFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return state_choices[pk];
+  };
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {
+        title: "Номер заявки",
+        field: "welding_joint__request_number",
+        headerFilterPlaceholder: "Номер заявки",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: weldingJointFormatter,
+        minWidth: 230,
+      },
+      {
+        title: "Пользователь",
+        field: "user__username",
+        headerFilterPlaceholder: "Линия",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: userFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Дата",
+        field: "date",
+        headerFilterPlaceholder: "Дата",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Пред. статус",
+        field: "from_state",
+        headerFilterPlaceholder: "Пред. статус",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: state_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: stateFormatter,
+        width: 100,
+        downloadTitle: "state",
+      },
+      {
+        title: "На cтатус",
+        field: "to_state",
+        headerFilterPlaceholder: "На статус",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: state_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: stateFormatter,
+        width: 100,
+        downloadTitle: "state",
+      },
+/*
+      {% include "core/tabulator_cell/actions.html" %}
+*/
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsWeldingJointStateFormatter,
+        width: 70,
+        download: false,
+      },
+
+    ],
+  });
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "date"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "left top",
+        todayButton: new Date(),
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

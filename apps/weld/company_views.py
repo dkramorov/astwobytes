@@ -262,11 +262,16 @@ def show_lines(request, *args, **kwargs):
 @login_required
 def edit_line(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование линий"""
+    pass_fields = ('new_joints',
+                   'in_progress_joints',
+                   'repair_joints',
+                   'complete_joints', )
     return edit_view(request,
                      model_vars = lines_vars,
                      cur_app = CUR_APP,
                      action = action,
                      row_id = row_id,
+                     pass_fields = pass_fields,
                      extra_vars = None, )
 
 @login_required

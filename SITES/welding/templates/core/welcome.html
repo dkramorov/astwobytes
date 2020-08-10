@@ -10,6 +10,61 @@
   <div class="panel widget">
     <div class="panel-body">
       <div class="row row-table">
+        <h3 class="mt0">05/07 Документация для сварщика (исполнителя)</h3>
+        <p></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">04/07 Добавлены файлы к заявкам и прохождение заявки до полной готовности стыка</h3>
+        <p>Добавлена модель файлов, куда будут загружаться различные изображения и другие файлы</p>
+        <div class="mb-sm mr-sm">
+          <a href="{% url 'files:show_files' %}" class="btn btn-success">Файлы</a>
+        </div>
+        <p>Добавлена возможность загружать файлы к заявкам на стык</p>
+        <p>Для заявки добавлены статусы, статус можно сменить в таблице или на форме редактирования заявки при наличии прав на изменение заявки</p>
+        <p>Для готовой заявки (принятый стык) редактирование запрещено</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">03/07 Обновления в структуре</h3>
+        <p>Толщина стенки и диаметр теперь относятся к заявке на стык</p>
+        <p>Загружены данные, исключая звездочки (*)</p>
+        <p>Загружены актуальные данные от 27/04/20</p>
+        <p>Служебное поле id скрыто в таблицах</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">30/07 Загружены актуальные данные, pdf-файл заявки</h3>
+        <p>Загружены данные по сварщикам и заявкам на стыки с учетом всех правок</p>
+        <p>После создания заявки на стык при ее просмотре можно сформировать pdf-файл</p>
+        <p>В таблице заявок для каждой заявки можно открыть pdf-файл</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
         <h3 class="mt0">29/07 Изменения в создании заявки на стык</h3>
         <p>Заявка на стык теперь создается из таблицы узлов, по нажатию на кнопку <a class="btn-xs btn btn-info" href="javascript:void(0);" title="Заявка на стык"><i class="fa fa-file"></i></a> что позволяет сразу знать данные по узлу, линии, титулу, объекту</p>
         <div class="mb-sm mr-sm">
@@ -37,7 +92,7 @@
           <a href="{% url 'welding:show_welding' 'in_progress' %}" class="btn btn-success">Заявки в работе</a>
         </div>
         <div class="pull-left mb-sm mr-sm">
-          <a href="{% url 'welding:show_welding' 'done' %}" class="btn btn-success">Выполненные заявки</a>
+          <a href="{% url 'welding:show_welding' 'complete' %}" class="btn btn-success">Выполненные заявки</a>
         </div>
         <div class="pull-left mb-sm mr-sm">
           <a href="{% url 'welding:show_welding' 'in_repair' %}" class="btn btn-success">Заявки на ремонт</a>
@@ -106,6 +161,7 @@
           <li>Сделана иерархия от компании до узла</li>
           <li>Удалена модель Договоров</li>
           <li>Удалена модель Изометрические схемы (раширена модель линии)</li>
+          <li>Диаметр и толщина стенки перенесены из заявки на стык в линию</li>
           <li>
             Добавлен объект верхнего уровня - компания
             <div class="mb-sm mr-sm">

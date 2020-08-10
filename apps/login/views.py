@@ -228,9 +228,17 @@ def edit_user(request, action: str, row_id: int = None, *args, **kwargs):
         # ---------------------------------------
         # Исключение, когда редактируешь сам себя
         # ---------------------------------------
-        if action == 'edit' and not mh.permissions['edit']:
+        if action == 'edit' and row and not mh.permissions['edit'] and request.user.id == row.id:
             mh.permissions['edit'] = True
             pass_fields = ('password', 'is_active', 'is_staff', 'is_superuser', 'position', )
+        # ---------------------------------
+        # Нельзя без прав суперпользователя
+        # управлять суперпользователями
+        # ---------------------------------
+        if not request.user.is_superuser:
+             if not 'is_superuser' in pass_fields:
+                 pass_fields = [item for item in pass_fields]
+                 pass_fields.append('is_superuser')
 
         mh.post_vars(pass_fields=pass_fields)
 
@@ -602,7 +610,8 @@ def prepare_perm_list(cur_perms):
     pass_perms = ('content type', 'session', 'custom user', 'permission')
     permissions = Permission.objects.select_related('content_type').all()
     for perm in permissions:
-        if not perm.content_type.model_class()._meta.default_permissions:
+        model_class = perm.content_type.model_class()
+        if not model_class or not model_class._meta.default_permissions:
             continue
 
         if not perm.content_type.id in perms:

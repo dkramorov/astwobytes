@@ -29,10 +29,10 @@
           <div class="form-group">
             <label class="col-lg-2 control-label">На объекте</label>
             <div class="col-lg-10">
-              <select id="company_select2" name="company" autocomplete="off">
+              <select id="subject_select2" name="subject" autocomplete="off">
                 <option value="">Не выбрано</option>
-                {% if row.company %}
-                  <option value="{{ row.company.id }}" selected>{{ row.company.name }}</option>
+                {% if row.subject %}
+                  <option value="{{ row.subject.id }}" selected>{{ row.subject.name }}</option>
                 {% endif %}
               </select>
             </div>
@@ -44,8 +44,19 @@
             </div>
           </div>
           {% include "core/forms/row_image.html" %}
-          {% include "core/forms/row_position.html" %}
-          {% include "core/forms/row_is_active.html" %}
+          <div class="hidden">
+            {% include "core/forms/row_position.html" %}
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="is_active" {% if row.is_active or not row %} checked{% endif %} autocomplete="off">
+                  <span class="fa fa-check"></span> Работает?
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
         {% include "core/forms/footer_buttons.html" %}
       </form>
@@ -60,13 +71,13 @@
       var upload_img_url = '{% url "welding:edit_welder" "img" row.id %}';
     {% endif %}
     $(document).ready(function(){
-      $('#company_select2').select2({
+      $('#subject_select2').select2({
         placeholder: 'Выберите объект',
         allowClear: true,
         width: '100%',
         tags: true,
         ajax: {
-          url: "{% url 'welding:search_companies' %}",
+          url: "{% url 'welding:search_subjects' %}",
           data: function (params) {
             var query = {
               q: params.term,

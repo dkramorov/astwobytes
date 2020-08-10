@@ -8,4 +8,5 @@ app_name = 'main'
 urlpatterns = [
     # Главная страничка сайта
     path('', views.home, name='home'),
+    path('test_pdf/', views.test_pdf, name='test_pdf'),
 ]

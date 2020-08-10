@@ -1,0 +1,362 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% block title %}{% endblock %}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="author" content="Ярославцев Денис">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style type="text/css">
+@font-face {
+  font-family: Helvetica;
+  src: url("{{ font }}");}
+@font-face {
+   font-family: Helvetica;
+   src: url("{{ font_bold }}");
+   font-weight: bold;
+}
+@page {
+  size: {{ pagesize }};
+  @frame main_frame {
+    -pdf-frame-content: main_content;
+    left: 1cm; width: 19cm; top: 0.2cm; height: 26.8cm;
+  }
+  @frame footer_frame {
+    -pdf-frame-content: footer_content;
+    left: 1cm; width: 19cm; top: 27cm; height: 1cm;
+  }
+}
+table.two_col tr th,
+table.two_col tr td {
+  padding: 8px 6px 3px 6px;
+  border: 1px solid #ccc;
+  vertical-align: top;
+}
+p, ul, ul li {
+  margin: 0;
+  padding: 0;
+}
+.title {
+  font-size: 1.2em;
+}
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
+table.two_col tr td.noborder {
+  border: 0;
+}
+.logo img {
+  height: 50px;
+  text-align:center;
+  display: block;
+  margin-bottom: 10px;
+}
+table.two_col tr td.welder{
+  padding: 0;
+}
+table.two_col .welder tr td {
+  padding: 4px 4px 1px 4px;
+  border: 1px solid #ccc;
+  vertical-align: top;
+  margin: 0;
+}
+</style>
+</head>
+<body>
+
+{% block content %}
+<div id="main_content">
+  <div class="logo"><img src="{{ logo }}" /></div>
+  <table class="two_col">
+    <thead>
+      <tr>
+        <td>
+          <p class="title">
+            {% if row.joint.line.titul.subject.company.location %}
+              {{ row.joint.line.titul.subject.company.location }}
+            {% else %}-{% endif %}
+          </p>
+          </p>место строительства предприятия</p>
+        </td>
+        <td>
+          <p class="title">
+            {% if row.joint.line.titul.subject.company.contractor %}
+              {{ row.joint.line.titul.subject.company.contractor }}
+            {% else %}-{% endif %}
+          </p>
+          <p>наименование генподрядной и строильеной оргганизации и ее ведомственная принадлежность</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="title">
+            {% if row.joint.line.titul.subject.company.name %}
+              {{ row.joint.line.titul.subject.company.name }}
+            {% else %}-{% endif %}
+          </p>
+          <p>наименование предприятия-заказчика</p>
+        </td>
+        <td>
+          <p class="title">
+            {% if row.joint.line.titul.subject.company.fitter %}
+              {{ row.joint.line.titul.subject.company.fitter }}
+            {% else %}-{% endif %}
+          </p>
+          <p>наименование монтажной организации</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="title">
+            {% if row.joint.line.titul.subject.name %}
+              {{ row.joint.line.titul.subject.name }}
+            {% else %}-{% endif %}
+          </p>
+          <p>наименование сооружаемого объекта</p>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="noborder">&nbsp;</td>
+        <td class="noborder">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Дата заявки на НК</p>
+        </td>
+        <td>
+          <p>
+            {% if row.request_control_date %}
+              {{ row.request_control_date|date:'d-m-Y' }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">№ заявки</p>
+          <p class="text-right">на выполнение контроля качества сварных соединений</p>
+        </td>
+        <td>
+          <p class="title">
+            {% if row.request_number %}
+              {{ row.request_number }}
+            {% else %}-{% endif %}</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <ul>
+            <li>Сварные стыки зачищены и не имеют наружных дефектов</li>
+            <li>Исполнительная схема (чертеж) сварных соединений предоставлена</li>
+            <li>Рабочее место соответствует требованиям СНиП по технике безопасности (леса, ограждения), доступ людей на радиационно-опасную зону исключен</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Свариваемые элементы</p>
+        </td>
+        <td>
+          <p>
+            {% if row.join_type_from and row.join_type_to %}
+              {{ row.get_join_type_from_display }} / {{ row.get_join_type_to_display }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Номер сварного соединения</p>
+        </td>
+        <td>
+          <p class="title">
+            {% if row.joint.name %}
+              {{ row.joint.name }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Материал</p>
+        </td>
+        <td>
+          <p>
+            {% if row.material %}
+              {{ row.get_material_display }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Толщина стенки, мм</p>
+        </td>
+        <td>
+          <p>
+            {% if row.side_thickness %}
+              {{ row.side_thickness }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Диаметр трубопровода, мм</p>
+        </td>
+        <td>
+          <p>
+            {% if row.diameter %}
+              {{ row.diameter }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      {% if welders.1 and welders.1.name and welders.1.stigma %}
+        <tr>
+          <td>
+            <p class="text-right">Сварщик</p>
+          </td>
+          <td class="welder">
+            <table>
+              <tr>
+                <td>ФИО</td>
+                <td>Клеймо</td>
+              </tr>
+              <tr>
+                <td>{{ welders.1.name }}</td>
+                <td>{{ welders.1.stigma }}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      {% endif %}
+      {% if welders.2 and welders.2.name and welders.2.stigma %}
+        <tr>
+          <td>
+            <p class="text-right">Сварщик 2</p>
+          </td>
+          <td class="welder">
+            <table>
+              <tr>
+                <td>ФИО</td>
+                <td>Клеймо</td>
+              </tr>
+              <tr>
+                <td>{{ welders.2.name }}</td>
+                <td>{{ welders.2.stigma }}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          <p class="text-right">Вид сварного соединения</p>
+        </td>
+        <td>
+          <p>
+            {% if row.welding_conn_view %}
+              {{ row.get_welding_conn_view_display }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Тип сварки</p>
+        </td>
+        <td>
+          <p>
+            {% if row.welding_type %}
+              {{ row.get_welding_type_display }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Дата сварки</p>
+        </td>
+        <td>
+          <p>
+            {% if row.welding_date %}
+              {{ row.welding_date|date:'d-m-Y' }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Вид контроля</p>
+        </td>
+        <td>
+          <p>
+            {% if row.control_type %}
+              {{ row.get_control_type_display }}
+            {% else %}-{% endif %}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-right">Категория трубопровода</p>
+        </td>
+        <td>
+          <p>
+            {% if row.category %}
+              {{ row.get_category_display }}
+            {% endif %}
+          </p>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td class="noborder">&nbsp;</td>
+        <td class="noborder">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          <p class="text-center">Заявку подал</p>
+          <p>
+            Должность: {% if requester.function %}{{ requester.function }}{% else %}-{% endif %}
+          </p>
+          <p>
+            ФИО: {% if requester.name %}{{ requester.name }}{% else %}-{% endif %}
+          </p>
+          <p>&nbsp;</p>
+          <p>Подпись: ______________</p>
+        </td>
+        <td>
+          <p class="text-center">Заявку принял</p>
+          <p>
+            Должность: {% if receiver.function %}{{ receiver.function }}{% else %}-{% endif %}
+          </p>
+          <p>
+            ФИО: {% if receiver.name %}{{ receiver.name }}{% else %}-{% endif %}
+          </p>
+          <p>&nbsp;</p>
+          <p>Подпись: _______________</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <p class="text-center">Примечание</p>
+          <p>{% if row.notice %}{{ row.notice }}{% else %}-{% endif %}</p>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div id="footer_content">стр. <pdf:pagenumber> из <pdf:pagecount> <!-- обязательный пробел, чтобы не дублировалось кол-во страничек --></div>
+{% endblock %}
+</body>
+</html>

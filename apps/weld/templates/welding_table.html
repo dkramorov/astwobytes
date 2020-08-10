@@ -5,14 +5,16 @@
 {% endblock %}
 
 {% block content %}
-{% if request.user.is_superuser %}
-  <a class="btn btn-primary pull-right mr-sm" href="{{ url_create }}">
-    <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+  {% comment %}<!--
+    {% include "core/forms/default_create.html" %}
+  -->{% endcomment %}
+
+{% if permissions.create %}
+  <a class="btn btn-primary pull-right" href="{{ url_form }}">
+    <em class="fa fa-plus-circle fa-fw mr-sm"></em>
+    Создание заявки на стык
   </a>
 {% endif %}
-<a class="btn btn-primary pull-right mr-sm" href="{{ url_form }}">
-  <em class="fa fa-plus-circle fa-fw mr-sm"></em> Заявка на стык
-</a>
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
@@ -23,9 +25,103 @@
 {% block extrascripts %}
 <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
 <script type="text/javascript">
+window.disableMovableRows = true;
 var main_table = null;
-$(document).ready(function(){
+var state_choices = {
+  "": "Без фильтра",
+  {% for state in state_choices %}
+    {{ state.0 }}: "{{ state.1 }}",
+  {% endfor %}
+};
+function state_to_progress(pk, ind){
+  // Принять заявку в работу
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  state_helper(pk, ind, 'in_progress', 2);
+}
+function state_to_complete(pk, ind){
+  // Принять заявку в работу
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  state_helper(pk, ind, 'complete', 3)
+}
+function state_helper(pk, ind, new_state, state){
+  // Вспомогательная функция для смены статуса заявки
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  // :param new_state: новый статус для отправки на сервер
+  // :param state: статус в таблице
+  var status = 'danger';
+  var msg = 'Произошла ошибка';
+  $.ajax({
+    type: "POST",
+    url: "{{ root_url }}state/" + pk + "/",
+    data: {
+      csrfmiddlewaretoken: getCookie('csrftoken'),
+      new_state: new_state,
+    },
+  }).done(function(r) {
+    if(r.error){
+      msg = r.error;
+    }else if(r.success){
+      msg =  r.success;
+      status = 'success';
+      var row = main_table.getRow(ind);
+      var data = row.getData();
+      row.update({'state': state});
+      $("#state_for_" + pk).addClass("hidden");
+    }
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  }).fail(function() {
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  });
+}
 
+$(document).ready(function(){
+  var actionsJointFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var rowIndex = row.getIndex();
+    var pk = cell.getValue();
+    var data = row.getData();
+    var actions = "<div class='padding-rl5'>";
+
+    {% if welding_joint_state_permissions.edit %}
+      if(data.state == 1 || data.state == 4){
+        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left' href='javascript:void(0);' onclick='state_to_progress(" + pk + ", " + rowIndex + ")' title='Принять заявку в работу'><i class='fa fa-check-square-o'></i></a> ";
+      }else if(data.state == 2){
+        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-success pull-left' href='javascript:void(0);' onclick='state_to_complete(" + pk + ", " + rowIndex + ")' title='Принять стык как готовый'><i class='fa fa-check-square-o'></i></a> ";
+      }
+    {% endif %}
+
+    {% if permissions.create %}
+      actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}form/" + pk + "/' title='Открыть заявку на стык'><i class='fa fa-file'></i></a> ";
+    {% endif %}
+    actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}pdf/" + pk + "/' title='PDF документ' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+
+    {% if permissions.edit %}
+      {% comment %}
+        /*
+         не даем возможности редактировать
+
+      actions += " <a class='btn-xs btn btn-primary pull-left ml' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+        */
+      {% endcomment %}
+    {% endif %}
+
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right ml' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
+    actions += "</div>";
+    return actions;
+  };
   var repair_choices = {
     "": "Без фильтра",
     {% for repair_choice in repair_choices %}
@@ -74,32 +170,35 @@ $(document).ready(function(){
       {{ material.0 }}: "{{ material.1 }}",
     {% endfor %}
   };
-  var state_choices = {
+  var join_types = {
     "": "Без фильтра",
-    {% for state in state_choices %}
-      {{ state.0 }}: "{{ state.1 }}",
+    {% for join_type in join_types %}
+      {{ join_type.0 }}: "{{ join_type.1 }}",
     {% endfor %}
-  };
-
-  var titulFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['titul'] ? data['titul']['name'] : '';
-  };
-  var lineFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['joint'] ? data['joint']['line']['name']  : '';
   };
   var jointFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['joint'] ? data['joint']['name']  : '';
   };
+  var lineFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint']['line'] ? data['joint']['line']['name']  : '';
+  };
+  var titulFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint']['line']['titul'] ? data['joint']['line']['titul']['name'] : '';
+  };
+  var subjectFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint']['line']['titul']['subject'] ? data['joint']['line']['titul']['subject']['name'] : '';
+  };
+  var companyFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint']['line']['titul']['subject']['company'] ? data['joint']['line']['titul']['subject']['company']['name'] : '';
+  };
   var repairFormatter = function(cell, formatterParams, onRendered){
     var pk = cell.getValue();
     return repair_choices[pk];
-  };
-  var joinTypeFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['join_type'] ? data['join_type']['name']  : '';
   };
   var workshiftFormatter = function(cell, formatterParams, onRendered){
     var pk = cell.getValue();
@@ -133,28 +232,28 @@ $(document).ready(function(){
     var pk = cell.getValue();
     return state_choices[pk];
   };
+  var joinTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return join_types[pk];
+  };
 
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
       {
-        title: "Титул",
-        field: "titul__name",
-        headerFilterPlaceholder: "Титул",
+        title: "№ заявки на НК",
+        field: "request_number",
+        headerFilterPlaceholder: "№ заявки на НК",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: titulFormatter,
-        minWidth: 90,
+        minWidth: 230,
       },
       {
-        title: "Линия",
-        field: "joint__line__name",
-        headerFilterPlaceholder: "Линия",
+        title: "Дата заявки на НК",
+        field: "request_control_date",
+        headerFilterPlaceholder: "Дата заявки на НК",
         headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: lineFormatter,
+        headerFilterFunc: "=",
         minWidth: 90,
       },
       {
@@ -164,6 +263,42 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: jointFormatter,
+        minWidth: 70,
+      },
+      {
+        title: "Линия",
+        field: "joint__line__name",
+        headerFilterPlaceholder: "Линия",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: lineFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Титул",
+        field: "joint__line__titul__name",
+        headerFilterPlaceholder: "Титул",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: titulFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Объект",
+        field: "joint__line__titul__subject__name",
+        headerFilterPlaceholder: "Объект",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: subjectFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Компания",
+        field: "joint__line__titul__subject__company__name",
+        headerFilterPlaceholder: "Компания",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: companyFormatter,
         minWidth: 90,
       },
       {
@@ -178,7 +313,7 @@ $(document).ready(function(){
         editable: false,
         editor: "select",
         formatter: repairFormatter,
-        width: 90,
+        width: 70,
         downloadTitle: "repair",
       },
       {
@@ -193,7 +328,7 @@ $(document).ready(function(){
         editable: false,
         editor: "select",
         formatter: booleanFormatter,
-        width: 90,
+        width: 70,
         downloadTitle: "cutout",
         accessorDownload: accessor_is_active,
         //accessorDownloadParams: {test: 'test'},
@@ -204,7 +339,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Диаметр",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 90,
+        minWidth: 70,
       },
       {
         title: "Толщина стенки",
@@ -212,7 +347,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Толщина стенки",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 90,
+        minWidth: 70,
       },
       {
         title: "Материал",
@@ -230,13 +365,34 @@ $(document).ready(function(){
         downloadTitle: "material",
       },
       {
-        title: "Свар. элементы",
-        field: "join_type__name",
-        headerFilterPlaceholder: "Свар. элементы",
-        headerFilter: "input",
-        headerFilterFunc: "like",
+        title: "Свар. эл. 1",
+        field: "join_type_from",
+        headerFilterPlaceholder: "Свар. эл. 1",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: join_types,
+        },
+        editable: false,
+        editor: "select",
         formatter: joinTypeFormatter,
-        minWidth: 120,
+        width: 90,
+        downloadTitle: "join_type_from",
+      },
+      {
+        title: "Свар. эл. 2",
+        field: "join_type_to",
+        headerFilterPlaceholder: "Свар. эл. 2",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: join_types,
+        },
+        editable: false,
+        editor: "select",
+        formatter: joinTypeFormatter,
+        width: 90,
+        downloadTitle: "join_type_to",
       },
       {
         title: "Дата сварки",
@@ -244,7 +400,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Дата сварки",
         headerFilter: "input",
         headerFilterFunc: "=",
-        minWidth: 120,
+        minWidth: 90,
       },
       {
         title: "Смена",
@@ -258,24 +414,8 @@ $(document).ready(function(){
         editable: false,
         editor: "select",
         formatter: workshiftFormatter,
-        width: 90,
+        width: 70,
         downloadTitle: "workshift",
-      },
-      {
-        title: "№ заявки на НК",
-        field: "request_number",
-        headerFilterPlaceholder: "№ заявки на НК",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 120,
-      },
-      {
-        title: "Дата заявки на НК",
-        field: "request_control_date",
-        headerFilterPlaceholder: "Дата заявки на НК",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        minWidth: 120,
       },
       {
         title: "Вид контроля",
@@ -334,7 +474,7 @@ $(document).ready(function(){
         editable: false,
         editor: "select",
         formatter: categoryFormatter,
-        width: 90,
+        width: 70,
         downloadTitle: "category",
       },
       {
@@ -366,7 +506,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Дата заключения",
         headerFilter: "input",
         headerFilterFunc: "=",
-        minWidth: 120,
+        minWidth: 90,
       },
       {
         title: "Примечание",
@@ -388,10 +528,17 @@ $(document).ready(function(){
         editable: false,
         editor: "select",
         formatter: stateFormatter,
-        width: 90,
+        width: 120,
         downloadTitle: "state",
       },
-      {% include "core/tabulator_cell/actions.html" %}
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsJointFormatter,
+        width: 160,
+        download: false,
+      },
     ],
   });
   $(".tabulator-headers .tabulator-col").each(function(){

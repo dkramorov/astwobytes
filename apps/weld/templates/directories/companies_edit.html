@@ -41,6 +41,13 @@
               <input type="text" placeholder="Монтажник" class="form-control" name="fitter" value="{% if row.fitter %}{{ row.fitter }}{% endif %}" autocomplete="off">
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="col-lg-6 control-label">Код компании, например, ТПС (используется для нумерации документов</label>
+            <div class="col-lg-6">
+              <input type="text" placeholder="Код компании" class="form-control" name="code" value="{% if row.code %}{{ row.code }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
           {% include "core/forms/row_image.html" %}
           {% include "core/forms/hidden_fields.html" %}
         </div>

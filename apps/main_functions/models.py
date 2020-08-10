@@ -134,11 +134,21 @@ class Standard(models.Model):
         self.img = new_img
         return new_img
 
-    def upload_file(self, fname, field):
-        """Загрузка файла в нужное поле"""
+    def upload_file(self, fname,
+                    field: str,
+                    additional_update: dict = None):
+        """Загрузка файла в нужное поле
+           :param fname: файл
+           :param field: поле в которое загружаем файл
+           :param additional_update: доп. поля, которые хотим
+                                     обновить у модели,
+                                     например, {'name': '123.txt'}
+        """
         new_fname = None
         if not hasattr(self, field):
             return None
+        if not additional_update:
+            additional_update = {}
         self.drop_file(field)
         media_folder = self.get_folder()
         if check_path(media_folder):
@@ -152,8 +162,12 @@ class Standard(models.Model):
         # ---------------------------------------------
         new_fname = "%s_%s.%s" % (field, self.id, ext)
         path = os.path.join(media_folder, new_fname)
+        params = {
+            field: new_fname,
+        }
+        params.update(additional_update)
         if catch_file(fname, path):
-            self.__class__.objects.filter(pk=self.id).update(**{field:new_fname})
+            self.__class__.objects.filter(pk=self.id).update(**params)
             setattr(self, field, new_fname)
         else:
             self.__class__.objects.filter(pk=self.id).update(**{field:None})

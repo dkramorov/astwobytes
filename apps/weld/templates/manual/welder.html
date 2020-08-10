@@ -1,0 +1,418 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div>
+  <ul>
+    <li>
+      <a href="#manual_new_welding_joint">Создание заявки на стык</a>
+    </li>
+    <li>
+      <a href="#manual_new_joint">Создание стыка</a>
+    </li>
+    <li>
+      <a href="#manual_new_line">Создание линии</a>
+    </li>
+    <li>
+      <a href="#manual_new_base">Создание установки</a>
+    </li>
+    <li>
+      <a href="#manual_new_titul">Создание титула</a>
+    </li>
+    <li>
+      <a href="#manual_new_subject">Создание объекта</a>
+    </li>
+    <li>
+      <a href="#manual_new_company">Создание компании</a>
+    </li>
+
+
+    <li>
+      <a href="#manual_new_welder">Создание сварщика</a>
+    </li>
+    <li>
+      <a href="#manual_new_user">Создание пользователя</a>
+    </li>
+  </ul>
+</div>
+
+<a name="manual_new_welding_joint"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание заявки на стык</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-unlink"></i> Заявки на стыки и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_welding' 'new' %}" target="_blank">Новые заявки</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу новых заявок на стыки. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_welding' 'form' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание заявки на стык</a>
+        </p>
+        <p>Вы увидите форму создания заявки на стык. Пожалуйста, заполняйте форму внимательно, редактировать заявку будет возможно только при наличии прав, по умолчанию, исполнители (сварщики) не имеют прав на редактирование</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-5">
+      <div class="box-placeholder">
+        <p>Поля "Сварное соединение", "Свариваемые элементы", "Материал", "Вид сварного соединения", "Тип сварки", "Вид контроля", "Категория трубопровода" заполняются из выпадающего списка, в случае отсутствия необходимых элементов в выпадающем списке, необходимо обратиться к администратору, самостоятельно вы их добавить не сможете</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поля "Дата заявки на НК", "Заявка №" заполняются автоматически, редактировать их вы не можете</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы можете загружать файлы/изображения через нажав на ссылку "выберите файл для загрузки", либо просто перетащить файл в серое поля с этой надписью. Загружать файлы можно будет и после сохранения заявки.</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Заявку принял" на данном этапе заполнять не нужно, это поле будет заполнено, когда лаборатория примет заявку в работу</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Чтобы сохранить заявку, необходимо нажать зеленую кнопку "Сохранить", если ошибок не будет, то заявка сохранится, в противном случае вы увидите красные предупреждения над полями, которые необходимо заполнить</p>
+        <p>Если заявка успешно сохранена в правом верхнем углу вы увидите, что теперь заявку можно посмотреь в PDF - синяя кнопка <i class="fa fa-file-pdf-o"></i> PDF заявка на стык</p>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="box-placeholder">
+        <p>
+          Поле "Сварное соединение" вы должны выбрать с помощью поиска из списка, чтобы найти нужный стык, вы можете ввести номер титула, номер линии, номер стыка, тогда вы сможете выбрать из найденных вариантов нужный стык. Если стык еще не создан, тогда необходимо перейти в раздел помощи
+        </p>
+        <p>
+          <a href="#manual_new_joint" class="btn btn-info">Создание стыка</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Толщина стенки, мм" заполняется вручную</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Диаметр трубопровода, мм" заполняется вручную</p>
+      </div>
+      <div class="box-placeholder">
+        <p>
+          Поля "Сварщик 1", "Сварщик 2", "Сварщик 1 по факту", "Сварщик 2 по факту" заполняются с помощью поиска сварщика из выпадающего списка, наберите, фамилию и/или клеймо и выберите нужного сварщика. Если сварщика в списке нет, тогда необходимо перейти в раздел помощи
+        </p>
+        <p>
+          <a href="#manual_new_welder" class="btn btn-info">Создание сварщика</a>
+        </p>
+        <p>
+          "Сварщик 1 по факту", "Сварщик 2 по факту" нужны, для внутреннего пользования, в случае, если работы производили сварщики, которые не могут быть указаны в заявке, в других случаях эти поля заполнять не нужно
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Дата сварки" заполняется вручную, выбирается дата, когда была выполнена работа</p>
+      </div>
+      <div class="box-placeholder">
+        <p>
+          Поле "Заявку подал" заполняется из выпадающего списка с помощью поиска, по умолчанию будет выставлен пользователь, который создает заявку (Вы), вы должны выбрать пользователя, который создан в системе. В случае, если пользователя нет в системе, необходимо перейти в раздел помощи
+        </p>
+        <p>
+          <a href="#manual_new_user" class="btn btn-info">Создание пользователя</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Примечание" заполняется вручную</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_joint"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание стыка</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-sitemap"></i> Структура и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_joints' %}" target="_blank">Стыки</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу стыков. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_joint' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание стыка</a>
+        </p>
+        <p>Вы увидите форму создания стыка</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Поле "Название" заполняется вручную, это номер стыка. Если вы попытаетесь сохранить дубль, вам будет сообщено об этом, дублем считается два одинковых номера стыка на одной линии</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Линия" заполняется из выпадающего списка с помощью поиска, введите номер линии и/или титул и выберите нужную линию. В случае, если линии еще нет, необходимо перейти в раздел помощи</p>
+        <p>
+          <a href="#manual_new_line" class="btn btn-info">Создание линии</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_line"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание линии</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-sitemap"></i> Структура и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_lines' %}" target="_blank">Линии</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу линий. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_line' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание линии</a>
+        </p>
+        <p>Вы увидите форму создания линии</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Поле "Название" заполняется вручную, это номер линии. Если вы попытаетесь сохранить дубль, вам будет сообщено об этом, дублем считается две одинковых линии в одном титуле</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Номер изометрической схемы" заполняется вручную</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Титул" заполняется из выпадающего списка с помощью поиска, введите номер титула и/или объекта и выберите нужный титул. В случае, если титула еще нет, необходимо перейти в раздел помощи</p>
+        <p>
+          <a href="#manual_new_titul" class="btn btn-info">Создание титула</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Установка" заполняется из выпадающего списка с помощью поиска, введите номер установки и/или титула и выберите нужную установку. В случае, если установки еще нет, необходимо перейти в раздел помощи</p>
+        <p>
+          <a href="#manual_new_base" class="btn btn-info">Создание установки</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_base"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание установки</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-sitemap"></i> Структура и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_bases' %}" target="_blank">Установки</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу установок. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_base' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание установки</a>
+        </p>
+        <p>Вы увидите форму создания установки</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Поле "Название" заполняется вручную, это номер установки. Если вы попытаетесь сохранить дубль, вам будет сообщено об этом, дублем считается две одинковых установки в одном титуле</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Титул" заполняется из выпадающего списка с помощью поиска, введите номер титула и/или объекта и выберите нужный титул. В случае, если титула еще нет, необходимо перейти в раздел помощи</p>
+        <p>
+          <a href="#manual_new_titul" class="btn btn-info">Создание титула</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_titul"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание титула</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-sitemap"></i> Структура и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_tituls' %}" target="_blank">Титулы</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу титулов. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_titul' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание титула</a>
+        </p>
+        <p>Вы увидите форму создания титула</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Поле "Название" заполняется вручную, это номер титула. Если вы попытаетесь сохранить дубль, вам будет сообщено об этом, дублем считается два одинковых титула в одном объекте</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Объект" заполняется из выпадающего списка с помощью поиска, введите номер объекта и/или компании и выберите нужный объект. В случае, если объекта еще нет, необходимо перейти в раздел помощи</p>
+        <p>
+          <a href="#manual_new_subject" class="btn btn-info">Создание объекта</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_subject"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание объекта</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-sitemap"></i> Структура и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_subjects' %}" target="_blank">Объекты</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу объектов. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_subject' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание объекта</a>
+        </p>
+        <p>Вы увидите форму создания объекта</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Поле "Название" заполняется вручную</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Код объекта" заполняется вручную, используется для нумерации в документах. Если вы попытаетесь сохранить дубль, вам будет сообщено об этом, дублем считается два одинковых кода объекта в одной компании</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Компания" заполняется из выпадающего списка с помощью поиска, введите компанию. В случае, если компании еще нет, необходимо перейти в раздел помощи</p>
+        <p>
+          <a href="#manual_new_company" class="btn btn-info">Создание компании</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_company"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание компании</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-sitemap"></i> Структура и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_subjects' %}" target="_blank">Компании</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу компаний. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_company' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание компании</a>
+        </p>
+        <p>Вы увидите форму создания компании</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Поля "Название", "Место строительства", "Подрядчик", "Монтажник" заполняются вручную</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Код объекта" заполняется вручную, используется для нумерации в документах</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_welder"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание сварщика</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-male"></i> Сварщики и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_subjects' %}" target="_blank">Сварщики</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу сварщиков. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_welder' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание сварщика</a>
+        </p>
+        <p>Вы увидите форму создания сварщика</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Поля "Имя", "Клеймо", "Примечание" заполняются вручную</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "На объекте" заполняется из выпадающего списка объектов</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_user"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание пользователя</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-user"></i> Пользователи и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'login:show_users' %}" target="_blank">Пользователи</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу пользователей. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'login:create_user' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание пользователя</a>
+        </p>
+        <p>Вы увидите форму создания пользователя</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Все поля заполняются вручную</p>
+      </div>
+    </div>
+  </div>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+{% endblock %}

@@ -44,7 +44,7 @@
                 </div>
                 <div class="col-xs-4">
                   <p>Ссылка</p>
-                  <p class="m0 text-primary file-link">{% if row.path %}<a href='{{ row.link }}' target='_blank'>Пользовательская ссылка на файл</a>{% endif %}</p>
+                  <p class="m0 text-primary file-link">{% if row.link %}<a href='{{ row.link }}' target='_blank'>Пользовательская ссылка на файл</a>{% endif %}</p>
                 </div>
               </div>
             </div>
@@ -124,9 +124,14 @@
         var path = "/media/" + r['row']['folder'] + r['row']['path'];
         var link = "<a href='" + path + "' target='_blank'>Служебная ссылка на файл</a>";
         $(".file-path").html(link);
-        var link = "<a href='" + r['row']['link'] + "' target='_blank'>Пользовательская ссылка на файл</a>";
-        $(".file-link").html(link);
-        $("#form-field-link").val(r['row']['link']);
+        if(r['row']['link']){
+          var link = "<a href='" + r['row']['link'] + "' target='_blank'>Пользовательская ссылка на файл</a>";
+          $(".file-link").html(link);
+          $("#form-field-link").val(r['row']['link']);
+        }else{
+          $(".file-link").html("");
+          $("#form-field-link").val("");
+        }
       }
       {% if row %}
         var progressbar = $('#progressbar-files'),

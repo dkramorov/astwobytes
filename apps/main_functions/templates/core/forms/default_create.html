@@ -1,0 +1,6 @@
+{% if permissions.create %}
+    <a class="btn btn-primary pull-right" href="{{ url_create }}">
+        <em class="fa fa-plus-circle fa-fw mr-sm"></em>
+        {{ action_create }} {{ rp_singular_obj }}
+    </a>
+{% endif %}

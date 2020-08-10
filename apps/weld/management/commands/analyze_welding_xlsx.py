@@ -10,7 +10,7 @@ from django.conf import settings
 from apps.main_functions.date_time import str_to_date
 from apps.main_functions.string_parser import kill_quotes
 from apps.main_functions.api_helper import open_wb, search_header, accumulate_data
-from apps.weld.enums import WELDING_TYPES, MATERIALS
+from apps.weld.enums import WELDING_TYPES, MATERIALS, JOIN_TYPES
 from apps.weld.welder_model import Welder
 from apps.weld.company_model import Company, Subject, Titul, Base, Line
 from apps.weld.models import WeldingJoint, Joint, JointWelder
@@ -33,6 +33,8 @@ def get_object(row, i: int, model, cond: dict = None):
     obj_name = row[i].value
     if obj_name:
         obj_name = str(obj_name).strip()
+        if '*' in obj_name:
+            return None
         obj = model.objects.filter(name=obj_name).filter(**cond).first()
         if not obj:
             obj = model(name=obj_name)
@@ -99,9 +101,13 @@ def analyze_statement_joints():
         if line and joint_str:
             joint_str = '%s' % joint_str
             joint_str = joint_str.strip()
+            if '*' in joint_str:
+                continue
             joint = Joint.objects.filter(name=joint_str, line=line).first()
             if not joint:
                 joint = Joint.objects.create(name=joint_str, line=line)
+        else:
+            continue
 
         # -----------------------------
         # Поправка по кривому материалу
@@ -254,9 +260,11 @@ def analyze_daily_report_weldings():
         location = 'г. Усть-Кут',
         contractor = 'ООО "Транспромстрой"',
         fitter = 'ООО "Транспромстрой"',
+        code = 'ТПС',
     )
     subject = Subject.objects.create(
       name = 'Усть-Кутская ГФУ',
+      code = 'ГФУ',
       company = company,
     )
 
@@ -292,9 +300,32 @@ def analyze_daily_report_weldings():
 
         # Титул это i+1 ячейка
         titul = get_object(row, i+1, Titul, {'subject': subject})
+        if not titul:
+            continue
+
+        diameter = row[i+7].value if row[i+7].value else None
+        if diameter:
+            diameter = str(diameter).replace(',', '.')
+            try:
+                diameter = float(diameter)
+            except ValueError:
+                diameter = None
+                logger.info('[ERROR]: diameter %s' % diameter)
+
+        side_thickness = row[i+8].value if row[i+8].value else None
+        if side_thickness:
+            side_thickness = str(side_thickness).replace(',', '.')
+            try:
+                side_thickness = float(side_thickness)
+            except ValueError:
+                side_thickness = None
+                logger.info('[ERROR]: side_thickness %s' % side_thickness)
 
         # Линия это i+2 ячейка
         line = get_object(row, i+2, Line, {'titul': titul})
+        if not line:
+            #logger.info('line is empty {}'.format(row))
+            continue
 
         # № стыка это i+3 ячейка
         joint = None
@@ -302,6 +333,8 @@ def analyze_daily_report_weldings():
         if line and joint_str:
             joint_str = '%s' % joint_str
             joint_str = joint_str.strip()
+            if '*' in joint_str:
+                continue
             joint = Joint.objects.filter(name=joint_str, line=line).first()
             if not joint:
                 joint = Joint.objects.create(name=joint_str, line=line)
@@ -317,12 +350,16 @@ def analyze_daily_report_weldings():
         workshift_str = accumulate_data(row, i+12, workshifts)
 
         # Сварщик
-        welder = None
+        welders = []
         stigma = row[i+14].value # клеймо сварщика это i+14 ячейка
         if stigma:
-            stigma = '%s' % stigma
-            stigma = stigma.strip()
-            welder = Welder.objects.filter(stigma=stigma).first()
+            stigma_arr = stigma.split('+')
+            for stigma in stigma_arr:
+                stigma = '%s' % stigma
+                stigma = stigma.strip()
+                welder = Welder.objects.filter(stigma=stigma).first()
+                if welder:
+                    welders.append(welder)
 
         # контроль это i+17 ячейка
         control_type_str = accumulate_data(row, i+17, control_types)
@@ -344,24 +381,6 @@ def analyze_daily_report_weldings():
             repair = 2
 
         cutout = True if row[i+6].value else None
-
-        diameter = row[i+7].value if row[i+7].value else None
-        if diameter:
-            diameter = str(diameter).replace(',', '.')
-            try:
-                diameter = float(diameter)
-            except ValueError:
-                diameter = None
-                logger.info('[ERROR]: diameter %s' % diameter)
-
-        side_thickness = row[i+8].value if row[i+8].value else None
-        if side_thickness:
-            side_thickness = str(side_thickness).replace(',', '.')
-            try:
-                side_thickness = float(side_thickness)
-            except ValueError:
-                side_thickness = None
-                logger.info('[ERROR]: side_thickness %s' % side_thickness)
 
         welding_date = row[i+11].value if row[i+11].value else None
         if welding_date:
@@ -398,13 +417,26 @@ def analyze_daily_report_weldings():
 
         material = get_choice(material_str, MATERIALS)
 
+        join_type_from = None
+        join_type_to = None
+        if join_type:
+            join_type_arr = join_type.split('/')
+            if len(join_type_arr) == 2:
+                for item in JOIN_TYPES:
+                    if item[1][:-1] in join_type_arr[0]:
+                        join_type_from = item[0]
+                    if item[1][:-1] in join_type_arr[1]:
+                        join_type_to = item[0]
+        #print(join_type_from, join_type_to, join_type)
+
+        state = 1
+        if repair:
+            state = 4
+
         welding_joint_obj = {
-            'titul': titul,
             'joint': joint,
             'repair': repair,
             'cutout': cutout,
-            'diameter': diameter,
-            'side_thickness': side_thickness,
             'material': material,
             'welding_date': welding_date,
             'workshift': workshift,
@@ -416,13 +448,20 @@ def analyze_daily_report_weldings():
             'category': category,
             'control_result': control_result,
             'notice': notice,
+            'join_type_from': join_type_from,
+            'join_type_to': join_type_to,
+            'diameter': diameter,
+            'side_thickness': side_thickness,
+            'state': state,
         }
 
         welding_joint = WeldingJoint.objects.create(**welding_joint_obj)
-        JointWelder.objects.create(**{
-            'welding_joint': welding_joint,
-            'welder':  welder,
-        })
+        for w, welder in enumerate(welders):
+            JointWelder.objects.create(**{
+                'welding_joint': welding_joint,
+                'welder':  welder,
+                'position': w+1,
+            })
     logger.info('Workshifts: %s' % workshifts)
     logger.info('ControlTypes: %s' % control_types)
     logger.info('ConnTypesViews: %s' % conn_types_views)
@@ -447,18 +486,3 @@ class Command(BaseCommand):
         clean_tables()
         #analyze_statement_joints()
         analyze_daily_report_weldings()
-
-
-# толщина стенки и диаметр к линии отнести
-# ДОБАВИТЬ СВАРЩИКОВ ПО ФАКТУ
-# JoinType разбить по слешу и добавить комментарий (труба57х5/бобышка 11/28-100)
-# ограничение на аякс поиск, например, линию нельзя привязать к титулу, который принадлежит другому объекту
-# проверить обязательные поля в формах
-# К линии добавить загрузку фотографий/файлов
-# автоматически подписывать к линии номер изометрической схемы
-# в таблицах добавить всю иерархию
-# проработать заявку от сварщика
-# выводить нормальные результаты поиска по аяксу
-# сделать запрос только нужных полей по иерархии в таблице
-# сделать три таблицы по заявкам - в работе, готовые, на проверке
-

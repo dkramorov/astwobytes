@@ -173,18 +173,18 @@
     </div>
   </div>
   <form class="hidden" method="get" action="{{ root_url }}" id="current_drop_photo_form">{% csrf_token %}</form>
-  <script type="text/javascript">
-    function prepare_for_drop_photo(pk, row_index){
-      $("#ajax_drop_photo_id").html(pk);
-      $("#current_drop_photo_form").attr("action", "{{ root_url }}photos/drop/" + pk + "/");
-    }
-  </script>
 
   <script src="/static/redactor/jquery.browser.js"></script>
   <script src="/static/redactor/redactor.js"></script>
   <script src="/static/admin/js/parsley.min.js"></script>
   {% include "props_scripts.html" %}
   <script type="text/javascript">
+
+    function prepare_for_drop_photo(pk, row_index){
+      $("#ajax_drop_photo_id").html(pk);
+      $("#current_drop_photo_form").attr("action", "{{ root_url }}photos/drop/" + pk + "/");
+    }
+
     $(document).ready(function(){
       // -------------
       // Удаление фото

@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-
+{% load mtags %}
 {% block extrahead %}
 <link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
 <style type="text/css">
@@ -7,27 +7,44 @@
     padding: 5px;
     border-bottom: 1px solid #ccc;
   }
+  .welding_joint_file{
+    text-align: center;
+    padding: 5px 10px;
+    border: 1px dotted #ccc;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
+{% if row.id %}
+  <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}pdf/{{ row.id }}/" target="_blank">
+    <em class="fa fa-file-pdf-o fa-fw mr-sm"></em> PDF {{ singular_obj }}
+  </a>
+{% endif %}
+
+
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-default">
-      <form class="form-horizontal" method="post"{% comment %} action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}"{% endcomment %} id="current_edit_form">
-        <div class="panel-heading">{{ singular_obj }}</div>
+      <form class="form-horizontal" method="post" action="{{ url_form }}" id="current_edit_form">
+        <div class="panel-heading">
+          {{ singular_obj }}
+          {% if row.joint %}
+            {{ row.joint.name }}, {{ row.joint.line.name }}, {{ row.joint.line.titul.name }}, {{ row.joint.line.titul.subject.name }}, {{ row.joint.line.titul.subject.company.name }}
+          {% endif %}
+        </div>
         <div class="panel-body">
           {% csrf_token %}
           <div class="form-group bordered">
             <div class="col-lg-6">
-              <p>{% if joint %}{{ joint.line.titul.subject.company.location }}{% else %}-{% endif %}</p>
+              <p>{% if row.joint %}{{ row.joint.line.titul.subject.company.location }}{% else %}-{% endif %}</p>
               <p>место строительства предприятия</p>
             </div>
             <div class="col-lg-6">
-              <p>{% if joint %}{{ joint.line.titul.subject.company.contractor }}{% else %}-{% endif %}</p>
+              <p>{% if row.joint %}{{ row.joint.line.titul.subject.company.contractor }}{% else %}-{% endif %}</p>
               <p>наименование генподрядной и строильеной оргганизации и ее ведомственная принадлежность</p>
             </div>
             <div class="clearfix"></div>
@@ -35,18 +52,18 @@
 
           <div class="form-group bordered">
             <div class="col-lg-6">
-              <p>{% if joint %}{{ joint.line.titul.subject.company.name }}{% else %}-{% endif %}</p>
+              <p>{% if row.joint %}{{ row.joint.line.titul.subject.company.name }}{% else %}-{% endif %}</p>
               <p>наименование предприятия-заказчика</p>
             </div>
             <div class="col-lg-6">
-              <p>{% if joint %}{{ joint.line.titul.subject.company.fitter }}{% else %}-{% endif %}</p>
+              <p>{% if row.joint %}{{ row.joint.line.titul.subject.company.fitter }}{% else %}-{% endif %}</p>
               <p>наименование монтажной организации</p>
             </div>
           </div>
 
           <div class="form-group bordered">
             <div class="col-lg-6">
-              <p>{% if joint %}{{ joint.line.titul.subject.name }}{% else %}-{% endif %}</p>
+              <p>{% if row.joint %}{{ row.joint.line.titul.subject.name }}{% else %}-{% endif %}</p>
               <p>наименование сооружаемого объекта</p>
             </div>
             <div class="col-lg-6">
@@ -60,15 +77,6 @@
             </div>
             <div class="col-lg-6">
               <input type="text" placeholder="Дата заявки на НК" class="form-control" name="request_control_date" value="{% if row.request_control_date %}{{ row.request_control_date }}{% else %}{{ today }}{% endif %}" autocomplete="off" readonly>
-            </div>
-          </div>
-
-          <div class="form-group bordered">
-            <div class="col-lg-6">
-              <p class="text-right">Наименование технологического узла</p>
-            </div>
-            <div class="col-lg-6">
-              <input type="text" placeholder="Наименование технологического узла" class="form-control" name="tech_joint_name" value="{% if row.line.base %}{{ row.line.base.name }}{% endif %}" autocomplete="off" readonly>
             </div>
           </div>
 
@@ -90,37 +98,16 @@
                 <li>Сварные стыки зачищены и не имеют наружных дефектов</li>
                 <li>Исполнительная схема (чертеж) сварных соединений предоставлена</li>
                 <li>Рабочее место соответствует требованиям СНиП по технике безопасности (леса, ограждения), доступ людей на радиационно-опасную зону исключен</li>
+              </ul>
             </div>
           </div>
 
           <div class="form-group bordered">
             <div class="col-lg-6">
-              <p class="text-right">Свариваемые элементы</p>
-            </div>
-            <div class="col-lg-3">
-              <select id="join_type_from_select2" name="join_type_from" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% for join_type in join_types %}
-                  <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_from %} selected{% endifequal %}>{{ join_type.1 }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="col-lg-3">
-              <select id="join_type_to_select2" name="join_type_to" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% for join_type in join_types %}
-                  <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_to %} selected{% endifequal %}>{{ join_type.1 }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group bordered">
-            <div class="col-lg-6">
-              <p class="text-right">Номер сварного соединения</p>
+              <p class="text-right">Сварное соединение (стык)</p>
             </div>
             <div class="col-lg-6">
-              <select id="joint_select2" name="joint" autocomplete="off">
+              <select id="joint_select2" name="joint" autocomplete="off" data-parsley-required>
                 <option value="">Не выбрано</option>
                 {% if row.joint %}
                   <option value="{{ row.joint.id }}" selected>{{ row.joint.name }}</option>
@@ -131,10 +118,32 @@
 
           <div class="form-group bordered">
             <div class="col-lg-6">
+              <p class="text-right">Свариваемые элементы</p>
+            </div>
+            <div class="col-lg-3">
+              <select id="join_type_from_select2" name="join_type_from" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% for join_type in join_types %}
+                  <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_from %} selected{% endifequal %}>{{ join_type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-lg-3">
+              <select id="join_type_to_select2" name="join_type_to" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% for join_type in join_types %}
+                  <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_to %} selected{% endifequal %}>{{ join_type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
               <p class="text-right">Материал (сталь)</p>
             </div>
             <div class="col-lg-6">
-              <select id="material_select2" name="material" autocomplete="off">
+              <select id="material_select2" name="material" autocomplete="off" data-parsley-required>
                 <option value="">Не выбрано</option>
                 {% for material in material_choices %}
                   <option value="{{ material.0 }}"{% ifequal material.0 row.material %} selected{% endifequal %}>{{ material.1 }}</option>
@@ -148,7 +157,7 @@
               <p class="text-right">Толщина стенки, мм</p>
             </div>
             <div class="col-lg-6">
-              <input type="number" step="0.01" placeholder="Толщина стенки" class="form-control" name="side_thickness" value="{% if row.side_thickness %}{{ row.side_thickness }}{% endif %}" autocomplete="off">
+              <input type="text" placeholder="Толщина стенки, мм" class="form-control" name="side_thickness" value="{% if row.side_thickness %}{{ row.side_thickness }}{% endif %}" autocomplete="off">
             </div>
           </div>
 
@@ -157,7 +166,7 @@
               <p class="text-right">Диаметр трубопровода, мм</p>
             </div>
             <div class="col-lg-6">
-              <input type="number" step="0.01" placeholder="Диаметр" class="form-control" name="diameter" value="{% if row.diameter %}{{ row.diameter }}{% endif %}" autocomplete="off">
+              <input type="text" placeholder="Диаметр трубопровода, мм" class="form-control" name="diameter" value="{% if row.diameter %}{{ row.diameter }}{% endif %}" autocomplete="off">
             </div>
           </div>
 
@@ -166,10 +175,10 @@
               <p class="text-right">Сварщик 1</p>
             </div>
             <div class="col-lg-6">
-              <select id="welder1_select2" name="welder" autocomplete="off"  data-parsley-required>
+              <select id="welder1_select2" name="welder1" autocomplete="off" data-parsley-required>
                 <option value="">Не выбрано</option>
-                {% if row.welder %}
-                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% if welders.1 %}
+                  <option value="{{ welders.1.id }}" selected>{{ welders.1.name }} - {{ welders.1.stigma }}</option>
                 {% endif %}
               </select>
             </div>
@@ -180,10 +189,10 @@
               <p class="text-right">Сварщик 2</p>
             </div>
             <div class="col-lg-6">
-              <select id="welder2_select2" name="welder" autocomplete="off"  data-parsley-required>
+              <select id="welder2_select2" name="welder2" autocomplete="off">
                 <option value="">Не выбрано</option>
-                {% if row.welder %}
-                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% if welders.2 %}
+                  <option value="{{ welders.2.id }}" selected>{{ welders.2.name }} - {{ welders.2.stigma }}</option>
                 {% endif %}
               </select>
             </div>
@@ -191,13 +200,27 @@
 
           <div class="form-group bordered">
             <div class="col-lg-6">
-              <p class="text-right">Сварщик 3</p>
+              <p class="text-right">Сварщик 1 по факту</p>
             </div>
             <div class="col-lg-6">
-              <select id="welder3_select2" name="welder" autocomplete="off"  data-parsley-required>
+              <select id="welder3_select2" name="welder3" autocomplete="off">
                 <option value="">Не выбрано</option>
-                {% if row.welder %}
-                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% if welders.3 %}
+                  <option value="{{ welders.3.id }}" selected>{{ welders.3.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Сварщик 2 по факту</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="welder4_select2" name="welder4" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% if welders.4 %}
+                  <option value="{{ welders.4.id }}" selected>{{ welders.4.name }}</option>
                 {% endif %}
               </select>
             </div>
@@ -208,7 +231,7 @@
               <p class="text-right">Вид сварного соединения</p>
             </div>
             <div class="col-lg-6">
-              <select id="welding_conn_view_select2" name="welding_conn_view" autocomplete="off">
+              <select id="welding_conn_view_select2" name="welding_conn_view" autocomplete="off" data-parsley-required>
                 <option value="">Не выбрано</option>
                 {% for welding_conn_view in welding_conn_view_choices %}
                   <option value="{{ welding_conn_view.0 }}"{% ifequal welding_conn_view.0 row.welding_conn_view %} selected{% endifequal %}>{{ welding_conn_view.1 }}</option>
@@ -222,7 +245,7 @@
               <p class="text-right">Тип сварки</p>
             </div>
             <div class="col-lg-6">
-              <select id="welding_type_select2" name="welding_type" autocomplete="off">
+              <select id="welding_type_select2" name="welding_type" autocomplete="off" data-parsley-required>
                 <option value="">Не выбрано</option>
                 {% for welding_type in welding_type_choices %}
                   <option value="{{ welding_type.0 }}"{% ifequal welding_type.0 row.welding_type %} selected{% endifequal %}>{{ welding_type.1 }}</option>
@@ -245,7 +268,7 @@
               <p class="text-right">Вид контроля</p>
             </div>
             <div class="col-lg-6">
-              <select id="control_type_select2" name="control_type" autocomplete="off">
+              <select id="control_type_select2" name="control_type" autocomplete="off" data-parsley-required>
                 <option value="">Не выбрано</option>
                 {% for control_type in control_choices %}
                   <option value="{{ control_type.0 }}"{% ifequal control_type.0 row.control_type %} selected{% endifequal %}>{{ control_type.1 }}</option>
@@ -269,14 +292,78 @@
           </div>
 
           <div class="form-group bordered">
+            <div class="col-lg-12">
+              <p class="text-center"><strong>Стыков на линии: {{ total_joints }}</strong></p>
+            </div>
+            <div class="col-lg-3">
+              <p class="text-center">Новых стыков: {% if row.joint.line.new_joints %}{{ row.joint.line.new_joints }}{% else %}0{% endif %}</p>
+            </div>
+            <div class="col-lg-3">
+              <p class="text-center">Стыков в работе: {% if row.joint.line.in_progress_joints %}{{ row.joint.line.in_progress_joints }}{% else %}0{% endif %}</p>
+            </div>
+            <div class="col-lg-3">
+              <p class="text-center">Стыков в ремонте: {% if row.joint.line.repair_joints %}{{ row.joint.line.repair_joints }}{% else %}0{% endif %}</p>
+            </div>
+            <div class="col-lg-3">
+              <p class="text-center">Готовых стыков: {% if row.joint.line.complete_joints %}{{ row.joint.line.complete_joints }}{% else %}0{% endif %}</p>
+            </div>
+          </div>
+
+          {% if row.id and files_permissions.create %}
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label"><small>Загрузка изображения/файла</small></label>
+                <div class="col-sm-10">
+                  <div id="upload-drop-files" class="box-placeholder text-center">
+                    <p>
+                      <em class="fa fa-cloud-upload fa-2x"></em>
+                    </p>
+                    Перетащите файл сюда или
+                    <div class="btn-link form-file">выберите файл для загрузки
+                      <input id="upload-select-files" type="file" name="path">
+                    </div>
+                  </div>
+                  <div id="progressbar-files" class="progress hidden">
+                    <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          {% endif %}
+
+          {% if files_permissions.view %}
+          <div class="form-group bordered">
+            <div class="col-lg-2">
+              <p class="text-right">Изображения/файлы</p>
+            </div>
+            <div class="col-lg-10">
+              <div class="row-masonry row-masonry-md-4 row-masonry-sm-2" id="welding_joint_files">
+                {% for file in files %}
+                  <div class="col-masonry welding_joint_file" id="file_index_{{ file.id }}">
+                    {% comment %}<!--<img src="{% imagine file.img '150x150' file.get_folder True %}" alt="{{ file.name|textize }}" class="img-thumbnail img-responsive">-->{% endcomment %}
+                    <a target="_blank" href="/media/{{ file.folder }}{{ file.path }}" class="fname">{{ file.name }} ({{ file.mime }})</a>
+                    <br />
+                    <a href="{{ root_url }}welding_files/download/{{ file.id }}/" class="mt-sm btn-xs btn btn-info"><i class="fa fa-download"></i></a>
+
+                    <a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_file" onclick="prepare_for_drop_file({{ file.id }})"><i class="fa fa-trash"></i></a>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="form-group bordered">
             <div class="col-lg-6">
               <p class="text-right">Заявку подал</p>
             </div>
             <div class="col-lg-6">
-              <select id="sender_select2" name="sender" autocomplete="off">
+              <select id="requester_select2" name="requester" autocomplete="off" data-parsley-required>
                 <option value="">Не выбрано</option>
-                {% if row.sender %}
-                  <option value="{{ row.sender.id }}" selected>{{ row.sender.name }}</option>
+                {% if requester %}
+                  <option value="{{ requester.id }}" selected>{{ requester.name }} ({{ requester.login }} id={{ requester.id }})</option>
+                {% else %}
+                  <option value="{{ request.user.id }}" selected>Я, {{ request.user.customuser }}</option>
                 {% endif %}
               </select>
             </div>
@@ -289,12 +376,27 @@
             <div class="col-lg-6">
               <select id="receiver_select2" name="receiver" autocomplete="off">
                 <option value="">Не выбрано</option>
-                {% if row.receiver %}
-                  <option value="{{ row.receiver.id }}" selected>{{ row.receiver.name }}</option>
+                {% if receiver %}
+                  <option value="{{ receiver.id }}" selected>{{ receiver.name }} ({{ receiver.login }} id={{ receiver.id }})</option>
                 {% endif %}
               </select>
             </div>
           </div>
+          {% if welding_joint_state_permissions.edit %}
+            {% if row.state == 1 or row.state == 4 %}
+              <!-- Принять заявку в работу -->
+              <div class="form-group">
+                <div class="col-lg-offset-6 col-lg-6">
+                  <div class="checkbox c-checkbox">
+                    <label>
+                      <input type="checkbox" value="in_progress" name="new_state" autocomplete="off">
+                      <span class="fa fa-check"></span> Принять заявку в работу
+                    </label>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
 
           <div class="form-group">
             <div class="col-lg-6">
@@ -306,6 +408,7 @@
           </div>
 
           <div class="hidden">
+            <input type="text" name="state" value="{% if row.state %}{{ row.state }}{% endif %}">
             {% include "core/forms/row_position.html" %}
             {% include "core/forms/row_is_active.html" %}
           </div>
@@ -318,10 +421,66 @@
 {% endblock %}
 
 {% block extrascripts %}
+  <div id="ajax_drop_file" tabindex="-1" role="dialog" aria-labelledby="myModalLabelFile" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
+          <h4 id="myModalLabelFile" class="modal-title">{{ action_drop }} файла из {{ rp_singular_obj }}</h4>
+        </div>
+        <div class="modal-body">Вы уверены, что хотите удалить файл id=<span id="ajax_drop_file_id"></span><span class="hidden" id="ajax_drop_file_ind"></span>?</div>
+        <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
+          <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_file_button">Да</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form class="hidden" method="get" action="{{ root_url }}" id="current_drop_file_form">{% csrf_token %}</form>
+
   <script src="/static/admin/js/parsley.min.js"></script>
   <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
   <script type="text/javascript">
+
+    function prepare_for_drop_file(pk, row_index){
+      $("#ajax_drop_file_id").html(pk);
+      $("#current_drop_file_form").attr("action", "{{ root_url }}welding_files/drop/" + pk + "/");
+    }
+
     $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            window.location.href = r.redirect;
+          }
+          $.notify({
+              message: msg,
+          },{
+              status: status,
+          });
+        }).fail(function() {
+          $.notify({
+              message: msg,
+          },{
+              status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
       $("#welding_date").datepicker({
         onSelect: function (fd, d, calendar) {
           calendar.hide();
@@ -336,42 +495,6 @@
         todayButton: new Date(),
       });
 
-      $('#base_select2').select2({
-        placeholder: 'Выберите установку',
-        allowClear: true,
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_bases' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
-        }
-      });
-      $('#titul_select2').select2({
-        placeholder: 'Выберите титул',
-        allowClear: true,
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_tituls' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
-        }
-      });
       $('#joint_select2').select2({
         placeholder: 'Выберите стык',
         allowClear: true,
@@ -391,7 +514,7 @@
         }
       });
 
-      for(var i=1; i<=3; i++){
+      for(var i=1; i<=4; i++){
         $('#welder' + i + '_select2').select2({
           placeholder: 'Выберите сварщика',
           allowClear: true,
@@ -412,7 +535,7 @@
         });
       }
 
-      $('#sender_select2').select2({
+      $('#requester_select2').select2({
         placeholder: 'Выберите пользователя',
         allowClear: true,
         width: '100%',
@@ -431,7 +554,7 @@
         }
       });
       $('#receiver_select2').select2({
-        placeholder: 'Выберите поьзователя',
+        placeholder: 'Выберите пользователя',
         allowClear: true,
         width: '100%',
         tags: true,
@@ -455,12 +578,7 @@
           width: '100%',
           tags: true,
       });
-      $('#workshift_select2').select2({
-          placeholder: 'Выберите смену',
-          allowClear: true,
-          width: '100%',
-          tags: true,
-      });
+
       $('#control_type_select2').select2({
           placeholder: 'Выберите вид контроля',
           allowClear: true,
@@ -509,6 +627,95 @@
           width: '100%',
           tags: true,
       });
+
+      // --------------
+      // Удаление файла
+      // --------------
+      $('#ajax_drop_file_button').click(function(){
+        var pk = $('#ajax_drop_file_id').html();
+        var $form = $('#current_drop_file_form');
+        var msg = 'Произошла ошибка, сообщите администратору';
+        var status = 'danger';
+
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            // Удаляем блок с файлом
+            $("#file_index_" + pk).remove();
+          }
+          $.notify({
+            message: msg,
+          },{
+           status: status,
+          });
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+      });
+      function update_links(r){
+        // Добавление файла в заявку на стык
+        var file = r['file'];
+        var html = '';
+        html += '<div class="col-masonry welding_joint_file" id="file_index_' + file['id'] + '">';
+        //html += '<img src="' + file['thumb'] + '" class="img-thumbnail img-responsive">';
+        html += '<a target="_blank" href="/media/' + file['folder'] + file['path'] + '" class="fname">' + file['name'] + ' (' + file['mime'] + ')</a>';
+
+        html += '<br /><a href="{{ root_url }}welding_files/download/' + file['id'] + '/" class="mt-sm btn-xs btn btn-info">';
+        html += '<i class="fa fa-download"></i></a>';
+        html += ' ';
+        html += '<a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_file" onclick="prepare_for_drop_file(' + file['id'] + ')">';
+        html += '<i class="fa fa-trash"></i></a>';
+
+        html += '</div>'
+        $("#welding_joint_files").append($(html));
+        return;
+      }
+
+      {% if row.id %}
+        var progressbar = $('#progressbar-files'),
+          bar         = progressbar.find('.progress-bar-files'),
+          settings    = {
+            action: '{% url "welding:edit_welding" "file" row.id %}',
+            allow : '*.*',
+            param: 'path',
+            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+            loadstart: function() {
+              bar.css('width', '0%').text('0%');
+              progressbar.removeClass('hidden');
+            },
+            progress: function(percent) {
+              percent = Math.ceil(percent);
+              bar.css('width', percent+'%').text(percent+'%');
+            },
+            allcomplete: function(response) {
+              bar.css('width', '100%').text('100%');
+              setTimeout(function(){
+                progressbar.addClass('hidden');
+              }, 750);
+              // Upload Completed
+              //alert(response);
+            },
+            complete: function(response) {
+              // Обновление ссылок
+              var r = JSON.parse(response);
+              update_links(r);
+            }
+          };
+        var select = new $.upload.select($('#upload-select-files'), settings),
+        drop   = new $.upload.drop($('#upload-drop-files'), settings);
+      {% endif %}
+
     });
   </script>
 {% endblock %}

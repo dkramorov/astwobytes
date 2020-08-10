@@ -1,0 +1,66 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script type="text/javascript">
+window.disableMovableRows = true;
+var main_table = null;
+
+$(document).ready(function(){
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {
+        title: "№ заявки на НК",
+        field: "welding_joint__request_number",
+        headerFilterPlaceholder: "№ заявки на НК",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 230,
+      },
+      {
+        title: "Дата заключения",
+        field: "date",
+        headerFilterPlaceholder: "Дата заключения",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 90,
+      },
+      {
+        title: "Дефекты",
+        field: "defects",
+        headerFilterPlaceholder: "Дефекты",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "date"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "left top",
+        todayButton: new Date(),
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

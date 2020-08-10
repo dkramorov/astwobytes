@@ -1,0 +1,357 @@
+{% extends "core/base.html" %}
+{% load mtags %}
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+<style type="text/css">
+  #current_edit_form .bordered{
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+  .welding_joint_file{
+    text-align: center;
+    padding: 5px 10px;
+    border: 1px dotted #ccc;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if row.id %}
+  <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}pdf/{{ row.id }}/" target="_blank">
+    <em class="fa fa-file-pdf-o fa-fw mr-sm"></em> PDF {{ singular_obj }}
+  </a>
+{% endif %}
+
+
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{{ url_form }}" id="current_edit_form">
+        <div class="panel-heading">
+          {{ singular_obj }}
+          {% if row.joint %}
+            {{ row.joint.name }}, {{ row.joint.line.name }}, {{ row.joint.line.titul.name }}, {{ row.joint.line.titul.subject.name }}, {{ row.joint.line.titul.subject.company.name }}
+          {% endif %}
+        </div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Наименование организации Заказчика</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="requester_select2" name="requester" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.requester %}
+                  <option value="{{ row.requester.id }}" selected>{{ row.requester.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Наименование организации Подрядчика</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="contractor_select2" name="contractor" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.joint.line.titul.subject.company %}
+                  <option value="{{ row.joint.line.titul.subject.company.id }}" selected>{{ row.joint.line.titul.subject.company.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Организация, выполнившая контроль</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="controller_select2" name="contractor" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.joint.line.titul.subject.company %}
+                  <option value="{{ row.joint.line.titul.subject.company.id }}" selected>{{ row.joint.line.titul.subject.company.name }}</option>
+                {% endif %}
+              </select>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>&nbps;</p>
+            </div>
+            <div class="col-lg-6">
+              <p>{{ row.joint.line.titul.subject.name }}</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>&nbps;</p>
+            </div>
+            <div class="col-lg-6">
+              <p>Технологическая площадка</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Отделение печей нагрева</p>
+            </div>
+            <div class="col-lg-6">
+              <p>У300</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Шифр</p>
+            </div>
+            <div class="col-lg-6">
+              <p>16.019.5-14.01-300.01-МР-1</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Линия</p>
+            </div>
+            <div class="col-lg-6">
+              <p>{{ row.joint.line.name }}</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Акт №1 ВИК 684 от</p>
+            </div>
+            <div class="col-lg-6">
+              <input type="text" placeholder="Дата акта ВИК" class="form-control" name="vik_date" value="{% if row.vik_date %}{{ row.vik_date }}{% else %}{{ today }}{% endif %}" autocomplete="off" readonly>
+            </div>
+            <div class="col-lg-12">
+              <p>визуального и измерительного контроля</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">1. В соответствии с наряд-заказом (заявкой) № 1</p>
+            </div>
+            <div class="col-lg-6">
+              <p>выполнен</p>
+            </div>
+            <div class="col-lg-12">
+              <p class="text-center">визуально-измерительный контроль, контроль сварных соединений:</p>
+            </div>
+            <div class="col-lg-6">
+              <p class="text-right">№ {{ row.joint.name }}</p>
+            </div>
+            <div class="col-lg-6">
+              <p>Ø {{ row.diameter }}x{{ row.side_thickness }}</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Тип сварных соединений - {{ row.get_welding_conn_view_display }}, материал - {{ row.get_material_display }}</p>
+            </div>
+            <div class="col-lg-6">
+              <p>
+                выполненные ручной аргонодуговой сваркой,
+                сварщиком {{ row.joint.line.titul.subject.company.name }}
+                {% if welders.1 %}
+                  {{ welders.1.name }} {{ welders.1.stigma }}
+                {% endif %}
+                {% if welders.2 %}
+                  {{ welders.2.name }} {{ welders.2.stigma }}
+                {% endif %}
+              </p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>Контроль выполнен согласно</p>
+            </div>
+            <div class="col-lg-6">
+              <p>РД 03-606-03, ТК-ВИК-3</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p>с оценкой качества по нормам</p>
+            </div>
+            <div class="col-lg-6">
+              <p>ГОСТ 32569-2013, ГОСТ 16037-80</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">2. При контроле выявлены следующие дефекты</p>
+            </div>
+            <div class="col-lg-6">
+              <input type="text" placeholder="Дефекты" class="form-control" name="defects" value="{% if row.defects %}{{ row.defects }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-12">
+              <p class="text-right">2.1. Геометрическая форма и размеры сварных соединений</p>
+            </div>
+            <div class="col-lg-6">
+              <p>№ {{ row.joint.name }}</p>
+            </div>
+            <div class="col-lg-6">
+              <p>Ø {{ row.diameter }}x{{ row.side_thickness }}</p>
+            </div>
+            <div class="col-lg-12">
+              <p>РД 03-606-03, ГОСТ 32569-2013, ГОСТ 16037-80</p>
+            </div>
+            <div class="col-lg-6">
+              <p>№ {{ row.joint.name }}</p>
+            </div>
+            <div class="col-lg-6">
+              <p>Ø {{ row.diameter }}x{{ row.side_thickness }}</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-12">
+              <p class="text-right">2.2. Дефекты отсутствуют</p>
+            </div>
+            <div class="col-lg-12">
+              Заключение по результатам визуального и измерительного контроля:
+            </div>
+            <div class="col-lg-12">
+              сварные швы соответствуют требованиям НТД и признаны годными
+            </div>
+          </div>
+
+
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Контроль выполнил</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="controller_select2" name="controller" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if controller %}
+                  <option value="{{ controller.id }}" selected>{{ controller.name }} ({{ controller.login }} id={{ controller.id }})</option>
+                {% endif %}
+              </select>
+              <p>№ НОАП-0001-57504</p>
+            </div>
+          </div>
+
+          <div class="form-group bordered">
+            <div class="col-lg-6">
+              <p class="text-right">Руководитель работ по визуальному и измерительному контролю</p>
+            </div>
+            <div class="col-lg-6">
+              <select id="director_select2" name="director" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% if director %}
+                  <option value="{{ director.id }}" selected>{{ director.name }} ({{ director.login }} id={{ director.id }})</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+
+          <div class="hidden">
+            <input type="text" name="state" value="{% if row.state %}{{ row.state }}{% endif %}">
+            {% include "core/forms/row_position.html" %}
+            {% include "core/forms/row_is_active.html" %}
+          </div>
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            window.location.href = r.redirect;
+          }
+          $.notify({
+              message: msg,
+          },{
+              status: status,
+          });
+        }).fail(function() {
+          $.notify({
+              message: msg,
+          },{
+              status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+      $("#welding_date").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+
+      $('#base_select2').select2({
+        placeholder: 'Выберите установку',
+        allowClear: true,
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'welding:search_bases' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
+      $('#repair_select2').select2({
+          placeholder: 'Выберите номер ремонта',
+          allowClear: true,
+          width: '100%',
+          tags: true,
+      });
+
+    });
+  </script>
+{% endblock %}

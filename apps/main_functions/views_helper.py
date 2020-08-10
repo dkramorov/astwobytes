@@ -107,14 +107,22 @@ def edit_view(request,
               cur_app: str,
               action: str,
               row_id: int = None,
+              pass_fields: list = None,
               extra_vars: dict = None):
     """Создание/редактирование записи для для модели
        :param request: HttpRequest
        :param model_vars: словарь с данными для модели
        :param cur_app: CUR_APP во view.py
+       :param action: выполняемое действие
+       :param row_id: ид записи
+       :param pass_fields: поля, которые пропускаем при сохранении
+       :param extra_vars: дополнительные данные,
+                          которые надо передать в шаблон
     """
     if not extra_vars:
         extra_vars = {}
+    if not pass_fields:
+        pass_fields = ()
     mh_vars = model_vars.copy()
     mh = create_model_helper(mh_vars, request, cur_app, action)
     context = mh.context
@@ -143,7 +151,6 @@ def edit_view(request,
             else:
                 context['error'] = 'Недостаточно прав'
     elif request.method == 'POST':
-        pass_fields = []
         mh.post_vars(pass_fields=pass_fields)
         if action == 'create' or (action == 'edit' and row):
             if action == 'create':
@@ -244,19 +251,39 @@ def search_view(request,
             exists_fields.append(sfield)
     mh.search_fields = (sfield)
 
-    voca = None
+    voca = []
+    useful_fk = []
     search_result_format = mh_vars.get('search_result_format')
     if search_result_format:
-        voca = [field for field in search_result_format[1].split()]
+        voca = search_result_format[1].split()
         mh.search_fields = voca
+        exists_fields += voca
+        useful_fk = [field.rsplit('__', 1)[0]
+                         for field in voca if '__' in field]
 
     special_model_vars(mh, mh_vars, {})
 
-    rows = mh.standard_show()
+    # ----------------------------
+    # Если поля foreign_key,
+    # не используются для поиска,
+    # то и вытаскивать их не нужно
+    # ----------------------------
+    useless_sr = []
+    for sr in mh.select_related:
+        if not sr in sfields and not sr in useful_fk:
+            useless_sr.append(sr)
+    exists_fields = set(exists_fields) # Удаляем дубли
+
+    for useless in useless_sr:
+        mh.select_related.remove(useless)
+
+    rows = mh.standard_show(only_fields=exists_fields)
 
     for row in rows:
         if voca:
-            name = search_result_format[0].format(*[get_deep_attr(row, field) for field in voca])
+            name = search_result_format[0].format(
+                *[get_deep_attr(row, field) for field in voca]
+            )
             result['results'].append({'text': name, 'id': row.id})
         else:
             name = []

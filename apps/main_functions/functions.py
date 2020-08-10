@@ -97,19 +97,28 @@ def object_fields_names(row):
         result.append(field.get_attname_column())
     return result
 
-def object_fields(row, pass_fields:tuple = (), only_fields:tuple = ()):
+def object_fields(row,
+                  pass_fields: tuple = (),
+                  only_fields: tuple = (),
+                  fk_only_keys: dict = None):
     """Все параметры объекта (id, state, created...)
        Можно сделать row.full_clean(), что приведет
        pass_fields = ('пропускаем', 'эти', 'поля')
        only_fields = ('достаем', 'только', 'эти', 'поля')
+       fk_only_fields = {'fk_field': ('достаем', 'только', 'эти', 'поля'), ...}
        все данные к нужному типу/виду"""
     result = {}
+    if not fk_only_keys:
+        fk_only_keys = {}
     #row.full_clean()
     default_values = object_default_values(row)
     ftypes = object_fields_types(row)
+
     for field in row.__class__._meta.fields:
         if pass_fields and field.name in pass_fields:
             continue
+        elif field.name in fk_only_keys:
+            pass # Не пропускаем поля, если они указаны явно как foreign_keys
         elif only_fields and not field.name in only_fields:
             continue
 
@@ -121,7 +130,10 @@ def object_fields(row, pass_fields:tuple = (), only_fields:tuple = ()):
                 # ---------------------------------------------
                 fk = fetched_foreign_key(row, field.name)
                 if fk:
-                    value = object_fields(fk)
+                    value = object_fields(fk,
+                        only_fields=fk_only_keys.get(field.name),
+                        fk_only_keys=fk_only_keys,
+                    )
             else:
                 value = getattr(row, field.name)
 

@@ -17,6 +17,21 @@ from apps.main_functions.tabulator import tabulator_filters_and_sorters
 
 logger = logging.getLogger()
 
+def get_user_permissions(user, model):
+    """Права пользователя на модель
+       :param user: Пользователь
+       :param model: Модель
+    """
+    app_label = model._meta.app_label
+    model_name = model._meta.model_name
+    return {
+        # add_ instead create_
+        'create': user.has_perm('%s.add_%s' % (app_label, model_name)),
+        'edit': user.has_perm('%s.change_%s' % (app_label, model_name)),
+        'drop': user.has_perm('%s.delete_%s' % (app_label, model_name)),
+        'view': user.has_perm('%s.view_%s' % (app_label, model_name)),
+    }
+
 class ModelHelper:
     """Покрываем одним классом всю рутину
        model - основная модель, с которой работаем"""
@@ -152,18 +167,13 @@ class ModelHelper:
     def get_permissions(self, model=None):
         """Запрашиваем все права и запоминаем их
            :param model: Если надо запросить права от другой модели,
-           которая определяет права для текущей модели
+                         которая определяет права для текущей модели
         """
+        if not model:
+            model = self.model
         if self.request:
             user = self.request.user
-
-            self.permissions = {
-                # add_ instead create_
-                'create': user.has_perm('%s.add_%s' % (self.app_label, self.model_name)),
-                'edit': user.has_perm('%s.change_%s' % (self.app_label, self.model_name)),
-                'drop': user.has_perm('%s.delete_%s' % (self.app_label, self.model_name)),
-                'view': user.has_perm('%s.view_%s' % (self.app_label, self.model_name)),
-            }
+            self.permissions = get_user_permissions(user, model)
 
     def get_row(self, row_id):
         """Получаем запись по айдишнику"""
@@ -281,10 +291,19 @@ class ModelHelper:
             row_vars['img'] = self.request.POST['grab_img_by_url']
         self.row_vars = row_vars
 
-    def save_row(self, pass_fields:tuple = ()):
-        """Сохранение записи - запись значений row_vars"""
+    def save_row(self,
+                 pass_fields: tuple = (),
+                 set_fields: dict = None):
+        """Сохранение записи - запись значений row_vars,
+           если нужно записать свои значения, тогда,
+           просто пишем в row_vars заданные значения
+           :param pass_fields: пропустить поля
+           :param set_fields: задать свои значения для полей
+        """
         if not self.row or not self.row_vars:
             return None
+        if not set_fields:
+            set_fields = {}
         # --------------------
         # Находим ForeignKey's
         # --------------------
@@ -357,6 +376,12 @@ class ModelHelper:
             #    logger.warning('Update related %s {%s: %s}' % (foreign_obj, foreign_field, value))
             #    continue
             setattr(self.row, key, value)
+        # ---------------------------------
+        # Переопределение своими значениями
+        # ---------------------------------
+        if set_fields:
+            for key, value in set_fields.items():
+                setattr(self.row, key, value)
         # ---------------------------
         # Проверка на unique_together
         # ---------------------------
@@ -383,19 +408,31 @@ class ModelHelper:
         self.uploads()
         return self.row
 
-    def uploads(self, row = None):
+    def uploads(self, row = None,
+                additional_update: dict = None):
         """Загружаем файлы/изображения
            row позволяет грузить
-           в экземпляр другой модели"""
+           в экземпляр другой модели
+           :param row: экземпляр другой модели
+           :param additional_update: доп. поля, которые хотим
+                                     обновить у модели,
+                                     например, {'name': '123.txt'}
+        """
         dest = self.row
         if row:
             dest = row
+        # Бреем, если нет айдишника
+        if not hasattr(dest, 'id') or not dest.id:
+            logger.info('instance without id %s' % dest)
+            return
         if self.request.FILES and dest:
             for key, value in self.request.FILES.items():
                 if key in self.files:
-                    if hasattr(dest, key) and hasattr(dest, 'upload_img'):
-                        dest.upload_file(value, key)
-        if "img" in self.row_vars:
+                    if hasattr(dest, key) and hasattr(dest, 'upload_file'):
+                        dest.upload_file(value,
+                                         key,
+                                         additional_update=additional_update)
+        if 'img' in self.row_vars:
             # -----------------------------
             # Может быть файлом или ссылкой
             # -----------------------------

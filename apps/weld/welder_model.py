@@ -3,7 +3,7 @@ from django.db import models
 
 from apps.main_functions.models import Standard
 from apps.weld.enums import WELDING_TYPES, MATERIALS
-from apps.weld.company_model import Company
+from apps.weld.company_model import Subject
 
 class Welder(Standard):
     """Сварщики"""
@@ -15,7 +15,7 @@ class Welder(Standard):
     notice = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Примечание, например, нет закл. ВИК, РК, ДЛ')
-    company = models.ForeignKey(Company,
+    subject = models.ForeignKey(Subject,
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Находится на объекте, например, ГФУ')
     # is_active - уволен/не уволен

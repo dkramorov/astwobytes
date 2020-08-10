@@ -13,7 +13,7 @@ from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 
-from apps.weld.enums import WELDING_TYPES
+from apps.weld.enums import WELDING_TYPES, MATERIALS
 from apps.weld.welder_model import (Welder,
                                     LetterOfGuarantee,
                                     Vik,
@@ -41,6 +41,7 @@ welders_vars = {
     'model': Welder,
     #'custom_model_permissions': WeldingJoint,
     'select_related_list': ('company', ),
+    'search_result_format': ('{} - {}', 'name stigma'),
 }
 
 # заготовленные хлебные крошки
@@ -276,7 +277,7 @@ holding_kss_vars = {
     'edit_urla': 'edit_holding_kss',
     'model': HoldingKSS,
     #'custom_model_permissions': WeldingJoint,
-    'select_related_list': ('welder', 'material'),
+    'select_related_list': ('welder', ),
 }
 
 @login_required
@@ -286,6 +287,7 @@ def show_holding_kss(request, *args, **kwargs):
         'insert_breadcrumbs': insert_breadcrumbs,
         'holding_choices': HoldingKSS.holding_choices,
         'spent_length_choices': HoldingKSS.spent_length_choices,
+        'material_choices': MATERIALS,
     }
     return show_view(request,
                      model_vars = holding_kss_vars,
@@ -299,6 +301,7 @@ def edit_holding_kss(request, action: str, row_id: int = None, *args, **kwargs):
         'insert_breadcrumbs': insert_breadcrumbs,
         'spent_length_choices': HoldingKSS.spent_length_choices,
         'holding_choices': HoldingKSS.holding_choices,
+        'material_choices': MATERIALS,
     }
     return edit_view(request,
                      model_vars = holding_kss_vars,

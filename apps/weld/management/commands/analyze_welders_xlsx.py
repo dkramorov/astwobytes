@@ -11,7 +11,7 @@ from django.conf import settings
 from apps.main_functions.date_time import str_to_date
 from apps.main_functions.string_parser import kill_quotes
 from apps.main_functions.api_helper import open_wb, search_header, accumulate_data
-from apps.weld.enums import WELDING_TYPES, replace_rus2eng, replace_eng2rus
+from apps.weld.enums import WELDING_TYPES, MATERIALS, replace_rus2eng, replace_eng2rus
 from apps.weld.welder_model import (Welder,
                                     LetterOfGuarantee,
                                     Vik,
@@ -21,7 +21,6 @@ from apps.weld.welder_model import (Welder,
                                     NAX,
                                     AdmissionSheet, )
 from apps.weld.company_model import Company
-from apps.weld.material_model import Material
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +106,6 @@ def get_controlk(row, i: int, welder):
     return controlk
 
 def get_holding_kss(row, i: int, welder,
-                    materials: list,
                     holding_choices: list = None,
                     spent_length_choices: list = None,
                     holding_value: str = None,
@@ -116,7 +114,6 @@ def get_holding_kss(row, i: int, welder,
        :param row: строка
        :param i: номер ячейки
        :param welder: сварщик
-       :param materials: материалы из таблицы (сталь)
        :param holding_choices: ТТ/МК
        :param spent_length_choices: затрачиваемая длина 150мм*2
        :param holding_value: передать значение из (пред) объединенных ячеек
@@ -161,13 +158,12 @@ def get_holding_kss(row, i: int, welder,
         steel = replace_eng2rus(steel)
 
         material = None
-        for item in materials:
-            if item.name == steel:
-                material = item
+        for item in MATERIALS:
+            if item[1] == steel:
+                material = item[0]
                 break
         if not material:
-            material = Material.objects.create(name=steel)
-            materials.append(material)
+            print('material not found', item)
         holding_state = None
         if kss_state:
             for holding_choice in HoldingKSS.holding_choices:
@@ -324,8 +320,6 @@ def analyze_fired_welders():
     if header is None:
         logger.info('[ERROR]: header not found')
 
-    materials = [item for item in Material.objects.all()]
-
     prev_welder = None # для объединенных ячеек
     for row in rows: # Продолжаем обход по генератору
         cell_values = [cell.value for cell in row]
@@ -353,7 +347,6 @@ def analyze_fired_welders():
         # ксс номер это i+10,
         # затрачиваемая длина 150мм*2 это i+9 ячейка
         holding_kss = get_holding_kss(row, i+7, welder,
-                                      materials,
                                       holding_choices = None,
                                       spent_length_choices = None,
                                       holding_value = None,
@@ -390,7 +383,6 @@ def analyze_welders():
 
     holding_choices = []
     spent_length_choices = []
-    materials = [item for item in Material.objects.all()]
 
     prev_welder = None # для объединенных ячеек
     prev_holding_value = None # для объединенных ячеек
@@ -439,7 +431,6 @@ def analyze_welders():
         # Проведение КСС типоразмер это i+9, марка стали это i+10
         # ксс номер это i+11, ТТ/МК это i+13 ячейка
         holding_kss = get_holding_kss(row, i+9, welder,
-                                      materials,
                                       holding_choices,
                                       spent_length_choices,
                                       holding_value = prev_holding_value,
