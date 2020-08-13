@@ -22,6 +22,14 @@ $(document).ready(function(){
     columns:[
       {% include "core/tabulator_cell/name.html" %}
       {
+        title: "Заказчик",
+        field: "customer",
+        headerFilterPlaceholder: "Заказчик",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
         title: "Место строительства",
         field: "location",
         headerFilterPlaceholder: "Место строительства",

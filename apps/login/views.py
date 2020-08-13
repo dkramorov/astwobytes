@@ -381,7 +381,9 @@ def users_positions(request, *args, **kwargs):
             ids.append(ids_customuser[position])
     mh_vars['model'] = customUser
     mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions(custom_positions = ids)
+    # Для customUser прав на просмотр нету,
+    # поэтому и менять позиции не получится
+    result = mh.update_positions(custom_positions=ids)
     return JsonResponse(result, safe=False)
 
 def search_users(request, *args, **kwargs):
@@ -658,10 +660,20 @@ def prepare_perm_list(cur_perms):
                     'name': 'Просмотр',
                     'code': 'view',
                     # просто, чтобы в шаблоне знать как права называются
+                    #'codename': item.codename,
+                    'id': item.id,
+                    'access': item.id in cur_perms,
+                })
+            else:
+                perms.append({
+                    'name': item.name,
+                    'code': 'custom',
                     'codename': item.codename,
                     'id': item.id,
                     'access': item.id in cur_perms,
                 })
+                # Флаг, что нужно выводить спец. права
+                perm['custom'] = True
         perm['perms'] = perms
     perm_list.sort(key=lambda x:x['name'])
     return perm_list

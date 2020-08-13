@@ -1,0 +1,226 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="text-center">Заключение РК</h4>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <div class="checkbox c-checkbox">
+          <label>
+            <input type="checkbox" value="1" name="rk_active" {% if row.rk_active %} checked{% endif %} autocomplete="off">
+            <span class="fa fa-check"></span> Проведен РК?
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div id="main-table"></div>
+      <br>
+      <div class="text-center">
+      <a id="add_frame" href="javascript:void(0);" class="btn btn-default">Добавить снимок</a>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Стык принял по внешнему виду</label>
+      <div class="col-lg-10">
+        <select id="rk_defectoscopist1_select2" name="rk_defectoscopist1" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.rk_defectoscopist1 %}
+            <option value="{{ row.rk_defectoscopist1.id }}" selected>{{ row.rk_defectoscopist1.name }} {{ row.rk_defectoscopist1.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Контроль произвел</label>
+      <div class="col-lg-10">
+        <select id="rk_defectoscopist2_select2" name="rk_defectoscopist2" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.rk_defectoscopist2 %}
+            <option value="{{ row.rk_defectoscopist2.id }}" selected>{{ row.rk_defectoscopist2.name }} {{ row.rk_defectoscopist2.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Заключение выдал</label>
+      <div class="col-lg-10">
+        <select id="rk_defectoscopist3_select2" name="rk_defectoscopist3" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.rk_defectoscopist3 %}
+            <option value="{{ row.rk_defectoscopist3.id }}" selected>{{ row.rk_defectoscopist3.name }} {{ row.rk_defectoscopist3.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="rk_frames_form"></div>
+
+<script type="text/javascript">
+var rk_frames_table = null;
+
+function fill_rk_frames(){
+  // Заполнение формы по РК по снимкам,
+  // вызываем перед отправкой в $("#current_edit_form").submit
+  $("#rk_frames_form").html();
+  var frames_data = "";
+  var frames = rk_frames_table.getRows();
+  var frame_data = null;
+  for(var i=0; i<frames.length; i++){
+    frame_data = frames[i].getData();
+    frames_data += "<input type='hidden' name='rk_number_" + i + "' value='" + frame_data['number'] + "' />";
+    frames_data += "<input type='hidden' name='rk_sensitivity_" + i + "' value='" + frame_data['sensitivity'] + "' />";
+    frames_data += "<input type='hidden' name='rk_defects_" + i + "' value='" + frame_data['defects'] + "' />";
+    frames_data += "<input type='hidden' name='rk_state_" + i + "' value='" + frame_data['state'] + "' />";
+    frames_data += "<input type='hidden' name='rk_notice_" + i + "' value='" + frame_data['notice'] + "' />";
+  }
+  frames_data += "<input type='hidden' name='rk_frames' value='" + frames.length + "' />";
+  $("#rk_frames_form").html($(frames_data));
+}
+$(document).ready(function(){
+  var conclusion_states = {
+    {% for item in conclusion_states %}
+      '{{ item.0 }}': '{{ item.1 }}',
+    {% endfor %}
+  };
+  var conclusionStateFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return conclusion_states[pk];
+  };
+  var rk_frames = [
+    {% for frame in rk_frames %}
+      {
+          'id': '{{ frame.id }}',
+          'number': '{{ frame.number }}',
+          'sensitivity': '{{ frame.sensitivity }}',
+          'state': '{{ frame.state }}',
+          'defects': '{{ frame.defects }}',
+          'notice': '{{ frame.notice }}',
+      },
+    {% endfor %}
+  ];
+  rk_frames_table = new Tabulator("#main-table", {
+    layout: "fitColumns",
+    data: rk_frames,
+    columns:[
+      {
+        title: "Номер снимка,<br>координаты мерного пояса",
+        field: "number",
+        editor: "input",
+        minWidth: 120,
+      },
+      {
+        title: "Чувствительность<br> снимка (в мм или %)",
+        field: "sensitivity",
+        editor: "input",
+        minWidth: 120,
+      },
+      {
+        title: "Выявленные дефекты",
+        field: "defects",
+        editor: "input",
+        minWidth: 120,
+      },
+      {
+        title: "Заключение",
+        field: "state",
+        editor: "select",
+        editorParams: conclusion_states,
+        formatter: conclusionStateFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Примечание",
+        field: "notice",
+        editor: "input",
+        minWidth: 120,
+      },
+      {
+        title: "Действия",
+        formatter: "buttonCross",
+        minWidth: 70,
+        align:"center",
+        cellClick:function(e, cell){
+          cell.getRow().delete();
+        }
+      },
+    ],
+  });
+  $("#add_frame").click(function(){
+    var rows = rk_frames_table.getRows();
+    var data = null;
+    var max_number = 0;
+    var number = null;
+    for(var i=0; i<rows.length; i++){
+      data = rows[i].getData();
+      number = parseInt(data['number']);
+      if(number > max_number){
+        max_number = number;
+      }
+    }
+    rk_frames_table.addRow({
+      'number': max_number + 1,
+      'sensitivity': 0.1,
+      'defects': '',
+      'state': 1,
+      'notice': '',
+    });
+  });
+  $('#rk_defectoscopist1_select2').select2({
+    placeholder: 'Выберите дефектоскописта',
+    allowClear: true,
+    width: '100%',
+    tags: true,
+    ajax: {
+      url: "{% url 'welding:search_defectoscopists' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+  $('#rk_defectoscopist2_select2').select2({
+    placeholder: 'Выберите дефектоскописта',
+    allowClear: true,
+    width: '100%',
+    tags: true,
+    ajax: {
+      url: "{% url 'welding:search_defectoscopists' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+  $('#rk_defectoscopist3_select2').select2({
+    placeholder: 'Выберите дефектоскописта',
+    allowClear: true,
+    width: '100%',
+    tags: true,
+    ajax: {
+      url: "{% url 'welding:search_defectoscopists' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+});
+</script>

@@ -22,9 +22,13 @@ $(document).ready(function(){
     var rowIndex = row.getIndex();
     var pk = cell.getValue();
     var actions = "<div class='padding-rl5'>";
-    actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% if permissions.edit %}
+      actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% endif %}
     actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}perms/" + pk + "/'><i class='fa fa-key'></i></a> ";
-    actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
     actions += "</div>";
     return actions;
   };
@@ -41,7 +45,7 @@ $(document).ready(function(){
         field: "users",
         headerSort: false,
         formatter: wordwrapFormatter,
-        width: 180,
+        minWidth: 180,
       },
       {
         title: "Действия",

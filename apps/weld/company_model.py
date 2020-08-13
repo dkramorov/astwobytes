@@ -16,9 +16,12 @@ class Company(Standard):
     """Компания,
        на чьем балансе находятся работы,
        верхний уровень иерархии,
-       например, ООО "ИНК"
+       например, ООО "Транспромстрой"
     """
     name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Компания, наименование предприятия-заказчика, например, ООО "Транспромстрой"')
+    customer = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Компания, наименование предприятия-заказчика, например, ООО "ИНК"')
     location = models.CharField(max_length=255,
@@ -27,7 +30,7 @@ class Company(Standard):
     # подрядчик
     contractor = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
-        verbose_name='Наименоваение генподрядной и строительной организации и ее ведомственная принадлежность, например, АО "Хоневелл"')
+        verbose_name='Наименование генподрядной и строительной организации и ее ведомственная принадлежность, например, АО "Хоневелл"')
     # монтажник
     fitter = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
@@ -66,6 +69,9 @@ class Titul(Standard):
     name = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Часть объекта, например, У800')
+    description = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Описание титула, например, Отделение печей нагрева')
     subject = models.ForeignKey(Subject,
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Объект, например ТПС-ГФУ')

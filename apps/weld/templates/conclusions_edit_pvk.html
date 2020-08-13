@@ -1,0 +1,119 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="text-center">Заключение ПВК</h4>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <div class="checkbox c-checkbox">
+          <label>
+            <input type="checkbox" value="1" name="pvk_active" {% if row.pvk_active %} checked{% endif %} autocomplete="off">
+            <span class="fa fa-check"></span> Проведен ПВК?
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Вид контроля</label>
+      <div class="col-lg-10">
+        <select id="pvk_control_type_select2" name="pvk_control_type" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% for pvk_control_choice in pvk_control_choices %}
+            <option value="{{ pvk_control_choice.0 }}"{% ifequal pvk_control_choice.0 row.pvk_control_type %} selected{% endifequal %}>{{ pvk_control_choice.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Оценка качества</label>
+      <div class="col-lg-10">
+        <select id="pvk_state_select2" name="pvk_state" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% for conclusion_state in conclusion_states %}
+            <option value="{{ conclusion_state.0 }}"{% ifequal conclusion_state.0 row.pvk_state %} selected{% endifequal %}>{{ conclusion_state.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Дефекты</label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Дефекты" class="form-control" name="pvk_defects" value="{% if row.pvk_defects %}{{ row.pvk_defects }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Начальник ЛНК</label>
+      <div class="col-lg-10">
+        <select id="pvk_director_select2" name="pvk_director" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.pvk_director %}
+            <option value="{{ row.pvk_director.id }}" selected>{{ row.pvk_director.name }} {{ row.pvk_director.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Дефектоскопист</label>
+      <div class="col-lg-10">
+        <select id="pvk_defectoscopist_select2" name="pvk_defectoscopist" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.pvk_defectoscopist %}
+            <option value="{{ row.pvk_defectoscopist.id }}" selected>{{ row.pvk_defectoscopist.name }} {{ row.pvk_defectoscopist.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#pvk_director_select2').select2({
+      placeholder: 'Выберите дефектоскописта',
+      allowClear: true,
+      width: '100%',
+      tags: true,
+      ajax: {
+        url: "{% url 'welding:search_defectoscopists' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    $('#pvk_defectoscopist_select2').select2({
+      placeholder: 'Выберите дефектоскописта',
+      allowClear: true,
+      width: '100%',
+      tags: true,
+      ajax: {
+        url: "{% url 'welding:search_defectoscopists' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    $('#pvk_state_select2').select2({
+      placeholder: 'Выберите заключение',
+      allowClear: true,
+      width: '100%',
+      tags: true,
+    });
+    $('#pvk_control_type_select2').select2({
+      placeholder: 'Выберите вид контроля',
+      allowClear: true,
+      width: '100%',
+      tags: true,
+    });
+  });
+</script>

@@ -1,0 +1,85 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="text-center">Акт ВИК</h4>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <div class="checkbox c-checkbox">
+          <label>
+            <input type="checkbox" value="1" name="vik_active" {% if row.vik_active %} checked{% endif %} autocomplete="off">
+            <span class="fa fa-check"></span> Проведен ВИК?
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Дефекты</label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Дефекты" class="form-control" name="vik_defects" value="{% if row.vik_defects %}{{ row.vik_defects }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Контроль выполнил</label>
+      <div class="col-lg-10">
+        <select id="vik_controller_select2" name="vik_controller" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.vik_controller %}
+            <option value="{{ row.vik_controller.id }}" selected>{{ row.vik_controller.name }} {{ row.vik_controller.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Руководитель</label>
+      <div class="col-lg-10">
+        <select id="vik_director_select2" name="vik_director" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.vik_director %}
+            <option value="{{ row.vik_director.id }}" selected>{{ row.vik_director.name }} {{ row.vik_director.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#vik_controller_select2').select2({
+      placeholder: 'Выберите дефектоскописта',
+      allowClear: true,
+      width: '100%',
+      tags: true,
+      ajax: {
+        url: "{% url 'welding:search_defectoscopists' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    $('#vik_director_select2').select2({
+      placeholder: 'Выберите дефектоскописта',
+      allowClear: true,
+      width: '100%',
+      tags: true,
+      ajax: {
+        url: "{% url 'welding:search_defectoscopists' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+  });
+</script>

@@ -20,6 +20,12 @@
           {% csrf_token %}
           {% include "core/forms/row_name.html" %}
           <div class="form-group">
+            <label class="col-lg-2 control-label">Описание</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Описание" class="form-control" name="description" value="{% if row.description %}{{ row.description }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-2 control-label">Объект</label>
             <div class="col-lg-10">
               <select id="subject_select2" name="subject" autocomplete="off"  data-parsley-required>

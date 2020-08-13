@@ -20,6 +20,42 @@ window.disableMovableRows = true;
 var main_table = null;
 
 $(document).ready(function(){
+  var pdfVIKFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf_vik/" + pk + "/' title='ВИК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    actions += "</div>";
+    return actions;
+  };
+  var pdfRKFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf_rk/" + pk + "/' title='РК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    actions += "</div>";
+    return actions;
+  };
+  var pdfPVKFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf_pvk/" + pk + "/' title='ПВК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    actions += "</div>";
+    return actions;
+  };
+  var pdfUZKFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf_uzk/" + pk + "/' title='УЗК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    actions += "</div>";
+    return actions;
+  };
+  var weldingJointFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['welding_joint'] ? data['welding_joint']['request_number'] : '';
+  };
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -29,7 +65,8 @@ $(document).ready(function(){
         headerFilterPlaceholder: "№ заявки на НК",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 230,
+        formatter: weldingJointFormatter,
+        minWidth: 240,
       },
       {
         title: "Дата заключения",
@@ -40,12 +77,36 @@ $(document).ready(function(){
         minWidth: 90,
       },
       {
-        title: "Дефекты",
-        field: "defects",
-        headerFilterPlaceholder: "Дефекты",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 120,
+        title: "ВИК",
+        field: "id",
+        headerSort: false,
+        formatter: pdfVIKFormatter,
+        width: 50,
+        download: false,
+      },
+      {
+        title: "РК",
+        field: "id",
+        headerSort: false,
+        formatter: pdfRKFormatter,
+        width: 50,
+        download: false,
+      },
+      {
+        title: "ПВК",
+        field: "id",
+        headerSort: false,
+        formatter: pdfPVKFormatter,
+        width: 50,
+        download: false,
+      },
+      {
+        title: "УЗК",
+        field: "id",
+        headerSort: false,
+        formatter: pdfUZKFormatter,
+        width: 50,
+        download: false,
       },
       {% include "core/tabulator_cell/actions.html" %}
     ],

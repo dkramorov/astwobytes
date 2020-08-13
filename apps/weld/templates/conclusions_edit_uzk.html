@@ -1,0 +1,188 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="text-center">Заключение УЗК</h4>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <div class="checkbox c-checkbox">
+          <label>
+            <input type="checkbox" value="1" name="uzk_active" {% if row.uzk_active %} checked{% endif %} autocomplete="off">
+            <span class="fa fa-check"></span> Проведен УЗК?
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Угол ввода луча в градусах</label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Угол ввода луча в градусах" class="form-control" name="uzk_ray_angle" value="{% if row.uzk_ray_angle %}{{ row.uzk_ray_angle }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Условная чувствительность зарубка в мм</label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Условная чувствительность зарубка в мм" class="form-control" name="uzk_sensitivity" value="{% if row.uzk_sensitivity %}{{ row.uzk_sensitivity }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Дефекты</label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Дефекты" class="form-control" name="uzk_defects" value="{% if row.uzk_defects %}{{ row.uzk_defects }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Оценка качества</label>
+      <div class="col-lg-10">
+        <select id="uzk_state_select2" name="uzk_state" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% for conclusion_state in conclusion_states %}
+            <option value="{{ conclusion_state.0 }}"{% ifequal conclusion_state.0 row.uzk_state %} selected{% endifequal %}>{{ conclusion_state.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Примечание</label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Примечание" class="form-control" name="uzk_notice" value="{% if row.uzk_notice %}{{ row.uzk_notice }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Оператор</label>
+      <div class="col-lg-10">
+        <select id="uzk_operator_select2" name="uzk_operator" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.uzk_operator %}
+            <option value="{{ row.uzk_operator.id }}" selected>{{ row.uzk_operator.name }} {{ row.uzk_operator.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Стык принял по внешнему виду</label>
+      <div class="col-lg-10">
+        <select id="uzk_defectoscopist1_select2" name="uzk_defectoscopist1" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.uzk_defectoscopist1 %}
+            <option value="{{ row.uzk_defectoscopist1.id }}" selected>{{ row.uzk_defectoscopist1.name }} {{ row.uzk_defectoscopist1.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Контроль произвел</label>
+      <div class="col-lg-10">
+        <select id="uzk_defectoscopist2_select2" name="uzk_defectoscopist2" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.uzk_defectoscopist2 %}
+            <option value="{{ row.uzk_defectoscopist2.id }}" selected>{{ row.uzk_defectoscopist2.name }} {{ row.uzk_defectoscopist2.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Заключение выдал</label>
+      <div class="col-lg-10">
+        <select id="uzk_defectoscopist3_select2" name="uzk_defectoscopist3" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% if row.uzk_defectoscopist3 %}
+            <option value="{{ row.uzk_defectoscopist3.id }}" selected>{{ row.uzk_defectoscopist3.name }} {{ row.uzk_defectoscopist3.stigma }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var conclusion_states = {
+    {% for item in conclusion_states %}
+      '{{ item.0 }}': '{{ item.1 }}',
+    {% endfor %}
+  };
+  var conclusionStateFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return conclusion_states[pk];
+  };
+  $('#uzk_defectoscopist1_select2').select2({
+    placeholder: 'Выберите дефектоскописта',
+    allowClear: true,
+    width: '100%',
+    tags: true,
+    ajax: {
+      url: "{% url 'welding:search_defectoscopists' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+  $('#uzk_defectoscopist2_select2').select2({
+    placeholder: 'Выберите дефектоскописта',
+    allowClear: true,
+    width: '100%',
+    tags: true,
+    ajax: {
+      url: "{% url 'welding:search_defectoscopists' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+  $('#uzk_defectoscopist3_select2').select2({
+    placeholder: 'Выберите дефектоскописта',
+    allowClear: true,
+    width: '100%',
+    tags: true,
+    ajax: {
+      url: "{% url 'welding:search_defectoscopists' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+  $('#uzk_operator_select2').select2({
+    placeholder: 'Выберите дефектоскописта',
+    allowClear: true,
+    width: '100%',
+    tags: true,
+    ajax: {
+      url: "{% url 'welding:search_defectoscopists' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+  $('#uzk_state_select2').select2({
+    placeholder: 'Выберите заключение',
+    allowClear: true,
+    width: '100%',
+    tags: true,
+  });
+});
+</script>

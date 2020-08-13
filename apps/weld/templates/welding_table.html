@@ -86,6 +86,14 @@ function state_helper(pk, ind, new_state, state){
 }
 
 $(document).ready(function(){
+  var pdfFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf/" + pk + "/' title='PDF документ' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    actions += "</div>";
+    return actions;
+  };
   var actionsJointFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
     var rowIndex = row.getIndex();
@@ -102,9 +110,8 @@ $(document).ready(function(){
     {% endif %}
 
     {% if permissions.create %}
-      actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}form/" + pk + "/' title='Открыть заявку на стык'><i class='fa fa-file'></i></a> ";
+      actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}form/" + pk + "/' title='Редактировать'><i class='fa fa-edit'></i></a> ";
     {% endif %}
-    actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}pdf/" + pk + "/' title='PDF документ' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
 
     {% if permissions.edit %}
       {% comment %}
@@ -246,7 +253,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "№ заявки на НК",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 230,
+        minWidth: 250,
       },
       {
         title: "Дата заявки на НК",
@@ -517,6 +524,14 @@ $(document).ready(function(){
         minWidth: 120,
       },
       {
+        title: "PDF",
+        field: "id",
+        headerSort: false,
+        formatter: pdfFormatter,
+        width: 50,
+        download: false,
+      },
+      {
         title: "Статус",
         field: "state",
         headerFilterPlaceholder: "Статус",
@@ -536,7 +551,7 @@ $(document).ready(function(){
         field: "actions",
         headerSort: false,
         formatter: actionsJointFormatter,
-        width: 160,
+        width: 120,
         download: false,
       },
     ],

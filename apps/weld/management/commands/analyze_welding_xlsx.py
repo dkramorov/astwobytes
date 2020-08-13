@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import logging
 
 from openpyxl import load_workbook
@@ -10,16 +11,18 @@ from django.conf import settings
 from apps.main_functions.date_time import str_to_date
 from apps.main_functions.string_parser import kill_quotes
 from apps.main_functions.api_helper import open_wb, search_header, accumulate_data
-from apps.weld.enums import WELDING_TYPES, MATERIALS, JOIN_TYPES
+from apps.main_functions.files import ListDir
+from apps.files.models import Files
+
+from apps.weld.enums import WELDING_TYPES, MATERIALS, JOIN_TYPES, replace_rus2eng, replace_eng2rus
 from apps.weld.welder_model import Welder
 from apps.weld.company_model import Company, Subject, Titul, Base, Line
-from apps.weld.models import WeldingJoint, Joint, JointWelder
+from apps.weld.models import WeldingJoint, Joint, JointWelder, WeldingJointState, recalc_joints
 
 logger = logging.getLogger(__name__)
 
 # Файлы excel для анализа
 daily_report_weldings = 'daily_report_weldings.xlsx'
-statement_joints = 'statement_joints.xlsx'
 
 def get_object(row, i: int, model, cond: dict = None):
     """Создать/обновить простой объект (только название)
@@ -35,6 +38,16 @@ def get_object(row, i: int, model, cond: dict = None):
         obj_name = str(obj_name).strip()
         if '*' in obj_name:
             return None
+        if model in (Line, ):
+            obj_name = replace_rus2eng(obj_name)
+            first4letters = obj_name[:6]
+            if not '-' in first4letters:
+                obj_name = obj_name.replace(' ', '-')
+                obj_name = '%s-%s' % (obj_name[:4], obj_name[4:])
+                obj_name = obj_name.replace('--', '-')
+                #print('obj_name', obj_name)
+                if len(obj_name) < 5:
+                    return
         obj = model.objects.filter(name=obj_name).filter(**cond).first()
         if not obj:
             obj = model(name=obj_name)
@@ -54,209 +67,164 @@ def get_choice(item, choices):
                 return choice[0]
     return None
 
-def analyze_statement_joints():
-    """Заполнение базы уникальными значениями из эксельки"""
-    wb = open_wb(statement_joints)
-    sheet = None
-    for item in wb:
-        if item.title in ('Новые стыки', ):
-            sheet = item
-    if not sheet:
-        logger.info('[ERROR]: sheet not found')
-        return
-
+def more_lines_helper(subject: Subject, path: str):
+    """Загрузка дополнительных узлов в дополнительным линиям
+       :param subject: объект
+       :param path: путь до эксельки
+    """
+    wb = open_wb(path)
+    sheet = wb.active
     rows = sheet.rows
-    i, header = search_header(rows)
-    if header is None:
-        logger.info('[ERROR]: header not found')
+    cur_titul = None
+    for row in rows:
+        cell_values = [cell.value for cell in row]
+        # 1 - линия
+        # 2 - стык
+        # 3 - диаметр х тощина стенки
+        # 4 - дата сварки
+        # 5 - клеймо
+        # 6 - вид сварного соединения
+        # 7 - тип сварки
+        # 12 - статус (новый/готов)
+        digit = row[0].value
+        if not digit:
+            continue
+        digit = str(digit)
+        if 'Титул ' in digit:
+            titul_str = digit.split('Титул ')[1]
+            titul_str = titul_str.split(' ')[0]
+            titul_str = titul_str.split('.')[0]
+            titul = Titul.objects.filter(name=titul_str).first()
+            if not titul:
+                #logger.info('[ERROR]: titul not found %s' % titul_str)
+                cur_titul = Titul.objects.create(name=titul_str, subject=subject)
+            else:
+                cur_titul = titul
 
-    workshifts = []
-    control_types = []
-    conn_types_views = []
-    welding_types = []
-    categories = []
-    control_results = []
-    materials = []
+        diameter = side_thickness = date = stigma = welding_conn_view = welding_type = None
+        joint_str = row[2].value
+        size = row[3].value
+        if size and ('х' in size or 'ъ' in size):
+           size = str(size).strip()
+           if 'ъ' in size:
+               diameter, side_thickness = size.split('ъ')
+           elif 'х' in size:
+               diameter, side_thickness = size.split('х')
+           elif 'x' in size:
+               diameter, side_thickness = size.split('x')
+        if row[4].value:
+            date = str_to_date(str(row[4].value))
+        if row[5].value:
+            stigma = str(row[5].value).strip()
+            try:
+                stigma = replace_rus2eng(stigma)
+            except Exception as e:
+                print('[ERROR]: %s' % e)
+                stigma = None
+        if row[6].value:
+            welding_conn_view_str = replace_eng2rus(row[6].value)
+            welding_conn_view = get_choice(welding_conn_view_str, WeldingJoint.welding_conn_view_choices)
+        if row[7].value:
+            welding_type = row[7].value.replace('+', ' - ')
+            welding_type = replace_eng2rus(welding_type)
+            welding_type = welding_type.replace('  ', ' ')
+            welding_type = get_choice(welding_type, WELDING_TYPES)
 
-    z = 0
-    for row in rows: # Продолжаем обход по генератору
-        z += 1
+        line_str = row[1].value
+        if not line_str or not 'Линия ' in line_str:
+            #print(digit, line_str)
+            continue
+        line_str = line_str.split('Линия ')[1]
+        line_str = line_str.strip()
+        try:
+            line_str = replace_rus2eng(line_str)
+        except Exception:
+            print('Русские буквы даже после всех замен %s, стык %s' % (line_str, joint_str))
+            continue
+        analogs = Line.objects.filter(name__startswith=line_str, titul=cur_titul)
+        for item in analogs:
+            if item.name.split('-')[0] == line_str:
+                analogs = [item]
+                break
+        repair = None
+        state = 1
+        state_str = row[12].value
+        if state_str:
+            if 'готов' in state_str:
+                state = 3
+            elif 'ремонт' in state_str:
+                repair = 1
+            #print(state_str)
+        if not analogs:
+            #print('Линия не найдена %s в титуле %s, стык %s' % (line_str, cur_titul.name, joint_str))
+            continue
+        elif len(analogs) > 1:
+            print('Найдено больше 1 линии по "%s", это %s в титуле %s, стык %s' % (line_str, [item.name for item in analogs], cur_titul.name, joint_str))
+            pass
+        else:
+            line = analogs[0]
+            #print('line %s' % line.name)
+            #print(diameter, side_thickness, date, stigma, welding_conn_view, welding_type)
+            joint = get_object(row, 2, Joint, {'line': line})
+            welding_joint = WeldingJoint.objects.create(**{
+                'joint': joint,
+                'diameter': diameter,
+                'side_thickness': side_thickness,
+                'request_control_date': date,
+                'welding_conn_view': welding_conn_view,
+                'welding_type': welding_type,
+                'state': state,
+                'repair': repair,
+            })
+            welder = Welder.objects.filter(stigma__icontains=stigma).first()
+            if not welder:
+                print('welder not found %s' % stigma)
+                continue
+            JointWelder.objects.create(welding_joint=welding_joint, welder=welder, position=1)
+
+def more_lines(subject: Subject):
+    """Загрузка доп. линий из more_lines.xlsx
+       папка more_lines должна содержать все файлы по доп. линиям
+       :param subject: объект
+    """
+    wb = open_wb('more_lines.xlsx')
+    sheet = wb.active
+    rows = sheet.rows
+    for row in rows:
         cell_values = [cell.value for cell in row]
         if not any(cell_values):
             logger.info('EOF reached')
             break
 
-        # Установка это i+1 ячейка
-        base = get_object(row, i+1, Base)
-        # Договор это i+2 ячейка
-        contract = get_object(row, i+2, Contract)
-        # Линия это i+3 ячейка
-        line = get_object(row, i+3, Line)
-        # № Изометрической схемы это i+4 ячейка
-        #scheme = get_object(row, i+4, Scheme)
-
-        # № стыка это i+5 ячейка
-        joint = None
-        joint_str = row[i+5].value
-        if line and joint_str:
-            joint_str = '%s' % joint_str
-            joint_str = joint_str.strip()
-            if '*' in joint_str:
-                continue
-            joint = Joint.objects.filter(name=joint_str, line=line).first()
-            if not joint:
-                joint = Joint.objects.create(name=joint_str, line=line)
-        else:
+        titul_str = cell_values[0]
+        line_str = cell_values[1]
+        if not titul_str or not line_str or not '-' in line_str:
             continue
-
-        # -----------------------------
-        # Поправка по кривому материалу
-        # -----------------------------
-        if row[i+11] and row[i+11].value:
-            if '316/316L' in row[i+11].value:
-                logger.info('[ERROR]: bad material %s' % material)
-                continue
-
-        # материал (сталь) это i+11 ячейка
-        material_str = accumulate_data(row, i+11, materials)
-
-        # свариваемые элементы это i+12 ячейка
-        join_type = get_object(row, i+12, JoinType)
-
-        # смена это i+14 ячейка
-        workshift_str = accumulate_data(row, i+14, workshifts)
-
-        # Сварщик
-        welder = None
-        stigma = row[i+16].value # клеймо сварщика это i+16 ячейка
-        if stigma:
-            stigma = '%s' % stigma
-            stigma = stigma.strip()
-            welder = Welder.objects.filter(stigma=stigma).first()
-
-        # контроль это i+19 ячейка
-        control_type_str = accumulate_data(row, i+19, control_types)
-
-        # вид сварного соединения это i+20 ячейка
-        conn_type_view_str = accumulate_data(row, i+20, conn_types_views)
-
-        # тип сварки это i+21 ячейка
-        welding_type_str = accumulate_data(row, i+21, welding_types)
-
-        # категория это i+22 ячейка
-        category_str = accumulate_data(row, i+22, categories)
-
-        # результат контроля это i+23 ячейка
-        control_result_str = accumulate_data(row, i+23, control_results)
-
-        repair = 1 if row[i+6].value else None
-        if row[i+7].value:
-            repair = 2
-
-        cutout = True if row[i+8].value else None
-
-        diameter = row[i+9].value if row[i+9].value else None
-        if diameter:
-            diameter = str(diameter).replace(',', '.')
-            try:
-                diameter = float(diameter)
-            except ValueError:
-                diameter = None
-                logger.info('[ERROR]: diameter %s' % diameter)
-
-        side_thickness = row[i+10].value if row[i+10].value else None
-        if side_thickness:
-            side_thickness = str(side_thickness).replace(',', '.')
-            try:
-                side_thickness = float(side_thickness)
-            except ValueError:
-                side_thickness = None
-                logger.info('[ERROR]: side_thickness %s' % side_thickness)
-
-        welding_date = row[i+13].value if row[i+13].value else None
-        if welding_date:
-            welding_date = str_to_date(str(welding_date))
-
-        request_number = row[i+17].value if row[i+17].value else None
-
-        request_control_date = row[i+18].value if row[i+18].value else None
-        if request_control_date:
-            request_control_date = str_to_date(str(request_control_date))
-
-        conclusion_number = row[i+25].value if row[i+25].value else None
-
-        conclusion_date = row[i+26].value if row[i+26].value else None
-        if conclusion_date:
-            conclusion_date = str_to_date(str(conclusion_date))
-
-        notice = row[i+27].value if row[i+27].value else None
-
-        dinc = row[i+28].value if row[i+28].value else None
-        if dinc:
-            dinc = str(dinc).replace(',', '.')
-            try:
-                dinc = float(dinc)
-            except ValueError:
-                dinc = None
-                logger.info('[ERROR]: dinc %s' % dinc)
-
-        workshift = get_choice(workshift_str, WeldingJoint.workshift_choices)
-
-        control_type = get_choice(control_type_str, WeldingJoint.control_choices)
-
-        welding_conn_view = get_choice(conn_type_view_str, WeldingJoint.welding_conn_view_choices)
-
-        welding_type = get_choice(welding_type_str, WELDING_TYPES)
-
-        category = get_choice(category_str, WeldingJoint.category_choices)
-
-        material = get_choice(material_str, MATERIALS)
-
-        control_result = get_choice(control_result_str, WeldingJoint.control_result_choices)
-
-        welding_joint_obj = {
-            'base': base,
-            'contract': contract,
-            #'scheme': scheme,
-            'joint': joint,
-            'repair': repair,
-            'cutout': cutout,
-            'diameter': diameter,
-            'side_thickness': side_thickness,
-            'material': material,
-            'join_type': join_type,
-            'welding_date': welding_date,
-            'workshift': workshift,
-            'request_number': request_number,
-            'request_control_date': request_control_date,
-            'control_type': control_type,
-            'welding_conn_view': welding_conn_view,
-            'welding_type': welding_type,
-            'category': category,
-            'control_result': control_result,
-            'conclusion_number': conclusion_number,
-            'conclusion_date': conclusion_date,
-            'notice': notice,
-            'dinc': dinc,
-        }
-        welding_joint = WeldingJoint.objects.create(**welding_joint_obj)
-        JointWelder.objects.create(**{
-            'welding_joint': welding_joint,
-            'welder':  welder,
-        })
-    logger.info('Workshifts: %s' % workshifts)
-    logger.info('ControlTypes: %s' % control_types)
-    logger.info('ConnTypesViews: %s' % conn_types_views)
-    logger.info('WeldingTypes: %s' % welding_types)
-    logger.info('Categories: %s' % categories)
-    logger.info('ControlResults: %s' % control_results)
-    #logger.info('WeldingJoints: %s' % welding_joints)
-
+        # Титул
+        titul = get_object(row, 0, Titul, {'subject': subject})
+        if not titul:
+            continue
+        # Линия
+        try:
+            line = get_object(row, 1, Line, {'titul': titul})
+        except Exception:
+            print('Русские буквы даже после всех замен %s' % line_str)
+            continue
+    folder = 'more_lines'
+    files = ListDir(folder)
+    for item in files:
+        if not item.endswith('.xlsx'):
+            logger.info('non xlsx file %s' % item)
+            continue
+        path = os.path.join(folder, item)
+        print('Анализ файла %s' % item)
+        more_lines_helper(subject, path)
 
 def analyze_daily_report_weldings():
     """Заполнение базы уникальными значениями из эксельки"""
     company = Company.objects.create(
-        name = 'ООО "ИНК"',
+        name = 'ООО "Транспромстрой"',
+        customer = 'ООО "ИНК"',
         location = 'г. Усть-Кут',
         contractor = 'ООО "Транспромстрой"',
         fitter = 'ООО "Транспромстрой"',
@@ -471,7 +439,14 @@ def analyze_daily_report_weldings():
     #logger.info('WeldingJoints: %s' % welding_joints)
     logger.info('JoinTypes: %s' % join_types)
 
+    # -----------------------------
+    # Загрузка дополнительных линий
+    # из more_lines.xlsx
+    # -----------------------------
+    more_lines(subject)
+
 def clean_tables():
+    """Похерить данные в таблицах перед заливочкой"""
     JointWelder.objects.all().delete()
     WeldingJoint.objects.all().delete()
     Base.objects.all().delete()
@@ -480,9 +455,13 @@ def clean_tables():
     Joint.objects.all().delete()
     Company.objects.all().delete()
     Subject.objects.all().delete()
+    WeldingJointState.objects.all().delete()
+    for item in Files.objects.all():
+        item.delete()
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         clean_tables()
-        #analyze_statement_joints()
         analyze_daily_report_weldings()
+        for line in Line.objects.all():
+            recalc_joints(line)

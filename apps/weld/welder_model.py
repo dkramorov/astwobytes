@@ -24,6 +24,22 @@ class Welder(Standard):
         verbose_name_plural = 'Сварщики - Сварщики'
         #default_permissions = []
 
+class Defectoscopist(Standard):
+    """Дефектоскописты"""
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    stigma = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Номер удостоверения, например, 0048-1962')
+    notice = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Примечание')
+    # is_active - уволен/не уволен
+    class Meta:
+        verbose_name = 'Контроль - Дефектоскопист'
+        verbose_name_plural = 'Контроль - Дефектоскописты'
+        #default_permissions = []
+
 class LetterOfGuarantee(Standard):
     """Гарантийные письма на сварщиков"""
     name = models.CharField(max_length=255,

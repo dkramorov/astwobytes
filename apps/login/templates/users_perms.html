@@ -11,7 +11,7 @@
   <div class="col-sm-12">
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{{ url_edit }}" id="current_edit_form">
-        <div class="panel-heading">Права {{ rp_singular_obj }} {{ row }}</div>
+        <div class="panel-heading">Права {{ rp_singular_obj }} "{{ row }}"</div>
         <div class="panel-body">
           {% csrf_token %}
 
@@ -45,10 +45,25 @@
                          </label>
                        </div>
                      </td>
-                     <td>{{ data.name }}</td>
+                     <td>
+                       <p>{{ data.name }}</p>
+                       {% if data.custom %}
+                         {% for perm in data.perms %}
+                           {% if perm.code == 'custom' %}
+                             <p>
+                               <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
+                                 <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
+                                 <span class="fa fa-check"></span>
+                                 {{ perm.name }}
+                               </label>
+                             </p>
+                           {% endif %}
+                         {% endfor %}
+                       {% endif %}
+                     </td>
                      {% for perm in data.perms %}
                        {% if perm.code == 'view' %}
-                         <td data-perm="{{ perm.codename }}">
+                         <td>
                            <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
                              <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
                              <span class="fa fa-eye"></span>
@@ -91,8 +106,9 @@
               </tbody>
             </table>
           </div>
-          <div class="form-group" id="ajax_result">
-          </div>
+          {% for data in permissions %}
+            
+          {% endfor %}
         </div>
         <div class="panel-footer">
           <div class="col-lg-6 col-sm-6 padding-tb5">

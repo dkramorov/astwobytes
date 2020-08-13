@@ -169,6 +169,15 @@
   </ul>
 </li>
 
+{% if perms.weld.view_defectoscopist %}
+  <li{% ifequal menu 'defectoscopists' %} class="active"{% endifequal %}>
+    <a href="{% url 'welding:show_defectoscopists' %}">
+      <em class="fa fa-male"></em>
+      <span class="item-text">Дефектоскописты</span>
+    </a>
+  </li>
+{% endif %}
+
 {% include "files_admin_menu.html" %}
 
 <li{% ifequal menu 'logs' %} class="active"{% endifequal %}>

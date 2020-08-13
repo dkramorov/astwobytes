@@ -10,8 +10,7 @@
   <div class="panel widget">
     <div class="panel-body">
       <div class="row row-table">
-        <h3 class="mt0">05/07 Документация для сварщика (исполнителя)</h3>
-        <p></p>
+        <h3 class="mt0">11/08</h3>
       </div>
     </div>
   </div>
@@ -21,7 +20,70 @@
   <div class="panel widget">
     <div class="panel-body">
       <div class="row row-table">
-        <h3 class="mt0">04/07 Добавлены файлы к заявкам и прохождение заявки до полной готовности стыка</h3>
+        <h3 class="mt0">10/08 Изменения для заключений</h3>
+        <p>Добавлена модель дефектоскопистов для выбора в актах и заключениях</p>
+        <div class="mb-sm mr-sm">
+          <a href="{% url 'welding:show_defectoscopists' %}" class="btn btn-success">Дефектоскописты</a>
+        </div>
+        <p>В создание/редактирование акта/заключения добавлены поля специфические для каждого вида контроля</p>
+        <div class="mb-sm mr-sm">
+          <a href="{% url 'welding:create_conclusion' 'create' %}" class="btn btn-success">Новое заключение</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">07/08 Обновление данных</h3>
+        <p>Приведение названия линий во всех файлах к английской раскладке, т/к невозможно сравнить линии, постоянно встречаются в середине русские буквы</p>
+        <p>Загружены дополнительные данные по линиям и титулам</p>
+        <p>Загружены данные из разрозненных ненормализованных файлов по стыкам</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">06/08 Заключения для заявок на стык</h3>
+        <p>Добавлена модель заключений заявки на стык</p>
+        <p>На одну заявку на стык доступны 4 заключения: ВИК акт, РК заключение, ПВК заключение, УЗК заключение</p>
+        <p>Каждое заключение можно посмотреть в PDF</p>
+        <div class="mb-sm mr-sm">
+          <a href="{% url 'welding:show_conclusions' %}" class="btn btn-success">Заключения</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">05/08 Документация для сварщика (исполнителя)</h3>
+        <div class="mb-sm mr-sm">
+          <a href="{% url 'welding:manual' 'welder' %}" class="btn btn-success">Помощь - Сварщик (исполнитель)</a>
+        </div>
+        <div class="mb-sm mr-sm">
+          <a href="https://yadi.sk/i/MQxUzXkP-uyzyg" class="btn btn-success" target="_blank">Видео-демонстрация</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div class="panel widget">
+    <div class="panel-body">
+      <div class="row row-table">
+        <h3 class="mt0">04/08 Добавлены файлы к заявкам и прохождение заявки до полной готовности стыка</h3>
         <p>Добавлена модель файлов, куда будут загружаться различные изображения и другие файлы</p>
         <div class="mb-sm mr-sm">
           <a href="{% url 'files:show_files' %}" class="btn btn-success">Файлы</a>
@@ -38,7 +100,7 @@
   <div class="panel widget">
     <div class="panel-body">
       <div class="row row-table">
-        <h3 class="mt0">03/07 Обновления в структуре</h3>
+        <h3 class="mt0">03/08 Обновления в структуре</h3>
         <p>Толщина стенки и диаметр теперь относятся к заявке на стык</p>
         <p>Загружены данные, исключая звездочки (*)</p>
         <p>Загружены актуальные данные от 27/04/20</p>

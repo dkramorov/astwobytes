@@ -17,44 +17,48 @@
 window.disableMovableRows = true;
 var main_table = null;
 $(document).ready(function(){
-  var subjectFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['subject'] ? data['subject']['name']  : '';
-  };
-  var companyFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['subject']['company'] ? data['subject']['company']['name']  : '';
-  };
-
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
-      {% include "core/tabulator_cell/name.html" %}
       {
-        title: "Описание",
-        field: "description",
-        headerFilterPlaceholder: "Описание",
+        title: "ФИО",
+        field: "name",
+        headerFilterPlaceholder: "ФИО",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 120,
+        minWidth: 150,
       },
       {
-        title: "Объект",
-        field: "subject__name",
-        headerFilterPlaceholder: "Объект",
+        title: "№ удостоверения",
+        field: "stigma",
+        headerFilterPlaceholder: "№ удостоверения",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: subjectFormatter,
-        minWidth: 90,
+        minWidth: 150,
       },
       {
-        title: "Компания",
-        field: "subject__company__name",
-        headerFilterPlaceholder: "Компания",
+        title: "Примечание",
+        field: "notice",
+        headerFilterPlaceholder: "Примечание",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: companyFormatter,
-        minWidth: 90,
+        minWidth: 150,
+      },
+      {
+        title: "Работает",
+        field: "is_active",
+        headerFilterPlaceholder: "Работает",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        editable: false,
+        editor: "select",
+        formatter: booleanFormatter,
+        width: 90,
+        downloadTitle: "is_active",
+        accessorDownload: accessor_is_active,
       },
       {% include "core/tabulator_cell/actions.html" %}
     ],

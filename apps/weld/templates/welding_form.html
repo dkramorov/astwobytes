@@ -291,6 +291,7 @@
             </div>
           </div>
 
+          {% if row.joint %}
           <div class="form-group bordered">
             <div class="col-lg-12">
               <p class="text-center"><strong>Стыков на линии: {{ total_joints }}</strong></p>
@@ -308,6 +309,7 @@
               <p class="text-center">Готовых стыков: {% if row.joint.line.complete_joints %}{{ row.joint.line.complete_joints }}{% else %}0{% endif %}</p>
             </div>
           </div>
+          {% endif %}
 
           {% if row.id and files_permissions.create %}
             <fieldset>
@@ -331,7 +333,7 @@
             </fieldset>
           {% endif %}
 
-          {% if files_permissions.view %}
+          {% if row.id and files_permissions.view %}
           <div class="form-group bordered">
             <div class="col-lg-2">
               <p class="text-right">Изображения/файлы</p>
@@ -408,7 +410,11 @@
           </div>
 
           <div class="hidden">
-            <input type="text" name="state" value="{% if row.state %}{{ row.state }}{% endif %}">
+            {% if row.state %}
+              <input type="text" name="state" value="{{ row.state }}">
+            {% else %}
+              <input type="text" value="new" name="new_state" autocomplete="off">
+            {% endif %}
             {% include "core/forms/row_position.html" %}
             {% include "core/forms/row_is_active.html" %}
           </div>

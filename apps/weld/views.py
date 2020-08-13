@@ -19,11 +19,13 @@ from apps.main_functions.views_helper import (show_view,
                                               search_view, )
 from apps.main_functions.pdf_helper import render_pdf
 from apps.files.models import Files
-
+from apps.weld.company_model import Joint
 from apps.weld.enums import (WELDING_TYPES,
                              MATERIALS,
                              JOIN_TYPES,
                              WELDING_JOINT_STATES,
+                             WELDING_TYPE_DESCRIPTIONS,
+                             CONCLUSION_STATES,
                              get_welding_joint_state, )
 from apps.weld.welder_model import (Welder,
                                     LetterOfGuarantee, )
@@ -32,6 +34,7 @@ from .models import (WeldingJoint,
                      WeldingJointFile,
                      WeldingJointState,
                      JointConclusion,
+                     RKFrames,
                      recalc_joints, )
 
 CUR_APP = 'welding'
@@ -203,17 +206,19 @@ def update_welding_joint_state(request, mh):
     repair2progress = state == 4 and new_state == 2
     # В работе => Готово
     progress2complete = state == 2 and new_state == 3
+    # Новый стык
+    none2new = state is None and new_state == 1
     # -----------------
     # Установить статус
     # -----------------
-    if new2progress or repair2progress or progress2complete:
+    if new2progress or repair2progress or progress2complete or none2new:
         WeldingJointState.objects.create(
             from_state=state,
             to_state=new_state,
             user=request.user,
             welding_joint=mh.row, )
         params = {'state': new_state}
-        if not mh.row.receiver:
+        if not mh.row.receiver and not none2new:
             params['receiver'] = request.user
         WeldingJoint.objects.filter(pk=mh.row.id).update(**params)
         # Пересчитать процент готовности линии
@@ -347,9 +352,10 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
         if action in ('create', 'form') or (action == 'edit' and row):
             if action == 'create':
                 if mh.permissions['create']:
-                    mh.row = mh.model(set_fields={'state': 1})
+                    mh.row = mh.model()
                     mh.save_row()
                     update_welding_join_welders(request, mh)
+                    update_welding_joint_state(request, mh)
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
@@ -366,6 +372,7 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 if mh.permissions['edit']:
                     mh.save_row()
                     update_welding_join_welders(request, mh)
+                    update_welding_joint_state(request, mh)
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
@@ -381,8 +388,9 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                         context['success'] = 'Данные успешно записаны'
                 elif mh.permissions['create'] and not mh.row: # NOT!
                     mh.row = mh.model()
-                    mh.save_row(set_fields={'state': 1})
+                    mh.save_row()
                     update_welding_join_welders(request, mh)
+                    update_welding_joint_state(request, mh)
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
@@ -723,20 +731,179 @@ conclusions_vars = {
 @login_required
 def show_conclusions(request, *args, **kwargs):
     """Вывод заключений (актов)"""
-    return show_view(request,
-                     model_vars = conclusions_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
+    mh_vars = conclusions_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh.select_related_add('welding_joint')
+    context = mh.context
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        only_fields = (
+            'id',
+            'welding_joint__request_number',
+            'date',
+        )
+        rows = mh.standard_show(only_fields=only_fields)
+        result = []
+        for row in rows:
+            fk_keys = {
+                'welding_joint': ('request_number', ),
+            }
+            item = object_fields(row,
+                                 only_fields=only_fields,
+                                 fk_only_keys=fk_keys)
+            item['actions'] = row.id
+            result.append(item)
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+def fill_rk_frames(request, row):
+    """Заполнить снимки на РК заключение
+       :param request: HttpRequest
+       :param row: текущий Conclusion экземпляр
+    """
+    row.rkframes_set.all().delete()
+    rk_frames = request.POST.get('rk_frames')
+    if not rk_frames:
+        return
+    rk_frames = int(rk_frames)
+    for i in range(rk_frames):
+        frame = {}
+        for field in ('number', 'sensitivity', 'state', 'defects', 'notice'):
+            value = request.POST.get('rk_%s_%s' % (field, i))
+            frame[field] = value
+        frame['joint_conclusion'] = row
+        RKFrames.objects.create(**frame)
 
 @login_required
 def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование заключений (актов)"""
-    return edit_view(request,
-                     model_vars = conclusions_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
+    mh_vars = conclusions_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    mh.select_related_add('welding_joint')
+    mh.select_related_add('welding_joint__joint')
+    mh.select_related_add('vik_controller')
+    mh.select_related_add('vik_director')
+    mh.select_related_add('rk_defectoscopist1')
+    mh.select_related_add('rk_defectoscopist2')
+    mh.select_related_add('rk_defectoscopist3')
+    mh.select_related_add('pvk_director')
+    mh.select_related_add('pvk_defectoscopist')
+    mh.select_related_add('uzk_defectoscopist1')
+    mh.select_related_add('uzk_defectoscopist2')
+    mh.select_related_add('uzk_defectoscopist3')
+    mh.select_related_add('uzk_operator')
+
+    # pdf
+    mh.select_related_add('welding_joint__joint__line')
+    mh.select_related_add('welding_joint__joint__line__titul')
+    mh.select_related_add('welding_joint__joint__line__titul__subject')
+    mh.select_related_add('welding_joint__joint__line__titul__subject__company')
+
+    context = mh.context
+    row = mh.get_row(row_id)
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+    if request.method == 'GET':
+        if action in ('create', 'edit'):
+            context['welding_type_descriptions'] = WELDING_TYPE_DESCRIPTIONS
+
+        if action in ('edit', 'pdf_vik', 'pdf_rk', 'pdf_pvk', 'pdf_uzk'):
+            context['welding_type'] = '%s и %s' % (
+                WELDING_TYPE_DESCRIPTIONS[0][1],
+                WELDING_TYPE_DESCRIPTIONS[1][1],
+            )
+            for item in WELDING_TYPE_DESCRIPTIONS:
+                if row.welding_joint.welding_type == item[0]:
+                    context['welding_type'] = item[1]
+                    break
+            context['rk_frames'] = row.rkframes_set.all().order_by('position')
+            context['conclusion_states'] = CONCLUSION_STATES
+            context['pvk_control_choices'] = JointConclusion.pvk_control_choices
+        if action == 'create':
+            mh.breadcrumbs_add({
+                'link': mh.url_create,
+                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
+            })
+        elif action == 'edit' and row:
+            mh.breadcrumbs_add({
+                'link': mh.url_edit,
+                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+            })
+        elif action == 'drop' and row:
+            if mh.permissions['drop']:
+                row.delete()
+                mh.row = None
+                context['success'] = '%s удален' % (mh.singular_obj, )
+            else:
+                context['error'] = 'Недостаточно прав'
+        elif action in ('pdf_vik', 'pdf_rk', 'pdf_pvk', 'pdf_uzk') and row:
+            pdf_type = action.replace('pdf_', '')
+            context.update({
+                'row': row,
+                'logo': full_path('misc/logo_standard.png'),
+                'pdf_type': pdf_type,
+                'joint': row.welding_joint.joint,
+                'today': datetime.datetime.today(),
+                'welders': {},
+            })
+            welders = row.welding_joint.jointwelder_set.select_related('welder').all()
+            for welder in welders:
+                context['welders'][welder.position] = welder.welder
+            template = 'pdf/conclusion_%s_form.html' % pdf_type
+            return render_pdf(
+                request,
+                template = template,
+                context = context,
+                download = False,
+                fname = 'conclusion_%s_%s' % (
+                    pdf_type,
+                    row.welding_joint.joint.id,
+                )
+            )
+    elif request.method == 'POST':
+        mh.post_vars()
+        if action == 'create' or (action == 'edit' and row):
+            if action == 'create':
+                if mh.permissions['create']:
+                    mh.row = mh.model()
+                    mh.save_row()
+                    if mh.error:
+                        context['error'] = mh.error
+                    else:
+                        context['success'] = 'Данные успешно записаны'
+                        fill_rk_frames(request, mh.row)
+                else:
+                    context['error'] = 'Недостаточно прав'
+            if action == 'edit':
+                if mh.permissions['edit']:
+                    mh.save_row()
+                    if mh.error:
+                        context['error'] = mh.error
+                    else:
+                        context['success'] = 'Данные успешно записаны'
+                        fill_rk_frames(request, mh.row)
+                else:
+                    context['error'] = 'Недостаточно прав'
+
+    if not mh.error and mh.row:
+        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
+                              kwargs={'action': 'edit', 'row_id': mh.row.id})
+        if not 'row' in context:
+            context['row'] = object_fields(mh.row)
+        context['redirect'] = mh.url_edit
+    if request.is_ajax() or action == 'img':
+        return JsonResponse(context, safe=False)
+    template = '%sedit.html' % (mh.template_prefix, )
+    return render(request, template, context)
 
 @login_required
 def conclusions_positions(request, *args, **kwargs):

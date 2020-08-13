@@ -28,7 +28,7 @@ urlpatterns = [
     # заключения на заявки на стыки
     path('admin/conclusions/', views.show_conclusions, name='show_conclusions'),
     url('^admin/conclusions/(?P<action>create)/$', views.edit_conclusion, name='create_conclusion'),
-    url('^admin/conclusions/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_conclusion, name='edit_conclusion'),
+    url('^admin/conclusions/(?P<action>edit|drop|pdf_vik|pdf_rk|pdf_pvk|pdf_uzk)/(?P<row_id>[0-9]{1,11})/$', views.edit_conclusion, name='edit_conclusion'),
 
     # ------------------------
     # компании (company_views)
@@ -89,6 +89,14 @@ urlpatterns = [
     path('admin/welders/positions/', welder_views.welders_positions, name='welders_positions'),
     # аякс-поиск
     path('welding/welders/search/', welder_views.search_welders, name='search_welders'),
+
+    # дефектоскописты (welder_views)
+    path('admin/defectoscopists/', welder_views.show_defectoscopists, name='show_defectoscopists'),
+    url('^admin/defectoscopists/(?P<action>create)/$', welder_views.edit_defectoscopist, name='create_defectoscopist'),
+    url('^admin/defectoscopists/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_defectoscopist, name='edit_defectoscopist'),
+    path('admin/defectoscopists/positions/', welder_views.defectoscopists_positions, name='defectoscopists_positions'),
+    # аякс-поиск
+    path('welding/defectoscopists/search/', welder_views.search_defectoscopists, name='search_defectoscopists'),
 
     # сварщики - гарантийные письма (welder_views)
     path('admin/letters_of_guarantee/', welder_views.show_letters_of_guarantee, name='show_letters_of_guarantee'),

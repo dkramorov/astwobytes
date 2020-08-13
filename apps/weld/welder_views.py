@@ -15,6 +15,7 @@ from apps.main_functions.views_helper import (show_view,
 
 from apps.weld.enums import WELDING_TYPES, MATERIALS
 from apps.weld.welder_model import (Welder,
+                                    Defectoscopist,
                                     LetterOfGuarantee,
                                     Vik,
                                     ControlK,
@@ -40,7 +41,7 @@ welders_vars = {
     'edit_urla': 'edit_welder',
     'model': Welder,
     #'custom_model_permissions': WeldingJoint,
-    'select_related_list': ('company', ),
+    'select_related_list': ('subject', ),
     'search_result_format': ('{} - {}', 'name stigma'),
 }
 
@@ -506,3 +507,57 @@ def search_admission_sheet(request, *args, **kwargs):
                        model_vars = admission_sheet_vars,
                        cur_app = CUR_APP,
                        sfields = ('number', ), )
+
+defectoscopists_vars = {
+    'singular_obj': 'Дефектоскопист',
+    'plural_obj': 'Дефектоскописты',
+    'rp_singular_obj': 'дефектоскописта',
+    'rp_plural_obj': 'дефектоскопистов',
+    'template_prefix': 'welders/defectoscopists_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'defectoscopists',
+    'submenu': 'defectoscopists',
+    'show_urla': 'show_defectoscopists',
+    'create_urla': 'create_defectoscopist',
+    'edit_urla': 'edit_defectoscopist',
+    'model': Defectoscopist,
+    #'custom_model_permissions': WeldingJoint,
+    #'select_related_list': ('subject', ),
+    'search_result_format': ('{} - {}', 'name stigma'),
+}
+
+@login_required
+def show_defectoscopists(request, *args, **kwargs):
+    """Вывод дефектоскопистов"""
+    return show_view(request,
+                     model_vars = defectoscopists_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
+
+@login_required
+def edit_defectoscopist(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование дефектоскопистов"""
+    return edit_view(request,
+                     model_vars = defectoscopists_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
+
+@login_required
+def defectoscopists_positions(request, *args, **kwargs):
+    """Изменение позиций дефектоскопистов"""
+    result = {}
+    mh_vars = defectoscopists_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_defectoscopists(request, *args, **kwargs):
+    """Поиск дефектоскопистов"""
+    return search_view(request,
+                       model_vars = defectoscopists_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('name', 'stigma'), )

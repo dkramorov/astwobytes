@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from apps.main_functions.files import open_file
-from apps.main_functions.date_time import date_plus_days
+from apps.main_functions.date_time import date_plus_days, str_to_date
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class Command(BaseCommand):
 
         root_url = "http://jsmnew.doko.link/service_api.php"
         key = "d296c101daa88a51f6ca8cfc1ac79b50"
-        urla = "{}?key={}&module=yahoo&&startDate={}&endDate={}".format(root_url, key, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
+        urla = "{}?key={}&module=yahoo&startDate={}&endDate={}".format(root_url, key, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
 
         fname = "ylots.json"
         r = requests.post(urla)
