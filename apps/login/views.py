@@ -193,10 +193,10 @@ def edit_user(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование пользователя админки"""
     mh_vars = users_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
     mh.select_related_add('customuser')
-
     row = mh.get_row(row_id)
+    context = mh.context
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -277,10 +277,8 @@ def edit_user(request, action: str, row_id: int = None, *args, **kwargs):
                 mh.uploads(mh.row.customuser)
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
         # -------------------------------------
         # OneToOneField связь User с customUser
         # -------------------------------------
@@ -478,9 +476,9 @@ def edit_group(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование группы пользователей админки"""
     mh_vars = groups_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    row = mh.get_row(row_id)
     context = mh.context
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -530,8 +528,6 @@ def edit_group(request, action: str, row_id: int = None, *args, **kwargs):
                 users = User.objects.filter(pk__in=group_users)
                 mh.row.user_set.set(users)
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row)
         users = mh.row.user_set.select_related('customuser').all()
         pass_fields = ('password', 'customuser')
@@ -539,7 +535,7 @@ def edit_group(request, action: str, row_id: int = None, *args, **kwargs):
             'user': '%s' % (customUser.get_name(user), ),
             'id': user.id,
         } for user in users]
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)

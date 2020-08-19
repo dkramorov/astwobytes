@@ -1,0 +1,31 @@
+{% load mtags %}
+{% ifequal tag "mainmenu" %}
+<div class="collapse navbar-collapse navbar-right" id="header-menu">
+  <nav>
+    <ul class="nav navbar-nav">
+      {% for menu in menus %}
+        <li{% ifequal menu.link request.META.PATH_INFO %} class="active"{% endifequal %}>
+          <a href="{{ menu.link }}" class="smoothScroll">{{ menu.name }}</a>
+        </li>
+      {% endfor %}
+{% comment %}<!--
+      <li><a href="#testimonials" data-scroll class="smoothScroll">Testimonials</a></li>
+-->{% endcomment %}
+    </ul>
+  </nav>
+</div>
+{% endifequal %}
+{% ifequal tag "bottommenu" %}
+  {% for menu in menus %}
+    <div class="col-lg-2 col-md-2">
+      <div class="block-footer">
+        <h4 class="title-footer">{{ menu.name }}</h4>
+        <ul>
+          {% for item in menu.sub %}
+            <li><a title="{{ item.name|textize }}" href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endfor %}
+{% endifequal %}

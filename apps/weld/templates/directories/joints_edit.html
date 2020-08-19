@@ -4,6 +4,12 @@
 {% endblock %}
 
 {% block content %}
+{% if row.id %}
+  <a class="btn btn-primary pull-right mr-sm" href="{% url 'welding:create_welding' 'form' %}?joint={{ row.id }}" target="_blank">
+    <em class="fa fa-unlink fa-fw mr-sm"></em> Заявка на стык
+  </a>
+{% endif %}
+
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}

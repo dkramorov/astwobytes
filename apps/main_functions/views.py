@@ -52,9 +52,9 @@ def edit_task(request, action:str, row_id:int = None, *args, **kwargs):
     """Создание/редактирование задачи"""
     mh_vars = main_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    row = mh.get_row(row_id)
     context = mh.context
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -106,11 +106,9 @@ def edit_task(request, action:str, row_id:int = None, *args, **kwargs):
             mh.uploads()
 
     if mh.row and mh.row.id:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)

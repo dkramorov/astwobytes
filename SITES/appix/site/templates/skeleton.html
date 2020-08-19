@@ -1,0 +1,223 @@
+{% load mtags tags flatcontent_tags %}﻿<!doctype html><html class="no-js" lang="en"><head>
+{% include "skeleton_header.html" %}
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/media/css/bootstrap.min.css">
+<link rel="stylesheet" href="/media/css/font-awesome.min.css">
+<link rel="stylesheet" href="/media/css/owl.carousel.css">
+<link rel="stylesheet" href="/media/css/animate.min.css">
+<link rel="stylesheet" href="/media/css/magnific-popup.css">
+<link rel="stylesheet" href="/media/css/style.css">
+<link rel="stylesheet" href="/media/css/responsive.css" type="text/css">
+{% block extrahead %}{% endblock %}
+</head>
+<body data-spy="scroll" data-target="#header-menu">
+{% block body %}
+  <div class="preloader">
+    <div class="preloader-battery">
+      <div class="cssload-liquid"></div>
+    </div>
+  </div>
+
+  <header id="stickey-menu">
+    <div class="main-menu">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-2">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed custom-toggle" data-toggle="collapse" data-target="#header-menu" aria-expanded="false">
+                <i class="fa fa-bars fa-lg"></i>
+              </button>
+              <div class="logo-brand">
+                <a href="/">
+                  <img src="{% if containers.main.tags.logo.img %}{% imagine containers.main.tags.logo.img '250x150' containers.main.tags.logo.get_folder True %}{% endif %}" alt="{% if containers.main.tags.logo.description %}{{ containers.main.tags.logo.description|textize }}{% endif %}">
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-10">
+            {% flatmenu request "mainmenu" %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  {% block content %}{% endblock %}
+
+  <section id="pricing" class="section-ptb">
+    <div class="themeix-pricing-area">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="themeix-section-heading-title">
+              <h2 class="head-title">Latest Pricing</h2>
+              <p class="light-300">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that</p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-4 wow fadeIn animated">
+            <div class="single-pricing">
+              <h2>Appix <span>REgular</span></h2>
+              <div class="price-table">
+                <span class="dollar-rate">$<b>19</b></span>
+                <span class="dollar-cent">.99</span>
+                <sub>/month</sub>
+              </div>
+              <ul class="pricing-features">
+                <li><b>25GB</b> Web Space</li>
+                <li>FREE Site Building Tools</li>
+                <li>FREE Domain Registar</li>
+                <li><b>24/7/365</b> Support </li>
+                <li>FREE Marketing & SEO Tools</li>
+                <li><b>99.9%</b> Service Uptime</li>
+                <li><b>30</b> Day Money Back Guarantee</li>
+              </ul>
+              <div class="themeix-button-group">
+                <a href="#" class="themeix-btn active-bg themeix-price-button-active">Order Now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-4 wow fadeIn animated">
+            <div class="single-pricing active-box-shadow">
+              <h2>Appix<span>Premium </span></h2>
+              <span class="price-tag">POPULLAR</span>
+              <div class="price-table active-color appiex-active">
+                <span class="dollar-rate">$<b>29</b></span>
+                <span class="dollar-cent">.99</span>
+                <sub>/month</sub>
+              </div>
+              <ul class="pricing-features">
+                <li><b>25GB</b> Web Space</li>
+                <li>FREE Site Building Tools</li>
+                <li>FREE Domain Registar</li>
+                <li><b>24/7/365</b> Support </li>
+                <li>FREE Marketing & SEO Tools</li>
+                <li><b>99.9%</b> Service Uptime</li>
+                <li><b>30</b> Day Money Back Guarantee</li>
+              </ul>
+              <div class="themeix-button-group">
+                <a href="#" class="themeix-btn price-btn-cust">Order Now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12  col-sm-4  wow fadeIn animated">
+            <div class="single-pricing">
+              <h2>Appix<span>Ultimate</span></h2>
+              <div class="price-table">
+                <span class="dollar-rate">$<b>49</b></span>
+                <span class="dollar-cent">.99</span>
+                <sub>/month</sub>
+              </div>
+              <ul class="pricing-features">
+                <li><b>25GB</b> Web Space</li>
+                <li>FREE Site Building Tools</li>
+                <li>FREE Domain Registar</li>
+                <li><b>24/7/365</b> Support</li>
+                <li>FREE Marketing & SEO Tools</li>
+                <li><b>99.9%</b> Service Uptime</li>
+                <li><b>30</b> Day Money Back Guarantee</li>
+              </ul>
+              <div class="themeix-button-group">
+                <a href="#" class="themeix-btn price-btn-cust">Order Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="get-apps" class="get-appix-setion section-ptb">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="themeix-section-heading-title">
+            <h2 class="head-title">Get Appix Now</h2>
+            <p class="light-300">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="display-middle">
+            <div class="table-middle">
+              <a href="#" class="play-store-button"><i class="fa fa-android"></i> Play Store</a>
+              <a href="#" class="play-store-button itune-change-bg-color"><i class="fa fa-apple"></i> iTunes</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="contact">
+    <div class="contact-us-area ">
+      <div class="overlay-color pt-70">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="themeix-section-heading-title">
+                <h2 class="head-title themeix-title-a-b-col-change title-color-change">Contact Us</h2>
+                <p class="light-300 para-color-change change-color">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that</p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 col-md-push-3">
+              <div class="contact-form">
+                <form action="#" method="post" class="contact-form">
+                  <div class="form-group">
+                    <input class="form-control" type="text" id="name" placeholder="Your Name" required>
+                  </div>
+                  <div class="form-group">
+                    <input class="form-control" type="email" id="email" placeholder="Your Email" required>
+                  </div>
+                  <div class="form-group">
+                    <textarea rows="5" class="form-control" name="comment" placeholder="Write Your Message" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <div class="themeix-button-group">
+                      <button type="submit" class="themeix-submit-btn">Submit Message</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-overlay">
+          <div class="container">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="themeix-footer-bottom">
+                  <div class="inner-section">
+                    <h5><a href="index.html"><img src="/media/misc/footer-logo.png" alt="footer logo"></a></h5>
+                    <ul class="footer-menu">
+                      <li><a href="#">Privacy Policy</a></li>
+                      <li><a href="#">Refund Policy</a></li>
+                      <li><a href="#">Disclaimer</a></li>
+                    </ul>
+                    <h5>All content Appix <i class="fa fa-copyright"></i> 2017 - All rights reserved - Proudly made with <a href="http://designingmarekt.com">Designing Market</a></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <a id="scrollUp" href="#"></a>
+{% endblock %}
+<script src="/media/js/jquery-1.12.0.min.js"></script>
+<script src="/media/js/bootstrap.min.js"></script>
+<script src="/media/js/owl.carousel.min.js"></script>
+<script src="/media/js/plugins.js"></script>
+<script src="/media/js/scrollUp.min.js"></script>
+<script src="/media/js/smooth-scroll.js"></script>
+<script src="/media/js/zenith.min.js"></script>
+<script src="/media/js/jquery.waterwheelCarousel.min.js"></script>
+<script src="/media/js/jquery.magnific-popup.min.js"></script>
+<script src="/media/js/main.js"></script>
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

@@ -176,14 +176,12 @@ def edit_view(request,
         elif not mh.error and action == 'img' and request.FILES:
             mh.uploads()
     if not mh.error and mh.row:
-        mh.url_edit = reverse('%s:%s' % (cur_app, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         if not 'row' in context:
             context['row'] = object_fields(mh.row)
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )

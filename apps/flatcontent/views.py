@@ -206,26 +206,25 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
     update_containers_vars(ftype, mh_vars)
 
     mh = create_model_helper(mh_vars, request, CUR_APP, action, reverse_params={'ftype': ftype})
+    ftype_state = get_ftype(ftype)
+    mh.reverse_params = {'ftype': ftype}
+    mh.filter_add({'state': ftype_state})
+    row = mh.get_row(row_id)
     context = mh.context
     context['is_products'] = is_products
-    context['ftype_state'] = get_ftype(ftype)
-    mh.filter_add({'state': context['ftype_state']})
+    context['ftype_state'] = ftype_state
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'ftype': ftype, 'action': 'edit', 'row_id': mh.row.id})
         mh.url_tree = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
                               kwargs={'ftype': ftype, 'action': 'tree', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
         context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
-        context['url_edit'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
         context['url_tree'] = mh.url_tree
         mh.breadcrumbs_add({
             'link': mh.url_edit,
@@ -343,15 +342,11 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
             mh.uploads()
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'ftype': ftype,
-                                      'action': 'edit',
-                                      'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
         context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
@@ -707,16 +702,13 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
         'link': mh_containers.url_edit,
         'name': mh_containers.row.name or '%s %s' % (mh_containers.action_edit, mh_containers.rp_singular_obj),
     })
-
+    mh.filter_add({'container__id': mh_containers.row.id})
+    row = mh.get_row(row_id)
     context = mh.context
     context['is_products'] = is_products
     context['ftype_state'] = get_ftype(ftype)
     context['container'] = object_fields(mh_containers.row)
     context['url_tree'] = mh_containers.url_tree
-
-    mh.filter_add({'container__id': mh_containers.row.id})
-
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -792,18 +784,12 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
             mh.uploads()
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'ftype': ftype,
-                                      'action': 'edit',
-                                      'container_id': mh_containers.row.id,
-                                      'row_id': mh.row.id})
-        context['url_edit'] = mh.url_edit
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
         context['row']['folder'] = mh.row.get_folder()
         context['row']['container_name'] = mh_containers.row.name
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)

@@ -2,21 +2,21 @@
 from django.urls import path
 from django.conf.urls import url
 
-from . import views, welder_views, company_views
+from . import views, welder_views, company_views, conclusion_views
 
 app_name = 'welding'
 urlpatterns = [
     # получение по апи всех данных (т/к не секретно)
     url('^(?P<action>welding)/api/$', views.api, name='api'),
     # Документация PDF
-    url('^manual/(?P<action>welder)/$', views.manual, name='manual'),
+    url('^manual/(?P<action>welder|lab)/$', views.manual, name='manual'),
     # ---------------
     # заявки на стыки
     # ---------------
     path('admin/', views.show_welding, name='show_welding'),
     url('^admin/(?P<state>new|in_progress|complete|in_repair)/$', views.show_welding, name='show_welding'),
-    url('^admin/(?P<action>create|form)/$', views.edit_welding, name='create_welding'),
-    url('^admin/(?P<action>edit|drop|img|form|pdf|file|state)/(?P<row_id>[0-9]{1,11})/$', views.edit_welding, name='edit_welding'),
+    url('^admin/(?P<action>create|form|conclusion)/$', views.edit_welding, name='create_welding'),
+    url('^admin/(?P<action>edit|drop|img|form|pdf|file|state|conclusion)/(?P<row_id>[0-9]{1,11})/$', views.edit_welding, name='edit_welding'),
     path('admin/positions/', views.welding_positions, name='welding_positions'),
     # аякс-поиск
     path('welding/search/', views.search_welding, name='search_welding'),
@@ -25,10 +25,13 @@ urlpatterns = [
     path('admin/welding_files/', views.show_welding_files, name='show_welding_files'),
     url('^admin/welding_files/(?P<action>edit|drop|download)/(?P<row_id>[0-9]{1,11})/$', views.edit_welding_file, name='edit_welding_file'),
 
+    # -----------------------------
     # заключения на заявки на стыки
-    path('admin/conclusions/', views.show_conclusions, name='show_conclusions'),
-    url('^admin/conclusions/(?P<action>create)/$', views.edit_conclusion, name='create_conclusion'),
-    url('^admin/conclusions/(?P<action>edit|drop|pdf_vik|pdf_rk|pdf_pvk|pdf_uzk)/(?P<row_id>[0-9]{1,11})/$', views.edit_conclusion, name='edit_conclusion'),
+    # (conclusion_views)
+    # -----------------------------
+    path('admin/conclusions/', conclusion_views.show_conclusions, name='show_conclusions'),
+    url('^admin/conclusions/(?P<action>create)/$', conclusion_views.edit_conclusion, name='create_conclusion'),
+    url('^admin/conclusions/(?P<action>edit|drop|pdf_vik|pdf_rk|pdf_pvk|pdf_uzk)/(?P<row_id>[0-9]{1,11})/$', conclusion_views.edit_conclusion, name='edit_conclusion'),
 
     # ------------------------
     # компании (company_views)

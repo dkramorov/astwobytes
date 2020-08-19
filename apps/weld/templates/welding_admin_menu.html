@@ -70,19 +70,23 @@
           <span class="item-text">Новые заявки</span>
         </a>
       </li>
+      {% if perms.weld.in_progress %}
       <li{% ifequal submenu 'welding_in_progress' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'in_progress' %}">
           <span class="item-text">Заявки в работе</span>
         </a>
       </li>
+      {% endif %}
+      {% if perms.weld.repair %}
       <li{% ifequal submenu 'welding_in_repair' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'in_repair' %}">
           <span class="item-text">Заявки на ремонт</span>
         </a>
       </li>
+      {% endif %}
       <li{% ifequal submenu 'welding_complete' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'complete' %}">
-          <span class="item-text">Выполненные заявки</span>
+          <span class="item-text">Готовые стыки</span>
         </a>
       </li>
       <li{% ifequal submenu 'welding' %} class="active"{% endifequal %}>
@@ -97,7 +101,7 @@
 {% if perms.weld.view_jointconclusion %}
   <li{% ifequal menu 'conclusions' %} class="active"{% endifequal %}>
     <a href="{% url 'welding:show_conclusions' %}">
-      <em class="fa fa-check-square-o"></em>
+      <em class="fa fa-gavel"></em>
       <span class="item-text">Заключения (акты)</span>
     </a>
   </li>
@@ -208,6 +212,11 @@
     <li{% ifequal submenu 'welder' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'welding:manual' 'welder' %}">
         <span class="item-text">Сварщик (исполнитель)</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'lab' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'welding:manual' 'lab' %}">
+        <span class="item-text">Лаборатория</span>
       </a>
     </li>
   </ul>

@@ -1,0 +1,72 @@
+<script type="text/javascript">
+var state_choices = {
+  "": "Без фильтра",
+  {% for state in state_choices %}
+    {{ state.0 }}: "{{ state.1 }}",
+  {% endfor %}
+};
+function state_to_progress(pk, ind){
+  // Принять заявку в работу
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  state_helper(pk, ind, 'in_progress', 2);
+}
+function state_to_complete(pk, ind){
+  // Принять заявку в работу
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  state_helper(pk, ind, 'complete', 3)
+}
+function state_to_repair(pk, ind){
+  // Принять заявку в работу
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  state_helper(pk, ind, 'repair', 4)
+}
+function state_helper(pk, ind, new_state, state){
+  // Вспомогательная функция для смены статуса заявки
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  // :param new_state: новый статус для отправки на сервер
+  // :param state: статус в таблице
+  var status = 'danger';
+  var msg = 'Произошла ошибка';
+  $.ajax({
+    type: "POST",
+    url: "{{ root_url }}state/" + pk + "/",
+    data: {
+      csrfmiddlewaretoken: getCookie('csrftoken'),
+      new_state: new_state,
+    },
+  }).done(function(r) {
+    if(r.error){
+      msg = r.error;
+    }else if(r.success){
+      msg =  r.success;
+      status = 'success';
+      if(typeof(main_table) !== "undefined"){
+        var row = main_table.getRow(ind);
+        var data = row.getData();
+        row.update({'state': state});
+      }else{
+        if(("#current_request_state").length > 0){
+          $("#current_request_state").html(state_choices[r['row']['state']]);
+        }
+      }
+      $("#state_for_" + pk).addClass("hidden");
+      $("#state_for_" + pk + "_r").addClass("hidden"); // В ремонт
+    }
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  }).fail(function() {
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  });
+}
+</script>

@@ -1,0 +1,8 @@
+{% extends "skeleton.html" %}
+{% load tags flatcontent_tags %}
+
+{% block content %}
+  {% for container in page.containers %}
+    {% flatcontent request page container.container.tag %}
+  {% endfor %}
+{% endblock %}

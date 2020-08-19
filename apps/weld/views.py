@@ -29,12 +29,11 @@ from apps.weld.enums import (WELDING_TYPES,
                              get_welding_joint_state, )
 from apps.weld.welder_model import (Welder,
                                     LetterOfGuarantee, )
+from apps.weld.conclusion_model import JointConclusion
 from .models import (WeldingJoint,
                      JointWelder,
                      WeldingJointFile,
                      WeldingJointState,
-                     JointConclusion,
-                     RKFrames,
                      recalc_joints, )
 
 CUR_APP = 'welding'
@@ -74,6 +73,11 @@ def manual(request, action: str = 'welder'):
         'menu': 'manual',
         'submenu': 'welder',
     }
+    if action == 'lab':
+        template = 'manual/lab.html'
+        context.update({
+            'submenu': 'lab',
+        })
     return render(request, template, context)
 
 @login_required
@@ -135,7 +139,6 @@ def show_welding(request, *args, **kwargs):
             'welding_type',
             'category',
             'control_result',
-            'conclusion_number',
             'conclusion_date',
             'notice',
             'state',
@@ -221,6 +224,8 @@ def update_welding_joint_state(request, mh):
         if not mh.row.receiver and not none2new:
             params['receiver'] = request.user
         WeldingJoint.objects.filter(pk=mh.row.id).update(**params)
+        for k, v in params.items():
+            setattr(mh.row, k, v)
         # Пересчитать процент готовности линии
         if mh.row.joint and mh.row.joint.line:
             line = mh.row.joint.line
@@ -244,12 +249,11 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
     mh.select_related_add('joint__line__titul__subject__company')
     mh.select_related_add('requester')
     mh.select_related_add('receiver')
-
+    row = mh.get_row(row_id)
     context = mh.context
     # Права на файлы к заявке
     context['files_permissions'] = get_user_permissions(request.user, WeldingJointFile)
     context['welding_joint_state_permissions'] = get_user_permissions(request.user, WeldingJointState)
-
     context['repair_choices'] = WeldingJoint.repair_choices
     context['workshift_choices'] = WeldingJoint.workshift_choices
     context['control_choices'] = WeldingJoint.control_choices
@@ -262,13 +266,12 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
     context['state_choices'] = WELDING_JOINT_STATES
     context['today'] = datetime.datetime.today().strftime('%d.%m.%Y')
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
+        # ----------------------------------------------
         # Вытаскиваем узел, по которому создается заявка
-        # На данный момент считаем, что на один стык
-        # можно создать несколько заявок, возможно, это переиграется
+        # ----------------------------------------------
         joint_str = request.GET.get('joint')
         if joint_str and not mh.row:
             joint = Joint.objects.select_related(
@@ -290,9 +293,9 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
             # -------------------------------------
             analog = WeldingJoint.objects.filter(joint=joint).first()
             if analog:
-                params = {'action': 'form', 'row_id': analog.id}
-                form = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']), kwargs=params)
-                return redirect(form)
+                link = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
+                               kwargs={'action': 'form', 'row_id': analog.id})
+                return redirect(link)
         if action in ('edit', 'form', 'pdf') and row:
             if row.id:
                 context['welders'] = {}
@@ -328,6 +331,7 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
             context['joint'] = mh.row.joint
+            context['state'] = mh.row.get_state_display()
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -345,12 +349,35 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 download = False,
                 fname = 'welding_joint_%s' % row.joint.id,
             )
+        elif action == 'conclusion' and row:
+            # Если по акту нет заключения,
+            # переадресовываем на создание,
+            conclusion = JointConclusion.objects.filter(welding_joint=row).first()
+            # -------------------------------
+            # Ссылки не импортирую тупо меняю
+            # welding на conclusion
+            # -------------------------------
+            create_conclusion = mh_vars['create_urla'].replace('welding', 'conclusion')
+            edit_conclusion = mh_vars['edit_urla'].replace('welding', 'conclusion')
+            if conclusion:
+                link = reverse('%s:%s' % (CUR_APP, edit_conclusion),
+                               kwargs={'action': 'edit', 'row_id': conclusion.id})
+                return redirect(link)
+            link = reverse('%s:%s' % (CUR_APP, create_conclusion),
+                           kwargs={'action': 'create'})
+            return redirect('%s?welding_joint=%s' % (link, row.id))
 
     elif request.method == 'POST':
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
         if action in ('create', 'form') or (action == 'edit' and row):
             if action == 'create':
+                # -------------------------
+                # Создание пока что бреем,
+                # используем form действие,
+                # -------------------------
+                assert False
+
                 if mh.permissions['create']:
                     mh.row = mh.model()
                     mh.save_row()
@@ -360,12 +387,9 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 else:
                     context['error'] = 'Недостаточно прав'
             elif action == 'edit' and mh.row:
-
                 # ------------------------------
                 # Редактирование пока что бреем,
-                # пока используем form действие,
-                # т/к надо добавить файлы,
-                # логирование смены статуса...
+                # используем form действие,
                 # ------------------------------
                 assert False
 
@@ -382,11 +406,35 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                     if mh.row.state == 3:
                         context['error'] = 'Нельзя изменить принятую заявку'
                     else:
-                        mh.save_row()
+                        # -------------------------------
+                        # Изменять на другой стык не даем
+                        # 1 стык = 1 заявка
+                        # -------------------------------
+                        mh.save_row(set_fields={'joint': mh.row.joint})
                         update_welding_join_welders(request, mh)
                         update_welding_joint_state(request, mh)
                         context['success'] = 'Данные успешно записаны'
                 elif mh.permissions['create'] and not mh.row: # NOT!
+                    # --------------------------
+                    # Без стыка нельзя сохранить
+                    # --------------------------
+                    joint = None
+                    joint_str = mh.row_vars.get('joint')
+                    if joint_str:
+                        joint = Joint.objects.filter(pk=joint_str).first()
+                    if not joint:
+                        context['error'] = 'Выберите стык'
+                        return JsonResponse(context)
+                    else:
+                        analog = WeldingJoint.objects.filter(joint=joint).first()
+                        if analog:
+                            context['error'] = 'Вы создаете дубликат, переадресовываем на заявку...'
+                            link = reverse(
+                                '%s:%s' % (CUR_APP, mh_vars['edit_urla']),
+                                kwargs={'action': 'form', 'row_id': analog.id}
+                            )
+                            context['redirect_on_error'] = link
+                            return JsonResponse(context)
                     mh.row = mh.model()
                     mh.save_row()
                     update_welding_join_welders(request, mh)
@@ -436,8 +484,6 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 context['error'] = 'Статус заявки не обновлен'
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         mh.url_form = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
                               kwargs={'action': 'form', 'row_id': mh.row.id})
         context['url_form'] = mh.url_form
@@ -446,7 +492,7 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
         # Не надо инфу о пользователях сливать
         context['row']['receiver'] = None
         context['row']['requester'] = None
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
         if action == 'form':
             context['redirect'] = mh.url_form
     else:
@@ -513,8 +559,9 @@ def edit_welding_file(request, action: str, row_id: int = None, *args, **kwargs)
     mh_vars = welding_files_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.select_related_add('welding_joint')
-    context = mh.context
     row = mh.get_row(row_id)
+    context = mh.context
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
@@ -570,12 +617,10 @@ def edit_welding_file(request, action: str, row_id: int = None, *args, **kwargs)
         elif action == 'img' and request.FILES:
             mh.uploads()
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row)
         if mh.row.file:
             context['row']['file'] = object_fields(mh.row.file)
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
@@ -644,10 +689,10 @@ def edit_welding_joint_state(request, action: str, row_id: int = None, *args, **
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.select_related_add('welding_joint')
     mh.select_related_add('user')
+    row = mh.get_row(row_id)
     context = mh.context
     context['state_choices'] = WELDING_JOINT_STATES
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
@@ -700,223 +745,10 @@ def edit_welding_joint_state(request, action: str, row_id: int = None, *args, **
                     context['error'] = 'Недостаточно прав'
 
     if not mh.error and mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         if not 'row' in context:
             context['row'] = object_fields(mh.row)
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
     if request.is_ajax():
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
-
-conclusions_vars = {
-    'singular_obj': 'Заключение',
-    'plural_obj': 'Заключения',
-    'rp_singular_obj': 'заключения',
-    'rp_plural_obj': 'заключений',
-    'template_prefix': 'conclusions_',
-    'action_create': 'Создание',
-    'action_edit': 'Редактирование',
-    'action_drop': 'Удаление',
-    'menu': 'conclusions',
-    'submenu': 'conclusions',
-    'show_urla': 'show_conclusions',
-    'create_urla': 'create_conclusion',
-    'edit_urla': 'edit_conclusion',
-    'model': JointConclusion,
-    #'custom_model_permissions': WeldingJoint,
-}
-
-@login_required
-def show_conclusions(request, *args, **kwargs):
-    """Вывод заключений (актов)"""
-    mh_vars = conclusions_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    mh.select_related_add('welding_joint')
-    context = mh.context
-    # -----------------------------
-    # Вся выборка только через аякс
-    # -----------------------------
-    if request.is_ajax():
-        only_fields = (
-            'id',
-            'welding_joint__request_number',
-            'date',
-        )
-        rows = mh.standard_show(only_fields=only_fields)
-        result = []
-        for row in rows:
-            fk_keys = {
-                'welding_joint': ('request_number', ),
-            }
-            item = object_fields(row,
-                                 only_fields=only_fields,
-                                 fk_only_keys=fk_keys)
-            item['actions'] = row.id
-            result.append(item)
-        if request.GET.get('page'):
-            result = {'data': result,
-                      'last_page': mh.raw_paginator['total_pages'],
-                      'total_records': mh.raw_paginator['total_records'],
-                      'cur_page': mh.raw_paginator['cur_page'],
-                      'by': mh.raw_paginator['by'], }
-        return JsonResponse(result, safe=False)
-    template = '%stable.html' % (mh.template_prefix, )
-    return render(request, template, context)
-
-def fill_rk_frames(request, row):
-    """Заполнить снимки на РК заключение
-       :param request: HttpRequest
-       :param row: текущий Conclusion экземпляр
-    """
-    row.rkframes_set.all().delete()
-    rk_frames = request.POST.get('rk_frames')
-    if not rk_frames:
-        return
-    rk_frames = int(rk_frames)
-    for i in range(rk_frames):
-        frame = {}
-        for field in ('number', 'sensitivity', 'state', 'defects', 'notice'):
-            value = request.POST.get('rk_%s_%s' % (field, i))
-            frame[field] = value
-        frame['joint_conclusion'] = row
-        RKFrames.objects.create(**frame)
-
-@login_required
-def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
-    """Создание/редактирование заключений (актов)"""
-    mh_vars = conclusions_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    mh.select_related_add('welding_joint')
-    mh.select_related_add('welding_joint__joint')
-    mh.select_related_add('vik_controller')
-    mh.select_related_add('vik_director')
-    mh.select_related_add('rk_defectoscopist1')
-    mh.select_related_add('rk_defectoscopist2')
-    mh.select_related_add('rk_defectoscopist3')
-    mh.select_related_add('pvk_director')
-    mh.select_related_add('pvk_defectoscopist')
-    mh.select_related_add('uzk_defectoscopist1')
-    mh.select_related_add('uzk_defectoscopist2')
-    mh.select_related_add('uzk_defectoscopist3')
-    mh.select_related_add('uzk_operator')
-
-    # pdf
-    mh.select_related_add('welding_joint__joint__line')
-    mh.select_related_add('welding_joint__joint__line__titul')
-    mh.select_related_add('welding_joint__joint__line__titul__subject')
-    mh.select_related_add('welding_joint__joint__line__titul__subject__company')
-
-    context = mh.context
-    row = mh.get_row(row_id)
-    if mh.error:
-        return redirect('%s?error=not_found' % (mh.root_url, ))
-    if request.method == 'GET':
-        if action in ('create', 'edit'):
-            context['welding_type_descriptions'] = WELDING_TYPE_DESCRIPTIONS
-
-        if action in ('edit', 'pdf_vik', 'pdf_rk', 'pdf_pvk', 'pdf_uzk'):
-            context['welding_type'] = '%s и %s' % (
-                WELDING_TYPE_DESCRIPTIONS[0][1],
-                WELDING_TYPE_DESCRIPTIONS[1][1],
-            )
-            for item in WELDING_TYPE_DESCRIPTIONS:
-                if row.welding_joint.welding_type == item[0]:
-                    context['welding_type'] = item[1]
-                    break
-            context['rk_frames'] = row.rkframes_set.all().order_by('position')
-            context['conclusion_states'] = CONCLUSION_STATES
-            context['pvk_control_choices'] = JointConclusion.pvk_control_choices
-        if action == 'create':
-            mh.breadcrumbs_add({
-                'link': mh.url_create,
-                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
-            })
-        elif action == 'edit' and row:
-            mh.breadcrumbs_add({
-                'link': mh.url_edit,
-                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
-            })
-        elif action == 'drop' and row:
-            if mh.permissions['drop']:
-                row.delete()
-                mh.row = None
-                context['success'] = '%s удален' % (mh.singular_obj, )
-            else:
-                context['error'] = 'Недостаточно прав'
-        elif action in ('pdf_vik', 'pdf_rk', 'pdf_pvk', 'pdf_uzk') and row:
-            pdf_type = action.replace('pdf_', '')
-            context.update({
-                'row': row,
-                'logo': full_path('misc/logo_standard.png'),
-                'pdf_type': pdf_type,
-                'joint': row.welding_joint.joint,
-                'today': datetime.datetime.today(),
-                'welders': {},
-            })
-            welders = row.welding_joint.jointwelder_set.select_related('welder').all()
-            for welder in welders:
-                context['welders'][welder.position] = welder.welder
-            template = 'pdf/conclusion_%s_form.html' % pdf_type
-            return render_pdf(
-                request,
-                template = template,
-                context = context,
-                download = False,
-                fname = 'conclusion_%s_%s' % (
-                    pdf_type,
-                    row.welding_joint.joint.id,
-                )
-            )
-    elif request.method == 'POST':
-        mh.post_vars()
-        if action == 'create' or (action == 'edit' and row):
-            if action == 'create':
-                if mh.permissions['create']:
-                    mh.row = mh.model()
-                    mh.save_row()
-                    if mh.error:
-                        context['error'] = mh.error
-                    else:
-                        context['success'] = 'Данные успешно записаны'
-                        fill_rk_frames(request, mh.row)
-                else:
-                    context['error'] = 'Недостаточно прав'
-            if action == 'edit':
-                if mh.permissions['edit']:
-                    mh.save_row()
-                    if mh.error:
-                        context['error'] = mh.error
-                    else:
-                        context['success'] = 'Данные успешно записаны'
-                        fill_rk_frames(request, mh.row)
-                else:
-                    context['error'] = 'Недостаточно прав'
-
-    if not mh.error and mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
-        if not 'row' in context:
-            context['row'] = object_fields(mh.row)
-        context['redirect'] = mh.url_edit
-    if request.is_ajax() or action == 'img':
-        return JsonResponse(context, safe=False)
-    template = '%sedit.html' % (mh.template_prefix, )
-    return render(request, template, context)
-
-@login_required
-def conclusions_positions(request, *args, **kwargs):
-    """Изменение позиций заключений (актов)"""
-    result = {}
-    mh_vars = conclusions_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
-    result = mh.update_positions()
-    return JsonResponse(result, safe=False)
-
-def search_conclusions(request, *args, **kwargs):
-    """Поиск заключений (актов)"""
-    return search_view(request,
-                       model_vars = conclusions_vars,
-                       cur_app = CUR_APP,
-                       sfields = ('welding_joint__joint__name', ), )

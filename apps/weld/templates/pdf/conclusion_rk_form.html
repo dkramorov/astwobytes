@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+{% load mtags %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>{% block title %}{% endblock %}</title>
@@ -295,9 +295,9 @@ table.two_col .inner tr td.nopadding {
                   </td>
                   <td>
                     Ø{% if row.welding_joint.diameter %}
-                      {{ row.welding_joint.diameter }}
+                      {{ row.welding_joint.diameter|money_format }}
                     {% endif %}x{% if row.welding_joint.side_thickness %}
-                      {{ row.welding_joint.side_thickness }}
+                      {{ row.welding_joint.side_thickness|money_format }}
                     {% endif %}
                   </td>
                   <td>

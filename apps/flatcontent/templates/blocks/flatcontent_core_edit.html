@@ -29,6 +29,7 @@
 {% endblock %}
 
 {% block extrascripts %}
+  <script src="/static/admin/js/fontawesome_select2.js"></script>
   <script src="/static/redactor/jquery.browser.js"></script>
   <script src="/static/redactor/redactor.js"></script>
   <script src="/static/admin/js/parsley.min.js"></script>
@@ -194,6 +195,13 @@
         var select = new $.upload.select($('#upload-select-files'), settings),
         drop   = new $.upload.drop($('#upload-drop-files'), settings);
       {% endif %}
+
+      // --------------------------
+      // Получение файла с иконками
+      // и подстановка их в select2
+      // --------------------------
+      fontawesome_select2("icon_fontawesome");
+
     });
   </script>
 {% endblock %}

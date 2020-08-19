@@ -29,7 +29,7 @@
           <div class="form-group">
             <label class="col-lg-2 control-label">Примечание</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Примечание" class="form-control" name="notice" value="{% if row.notice %}{{ row.notice }}{% endif %}" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="Примечание" class="form-control" name="notice" value="{% if row.notice %}{{ row.notice }}{% endif %}" autocomplete="off">
             </div>
           </div>
           {% include "core/forms/row_image.html" %}

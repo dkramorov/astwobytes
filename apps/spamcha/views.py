@@ -89,9 +89,9 @@ def edit_spam_table(request, action:str, row_id:int = None, *args, **kwargs):
     mh_vars = spam_tables_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.breadcrumbs.insert(0, root_breadcrumbs)
+    row = mh.get_row(row_id)
     context = mh.context
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -152,11 +152,9 @@ def edit_spam_table(request, action:str, row_id:int = None, *args, **kwargs):
                                     kwargs={'action': 'html', 'row_id': mh.row.id}))
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('html_msg', ))
         context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
         context['time'] = time.time()
 
     if request.is_ajax() or action == 'img':
@@ -268,8 +266,7 @@ def edit_spam_row(request, action: str, spam_table_id: int, row_id: int = None, 
     spam_table = mh_spam_tables.get_row(spam_table_id)
     if mh_spam_tables.error:
         return redirect('%s?error=not_found' % (mh_spam_tables.root_url, ))
-    mh_spam_tables.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars_spam_tables['edit_urla']),
-                                      kwargs={'action': 'edit', 'row_id': mh_spam_tables.row.id})
+    mh_spam_tables.url_edit = mh_spam_tables.get_url_edit()
 
     mh = create_model_helper(mh_vars, request, CUR_APP, action, reverse_params={'spam_table_id': spam_table_id})
     mh.select_related_add('spam_table')
@@ -289,12 +286,11 @@ def edit_spam_row(request, action: str, spam_table_id: int, row_id: int = None, 
         'link': mh_spam_tables.url_edit,
         'name': mh_spam_tables.row.name or '%s %s' % (mh_spam_tables.action_edit, mh_spam_tables.rp_singular_obj),
     })
-
+    mh.filter_add({'spam_table__id': mh_spam_tables.row.id})
+    row = mh.get_row(row_id)
     context = mh.context
     context['spam_table'] = object_fields(mh_spam_tables.row)
-    mh.filter_add({'spam_table__id': mh_spam_tables.row.id})
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -351,16 +347,12 @@ def edit_spam_row(request, action: str, spam_table_id: int, row_id: int = None, 
                     context['error'] = 'Недостаточно прав'
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit',
-                                      'spam_table_id': mh_spam_tables.row.id,
-                                      'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
         context['row']['folder'] = mh.row.get_folder()
         context['row']['spam_table_name'] = mh_spam_tables.row.name
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
@@ -432,9 +424,9 @@ def edit_email_account(request, action:str, row_id:int = None, *args, **kwargs):
     mh_vars = email_accounts_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.breadcrumbs.insert(0, root_breadcrumbs)
+    row = mh.get_row(row_id)
     context = mh.context
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -482,13 +474,11 @@ def edit_email_account(request, action:str, row_id:int = None, *args, **kwargs):
             mh.uploads()
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
@@ -580,9 +570,9 @@ def edit_black_list(request, action:str, row_id:int = None, *args, **kwargs):
     mh_vars = black_list_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.breadcrumbs.insert(0, root_breadcrumbs)
+    row = mh.get_row(row_id)
     context = mh.context
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -625,10 +615,8 @@ def edit_black_list(request, action:str, row_id:int = None, *args, **kwargs):
                     context['error'] = 'Недостаточно прав'
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)

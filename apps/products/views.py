@@ -101,8 +101,9 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование товара"""
     mh_vars = products_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
-    context = mh.context
     row = mh.get_row(row_id)
+    context = mh.context
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
@@ -168,15 +169,13 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
             else:
                 mh.uploads()
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         # Чтобы не перезаписывать инфу о загруженном фото в галерею
         if not 'row' in context:
             context['row'] = object_fields(mh.row)
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
@@ -232,8 +231,9 @@ def edit_photo(request, action: str, row_id: int = None, *args, **kwargs):
     mh_vars = photos_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.get_permissions(Products) # Права от товаров/услуг
-    context = mh.context
     row = mh.get_row(row_id)
+    context = mh.context
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
@@ -274,13 +274,11 @@ def edit_photo(request, action: str, row_id: int = None, *args, **kwargs):
         elif action == 'img' and request.FILES:
             mh.uploads()
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
@@ -318,8 +316,9 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
     mh_vars = props_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.get_permissions(Products) # Права от товаров/услуг
-    context = mh.context
     row = mh.get_row(row_id)
+    context = mh.context
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
@@ -401,16 +400,13 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
             result['row'] = object_fields(prop, pass_fields=('prop', ))
             return JsonResponse(result, safe=False)
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
-        context['url_edit'] = mh.url_edit
         context['url_edit_pvalue'] = reverse('%s:%s' % (CUR_APP, 'edit_prop'),
                                          kwargs={'action': 'pvalue', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )

@@ -1,4 +1,5 @@
 <script src="/static/jstree/jstree.min.js"></script>
+<script src="/static/admin/js/fontawesome_select2.js"></script>
 <script type="text/javascript">
 function get_parent(data){
   // Получение родительской рубрики
@@ -245,9 +246,16 @@ $(document).ready(function(){
             $("#products_select2").append($("<option value='" + item['id'] + "' selected>" + item['name'] + " #" + item['id'] + " (" + item['tag'] + ")</option>"));
           }
         }
-        $("#products_select2").trigger('changed');
+        $("#products_select2").trigger("change");
         $("#products_select2").parent().parent().find("label").html("Привязанные товары: " + row['products'].length);
       }
+
+      if(row['icon'] !== null){
+        $("#icon_fontawesome").val(row['icon']).trigger("change");
+      }else{
+        $("#icon_fontawesome").val("").trigger("change");
+      }
+
       update_links(r);
       $("#current_edit_form").attr("action", row['url_edit']);
     });
@@ -264,9 +272,17 @@ $(document).ready(function(){
       }, 500);
     }
   });
+
+  // --------------------------
+  // Получение файла с иконками
+  // и подстановка их в select2
+  // --------------------------
+  fontawesome_select2("icon_fontawesome");
+
 });
 
 function clear_search(){
   $("#rubrics_tree").jstree("clear_search");
 }
+
 </script>

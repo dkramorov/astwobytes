@@ -1,0 +1,208 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div>
+  <h4>Заявки на стыки</h4>
+  <ul>
+    <li>
+      <a href="#manual_new_welding_joint">Смена статусов заявки на стык от новой до готовой</a>
+    </li>
+    <li>
+      <a href="#manual_conclusions">Заключения на заявку на стык</a>
+    </li>
+    <li>
+      <a href="https://yadi.sk/i/USKHhnkleicj9g" target="_blank">Видео-демонстрация по работе с заявкой и заключением</a>
+    </li>
+  </ul>
+
+  <h4>Дефектоскописты</h4>
+  <ul>
+    <li>
+      <a href="#manual_new_defectoscopist">Создание дефектоскописта</a>
+    </li>
+  </ul>
+</div>
+
+<a name="manual_new_welding_joint"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Смена статусов заявки от новой до готовой</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-unlink"></i> Заявки на стыки и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_welding' 'new' %}" target="_blank">Новые заявки</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Каждую новую заявку лаборатория сначала должна принять в работу</p>
+        <p>
+          Прокрутите таблицу вправо, чтобы увидеть столбик таблицы "Действия", в этом столбике есть желтая кнопка
+          <a class="btn-xs btn btn-warning" href="javascript:void(0);" title="Принять заявку в работу"><i class="fa fa-check-square-o"></i></a>,
+          нажмите ее, чтобы переместить заявку в работу, статус заявки сменится и вы увидите сообщение об этом, заявка будет продолжать отображаться в этой таблице, пока вы не уйдете со странички или не выполните поиск по таблице.
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Когда заявка находится в работе, ее статус можно сменить на статус "Готов", чтобы переместить заявку в "Готовые стыки"<br> в левом меню открыть пункт меню <i class="fa fa-unlink"></i> Заявки на стыки и выбрать подпункт меню</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_welding' 'in_progress' %}" target="_blank">Заявки в работе</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>
+          Прокрутите таблицу вправо, чтобы увидеть столбик таблицы "Действия", в этом столбике есть зеленая кнопка кнопка <a class="btn-xs btn btn-success" href="javascript:void(0);" title="Принять стык как готовый"><i class="fa fa-check-square-o"></i></a>, нажмите ее, чтобы переместить заявку в готовые, статус заявки сменится и вы увидите сообщение об этом, заявка будет продолжать отображаться в этой таблице, пока вы не уйдете со странички или не выполните поиск по таблице.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_conclusions"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Заключения на заявку на стык</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-unlink"></i> Заключения (акты)</p>
+        <p>
+          <a class="btn btn-default" href="{% url 'welding:show_conclusions' %}" target="_blank"><i class="fa fa-gavel"></i> Заключения (акты)</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу заключений. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_conclusion' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание заключения</a>
+        </p>
+        <p>Вы увидите форму создания заключения на заявку на стык. Форма содержит в себе 4 подраздела на каждое из заключений по заявке: Акт ВИК, Заключение РК, Заключение ПВК, Заключение УЗК</p>
+        <p>После сохранения заключения вы увидите сверху кнопки для каждого акта (заключения) для открытия PDF файлов, также вы увидите кнопку перехода к редактированию заявки на стык по этому заключению</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-6">
+      <div class="box-placeholder">
+        <p>Поле "Номер заявки на стык" заполняется из выпадающего списка с помощью поиска. Если заявки в списке нет, тогда необходимо перейти в раздел помощи</p>
+        <p>
+          <a href="{% url 'welding:manual' 'welder' %}#manual_new_welding_joint" class="btn btn-info">Сварщик (исполнитель) - Создание заявки на стык</a>
+        </p>
+      </div>
+      <div class="box-placeholder">
+        <p>Поле "Дата акта (заключения)" заполняется вручную</p>
+      </div>
+      <div class="box-placeholder">
+        <h4>Акт ВИК</h4>
+        <div class="box-placeholder">
+          <p>Галочка "Проведен ВИК" выбирается, если была проверка ВИК</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поле "Дефекты" заполняется вручную</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поля "Контроль выполнил", "Руководитель" заполняется из выпадающего списка дефектоскопистов с помощью поиска. Если дефектоскописта в списке нет, тогда необходимо перейти в раздел помощи</p>
+          <p>
+            <a href="#manual_new_defectoscopist" class="btn btn-info">Создание дефектоскописта</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="box-placeholder">
+        <h4>Заключение РК</h4>
+        <div class="box-placeholder">
+          <p>Галочка "Проведен РК" выбирается, если была проверка РК</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поле "Дефекты" заполняется вручную</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Необходимо нажать кнопку "Добавить снимок" нужное количество раз (согласно сделанным снимкам), затем прямо в таблице нажать на каждое поле и заполнить его. Поля для каждого снимка в таблице заполняются вручную - просто нажмите на нужное поле и начинайте вводить информацию. В столбце "Действия" есть красный крестик для каждого снимка - это удаление строки</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поля "Стык принял по внешнему виду", "Контроль произвел", "Заключение выдал" заполняются вручную из выпадающего списка дефектоскопистов с помощью поиска. Если дефектоскописта в списке нет, тогда необходимо перейти в раздел помощи</p>
+          <p>
+            <a href="#manual_new_defectoscopist" class="btn btn-info">Создание дефектоскописта</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-6">
+      <div class="box-placeholder">
+        <h4>Заключение ПВК</h4>
+        <div class="box-placeholder">
+          <p>Галочка "Проведен ПВК" выбирается, если была проверка ПВК</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поля "Вид контроля", "Оценка качества" заполняются вручную из выпадающего списка. В случае, отсутствия необходимых элементов в выпадающем списке, необходимо обратиться к администратору, самостоятельно вы их добавить не сможете</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поле "Дефекты" заполняется вручную</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поля "Начальник", "Дефектоскопист" заполняются вручную из выпадающего списка дефектоскопистов с помощью поиска. Если дефектоскописта в списке нет, тогда необходимо перейти в раздел помощи</p>
+          <p>
+            <a href="#manual_new_defectoscopist" class="btn btn-info">Создание дефектоскописта</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="box-placeholder">
+        <h4>Заключение УЗК</h4>
+        <div class="box-placeholder">
+          <p>Галочка "Проведен УЗК" выбирается, если была проверка УЗК</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поля "Угол ввода луча в градусах", "Условная чувствительность", "Дефекты", "Примечание" заполняются вручную</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поле "Оценка качества" заполняется вручную из выпадающего списка. В случае, отсутствия необходимых элементов в выпадающем списке, необходимо обратиться к администратору, самостоятельно вы их добавить не сможете</p>
+        </div>
+        <div class="box-placeholder">
+          <p>Поле "Оператор", "Стык принял по внешнему виду", "Контоль произвел", "Заключение выдал" заполняются вручную из выпадающего списка дефектоскопистов с помощью поиска. Если дефектоскописта в списке нет, тогда необходимо перейти в раздел помощи</p>
+          <p>
+            <a href="#manual_new_defectoscopist" class="btn btn-info">Создание дефектоскописта</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="manual_new_defectoscopist"></a>
+<br><br><br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2>Создание дефектоскописта</h2>
+  </div>
+  <div class="panel-body">
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>В левом меню открыть пункт меню <i class="fa fa-male"></i> Дефектоскописты</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Вы увидите таблицу дефектоскопистов. В правом верхнем углу нажать на кнопку</p>
+        <p>
+          <a class="btn btn-primary" href="{% url 'welding:create_defectoscopist' 'create' %}" target="_blank"><em class="fa fa-plus-circle fa-fw mr-sm"></em>Создание дефектоскописта</a>
+        </p>
+        <p>Вы увидите форму создания дефектоскописта</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+      <div class="box-placeholder">
+        <p>Поля "Имя", "№ удостоверения", "Примечание" заполняются вручную</p>
+      </div>
+      <div class="box-placeholder">
+        <p>Галочка "Работает" ставится если человек трудоустроен, и снимается, если человек уволен</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+{% endblock %}

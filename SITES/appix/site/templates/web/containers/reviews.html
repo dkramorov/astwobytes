@@ -1,0 +1,36 @@
+{% load mtags %}
+<section id="testimonials" class="our-testimonials-section section-ptb">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="themeix-section-heading-title">
+          <h2 class="head-title">{{ container.name }}</h2>
+          {% if container.description %}<div class="light-300">{{ container.description|safe }}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="testimonial-slider-wrapper">
+          {% for block in blocks %}
+            <div class="single-testimonials-section">
+              <div class="image-section">
+                <img src="/media/misc/1.jpg" alt="testimonials">
+              </div>
+              <div class="content-section">
+                {% if block.html %}<div>{{ block.html|safe }}</div>{% endif %}
+                <div class="author-info">
+                  <h4>
+                    {{ block.name }} <span>{{ block.description }}</span>
+                  </h4>
+                  <div class="rating"></div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

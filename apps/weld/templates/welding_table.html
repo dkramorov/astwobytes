@@ -17,74 +17,16 @@
 {% endif %}
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
-
 {% include "core/breadcrumbs.html" %}
 {% include "core/tabulator_table.html" %}
 {% endblock %}
 
 {% block extrascripts %}
+{% include "welding_js.html" %}
 <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
 <script type="text/javascript">
 window.disableMovableRows = true;
 var main_table = null;
-var state_choices = {
-  "": "Без фильтра",
-  {% for state in state_choices %}
-    {{ state.0 }}: "{{ state.1 }}",
-  {% endfor %}
-};
-function state_to_progress(pk, ind){
-  // Принять заявку в работу
-  // :param pk: ид заявки на стык
-  // :param ind: индекс строки в таблице
-  state_helper(pk, ind, 'in_progress', 2);
-}
-function state_to_complete(pk, ind){
-  // Принять заявку в работу
-  // :param pk: ид заявки на стык
-  // :param ind: индекс строки в таблице
-  state_helper(pk, ind, 'complete', 3)
-}
-function state_helper(pk, ind, new_state, state){
-  // Вспомогательная функция для смены статуса заявки
-  // :param pk: ид заявки на стык
-  // :param ind: индекс строки в таблице
-  // :param new_state: новый статус для отправки на сервер
-  // :param state: статус в таблице
-  var status = 'danger';
-  var msg = 'Произошла ошибка';
-  $.ajax({
-    type: "POST",
-    url: "{{ root_url }}state/" + pk + "/",
-    data: {
-      csrfmiddlewaretoken: getCookie('csrftoken'),
-      new_state: new_state,
-    },
-  }).done(function(r) {
-    if(r.error){
-      msg = r.error;
-    }else if(r.success){
-      msg =  r.success;
-      status = 'success';
-      var row = main_table.getRow(ind);
-      var data = row.getData();
-      row.update({'state': state});
-      $("#state_for_" + pk).addClass("hidden");
-    }
-    $.notify({
-      message: msg,
-    },{
-      status: status,
-    });
-  }).fail(function() {
-    $.notify({
-      message: msg,
-    },{
-      status: status,
-    });
-  });
-}
-
 $(document).ready(function(){
   var pdfFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
@@ -101,7 +43,7 @@ $(document).ready(function(){
     var data = row.getData();
     var actions = "<div class='padding-rl5'>";
 
-    {% if welding_joint_state_permissions.edit %}
+    {% if perms.weld.change_weldingjointstate %}
       if(data.state == 1 || data.state == 4){
         actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left' href='javascript:void(0);' onclick='state_to_progress(" + pk + ", " + rowIndex + ")' title='Принять заявку в работу'><i class='fa fa-check-square-o'></i></a> ";
       }else if(data.state == 2){
@@ -498,14 +440,6 @@ $(document).ready(function(){
         formatter: controlResultFormatter,
         width: 90,
         downloadTitle: "control_result",
-      },
-      {
-        title: "Номер заключения",
-        field: "conclusion_number",
-        headerFilterPlaceholder: "Номер заключения",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 120,
       },
       {
         title: "Дата заключения",

@@ -5,41 +5,57 @@
 {% endblock %}
 
 {% block content %}
-
+<div class="col-md-3">
+  <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+</div>
 {% if row.id %}
-  <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}pdf_uzk/{{ row.id }}/" target="_blank">
-    <em class="fa fa-file-pdf-o fa-fw mr-sm"></em> УЗК заключение
+<div class="col-md-9">
+  <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_uzk/{{ row.id }}/" target="_blank">
+    <em class="fa fa-file-pdf-o fa-fw mr-sm mt-sm"></em> УЗК заключение
   </a>
-  <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}pdf_pvk/{{ row.id }}/" target="_blank">
-    <em class="fa fa-file-pdf-o fa-fw mr-sm"></em> ПВК заключение
+  <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_pvk/{{ row.id }}/" target="_blank">
+    <em class="fa fa-file-pdf-o fa-fw mr-sm mt-sm"></em> ПВК заключение
   </a>
-  <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}pdf_rk/{{ row.id }}/" target="_blank">
-    <em class="fa fa-file-pdf-o fa-fw mr-sm"></em> РК заключение
+  <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_rk/{{ row.id }}/" target="_blank">
+    <em class="fa fa-file-pdf-o fa-fw mr-sm mt-sm"></em> РК заключение
   </a>
-  <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}pdf_vik/{{ row.id }}/" target="_blank">
-    <em class="fa fa-file-pdf-o fa-fw mr-sm"></em> ВИК акт
+  <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_vik/{{ row.id }}/" target="_blank">
+    <em class="fa fa-file-pdf-o fa-fw mr-sm mt-sm"></em> ВИК акт
   </a>
+  {% if welding_joint.id %}
+    <a class="btn btn-primary pull-right mr-sm mt-sm" href="{% url 'welding:edit_welding' 'form' welding_joint.id %}">
+      <em class="fa fa-unlink fa-fw mr-sm"></em> Заявка на стык
+    </a>
+  {% endif %}
+</div>
 {% endif %}
-
-<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+<div class="clearfix"></div>
 
 {% include "core/breadcrumbs.html" %}
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
-        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-heading">
+          {{ singular_obj }}
+          {{ welding_joint.request_number }}, создано {{ row.created }}
+        </div>
         <div class="panel-body">
           {% csrf_token %}
           <div class="form-group">
             <label class="col-lg-2 control-label">Номер заявки на стык</label>
             <div class="col-lg-10">
-              <select id="welding_joint_select2" name="welding_joint" autocomplete="off" data-parsley-required>
-                <option value="">Не выбрано</option>
-                {% if row.welding_joint %}
-                  <option value="{{ row.welding_joint.id }}" selected>{{ row.welding_joint.request_number }}</option>
-                {% endif %}
-              </select>
+              {% if welding_joint %}
+                <input type="hidden" name="welding_joint" value="{{ welding_joint.id }}" />
+                <input type="text" class="form-control" value="{{ welding_joint.request_number }}" disabled />
+              {% else %}
+                <select id="welding_joint_select2" name="welding_joint" autocomplete="off" data-parsley-required>
+                  <option value="">Не выбрано</option>
+                  {% if welding_joint %}
+                    <option value="{{ welding_joint.id }}" selected>{{ welding_joint.request_number }}</option>
+                  {% endif %}
+                </select>
+              {% endif %}
             </div>
           </div>
           <div class="form-group">
@@ -49,10 +65,10 @@
             </div>
           </div>
 
-          {% include "conclusions_edit_vik.html" %}
-          {% include "conclusions_edit_rk.html" %}
-          {% include "conclusions_edit_pvk.html" %}
-          {% include "conclusions_edit_uzk.html" %}
+          {% include "conclusions/edit_vik.html" %}
+          {% include "conclusions/edit_rk.html" %}
+          {% include "conclusions/edit_pvk.html" %}
+          {% include "conclusions/edit_uzk.html" %}
 
           {% include "core/forms/hidden_fields.html" %}
         </div>
@@ -97,6 +113,10 @@
           },{
               status: status,
           });
+          // Переадресация, если создается дубликат
+          if(r.redirect_on_error){
+            window.location.href = r.redirect_on_error;
+          }
         }).fail(function() {
           $.notify({
               message: msg,
@@ -118,7 +138,6 @@
         placeholder: 'Выберите номер заявки на стык',
         allowClear: true,
         width: '100%',
-        tags: true,
         ajax: {
           url: "{% url 'welding:search_welding' %}",
           data: function (params) {
@@ -130,7 +149,7 @@
           },
           cache: false,
           dataType: 'json',
-        }
+        },
       });
     });
   </script>

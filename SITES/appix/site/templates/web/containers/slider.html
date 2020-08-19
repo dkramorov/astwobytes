@@ -1,0 +1,29 @@
+{% load mtags %}
+<section class="skew themeix-bg first-skew first-skew-deg-3 remove-top-skew"{% if container.img %} style="background-image:url('{% imagine container.img '1920x1080' container.get_folder True %}')"{% endif %}>
+  <div class="main-slider-overlay">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="owl-carousel">
+            {% for block in blocks %}
+              <div class="col-md-8">
+                <div class="caption-area">
+                  <h1 class="caption-heading">{{ block.name }}</h1>
+                  {% if block.description %}<p class="caption-para">{{ block.description }}</p>{% endif %}
+                  {% if block.html %}
+                    <div class="caption-para-second">{{ block.html|safe }}</div>
+                  {% endif %}
+                  <div class="themeix-button-group">
+                    {% if block.link %}
+                      <a href="{{ block.link }}" class="themeix-btn smoothScroll">{{ block.name }}</a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

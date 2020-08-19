@@ -20,6 +20,9 @@
   <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}pdf/{{ row.id }}/" target="_blank">
     <em class="fa fa-file-pdf-o fa-fw mr-sm"></em> PDF {{ singular_obj }}
   </a>
+  <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}conclusion/{{ row.id }}/">
+    <em class="fa fa-gavel fa-fw mr-sm"></em> Заключения
+  </a>
 {% endif %}
 
 
@@ -33,7 +36,10 @@
         <div class="panel-heading">
           {{ singular_obj }}
           {% if row.joint %}
-            {{ row.joint.name }}, {{ row.joint.line.name }}, {{ row.joint.line.titul.name }}, {{ row.joint.line.titul.subject.name }}, {{ row.joint.line.titul.subject.company.name }}
+            №{{ row.joint.name }}, линия {{ row.joint.line.name }}, титул {{ row.joint.line.titul.name }}, объект {{ row.joint.line.titul.subject.name }}, {{ row.joint.line.titul.subject.company.name }}
+          {% endif %}
+          {% if row.state %}
+            <h4>Статус: <span id="current_request_state">{{ state }}</span></h4> заявка создана {{ row.created }}
           {% endif %}
         </div>
         <div class="panel-body">
@@ -390,10 +396,24 @@
               <div class="form-group">
                 <div class="col-lg-offset-6 col-lg-6">
                   <div class="checkbox c-checkbox">
-                    <label>
-                      <input type="checkbox" value="in_progress" name="new_state" autocomplete="off">
-                      <span class="fa fa-check"></span> Принять заявку в работу
-                    </label>
+                    <a id="state_for_{{ row.id }}" class="btn-xs btn btn-warning pull-left" href="javascript:void(0);" onclick="state_to_progress({{ row.id }}, 0)" title='Принять заявку в работу'><i class='fa fa-check-square-o'></i> Принять заявку в работу</a>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            {% if row.state == 2 %}
+              <!-- Принять стык как готовый -->
+              <div class="form-group">
+                <div class="col-lg-offset-6 col-lg-6">
+                  <div class="checkbox c-checkbox">
+                    <a id="state_for_{{ row.id }}" class="btn-xs btn btn-success pull-left" href="javascript:void(0);" onclick="state_to_complete({{ row.id }}, 0)" title='Принять стык как готовый'><i class='fa fa-check-square-o'></i> Принять стык как готовый</a>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-lg-offset-6 col-lg-6">
+                  <div class="checkbox c-checkbox">
+                    <a id="state_for_{{ row.id }}_r" class="btn-xs btn btn-danger pull-left" href="javascript:void(0);" onclick="state_to_repair({{ row.id }}, 0)" title='Отправить стык в ремонт'><i class='fa fa-check-square-o'></i> Отправить стык в ремонт</a>
                   </div>
                 </div>
               </div>
@@ -444,6 +464,7 @@
   </div>
   <form class="hidden" method="get" action="{{ root_url }}" id="current_drop_file_form">{% csrf_token %}</form>
 
+  {% include "welding_js.html" %}
   <script src="/static/admin/js/parsley.min.js"></script>
   <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
   <script type="text/javascript">
@@ -476,6 +497,10 @@
           },{
               status: status,
           });
+          // Переадресация, если создается дубликат
+          if(r.redirect_on_error){
+            window.location.href = r.redirect_on_error;
+          }
         }).fail(function() {
           $.notify({
               message: msg,
@@ -494,18 +519,10 @@
         todayButton: new Date(),
       });
 
-      $("#conclusion_date").datepicker({
-        onSelect: function (fd, d, calendar) {
-          calendar.hide();
-        },
-        todayButton: new Date(),
-      });
-
       $('#joint_select2').select2({
         placeholder: 'Выберите стык',
         allowClear: true,
         width: '100%',
-        tags: true,
         ajax: {
           url: "{% url 'welding:search_joints' %}",
           data: function (params) {
@@ -517,7 +534,7 @@
           },
           cache: false,
           dataType: 'json',
-        }
+        },
       });
 
       for(var i=1; i<=4; i++){
@@ -525,7 +542,6 @@
           placeholder: 'Выберите сварщика',
           allowClear: true,
           width: '100%',
-          tags: true,
           ajax: {
             url: "{% url 'welding:search_welders' %}",
             data: function (params) {
@@ -545,7 +561,6 @@
         placeholder: 'Выберите пользователя',
         allowClear: true,
         width: '100%',
-        tags: true,
         ajax: {
           url: "{% url 'login:search_users' %}",
           data: function (params) {
@@ -563,7 +578,6 @@
         placeholder: 'Выберите пользователя',
         allowClear: true,
         width: '100%',
-        tags: true,
         ajax: {
           url: "{% url 'login:search_users' %}",
           data: function (params) {
@@ -578,60 +592,45 @@
         }
       });
 
-      $('#repair_select2').select2({
-          placeholder: 'Выберите номер ремонта',
-          allowClear: true,
-          width: '100%',
-          tags: true,
-      });
-
       $('#control_type_select2').select2({
           placeholder: 'Выберите вид контроля',
           allowClear: true,
           width: '100%',
-          tags: true,
       });
       $('#welding_conn_view_select2').select2({
           placeholder: 'Выберите вид сварного соединения',
           allowClear: true,
           width: '100%',
-          tags: true,
       });
       $('#welding_type_select2').select2({
           placeholder: 'Выберите тип сварки',
           allowClear: true,
           width: '100%',
-          tags: true,
       });
       $('#category_select2').select2({
           placeholder: 'Выберите категорию',
           allowClear: true,
           width: '100%',
-          tags: true,
       });
       $('#control_result_select2').select2({
           placeholder: 'Выберите результат контроля',
           allowClear: true,
           width: '100%',
-          tags: true,
       });
       $('#material_select2').select2({
           placeholder: 'Выберите материал',
           allowClear: true,
           width: '100%',
-          tags: true,
       });
       $('#join_type_from_select2').select2({
           placeholder: 'Свариваемый элемент',
           allowClear: true,
           width: '100%',
-          tags: true,
       });
       $('#join_type_to_select2').select2({
           placeholder: 'Свариваемый элемент',
           allowClear: true,
           width: '100%',
-          tags: true,
       });
 
       // --------------

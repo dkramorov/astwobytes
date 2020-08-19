@@ -24,20 +24,38 @@ def get_user_permissions(user, model):
     """
     app_label = model._meta.app_label
     model_name = model._meta.model_name
-    return {
-        # add_ instead create_
+    permissions = {
+        # create_ instead of add_
         'create': user.has_perm('%s.add_%s' % (app_label, model_name)),
         'edit': user.has_perm('%s.change_%s' % (app_label, model_name)),
         'drop': user.has_perm('%s.delete_%s' % (app_label, model_name)),
         'view': user.has_perm('%s.view_%s' % (app_label, model_name)),
     }
+    # -----------------------------------
+    # Дополнительные разрешения из модели
+    # нулевой элемент списка - разрешение
+    # первый элемент списка - название
+    # -----------------------------------
+    custom_perms = model._meta.permissions
+    if custom_perms:
+        permissions.update({
+            custom_perm[0]: user.has_perm('%s.%s' % (app_label, custom_perm[0]))
+            for custom_perm in custom_perms
+        })
+    return permissions
 
 class ModelHelper:
-    """Покрываем одним классом всю рутину
-       model - основная модель, с которой работаем"""
-    def __init__(self, model, request=None):
+    """Покрываем одним классом всю рутину"""
+    def __init__(self, model, request=None, cur_app: str = None):
+        """Инициализация
+           :param model: основная модель, с которой работаем
+           :param request: HttpRequest
+           :param cur_app: папка приложения
+        """
         self.model = model
+        self.cur_app = cur_app
         self.context = {} # контекст для view
+        self.reverse_params = {} # Параметры для ссылок url_create/url_edit
         # Метка модели, например, 'price'
         self.app_label = self.model._meta.app_label
         self.model_name = self.model._meta.model_name
@@ -176,7 +194,9 @@ class ModelHelper:
             self.permissions = get_user_permissions(user, model)
 
     def get_row(self, row_id):
-        """Получаем запись по айдишнику"""
+        """Получаем запись по айдишнику
+           :param row_id: идентификатор для модели
+        """
         if row_id:
             try:
                 row = self.model.objects
@@ -186,6 +206,17 @@ class ModelHelper:
             except self.model.DoesNotExist:
                 self.error = 1
         return self.row
+
+    def get_url_edit(self):
+        """Ссыль для редактирования"""
+        if self.row and 'edit_urla' in self.context and self.cur_app:
+            self.reverse_params.update({
+                'action': 'edit',
+                'row_id': self.row.id
+            })
+            url_edit = reverse('%s:%s' % (self.cur_app, self.context['edit_urla']), kwargs=self.reverse_params)
+            self.context['url_edit'] = url_edit
+            return url_edit
 
     def get_all_related_objects(self, pass_related:tuple = ('somemodel_set', )):
         """Получаем все связанные модели
@@ -681,12 +712,12 @@ def create_model_helper(mh_vars, request, CUR_APP: str,
        :param disable_fas: отключить filters_and_sorters - во вьюхе свой
     """
     model = mh_vars.pop('model')
-    mh = ModelHelper(model, request)
+    mh = ModelHelper(model, request=request, cur_app=CUR_APP)
     if not reverse_params:
         reverse_params = {}
     else:
         mh.context.update(reverse_params)
-
+    mh.reverse_params = reverse_params
     mh_vars['root_url'] = reverse('%s:%s' % (CUR_APP, mh_vars['show_urla']), kwargs=reverse_params)
     # Опционально ссылка для создания объекта
     if 'create_urla' in mh_vars:

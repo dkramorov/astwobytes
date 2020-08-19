@@ -172,9 +172,8 @@ def edit_event(request, action:str, row_id:int = None, *args, **kwargs):
     mh_vars = events_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.select_related_add('rgenre')
-    context = mh.context
-
     row = mh.get_row(row_id)
+    context = mh.context
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -222,13 +221,11 @@ def edit_event(request, action:str, row_id:int = None, *args, **kwargs):
             mh.uploads()
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
@@ -297,9 +294,9 @@ def edit_place(request, action:str, row_id:int = None, *args, **kwargs):
     mh_vars = places_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.select_related_add('rubric')
+    row = mh.get_row(row_id)
     context = mh.context
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -342,11 +339,9 @@ def edit_place(request, action:str, row_id:int = None, *args, **kwargs):
                     context['error'] = 'Недостаточно прав'
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
@@ -419,9 +414,9 @@ def edit_seance(request, action:str, row_id:int = None, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.select_related_add('place')
     mh.select_related_add('event')
+    row = mh.get_row(row_id)
     context = mh.context
 
-    row = mh.get_row(row_id)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -464,11 +459,9 @@ def edit_seance(request, action:str, row_id:int = None, *args, **kwargs):
                     context['error'] = 'Недостаточно прав'
 
     if mh.row:
-        mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'action': 'edit', 'row_id': mh.row.id})
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
-        context['redirect'] = mh.url_edit
+        context['redirect'] = mh.get_url_edit()
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
