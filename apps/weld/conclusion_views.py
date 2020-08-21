@@ -46,6 +46,7 @@ def show_conclusions(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     mh.select_related_add('welding_joint')
     context = mh.context
+    context['conclusion_states'] = CONCLUSION_STATES
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -54,18 +55,48 @@ def show_conclusions(request, *args, **kwargs):
             'id',
             'welding_joint__request_number',
             'date',
+            'state',
         )
         rows = mh.standard_show(only_fields=only_fields)
         result = []
+        fk_keys = {
+            'welding_joint': ('request_number', ),
+        }
+        # ---------------------------
+        # Выбираем снимки с дефектами
+        # по РК заключениям
+        # ---------------------------
+        ids_rows = [row.id for row in rows]
+        rk_frames = RKFrames.objects.filter(joint_conclusion__in=ids_rows).exclude(state=1).values('joint_conclusion', 'defects', 'notice')
+        ids_frames = {}
+        for rk_frame in rk_frames:
+            conclusion_id = rk_frame['joint_conclusion']
+            if not conclusion_id in ids_frames:
+                ids_frames[conclusion_id] = []
+            ids_frames[conclusion_id].append({
+                'defects': rk_frame['defects'],
+                'notice': rk_frame['notice'],
+            })
+
         for row in rows:
-            fk_keys = {
-                'welding_joint': ('request_number', ),
-            }
             item = object_fields(row,
                                  only_fields=only_fields,
                                  fk_only_keys=fk_keys)
             item['actions'] = row.id
+            if row.vik_active:
+                item['vik'] = {'defects': row.vik_defects}
+            if row.rk_active:
+                item['rk'] = ids_frames.get(row.id)
+            if row.pvk_active:
+                item['pvk'] = {'defects': row.pvk_defects}
+            if row.uzk_active:
+                item['uzk'] = {
+                    'defects': row.uzk_defects,
+                    'notice': row.uzk_notice,
+                }
+
             result.append(item)
+
         if request.GET.get('page'):
             result = {'data': result,
                       'last_page': mh.raw_paginator['total_pages'],
@@ -149,8 +180,6 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                     break
             context['rk_frames'] = row.rkframes_set.all().order_by('position')
 
-        # TODO: нельзя сохранять дубль
-
         if action == 'create':
             mh.breadcrumbs_add({
                 'link': mh.url_create,
@@ -198,7 +227,9 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                 )
             )
     elif request.method == 'POST':
-        mh.post_vars()
+        # Общий статус ставится в save по заключениям
+        pass_fields = ('state', )
+        mh.post_vars(pass_fields=pass_fields)
         if action == 'create' or (action == 'edit' and row):
 
             # ---------------------------------

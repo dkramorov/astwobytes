@@ -7,12 +7,17 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.db.models import Sum
 
+from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
-                                              search_view, )
+                                              search_view,
+                                              special_model_vars, )
 
+from apps.weld.enums import WELDING_JOINT_STATES
+from apps.weld.models import WeldingJoint
 from apps.weld.company_model import Company, Subject, Titul, Base, Line, Joint
 from apps.weld.views import CUR_APP
 
@@ -247,16 +252,40 @@ lines_vars = {
     'edit_urla': 'edit_line',
     'model': Line,
     #'custom_model_permissions': WeldingJoint,
-    'select_related_list': ('titul', 'base', 'titul__subject', 'titul__subject__company'),
+    'select_related_list': (
+        'titul',
+        'titul__subject',
+        'titul__subject__company',
+    ),
     'search_result_format': ('{}', 'name'),
 }
 
 @login_required
 def show_lines(request, *args, **kwargs):
     """Вывод линий"""
+    only_fields = (
+        'id',
+        'name',
+        'img',
+        'new_joints',
+        'in_progress_joints',
+        'repair_joints',
+        'complete_joints',
+        'titul__name',
+        'titul__subject__name',
+        'titul__subject__company__name',
+    )
+    fk_keys = {
+        'titul': ('name', ),
+        'subject': ('name', ),
+        'company': ('name', ),
+    }
+
     return show_view(request,
                      model_vars = lines_vars,
                      cur_app = CUR_APP,
+                     only_fields = only_fields,
+                     fk_only_keys = fk_keys,
                      extra_vars = None, )
 
 @login_required
@@ -306,27 +335,156 @@ joints_vars = {
     'edit_urla': 'edit_joint',
     'model': Joint,
     #'custom_model_permissions': WeldingJoint,
-    'select_related_list': ('line', 'line__titul', 'line__base', 'line__titul__subject', 'line__titul__subject__company'),
+    'select_related_list': (
+        'line',
+        'line__titul',
+        'line__titul__subject',
+        'line__titul__subject__company',
+        'welding_joint',
+    ),
     'search_result_format': ('{}, {}, {}, {}, {}', 'name line__name line__titul__name line__titul__subject__name line__titul__subject__company__name'),
 }
 
 @login_required
 def show_joints(request, *args, **kwargs):
     """Вывод стыков"""
-    return show_view(request,
-                     model_vars = joints_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
+    mh_vars = joints_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP)
+    context = mh.context
+    context['state_choices'] = WELDING_JOINT_STATES
+    special_model_vars(mh, mh_vars, context)
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        only_fields = (
+            'id',
+            'name',
+            'img',
+            'welding_joint__welding_date',
+            'welding_joint__side_thickness',
+            'welding_joint__diameter',
+            'welding_joint__dinc',
+            'welding_joint__state',
+            'line__name',
+            'line__titul__name',
+            'line__titul__subject__name',
+            'line__titul__subject__company__name',
+        )
+        rows = mh.standard_show(only_fields=only_fields,
+                                related_fields=('welding_joint', ), )
+        result = []
+        fk_keys = {
+            'line': ('name', ),
+            'titul': ('name', ),
+            'subject': ('name', ),
+            'company': ('name', ),
+            'welding_joint': ('welding_date',
+                              'side_thickness',
+                              'diameter',
+                              'dinc',
+                              'state', ),
+        }
+        for row in rows:
+            item = object_fields(row,
+                                 only_fields=only_fields,
+                                 fk_only_keys=fk_keys,
+                                 related_fields=('welding_joint', ), )
+            item['actions'] = row.id
+            item['folder'] = row.get_folder()
+            item['thumb'] = row.thumb()
+            item['imagine'] = row.imagine()
+            result.append(item)
+
+        if request.GET.get('page'):
+            dinc = mh.query.aggregate(Sum('welding_joint__dinc'))
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'],
+                      'dinc': dinc['welding_joint__dinc__sum'],
+            }
+
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
 
 @login_required
 def edit_joint(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование стыков"""
-    return edit_view(request,
-                     model_vars = joints_vars,
-                     cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     extra_vars = None, )
+    mh_vars = joints_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    context = mh.context
+    special_model_vars(mh, mh_vars, context)
+    row = mh.get_row(row_id)
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+
+    if request.method == 'GET':
+        if action == 'create':
+            mh.breadcrumbs_add({
+                'link': mh.url_create,
+                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
+            })
+        elif action == 'edit' and row:
+            mh.breadcrumbs_add({
+                'link': mh.url_edit,
+                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+            })
+        elif action == 'drop' and row:
+            if mh.permissions['drop']:
+                row.delete()
+                mh.row = None
+                context['success'] = '%s удален' % (mh.singular_obj, )
+            else:
+                context['error'] = 'Недостаточно прав'
+    elif request.method == 'POST':
+        pass_fields = ()
+        mh.post_vars(pass_fields=pass_fields)
+        can_edit = True
+        if row and row.welding_joint and row.welding_joint.state:
+            state = row.welding_joint.state
+            if state > 1:
+                can_edit = False
+                context['error'] = 'Нельзя отредактировать стык со статусом %s' % row.welding_joint.get_state_display()
+        if action == 'create' or (action == 'edit' and row):
+            if action == 'create':
+                if mh.permissions['create']:
+                    mh.row = mh.model()
+                    mh.save_row()
+                    if mh.error:
+                        context['error'] = mh.error
+                    else:
+                        context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+            if action == 'edit' and can_edit:
+                if mh.permissions['edit']:
+                    mh.save_row()
+                    # Обновляем номер заявки, если она есть
+                    if mh.row.welding_joint:
+                        mh.row.welding_joint.update_request_number()
+                    if mh.error:
+                        context['error'] = mh.error
+                    else:
+                        context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+
+        elif not mh.error and action == 'img' and request.FILES:
+            mh.uploads()
+    if not mh.error and mh.row:
+        if not 'row' in context:
+            context['row'] = object_fields(mh.row)
+        context['row']['folder'] = mh.row.get_folder()
+        context['row']['thumb'] = mh.row.thumb()
+        context['row']['imagine'] = mh.row.imagine()
+        context['redirect'] = mh.get_url_edit()
+    if request.is_ajax() or action == 'img':
+        return JsonResponse(context, safe=False)
+    template = '%sedit.html' % (mh.template_prefix, )
+    return render(request, template, context)
 
 @login_required
 def joints_positions(request, *args, **kwargs):

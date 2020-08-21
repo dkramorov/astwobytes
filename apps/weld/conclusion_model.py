@@ -14,14 +14,18 @@ class JointConclusion(Standard):
         (1, 'первичный'),
         (2, 'вторичный'),
     )
-    welding_joint = models.ForeignKey(WeldingJoint,
+    welding_joint = models.OneToOneField(WeldingJoint,
         blank=True, null=True, on_delete=models.CASCADE,
+        related_name='joint_conclusion',
         verbose_name='Заявка на стык')
     date = models.DateField(blank=True, null=True, db_index=True,
         verbose_name='Дата актов/заключений')
-    welding_type = models.IntegerField(choices=WELDING_TYPE_DESCRIPTIONS,
+    # Если ВИК не пройдет - сюда пишем ВИК заключение,
+    # Если ВИК пройден, но РК не пройден - пишем РК заключение
+    # Если РК пройден, но ПВК не пройден...
+    state = models.IntegerField(choices=CONCLUSION_STATES,
         blank=True, null=True, db_index=True,
-        verbose_name='Тип сварки, например, аргонодуговая')
+        verbose_name='Результат заключения')
     # -------
     # Акт ВИК
     # -------
@@ -36,6 +40,9 @@ class JointConclusion(Standard):
     vik_director = models.ForeignKey(Defectoscopist, related_name='vik_director',
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Руководитель работ по визуальному и измерительному контролю')
+    vik_state = models.IntegerField(choices=CONCLUSION_STATES,
+        blank=True, null=True, db_index=True,
+        verbose_name='Результат заключения ВИК')
     # -------------
     # РК Заключение
     # -------------
@@ -104,6 +111,19 @@ class JointConclusion(Standard):
         verbose_name = 'Сварочные соединения - Заключение (акт) на стык'
         verbose_name_plural = 'Сварочные соединения - Заключения (акты) на стыки'
         #default_permissions = []
+
+    def save(self, *args, **kwargs):
+        # Обновляем основной статус заключения
+        self.state = 1
+        if self.vik_active and not self.vik_state == 1:
+            self.state = self.vik_state
+        elif self.rk_active and self.rkframes_set.all().exclude(state=1).values_list('id', flat=True):
+            self.state = self.rkframes_set.all().exclude(state=1).values_list('state', flat=True)[0]
+        elif self.pvk_active and not self.pvk_state == 1:
+            self.state = self.pvk_state
+        elif self.uzk_active and not self.uzk_state == 1:
+            self.state = self.uzk_state
+        super(JointConclusion, self).save(*args, **kwargs)
 
 class RKFrames(Standard):
     """Снимки на РК контроль для РК заключения

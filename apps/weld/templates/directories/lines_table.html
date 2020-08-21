@@ -21,17 +21,34 @@ $(document).ready(function(){
     var data = cell.getRow().getData();
     return data['titul'] ? data['titul']['name']  : '';
   };
-  var baseFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['base'] ? data['base']['name']  : '';
-  };
   var subjectFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['titul']['subject'] ? data['titul']['subject']['name']  : '';
   };
   var companyFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
-    return data['titul']['subject']['company'] ? data['titul']['subject']['company']['name']  : '';
+    return data['titul']['subject']['company'] ? data['titul']['subject']['company']['name'] : '';
+  };
+  var totalJointsFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    var new_joints= data['new_joints'] ? parseInt(data['new_joints']) : 0;
+    var in_progress_joints = data['in_progress_joints'] ? parseInt(data['in_progress_joints']) : 0;
+    var repair_joints = data['repair_joints'] ? parseInt(data['repair_joints']) : 0;
+    var complete_joints = data['complete_joints'] ? parseInt(data['complete_joints']) : 0;
+    var incomplete_joints = new_joints + in_progress_joints + repair_joints;
+    var total_joints = incomplete_joints + complete_joints;
+    return total_joints;
+  };
+  var progressFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    var new_joints= data['new_joints'] ? parseInt(data['new_joints']) : 0;
+    var in_progress_joints = data['in_progress_joints'] ? parseInt(data['in_progress_joints']) : 0;
+    var repair_joints = data['repair_joints'] ? parseInt(data['repair_joints']) : 0;
+    var complete_joints = data['complete_joints'] ? parseInt(data['complete_joints']) : 0;
+    var incomplete_joints = new_joints + in_progress_joints + repair_joints;
+    var total_joints = incomplete_joints + complete_joints;
+    var progress = parseInt(complete_joints * 100 / total_joints);
+    return progress + "%";
   };
 
   main_table = new Tabulator("#main-table", {
@@ -47,17 +64,17 @@ $(document).ready(function(){
         minWidth: 70,
       },
       {
-        title: "Стыки в работе",
+        title: "В работе",
         field: "in_progress_joints",
-        headerFilterPlaceholder: "Стыки в работе",
+        headerFilterPlaceholder: "В работе",
         headerFilter: "input",
         headerFilterFunc: "=",
         minWidth: 70,
       },
       {
-        title: "Стыки в ремонте",
+        title: "В ремонте",
         field: "repair_joints",
-        headerFilterPlaceholder: "Стыки в ремонте",
+        headerFilterPlaceholder: "В ремонте",
         headerFilter: "input",
         headerFilterFunc: "=",
         minWidth: 70,
@@ -68,6 +85,20 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Готовые стыки",
         headerFilter: "input",
         headerFilterFunc: "=",
+        minWidth: 70,
+      },
+      {
+        title: "Всего стыков",
+        field: "",
+        headerSort: false,
+        formatter: totalJointsFormatter,
+        minWidth: 70,
+      },
+      {
+        title: "Готовность",
+        field: "",
+        headerSort: false,
+        formatter: progressFormatter,
         minWidth: 70,
       },
       {
@@ -85,15 +116,6 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: titulFormatter,
-        minWidth: 90,
-      },
-      {
-        title: "Установка",
-        field: "base__name",
-        headerFilterPlaceholder: "Установка",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: baseFormatter,
         minWidth: 90,
       },
       {

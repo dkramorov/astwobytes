@@ -3,7 +3,7 @@ import datetime
 import logging
 
 from django.contrib.auth.models import Permission
-from django.db.models import Count, Q, Min, Max
+from django.db.models import Count, Q, Min, Max, fields
 from django.urls import reverse, resolve
 
 from apps.main_functions.functions import (object_foreign_keys,
@@ -56,6 +56,7 @@ class ModelHelper:
         self.cur_app = cur_app
         self.context = {} # контекст для view
         self.reverse_params = {} # Параметры для ссылок url_create/url_edit
+        self.query = None
         # Метка модели, например, 'price'
         self.app_label = self.model._meta.app_label
         self.model_name = self.model._meta.model_name
@@ -379,7 +380,7 @@ class ModelHelper:
                         except ValueError:
                             value = None
                 elif types[key] in ('date', 'datetime'):
-                    if not type(value) in (datetime.date, datetime.datetime):
+                    if not isinstance(value, (datetime.date, datetime.datetime)):
                         value = str_to_date(value)
                     if not value and key in auto_now_fields:
                         value = default_values.get(key)
@@ -470,11 +471,45 @@ class ModelHelper:
             if hasattr(dest, 'upload_img'):
                 dest.upload_img(self.row_vars['img'])
 
-    def standard_show(self, only_query: bool = False, only_fields: list = None):
+    def cond_for_query(self,
+                       key: str,
+                       value: str,
+                       types: dict,
+                       query):
+        """Подготовка условия для запроса
+           в зависимости от типа параметра
+           :param key: название поля
+           :param value: значения поля
+           :param types: типы полей
+           :param query: QuerySet
+        """
+        if types[key] in ('int', 'float', 'primary_key', 'boolean'):
+            query = query.filter(**{key: value})
+        # --------------------------------------
+        # По дате производим нестандартный поиск
+        # --------------------------------------
+        elif types[key] in ('date', 'datetime'):
+            value = str_to_date(value)
+            if value:
+                if types[key] == 'datetime' and isinstance(value, datetime.date):
+                    start_date = datetime.datetime(value.year, value.month, value.day, 0, 0, 0)
+                    end_date = datetime.datetime(value.year, value.month, value.day, 23, 59, 59)
+                    query = query.filter(**{'%s__range' % (key, ): [start_date, end_date]})
+                else:
+                    query = query.filter(**{key: value})
+        else:
+            key = '%s__icontains' % key
+            query = query.filter(**{key: value})
+        return query
+
+    def standard_show(self, only_query: bool = False,
+                      only_fields: list = None,
+                      related_fields: list = ()):
         """Стандартный вывод данных по модели
            filters = Q(name__isnull=True)|Q(name="")
            :param only_query: просто вернуть запрос с фильтрами
            :param only_fields: достать только определенные поля
+           :param related_fields: ссылающиеся объекты (OneToOneRel) для фильтра
         """
         result = []
 
@@ -492,6 +527,15 @@ class ModelHelper:
             self.context['paginator'] = self.paginator
             self.context['rows'] = result
             return result
+
+        # ----------------------------
+        # OneToOneRel поля для фильтра
+        # ----------------------------
+        related_types = {}
+        if related_fields:
+            for item in self.model._meta.related_objects:
+                if item.name in related_fields and isinstance(item, fields.related.OneToOneRel):
+                    related_types[item.name] = object_fields_types(item.related_model())
 
         types = object_fields_types(self.model())
         query = self.model.objects.all()
@@ -591,39 +635,26 @@ class ModelHelper:
                 # -----------------------------------
                 # Принимаем в фильтры словарь или Q()
                 # -----------------------------------
-                if type(item) == dict:
+                if isinstance(item, dict):
                     key, value = item.popitem()
                     if key in types:
-                        # ----------------------
-                        # По числу строгий поиск
-                        # ----------------------
-                        if types[key] in ('int', 'float', 'primary_key', 'boolean'):
-                            query = query.filter(**{key: value})
-                        # --------------------------------------
-                        # По дате производим нестандартный поиск
-                        # --------------------------------------
-                        elif types[key] in ('date', 'datetime'):
-                            value = str_to_date(value)
-                            if value:
-                                if types[key] == 'datetime' and type(value) == datetime.date:
-                                    start_date = datetime.datetime(value.year, value.month, value.day, 0, 0, 0)
-                                    end_date = datetime.datetime(value.year, value.month, value.day, 23, 59, 59)
-                                    query = query.filter(**{'%s__range' % (key, ): [start_date, end_date]})
-                                else:
-                                    query = query.filter(**{key: value})
-                        else:
-                            key = '%s__icontains' % key
-                            query = query.filter(**{key: value})
+                        query = self.cond_for_query(key, value, types, query)
                     elif '__' in key:
-                        # ---------------------------
-                        # Случай выбрки по ForeignKey
-                        # ---------------------------
-                        rel = key.split('__')[0]
-                        if rel == 'pk':
-                            rel = 'id'
+                        # -----------------------
+                        # Проверка на OneToOneRel
+                        # -----------------------
+                        if related_types:
+                            key_arr = key.split('__')
+                            related_model = key_arr[-2]
+                            related_field = key_arr[-1]
+                            if related_model in related_types and related_field in related_types[related_model]:
+                                prefix = '__'.join(key_arr[:-1])
+                                custom_types = {'%s__%s' % (prefix, k): v for k, v in related_types[related_model].items() if k == related_field}
+                                query = self.cond_for_query(key, value, custom_types, query)
+                                continue
                         query = query.filter(**{key: value})
 
-                elif type(item) == type(Q()):
+                elif isinstance(item, Q()):
                     query = query.filter(item)
 
         if self.excludes:
@@ -633,6 +664,7 @@ class ModelHelper:
         # Вернуть запрос для отдельных
         # предварительных манипуляций
         # ----------------------------
+        self.query = query
         if only_query:
             return query
 

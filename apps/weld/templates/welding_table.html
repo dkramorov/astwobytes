@@ -7,7 +7,6 @@
 {% block content %}
   {% comment %}<!--
     {% include "core/forms/default_create.html" %}
-  -->{% endcomment %}
 
 {% if permissions.create %}
   <a class="btn btn-primary pull-right" href="{{ url_form }}">
@@ -15,6 +14,8 @@
     Создание заявки на стык
   </a>
 {% endif %}
+
+-->{% endcomment %}
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 {% include "core/breadcrumbs.html" %}
@@ -44,10 +45,16 @@ $(document).ready(function(){
     var actions = "<div class='padding-rl5'>";
 
     {% if perms.weld.change_weldingjointstate %}
-      if(data.state == 1 || data.state == 4){
+      if(data.state == 1){
         actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left' href='javascript:void(0);' onclick='state_to_progress(" + pk + ", " + rowIndex + ")' title='Принять заявку в работу'><i class='fa fa-check-square-o'></i></a> ";
       }else if(data.state == 2){
         actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-success pull-left' href='javascript:void(0);' onclick='state_to_complete(" + pk + ", " + rowIndex + ")' title='Принять стык как готовый'><i class='fa fa-check-square-o'></i></a> ";
+      }
+    {% endif %}
+
+    {% if perms.weld.repair_completed %}
+      if(data.state == 4){
+        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left' href='javascript:void(0);' onclick='state_to_new(" + pk + ", " + rowIndex + ")' title='Ремонт выполнен'><i class='fa fa-check-square-o'></i></a> ";
       }
     {% endif %}
 
@@ -107,12 +114,6 @@ $(document).ready(function(){
       {{ category_choice.0 }}: "{{ category_choice.1 }}",
     {% endfor %}
   };
-  var control_result_choices = {
-    "": "Без фильтра",
-    {% for control_result_choice in control_result_choices %}
-      {{ control_result_choice.0 }}: "{{ control_result_choice.1 }}",
-    {% endfor %}
-  };
   var material_choices = {
     "": "Без фильтра",
     {% for material in material_choices %}
@@ -123,6 +124,12 @@ $(document).ready(function(){
     "": "Без фильтра",
     {% for join_type in join_types %}
       {{ join_type.0 }}: "{{ join_type.1 }}",
+    {% endfor %}
+  };
+  var conclusion_states = {
+    "": "Без фильтра",
+    {% for conclusion_state in conclusion_states %}
+      {{ conclusion_state.0 }}: "{{ conclusion_state.1 }}",
     {% endfor %}
   };
   var jointFormatter = function(cell, formatterParams, onRendered){
@@ -169,10 +176,6 @@ $(document).ready(function(){
     var pk = cell.getValue();
     return category_choices[pk];
   };
-  var controlResultFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return control_result_choices[pk];
-  };
   var materialFormatter = function(cell, formatterParams, onRendered){
     var pk = cell.getValue();
     return material_choices[pk];
@@ -185,6 +188,64 @@ $(document).ready(function(){
     var pk = cell.getValue();
     return join_types[pk];
   };
+  var jointConclusionDateFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint_conclusion'] ? data['joint_conclusion']['date'] : '';
+  };
+  var conclusionStateFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint_conclusion'] ? conclusion_states[data['joint_conclusion']['state']] : '';
+  };
+
+
+  var accessor_not_empty = function(value, data, type, params, column){
+    return value ? value : '';
+  }
+  var accessor_state = function(value, data, type, params, column){
+    return state_choices[value];
+  }
+  var accessor_conclusion_date = function(value, data, type, params, column){
+    return data['joint_conclusion'] ? data['joint_conclusion']['date'] : '';
+  }
+  var accessor_conclusion_state = function(value, data, type, params, column){
+    return data['joint_conclusion'] ? conclusion_states[data['joint_conclusion']['state']] : '';
+  }
+  var accessor_category = function(value, data, type, params, column){
+    return category_choices[value];
+  }
+  var accessor_welding_type = function(value, data, type, params, column){
+    return welding_type_choices[value];
+  }
+  var accessor_conn_view = function(value, data, type, params, column){
+    return conn_view_choices[value];
+  }
+  var accessor_control_type = function(value, data, type, params, column){
+    return control_type_choices[value];
+  }
+  var accessor_workshift = function(value, data, type, params, column){
+    return workshift_choices[value];
+  }
+  var accessor_join_type = function(value, data, type, params, column){
+    return join_types[value];
+  }
+  var accessor_material = function(value, data, type, params, column){
+    return material_choices[value];
+  }
+  var accessor_company = function(value, data, type, params, column){
+    return data['joint']['line']['titul']['subject']['company'] ? data['joint']['line']['titul']['subject']['company']['name'] : '';
+  }
+  var accessor_subject = function(value, data, type, params, column){
+    return data['joint']['line']['titul']['subject'] ? data['joint']['line']['titul']['subject']['name'] : '';
+  }
+  var accessor_titul = function(value, data, type, params, column){
+    return data['joint']['line']['titul'] ? data['joint']['line']['titul']['name'] : '';
+  }
+  var accessor_line = function(value, data, type, params, column){
+    return data['joint']['line'] ? data['joint']['line']['name'] : '';
+  }
+  var accessor_joint = function(value, data, type, params, column){
+    return data['joint'] ? data['joint']['name'] : '';
+  }
 
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
@@ -196,6 +257,7 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 250,
+        frozen:true,
       },
       {
         title: "Дата заявки на НК",
@@ -204,15 +266,17 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "=",
         minWidth: 90,
+        frozen:true,
       },
       {
-        title: "Узел",
+        title: "Стык",
         field: "joint__name",
-        headerFilterPlaceholder: "Узел",
+        headerFilterPlaceholder: "Стык",
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: jointFormatter,
         minWidth: 70,
+        accessorDownload: accessor_joint,
       },
       {
         title: "Линия",
@@ -222,6 +286,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         formatter: lineFormatter,
         minWidth: 120,
+        accessorDownload: accessor_line,
       },
       {
         title: "Титул",
@@ -231,6 +296,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         formatter: titulFormatter,
         minWidth: 90,
+        accessorDownload: accessor_titul,
       },
       {
         title: "Объект",
@@ -240,6 +306,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         formatter: subjectFormatter,
         minWidth: 90,
+        accessorDownload: accessor_subject,
       },
       {
         title: "Компания",
@@ -249,7 +316,9 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         formatter: companyFormatter,
         minWidth: 90,
+        accessorDownload: accessor_company,
       },
+/*
       {
         title: "Ремонт",
         field: "repair",
@@ -265,23 +334,7 @@ $(document).ready(function(){
         width: 70,
         downloadTitle: "repair",
       },
-      {
-        title: "Вырез",
-        field: "cutout",
-        headerFilterPlaceholder: "Вырез",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-         values: {"": "Без фильтра", true: "Да", false: "Нет"},
-        },
-        editable: false,
-        editor: "select",
-        formatter: booleanFormatter,
-        width: 70,
-        downloadTitle: "cutout",
-        accessorDownload: accessor_is_active,
-        //accessorDownloadParams: {test: 'test'},
-      },
+*/
       {
         title: "Диаметр",
         field: "diameter",
@@ -311,7 +364,7 @@ $(document).ready(function(){
         editor: "select",
         formatter: materialFormatter,
         width: 90,
-        downloadTitle: "material",
+        accessorDownload: accessor_material,
       },
       {
         title: "Свар. эл. 1",
@@ -326,7 +379,7 @@ $(document).ready(function(){
         editor: "select",
         formatter: joinTypeFormatter,
         width: 90,
-        downloadTitle: "join_type_from",
+        accessorDownload: accessor_join_type,
       },
       {
         title: "Свар. эл. 2",
@@ -341,7 +394,7 @@ $(document).ready(function(){
         editor: "select",
         formatter: joinTypeFormatter,
         width: 90,
-        downloadTitle: "join_type_to",
+        accessorDownload: accessor_join_type,
       },
       {
         title: "Дата сварки",
@@ -351,6 +404,7 @@ $(document).ready(function(){
         headerFilterFunc: "=",
         minWidth: 90,
       },
+/*
       {
         title: "Смена",
         field: "workshift",
@@ -364,8 +418,9 @@ $(document).ready(function(){
         editor: "select",
         formatter: workshiftFormatter,
         width: 70,
-        downloadTitle: "workshift",
+        accessorDownload: accessor_workshift,
       },
+*/
       {
         title: "Вид контроля",
         field: "control_type",
@@ -379,7 +434,7 @@ $(document).ready(function(){
         editor: "select",
         formatter: controlTypeFormatter,
         width: 90,
-        downloadTitle: "control_type",
+        accessorDownload: accessor_control_type,
       },
       {
         title: "Вид сварного соединения",
@@ -394,7 +449,7 @@ $(document).ready(function(){
         editor: "select",
         formatter: connViewFormatter,
         width: 90,
-        downloadTitle: "welding_conn_view",
+        accessorDownload: accessor_conn_view,
       },
       {
         title: "Тип сварки",
@@ -409,8 +464,9 @@ $(document).ready(function(){
         editor: "select",
         formatter: weldingTypeFormatter,
         width: 90,
-        downloadTitle: "welding_type",
+        accessorDownload: accessor_welding_type,
       },
+/*
       {
         title: "Категория",
         field: "category",
@@ -424,31 +480,35 @@ $(document).ready(function(){
         editor: "select",
         formatter: categoryFormatter,
         width: 70,
-        downloadTitle: "category",
+        accessorDownload: accessor_category,
       },
+*/
       {
         title: "Результат контроля",
-        field: "control_result",
+        field: "joint_conclusion__state",
         headerFilterPlaceholder: "Результат контроля",
         headerFilter: true,
         headerFilterFunc: "=",
         headerFilterParams: {
-          values: control_result_choices,
+          values: conclusion_states,
         },
         editable: false,
         editor: "select",
-        formatter: controlResultFormatter,
+        formatter: conclusionStateFormatter,
         width: 90,
-        downloadTitle: "control_result",
+        accessorDownload: accessor_conclusion_state,
       },
       {
         title: "Дата заключения",
-        field: "conclusion_date",
+        field: "joint_conclusion__date",
         headerFilterPlaceholder: "Дата заключения",
         headerFilter: "input",
         headerFilterFunc: "=",
+        formatter: jointConclusionDateFormatter,
         minWidth: 90,
+        accessorDownload: accessor_conclusion_date,
       },
+/*
       {
         title: "Примечание",
         field: "notice",
@@ -456,7 +516,9 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "=",
         minWidth: 120,
+        accessorDownload: accessor_not_empty,
       },
+*/
       {
         title: "PDF",
         field: "id",
@@ -479,6 +541,7 @@ $(document).ready(function(){
         formatter: stateFormatter,
         width: 120,
         downloadTitle: "state",
+        accessorDownload: accessor_state,
       },
       {
         title: "Действия",
@@ -491,7 +554,7 @@ $(document).ready(function(){
     ],
   });
   $(".tabulator-headers .tabulator-col").each(function(){
-    if($(this).attr("tabulator-field") === "welding_date" || $(this).attr("tabulator-field") === "request_control_date" || $(this).attr("tabulator-field") === "conclusion_date"){
+    if($(this).attr("tabulator-field") === "welding_date" || $(this).attr("tabulator-field") === "request_control_date" || $(this).attr("tabulator-field") === "joint_conclusion__date"){
       $(this).find("input").datepicker({
         onSelect: function (fd, d, calendar) {
           calendar.hide();

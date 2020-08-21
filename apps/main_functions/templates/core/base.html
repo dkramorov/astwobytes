@@ -1,8 +1,6 @@
 {% load mtags %}
 <!DOCTYPE html><!--[if lt IE 7]><html class="ie ie6 lt-ie9 lt-ie8 lt-ie7" lang="en"><![endif]--><!--[if IE 7]><html class="ie ie7 lt-ie9 lt-ie8" lang="en"><![endif]--><!--[if IE 8]><html class="ie ie8 lt-ie9"               lang="en"><![endif]--><!--[if IE 9]><html class="ie ie9" lang="en"><![endif]--><!--[if !IE]><!--><html class="no-ie" lang="en"><!--<![endif]--><head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="icon" href="/static/admin/img/apple-touch-icon-114.png" type="image/x-icon">
-<link rel="shortcut icon" href="/static/admin/img/apple-touch-icon-114.png" type="image/x-icon">
+{% include "skeleton_header.html" %}
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" name="viewport"/>
 <link href="/static/admin/css/bootstrap.css" rel="stylesheet"/>
 <link href="/static/admin/css/common.css" rel="stylesheet"/>
@@ -10,10 +8,10 @@
 <link href="/static/admin/css/animate+animo.css" rel="stylesheet"/>
 <link href="/static/tabulator/tabulator.min.css" rel="stylesheet">
 <link href="/static/tabulator/tabulator_bootstrap4.min.css" rel="stylesheet">
-
 <link href="/static/select2/select2.min.css" rel="stylesheet" />
-
 <link href="/static/admin/css/app.css" rel="stylesheet"/>
+{% include "core/custom_css.html" %}
+
 <script src="/static/admin/js/modernizr.js" type="application/javascript"></script>
 <script src="/static/admin/js/fastclick.js" type="application/javascript"></script>
 

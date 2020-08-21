@@ -63,7 +63,9 @@ def object_auto_now_fields(model):
     return result
 
 def object_fields_types(row):
-    """Все типы полей в объекте"""
+    """Все типы полей в объекте
+       :param row: экземпляр модели
+    """
     result = {}
     types = {
         #'one_to_one': (fields.related.OneToOneRel, ), # row.__class__._meta.get_fields()
@@ -72,8 +74,8 @@ def object_fields_types(row):
         'int': (fields.IntegerField, fields.BigIntegerField),
         'boolean': (fields.BooleanField, ),
         'float': (fields.DecimalField, ),
-        'date': (fields.DateField, ),
         'datetime': (fields.DateTimeField, ),
+        'date': (fields.DateField, ),
         'foreign_key': (fields.related.ForeignKey, fields.related.OneToOneField),
     }
     for field in row.__class__._meta.fields:
@@ -83,29 +85,38 @@ def object_fields_types(row):
             if found:
                 break
             for ftype in ftypes:
-                if ftype == type(field):
+                #if ftype == type(field):
+                # Если date будет выше datetime,
+                # то будет беда
+                if isinstance(field, ftype):
                     result[field.name] = key
                     found = True
                     break
+    # OneToOneRel отношения заносим
+    #if related_fields:
+    #    for item in row.__class__._meta.related_objects:
+    #        if isinstance(item, fields.related.OneToOneRel):
+    #            result[item.name] = 'foreign_key'
     return result
 
 def object_fields_names(row):
     """Достаем названия полей +
-       db_column названия полей => [('id', 'id'), ...]"""
-    result = []
-    for field in row.__class__._meta.fields:
-        result.append(field.get_attname_column())
-    return result
+       db_column названия полей => [('id', 'id'), ...]
+       :param row: экземпляр модели
+    """
+    return [field.get_attname_column() for field in row.__class__._meta.fields]
 
 def object_fields(row,
                   pass_fields: tuple = (),
                   only_fields: tuple = (),
-                  fk_only_keys: dict = None):
+                  fk_only_keys: dict = None,
+                  related_fields: list = (), ):
     """Все параметры объекта (id, state, created...)
+       :param pass_fields: ('пропускаем', 'эти', 'поля')
+       :param only_fields: ('достаем', 'только', 'эти', 'поля')
+       :param fk_only_fields: {'fk_field': ('достаем', 'только', 'эти', 'поля'), ...}
+       :param related_fields: поля ссылающиеся на этот объект (OneToOneRel)
        Можно сделать row.full_clean(), что приведет
-       pass_fields = ('пропускаем', 'эти', 'поля')
-       only_fields = ('достаем', 'только', 'эти', 'поля')
-       fk_only_fields = {'fk_field': ('достаем', 'только', 'эти', 'поля'), ...}
        все данные к нужному типу/виду"""
     result = {}
     if not fk_only_keys:
@@ -113,6 +124,23 @@ def object_fields(row,
     #row.full_clean()
     default_values = object_default_values(row)
     ftypes = object_fields_types(row)
+
+    # -----------------------------
+    # OneToOneRel отношения заносим
+    # -----------------------------
+    if related_fields:
+        for item in row.__class__._meta.related_objects:
+            if item.name in related_fields and isinstance(item, fields.related.OneToOneRel):
+                # ---------------------------------------------
+                # Если связанный объект вытащен - заполняем его
+                # ---------------------------------------------
+                fk = fetched_foreign_key(row, item.name)
+                if fk:
+                    value = object_fields(fk,
+                        only_fields=fk_only_keys.get(item.name),
+                        fk_only_keys=fk_only_keys,
+                    )
+                    result[item.name] = value
 
     for field in row.__class__._meta.fields:
         if pass_fields and field.name in pass_fields:
@@ -170,9 +198,6 @@ def object_fields(row,
                           value = json.loads(value)
                       except:
                           pass
-        #if value is None:
-        #    value = ''
-
         result[field.name] = value
     return result
 

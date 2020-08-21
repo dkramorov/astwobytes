@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 
 {% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -13,9 +14,20 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
 <script type="text/javascript">
 window.disableMovableRows = true;
+function tabulator_ajax_response(url, params, response){
+  console.log(response['dinc']);
+  $(".main_panel .panel-heading strong").html("Стыки. D'Inch: " + response['dinc']);
+}
 var main_table = null;
+var state_choices = {
+  "": "Без фильтра",
+  {% for state in state_choices %}
+    {{ state.0 }}: "{{ state.1 }}",
+  {% endfor %}
+};
 $(document).ready(function(){
   var actionsJointFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
@@ -52,6 +64,45 @@ $(document).ready(function(){
     var data = cell.getRow().getData();
     return data['line']['titul']['subject']['company'] ? data['line']['titul']['subject']['company']['name']  : '';
   };
+  var weldingDateFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['welding_joint'] ? data['welding_joint']['welding_date']  : '';
+  };
+  var sideThicknessFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['welding_joint'] ? data['welding_joint']['side_thickness']  : '';
+  };
+  var diameterFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['welding_joint'] ? data['welding_joint']['diameter']  : '';
+  };
+  var dincFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['welding_joint'] ? data['welding_joint']['dinc']  : '';
+  };
+  var stateFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    //return state = data['welding_joint'] ? state_choices[data['welding_joint']['state']]  : '';
+    var state = data['welding_joint'] ? data['welding_joint']['state']  : '';
+    var result = '';
+    switch(state){
+      case 1:
+        result = "<i title='Новый' class='fa fa-leaf'></i>";
+        break;
+      case 2:
+        result = "<i title='На контроле ЗНК' class='fa fa-eye'></i>";
+        break;
+      case 3:
+        result = "<i title='Годен' class='fa fa-check-square-o'></i>";
+        break;
+      case 4:
+        result = "<i title='В ремонте' class='fa fa-unlink'></i>";
+        break;
+      default:
+        break;
+    }
+    return "<p class='text-center'>" + result + "</p>";
+  };
 
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
@@ -63,6 +114,57 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 90,
+      },
+      {
+        title: "Дата сварки",
+        field: "welding_joint__welding_date",
+        headerFilterPlaceholder: "Дата сварки",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        formatter: weldingDateFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Толщина стенки",
+        field: "welding_joint__side_thickness",
+        headerFilterPlaceholder: "Толщина стенки",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: sideThicknessFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Диаметр",
+        field: "welding_joint__diameter",
+        headerFilterPlaceholder: "Диаметр",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: diameterFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "D'Inch",
+        field: "welding_joint__dinc",
+        headerFilterPlaceholder: "D'Inch",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: dincFormatter,
+        minWidth: 90,
+      },
+      {
+        title: "Статус",
+        field: "welding_joint__state",
+        headerFilterPlaceholder: "Статус",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: state_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: stateFormatter,
+        width: 70,
+        downloadTitle: "state",
       },
       {
         title: "Линия",
@@ -82,17 +184,6 @@ $(document).ready(function(){
         formatter: titulFormatter,
         minWidth: 90,
       },
-{% comment %}
-      {
-        title: "Установка",
-        field: "line__base__name",
-        headerFilterPlaceholder: "Установка",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: baseFormatter,
-        minWidth: 90,
-      },
-{% endcomment %}
       {
         title: "Объект",
         field: "line__titul__subject__name",
@@ -120,6 +211,17 @@ $(document).ready(function(){
         download: false,
       },
     ],
+  });
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "welding_joint__welding_date"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "right top",
+        todayButton: new Date(),
+      });
+    }
   });
 });
 </script>

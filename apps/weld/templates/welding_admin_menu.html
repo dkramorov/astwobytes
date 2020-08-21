@@ -80,13 +80,13 @@
       {% if perms.weld.repair %}
       <li{% ifequal submenu 'welding_in_repair' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'in_repair' %}">
-          <span class="item-text">Заявки на ремонт</span>
+          <span class="item-text">Стыки в ремонте</span>
         </a>
       </li>
       {% endif %}
       <li{% ifequal submenu 'welding_complete' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_welding' 'complete' %}">
-          <span class="item-text">Готовые стыки</span>
+          <span class="item-text">Прошедшие контроль</span>
         </a>
       </li>
       <li{% ifequal submenu 'welding' %} class="active"{% endifequal %}>

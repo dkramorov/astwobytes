@@ -94,6 +94,7 @@ def show_welding(request, *args, **kwargs):
     mh.select_related_add('joint__line__titul')
     mh.select_related_add('joint__line__titul__subject')
     mh.select_related_add('joint__line__titul__subject__company')
+    mh.select_related_add('joint_conclusion')
     context = mh.context
     context['welding_joint_state_permissions'] = get_user_permissions(request.user, WeldingJointState)
 
@@ -103,7 +104,7 @@ def show_welding(request, *args, **kwargs):
     context['welding_conn_view_choices'] = WeldingJoint.welding_conn_view_choices
     context['welding_type_choices'] = WELDING_TYPES
     context['category_choices'] = WeldingJoint.category_choices
-    context['control_result_choices'] = WeldingJoint.control_result_choices
+    context['conclusion_states'] = CONCLUSION_STATES
     context['material_choices'] = MATERIALS
     context['join_types'] = JOIN_TYPES
     context['state_choices'] = WELDING_JOINT_STATES
@@ -126,7 +127,6 @@ def show_welding(request, *args, **kwargs):
             'joint__line__titul__subject__name',
             'joint__line__titul__subject__company__name',
             'repair',
-            'cutout',
             'diameter',
             'side_thickness',
             'material',
@@ -139,23 +139,27 @@ def show_welding(request, *args, **kwargs):
             'welding_type',
             'category',
             'control_result',
-            'conclusion_date',
             'notice',
             'state',
+            'joint_conclusion__date',
+            'joint_conclusion__state',
         )
-        rows = mh.standard_show(only_fields=only_fields)
+        rows = mh.standard_show(only_fields=only_fields,
+                                related_fields=('joint_conclusion', ))
         result = []
+        fk_keys = {
+            'joint': ('name', ),
+            'line': ('name', ),
+            'titul': ('name', ),
+            'subject': ('name', ),
+            'company': ('name', ),
+            'joint_conclusion': ('date', 'state'),
+        }
         for row in rows:
-            fk_keys = {
-                'joint': ('name', ),
-                'line': ('name', ),
-                'titul': ('name', ),
-                'subject': ('name', ),
-                'company': ('name', ),
-            }
             item = object_fields(row,
                                  only_fields=only_fields,
-                                 fk_only_keys=fk_keys)
+                                 fk_only_keys=fk_keys,
+                                 related_fields=('joint_conclusion', ))
             item['actions'] = row.id
             result.append(item)
         if request.GET.get('page'):
@@ -197,24 +201,26 @@ def update_welding_joint_state(request, mh):
        Вспомогательная функция для сохранения
     """
     permissions = get_user_permissions(request.user, WeldingJointState)
-    if not permissions['edit'] or not mh.row.id:
+    if not mh.row.id:
         return
     state = mh.row.state
     new_state = request.POST.get('new_state')
     if new_state:
         new_state = get_welding_joint_state(new_state)
     # Новая => В работе
-    new2progress = state == 1 and new_state == 2
+    new2progress = state == 1 and new_state == 2 and permissions['edit']
+    # В работе => В ремонте
+    progress2repair = state == 2 and new_state == 4 and permissions['edit']
     # В ремонте => В работе
-    repair2progress = state == 4 and new_state == 2
+    repair2new = state == 4 and new_state == 1 and permissions['repair_completed']
     # В работе => Готово
-    progress2complete = state == 2 and new_state == 3
+    progress2complete = state == 2 and new_state == 3 and permissions['edit']
     # Новый стык
     none2new = state is None and new_state == 1
     # -----------------
     # Установить статус
     # -----------------
-    if new2progress or repair2progress or progress2complete or none2new:
+    if new2progress or progress2repair or repair2new or progress2complete or none2new:
         WeldingJointState.objects.create(
             from_state=state,
             to_state=new_state,
@@ -223,10 +229,16 @@ def update_welding_joint_state(request, mh):
         params = {'state': new_state}
         if not mh.row.receiver and not none2new:
             params['receiver'] = request.user
+        if progress2repair:
+            params['repair'] = mh.row.repair or 0
+            params['repair'] += 1
         WeldingJoint.objects.filter(pk=mh.row.id).update(**params)
         for k, v in params.items():
             setattr(mh.row, k, v)
+        mh.row.request_number = mh.row.update_request_number()
+        # ------------------------------------
         # Пересчитать процент готовности линии
+        # ------------------------------------
         if mh.row.joint and mh.row.joint.line:
             line = mh.row.joint.line
             recalc_joints(line)
@@ -260,7 +272,7 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
     context['welding_conn_view_choices'] = WeldingJoint.welding_conn_view_choices
     context['welding_type_choices'] = WELDING_TYPES
     context['category_choices'] = WeldingJoint.category_choices
-    context['control_result_choices'] = WeldingJoint.control_result_choices
+    context['conclusion_states'] = CONCLUSION_STATES
     context['material_choices'] = MATERIALS
     context['join_types'] = JOIN_TYPES
     context['state_choices'] = WELDING_JOINT_STATES
@@ -332,6 +344,7 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
             })
             context['joint'] = mh.row.joint
             context['state'] = mh.row.get_state_display()
+            context['joint_conclusion'] = JointConclusion.objects.filter(welding_joint=mh.row).first()
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -669,7 +682,7 @@ def show_welding_joint_state(request, *args, **kwargs):
         rows = mh.standard_show(only_fields=only_fields)
         result = []
         for row in rows:
-            item = object_fields(row)
+            item = object_fields(row, only_fields=only_fields)
             item['actions'] = row.id
             result.append(item)
         if request.GET.get('page'):

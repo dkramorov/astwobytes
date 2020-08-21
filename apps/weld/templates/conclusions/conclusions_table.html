@@ -20,35 +20,75 @@ window.disableMovableRows = true;
 var main_table = null;
 
 $(document).ready(function(){
+  var defects = null;
+  var notice = null;
+  var conclusion_states = {
+    "": "Без фильтра",
+    {% for conclusion_state in conclusion_states %}
+      {{ conclusion_state.0 }}: "{{ conclusion_state.1 }}",
+    {% endfor %}
+  };
   var pdfVIKFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
     var pk = cell.getValue();
-    var actions = "<div class='padding-rl5'>";
-    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf_vik/" + pk + "/' title='ВИК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    var data = row.getData();
+    var actions = "<div class='padding-rl5' style='white-space:normal;'>";
+    actions += " <a class='btn-xs btn btn-info' href='{{ root_url }}pdf_vik/" + pk + "/' title='ВИК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    if(data['vik']){
+      defects = data['vik']['defects'];
+      if(defects){
+        actions += "<hr>Дефекты: " + defects;
+      }
+    }
     actions += "</div>";
     return actions;
   };
   var pdfRKFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
     var pk = cell.getValue();
-    var actions = "<div class='padding-rl5'>";
-    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf_rk/" + pk + "/' title='РК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    var data = row.getData();
+    var actions = "<div class='padding-rl5' style='white-space:normal;'>";
+    actions += " <a class='btn-xs btn btn-info' href='{{ root_url }}pdf_rk/" + pk + "/' title='РК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    if(data['rk']){
+      for(var i=0; i<data['rk'].length; i++){
+        defects = data['rk'][i]['defects'];
+        notice = data['rk'][i]['notice'];
+        if(defects || notice){
+          actions += "<hr>Дефекты: " + defects + "<br>Примечание: " + notice;
+        }
+      }
+    }
     actions += "</div>";
     return actions;
   };
   var pdfPVKFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
     var pk = cell.getValue();
-    var actions = "<div class='padding-rl5'>";
-    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf_pvk/" + pk + "/' title='ПВК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    var data = row.getData();
+    var actions = "<div class='padding-rl5' style='white-space:normal;'>";
+    actions += " <a class='btn-xs btn btn-info' href='{{ root_url }}pdf_pvk/" + pk + "/' title='ПВК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    if(data['pvk']){
+      defects = data['pvk']['defects'];
+      if(defects){
+        actions += "<hr>Дефекты: " + defects;
+      }
+    }
     actions += "</div>";
     return actions;
   };
   var pdfUZKFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
     var pk = cell.getValue();
-    var actions = "<div class='padding-rl5'>";
-    actions += " <a class='btn-xs btn btn-info pull-left' href='{{ root_url }}pdf_uzk/" + pk + "/' title='УЗК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    var data = row.getData();
+    var actions = "<div class='padding-rl5' style='white-space:normal;'>";
+    actions += " <a class='btn-xs btn btn-info' href='{{ root_url }}pdf_uzk/" + pk + "/' title='УЗК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
+    if(data['uzk']){
+      defects = data['uzk']['defects'];
+      notice = data['uzk']['notice'];
+      if(defects || notice){
+        actions += "<hr>Дефекты: " + defects + "<br>Примечание: " + notice;
+      }
+    }
     actions += "</div>";
     return actions;
   };
@@ -56,6 +96,15 @@ $(document).ready(function(){
     var data = cell.getRow().getData();
     return data['welding_joint'] ? data['welding_joint']['request_number'] : '';
   };
+  var conclusionStateFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return conclusion_states[pk];
+  };
+
+  var accessor_not_empty = function(value, data, type, params, column){
+    return value ? value : '';
+  }
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -77,11 +126,25 @@ $(document).ready(function(){
         minWidth: 90,
       },
       {
+        title: "Результат заключения",
+        field: "state",
+        headerFilterPlaceholder: "Результат заключения",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: conclusion_states,
+        },
+        editable: false,
+        editor: "select",
+        formatter: conclusionStateFormatter,
+        width: 90,
+      },
+      {
         title: "ВИК",
         field: "id",
         headerSort: false,
         formatter: pdfVIKFormatter,
-        width: 50,
+        width: 150,
         download: false,
       },
       {
@@ -89,7 +152,7 @@ $(document).ready(function(){
         field: "id",
         headerSort: false,
         formatter: pdfRKFormatter,
-        width: 50,
+        width: 150,
         download: false,
       },
       {
@@ -97,7 +160,7 @@ $(document).ready(function(){
         field: "id",
         headerSort: false,
         formatter: pdfPVKFormatter,
-        width: 50,
+        width: 150,
         download: false,
       },
       {
@@ -105,7 +168,7 @@ $(document).ready(function(){
         field: "id",
         headerSort: false,
         formatter: pdfUZKFormatter,
-        width: 50,
+        width: 150,
         download: false,
       },
       {% include "core/tabulator_cell/actions.html" %}

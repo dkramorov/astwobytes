@@ -20,9 +20,11 @@
   <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}pdf/{{ row.id }}/" target="_blank">
     <em class="fa fa-file-pdf-o fa-fw mr-sm"></em> PDF {{ singular_obj }}
   </a>
-  <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}conclusion/{{ row.id }}/">
-    <em class="fa fa-gavel fa-fw mr-sm"></em> Заключения
-  </a>
+  {% if joint_conclusion or perms.weld.add_jointconclusion %}
+    <a class="btn btn-primary pull-right mr-sm" href="{{ root_url }}conclusion/{{ row.id }}/">
+      <em class="fa fa-gavel fa-fw mr-sm"></em> Заключение
+    </a>
+  {% endif %}
 {% endif %}
 
 
@@ -91,7 +93,7 @@
               <p class="text-right">Заявка №</p>
             </div>
             <div class="col-lg-6">
-              <input type="text" placeholder="Номер заявки на НК" class="form-control" name="request_number" value="{% if row.request_number %}{{ row.request_number }}{% endif %}" autocomplete="off" readonly>
+              <input id="current_request_number" type="text" placeholder="Номер заявки на НК" class="form-control" name="request_number" value="{% if row.request_number %}{{ row.request_number }}{% endif %}" autocomplete="off" readonly>
             </div>
             <div class="col-lg-12">
               <p class="text-center">на выполнение контроля качества сварных соединений</p>
@@ -391,7 +393,7 @@
             </div>
           </div>
           {% if welding_joint_state_permissions.edit %}
-            {% if row.state == 1 or row.state == 4 %}
+            {% if row.state == 1 %}
               <!-- Принять заявку в работу -->
               <div class="form-group">
                 <div class="col-lg-offset-6 col-lg-6">
@@ -418,6 +420,17 @@
                 </div>
               </div>
             {% endif %}
+          {% else %}<!-- Сварщик не имеет прав на редактирование заявки -->
+            {% if welding_joint_state_permissions.repair_completed and row.state == 4%}
+              <!-- Ремонт выполнен отправляет заявку в работу -->
+              <div class="form-group">
+                <div class="col-lg-offset-6 col-lg-6">
+                  <div class="checkbox c-checkbox">
+                    <a id="state_for_{{ row.id }}" class="btn-xs btn btn-warning pull-left" href="javascript:void(0);" onclick="state_to_new({{ row.id }}, 0)" title='Ремонт выполнен'><i class='fa fa-check-square-o'></i> Ремонт выполнен</a>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
           {% endif %}
 
           <div class="form-group">
@@ -430,6 +443,7 @@
           </div>
 
           <div class="hidden">
+            <input type="text" name="workshift" value="{{ row.workshift }}">
             {% if row.state %}
               <input type="text" name="state" value="{{ row.state }}">
             {% else %}

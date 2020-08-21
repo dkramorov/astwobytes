@@ -21,7 +21,13 @@ function state_to_repair(pk, ind){
   // Принять заявку в работу
   // :param pk: ид заявки на стык
   // :param ind: индекс строки в таблице
-  state_helper(pk, ind, 'repair', 4)
+  state_helper(pk, ind, 'in_repair', 4)
+}
+function state_to_new(pk, ind){
+  // Переместить в новые заявки (Принять ремонт)
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  state_helper(pk, ind, 'new', 1)
 }
 function state_helper(pk, ind, new_state, state){
   // Вспомогательная функция для смены статуса заявки
@@ -51,6 +57,7 @@ function state_helper(pk, ind, new_state, state){
       }else{
         if(("#current_request_state").length > 0){
           $("#current_request_state").html(state_choices[r['row']['state']]);
+          $("#current_request_number").val(r['row']['request_number']);
         }
       }
       $("#state_for_" + pk).addClass("hidden");

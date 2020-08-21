@@ -41,6 +41,17 @@
         </select>
       </div>
     </div>
+    <div class="form-group">
+      <label class="col-lg-2 control-label">Результат заключения ВИК</label>
+      <div class="col-lg-10">
+        <select id="vik_state_select2" name="vik_state" autocomplete="off">
+          <option value="">Не выбрано</option>
+          {% for conclusion_state in conclusion_states %}
+            <option value="{{ conclusion_state.0 }}"{% ifequal conclusion_state.0 row.vik_state %} selected{% endifequal %}>{{ conclusion_state.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
   </div>
 </div>
 <script type="text/javascript">
@@ -80,6 +91,11 @@
         cache: false,
         dataType: 'json',
       }
+    });
+    $('#vik_state_select2').select2({
+      placeholder: 'Выберите результат заключения',
+      allowClear: true,
+      width: '100%',
     });
   });
 </script>

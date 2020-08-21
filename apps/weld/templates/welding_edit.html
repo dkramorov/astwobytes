@@ -39,16 +39,6 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-lg-offset-2 col-lg-10">
-              <div class="checkbox c-checkbox">
-                <label>
-                  <input type="checkbox" value="1" name="cutout" {% if row.cutout %} checked{% endif %} autocomplete="off">
-                  <span class="fa fa-check"></span> Вырез
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
             <label class="col-lg-2 control-label">Диаметр</label>
             <div class="col-lg-10">
               <input type="number" step="0.01" placeholder="Диаметр" class="form-control" name="diameter" value="{% if row.diameter %}{{ row.diameter }}{% endif %}" autocomplete="off">
@@ -209,24 +199,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">Результат контроля</label>
-            <div class="col-lg-10">
-              <select id="control_result_select2" name="control_result" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% for control_result in control_result_choices %}
-                  <option value="{{ control_result.0 }}"{% ifequal control_result.0 row.control_result %} selected{% endifequal %}>{{ control_result.1 }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Дата заключения</label>
-            <div class="col-lg-10">
-              <input id="conclusion_date" type="text" placeholder="Дата заключения" class="form-control" name="conclusion_date" value="{% if row.conclusion_date %}{{ row.conclusion_date }}{% endif %}" autocomplete="off">
-            </div>
-          </div>
-          <div class="form-group">
             <label class="col-lg-2 control-label">Примечание</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Примечание" class="form-control" name="notice" value="{% if row.notice %}{{ row.notice }}{% endif %}" autocomplete="off">
@@ -289,12 +261,6 @@
         todayButton: new Date(),
       });
       $("#request_control_date").datepicker({
-        onSelect: function (fd, d, calendar) {
-          calendar.hide();
-        },
-        todayButton: new Date(),
-      });
-      $("#conclusion_date").datepicker({
         onSelect: function (fd, d, calendar) {
           calendar.hide();
         },

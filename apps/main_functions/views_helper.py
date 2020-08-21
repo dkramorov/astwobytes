@@ -44,6 +44,8 @@ def special_model_vars(mh, mh_vars, context):
 def show_view(request,
               model_vars: dict,
               cur_app: str,
+              only_fields: list = None,
+              fk_only_keys: dict = None,
               extra_vars: dict = None):
     """Вывод в таблицу записей модели
        :param request: HttpRequest
@@ -70,6 +72,29 @@ def show_view(request,
        :param cur_app: CUR_APP во view.py,
            например,
                CUR_APP='products'
+       :param only_fields: поля, которые нужно достать, остальные игнорируем,
+           например,
+               only_fields = (
+                   'id',
+                   'name',
+                   'img',
+                   'welding_joint__welding_date',
+                   'welding_joint__side_thickness',
+                   'line__titul__subject__company__name',
+               )
+       :param fk_only_keys: связанные поля ForeignKeys,
+           если надо выбрать не все, а только нужные поля в связях,
+           например,
+               fk_keys = {
+                   'line': ('name', ),
+                   'titul': ('name', ),
+                   'welding_joint': (
+                       'welding_date',
+                       'side_thickness',
+                       'state', ),
+               }
+       :param extra_vars: дополнительные данные, которые нужно передать в контекст,
+           а затем, через контекст для обработки в special_model_vars
     """
     if not extra_vars:
         extra_vars = {}
@@ -83,10 +108,12 @@ def show_view(request,
     # Вся выборка только через аякс
     # -----------------------------
     if request.is_ajax():
-        rows = mh.standard_show()
+        rows = mh.standard_show(only_fields=only_fields)
         result = []
         for row in rows:
-            item = object_fields(row)
+            item = object_fields(row,
+                                 only_fields=only_fields,
+                                 fk_only_keys=fk_only_keys)
             item['actions'] = row.id
             item['folder'] = row.get_folder()
             item['thumb'] = row.thumb()

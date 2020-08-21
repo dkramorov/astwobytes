@@ -48,30 +48,19 @@ class WeldingJoint(Standard):
         (2, 'II'),
         (3, 'III'),
     )
-    # Результат контроля
-    control_result_choices = (
-        (1, 'Вырез'),
-        (2, 'Годен'),
-        (3, 'Ремонт'),
-        (4, 'УЗК'),
-        (5, 'Пересвет'),
-        (6, 'Брак'),
-    )
     # Номер ремонта
     repair_choices = (
         (1, '1'),
         (2, '2'),
         (3, '3'),
     )
-    joint = models.ForeignKey(Joint,
+    joint = models.OneToOneField(Joint,
         blank=True, null=True, on_delete=models.SET_NULL,
+        related_name='welding_joint',
         verbose_name='Номер стыка, например, 26А')
     repair = models.IntegerField(choices=repair_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Ремонт, например, 2 (второй ремонт)')
-    cutout = models.BooleanField(blank=True, null=True,
-        db_index=True, default=False,
-        verbose_name='Вырез')
     diameter = models.DecimalField(blank=True, null=True, db_index=True,
         max_digits=9, decimal_places=2,
         verbose_name='Диаметр в мм, например, 355.6')
@@ -109,18 +98,15 @@ class WeldingJoint(Standard):
     category = models.IntegerField(choices=category_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Категория, например I')
-    control_result = models.IntegerField(choices=control_result_choices,
+    control_result = models.IntegerField(choices=CONCLUSION_STATES,
         blank=True, null=True, db_index=True,
         verbose_name='Результат контроля, например, Вырезать')
-    # TODO: Оставить либо в заключении дату, либо здесь
-    conclusion_date = models.DateField(blank=True, null=True, db_index=True,
-        verbose_name='Дата заключения, например, 3/29/20')
     notice = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Примечание, например, только ВИК')
-    #dinc = models.DecimalField(blank=True, null=True, db_index=True,
-    #    max_digits=9, decimal_places=2,
-    #    verbose_name='D-inc, например, 6.30, нужен для отчетов, рассчитывается динамически, например, диаметр(160)/константа(25.4)=6.30')
+    dinc = models.DecimalField(blank=True, null=True, db_index=True,
+        max_digits=9, decimal_places=2,
+        verbose_name='D-inc, например, 6.30, нужен для отчетов, рассчитывается динамически, например, диаметр(160)/константа(25.4)=6.30')
     state = models.IntegerField(choices=WELDING_JOINT_STATES,
         blank=True, null=True, db_index=True,
         verbose_name='Статус заявки, например, в работе')
@@ -141,8 +127,19 @@ class WeldingJoint(Standard):
         #default_permissions = []
 
     def save(self, *args, **kwargs):
+        self.dinc = None
+        if self.diameter:
+            try:
+                self.dinc = float(self.diameter) / 25.4
+            except ValueError:
+                pass
         super(WeldingJoint, self).save(*args, **kwargs)
-        # Номер заявки
+        self.request_number = self.update_request_number()
+
+    def update_request_number(self):
+        """Обновление номера заявки"""
+        if not self.id:
+            return
         request_number = ''
         obj = WeldingJoint.objects.select_related(
             'joint',
@@ -162,7 +159,7 @@ class WeldingJoint(Standard):
         if obj.joint and obj.joint.line and obj.joint.line.titul and obj.joint.line.titul.subject and obj.joint.line.titul.subject.company:
             repair = ''
             if self.repair:
-                repair = '-%s' % self.repair
+                repair = 'р%s' % self.repair
             request_number = '%s-%s-%s-%s-%s-%s%s' % (
                 obj.joint.line.titul.subject.company.code or '',
                 obj.joint.line.titul.subject.code or '',
@@ -175,6 +172,7 @@ class WeldingJoint(Standard):
             #print('numbers {} and {}'.format(self.request_number, request_number))
             if not self.request_number == request_number:
                 WeldingJoint.objects.filter(pk=self.id).update(request_number=request_number)
+        return request_number
 
     def get_files(self):
         """Получить файлы в виде списка"""
@@ -257,6 +255,9 @@ class WeldingJointState(models.Model):
     class Meta:
         verbose_name = 'Сварочные соединения - Смена статуса заявки на стык'
         verbose_name_plural = 'Сварочные соединения - Смена статусов заявкок на стыки'
+        permissions = (
+            ('repair_completed', 'Смена статуса - Ремонт выполнен'),
+        )
         #default_permissions = []
 
 def recalc_joints(line: Line):

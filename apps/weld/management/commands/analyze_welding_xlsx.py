@@ -9,12 +9,18 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from apps.main_functions.date_time import str_to_date
+from apps.main_functions.functions import object_fields
 from apps.main_functions.string_parser import kill_quotes
 from apps.main_functions.api_helper import open_wb, search_header, accumulate_data
 from apps.main_functions.files import ListDir
 from apps.files.models import Files
 
-from apps.weld.enums import WELDING_TYPES, MATERIALS, JOIN_TYPES, replace_rus2eng, replace_eng2rus
+from apps.weld.enums import (WELDING_TYPES,
+                             CONCLUSION_STATES,
+                             MATERIALS,
+                             JOIN_TYPES,
+                             replace_rus2eng,
+                             replace_eng2rus, )
 from apps.weld.welder_model import Welder
 from apps.weld.company_model import Company, Subject, Titul, Base, Line
 from apps.weld.models import WeldingJoint, Joint, JointWelder, WeldingJointState, recalc_joints
@@ -65,6 +71,23 @@ def get_choice(item, choices):
         for choice in choices:
             if choice[1].upper() == item.upper():
                 return choice[0]
+    return None
+
+def get_welding_joint_analog(joint, new_joint: dict):
+    """Ищем аналог joint по словарю new_joint
+       :param joint: экземпляр модели WeldingJoint
+       :param new_joint: словарь для новой заявки на стык
+    """
+    analog = WeldingJoint.objects.filter(joint=joint).first()
+    if analog:
+        # Пишем различия
+        print(" ### analog ### ")
+        analog_obj = object_fields(analog)
+        for key, value in analog_obj.items():
+            new_value = new_joint.get(key)
+            if not value == new_value:
+                print('diff %s %s' % (value, new_value))
+        return analog
     return None
 
 def more_lines_helper(subject: Subject, path: str):
@@ -166,7 +189,8 @@ def more_lines_helper(subject: Subject, path: str):
             #print('line %s' % line.name)
             #print(diameter, side_thickness, date, stigma, welding_conn_view, welding_type)
             joint = get_object(row, 2, Joint, {'line': line})
-            welding_joint = WeldingJoint.objects.create(**{
+
+            welding_joint_obj = {
                 'joint': joint,
                 'diameter': diameter,
                 'side_thickness': side_thickness,
@@ -175,7 +199,15 @@ def more_lines_helper(subject: Subject, path: str):
                 'welding_type': welding_type,
                 'state': state,
                 'repair': repair,
-            })
+            }
+
+            # Ищем аналог
+            analog = get_welding_joint_analog(joint, welding_joint_obj)
+            if analog:
+                continue
+
+            welding_joint = WeldingJoint.objects.create(**welding_joint_obj)
+
             welder = Welder.objects.filter(stigma__icontains=stigma).first()
             if not welder:
                 print('welder not found %s' % stigma)
@@ -348,8 +380,6 @@ def analyze_daily_report_weldings():
         if row[i+5].value:
             repair = 2
 
-        cutout = True if row[i+6].value else None
-
         welding_date = row[i+11].value if row[i+11].value else None
         if welding_date:
             welding_date = str_to_date(str(welding_date))
@@ -381,7 +411,7 @@ def analyze_daily_report_weldings():
 
         category = get_choice(category_str, WeldingJoint.category_choices)
 
-        control_result = get_choice(control_result_str, WeldingJoint.control_result_choices)
+        control_result = get_choice(control_result_str, CONCLUSION_STATES)
 
         material = get_choice(material_str, MATERIALS)
 
@@ -404,7 +434,6 @@ def analyze_daily_report_weldings():
         welding_joint_obj = {
             'joint': joint,
             'repair': repair,
-            'cutout': cutout,
             'material': material,
             'welding_date': welding_date,
             'workshift': workshift,
@@ -422,6 +451,11 @@ def analyze_daily_report_weldings():
             'side_thickness': side_thickness,
             'state': state,
         }
+
+        # Ищем аналог
+        analog = get_welding_joint_analog(joint, welding_joint_obj)
+        if analog:
+            continue
 
         welding_joint = WeldingJoint.objects.create(**welding_joint_obj)
         for w, welder in enumerate(welders):

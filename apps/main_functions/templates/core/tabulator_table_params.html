@@ -21,6 +21,12 @@ ajaxResponse:function(url, params, response){
   var end_row = response.by * response.cur_page;
   $("#main-table-footer .end").text(end_row > response.total_records ? response.total_records : end_row);
   $("#main-table-footer .max").text(response.total_records);
+
+  // Функция, выполняющаяся после после получения результатов
+  if(window.tabulator_ajax_response !== undefined){
+    window.tabulator_ajax_response(url, params, response);
+  }
+
   return response;
 },
 
