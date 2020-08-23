@@ -476,6 +476,7 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                         welding_joint=mh.row,
                         file=new_file, )
                     new_file.update_mimetype()
+                    context['success'] = 'Файл загружен'
                     context['file'] = {
                         'id': joint_file.id,
                         'path': new_file.path,
@@ -680,9 +681,15 @@ def show_welding_joint_state(request, *args, **kwargs):
             'user__username',
         )
         rows = mh.standard_show(only_fields=only_fields)
+        fk_keys = {
+            'welding_joint': ('request_number', ),
+            'user': ('username'),
+        }
         result = []
         for row in rows:
-            item = object_fields(row, only_fields=only_fields)
+            item = object_fields(row,
+                                 only_fields=only_fields,
+                                 fk_only_keys=fk_keys, )
             item['actions'] = row.id
             result.append(item)
         if request.GET.get('page'):

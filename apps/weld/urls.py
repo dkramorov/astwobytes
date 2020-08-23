@@ -31,7 +31,11 @@ urlpatterns = [
     # -----------------------------
     path('admin/conclusions/', conclusion_views.show_conclusions, name='show_conclusions'),
     url('^admin/conclusions/(?P<action>create)/$', conclusion_views.edit_conclusion, name='create_conclusion'),
-    url('^admin/conclusions/(?P<action>edit|drop|pdf_vik|pdf_rk|pdf_pvk|pdf_uzk)/(?P<row_id>[0-9]{1,11})/$', conclusion_views.edit_conclusion, name='edit_conclusion'),
+    url('^admin/conclusions/(?P<action>edit|drop|pdf_vik|pdf_rk|pdf_pvk|pdf_uzk|file)/(?P<row_id>[0-9]{1,11})/$', conclusion_views.edit_conclusion, name='edit_conclusion'),
+
+    # файлы заключений на заявку
+    path('admin/conclusions/files/', conclusion_views.show_conclusion_files, name='show_conclusion_files'),
+    url('^admin/conclusions/files/(?P<action>edit|drop|download)/(?P<row_id>[0-9]{1,11})/$', conclusion_views.edit_conclusion_file, name='edit_conclusion_file'),
 
     # ------------------------
     # компании (company_views)

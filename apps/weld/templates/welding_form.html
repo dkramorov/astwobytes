@@ -684,7 +684,24 @@
       });
       function update_links(r){
         // Добавление файла в заявку на стык
+        var msg = 'Произошла ошибка, сообщите администратору';
+        var status = 'danger';
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+        }
+        $.notify({
+          message: msg,
+        },{
+         status: status,
+        });
+
         var file = r['file'];
+        if(!file){
+          return;
+        }
         var html = '';
         html += '<div class="col-masonry welding_joint_file" id="file_index_' + file['id'] + '">';
         //html += '<img src="' + file['thumb'] + '" class="img-thumbnail img-responsive">';

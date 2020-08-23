@@ -1,0 +1,42 @@
+{% load mtags %}
+<section id="pricing" class="section-ptb">
+  <div class="themeix-pricing-area">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="themeix-section-heading-title">
+            <h2 class="head-title">{{ container.name }}</h2>
+            {% if container.description %}<div class="light-300">{{ container.description|safe }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        {% for block in blocks %}
+          <div class="col-xs-12 col-sm-4 wow fadeIn animated">
+            <div class="single-pricing">
+              <h2>{{ block.name }}
+                {% if block.html %}<span>{{ block.html|safe }}</span>{% endif %}
+              </h2>
+              {% if block.title %}
+                <span class="price-tag">{{ block.title }}</span>
+              {% endif %}
+              <div class="price-table">
+                <span class="dollar-rate"><b>{{ block.description }}</b>₽</span>
+                <sub>/мес</sub>
+              </div>
+              <ul class="pricing-features">
+                {% for item in block.sub %}
+                  <li>{{ item.name }}</li>
+                {% endfor %}
+              </ul>
+              <div class="themeix-button-group">
+                <a href="{{ block.link }}" class="themeix-btn active-bg themeix-price-button-active">Выбрать</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

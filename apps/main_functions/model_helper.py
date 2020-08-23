@@ -654,7 +654,7 @@ class ModelHelper:
                                 continue
                         query = query.filter(**{key: value})
 
-                elif isinstance(item, Q()):
+                elif isinstance(item, Q):
                     query = query.filter(item)
 
         if self.excludes:

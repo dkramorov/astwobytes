@@ -11,14 +11,18 @@ from django.conf import settings
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.files import full_path, check_path, file_size
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import create_model_helper, get_user_permissions
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 from apps.main_functions.pdf_helper import render_pdf
+from apps.files.models import Files
+
 from apps.weld.enums import WELDING_TYPE_DESCRIPTIONS, CONCLUSION_STATES
 from apps.weld.models import WeldingJoint
-from apps.weld.conclusion_model import JointConclusion, RKFrames
+from apps.weld.conclusion_model import (JointConclusion,
+                                        RKFrames,
+                                        JointConclusionFile, )
 from apps.weld.views import CUR_APP
 
 conclusions_vars = {
@@ -151,6 +155,9 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
     row = mh.get_row(row_id)
     context = mh.context
 
+    # Права на файлы к заключению
+    context['files_permissions'] = get_user_permissions(request.user, JointConclusionFile)
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
@@ -195,6 +202,7 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                     'id': row.welding_joint.id,
                     'request_number': row.welding_joint.request_number,
                 }
+            context['files'] = row.get_files()
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -231,7 +239,6 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
         pass_fields = ('state', )
         mh.post_vars(pass_fields=pass_fields)
         if action == 'create' or (action == 'edit' and row):
-
             # ---------------------------------
             # Без заявки стыка нельзя сохранить
             # ---------------------------------
@@ -281,12 +288,39 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                         fill_rk_frames(request, mh.row)
                 else:
                     context['error'] = 'Недостаточно прав'
-
+        elif action == 'file' and request.FILES:
+            # Принятую заявку не редактируем
+            if mh.row.welding_joint.state == 3:
+                context['error'] = 'Нельзя изменить принятую заявку'
+            else:
+                # Загрузка файла в JointConclusionFile
+                mh.files_add('path')
+                new_file = Files.objects.create(
+                    desc = mh.row.welding_joint.request_number,
+                    name = request.FILES['path'].name,
+                )
+                mh.uploads(row=new_file)
+                if new_file.path:
+                    joint_file = JointConclusionFile.objects.create(
+                        joint_conclusion=mh.row,
+                        file=new_file, )
+                    new_file.update_mimetype()
+                    context['success'] = 'Файл загружен'
+                    context['file'] = {
+                        'id': joint_file.id,
+                        'path': new_file.path,
+                        'name': new_file.name,
+                        'mime': new_file.mime,
+                        'folder': new_file.get_folder(),
+                    }
+                else:
+                    new_file.delete()
+                    context['error'] = 'Не удалось загрузить файл'
     if not mh.error and mh.row:
         if not 'row' in context:
             context['row'] = object_fields(mh.row)
         context['redirect'] = mh.get_url_edit()
-    if request.is_ajax() or action == 'img':
+    if request.is_ajax() or action in ('img', 'file'):
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
@@ -306,3 +340,103 @@ def search_conclusions(request, *args, **kwargs):
                        model_vars = conclusions_vars,
                        cur_app = CUR_APP,
                        sfields = ('welding_joint__joint__name', ), )
+
+conclusion_files_vars = {
+    'singular_obj': 'Файл заключения на заявку',
+    'plural_obj': 'Файлы заключения на заявку',
+    'rp_singular_obj': 'файла заключения на заявку',
+    'rp_plural_obj': 'файлов заключений на заявки',
+    'template_prefix': 'conclusions/files_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'conclusions',
+    'submenu': 'conclusions',
+    'show_urla': 'show_conclusion_files',
+    #'create_urla': 'create_conclusion_file',
+    'edit_urla': 'edit_conclusion_file',
+    'model': JointConclusionFile,
+    'select_related_list': ('file', 'joint_conclusion'),
+}
+
+@login_required
+def show_conclusion_files(request, *args, **kwargs):
+    """Вывод файлов для заключений на заявку"""
+    return show_view(request,
+                     model_vars = conclusion_files_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
+
+@login_required
+def edit_conclusion_file(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование файлов для заключений на заявку"""
+    mh_vars = conclusion_files_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    mh.select_related_add('joint_conclusion')
+    mh.select_related_add('joint_conclusion__welding_joint')
+    row = mh.get_row(row_id)
+    context = mh.context
+
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+    if request.method == 'GET':
+        if action == 'create':
+            mh.breadcrumbs_add({
+                'link': mh.url_create,
+                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
+            })
+        elif action == 'edit' and row:
+            mh.breadcrumbs_add({
+                'link': mh.url_edit,
+                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+            })
+        elif action == 'drop' and row:
+            if mh.permissions['drop']:
+                if mh.row.joint_conclusion.welding_joint.state == 3:
+                    context['error'] = 'Нельзя изменить принятую заявку'
+                else:
+                    row.delete()
+                    mh.row = None
+                    context['success'] = '%s удалено' % (mh.singular_obj, )
+            else:
+                context['error'] = 'Недостаточно прав'
+        elif action == 'download' and row:
+            # Возвращаем файл по имени
+            path = '%s%s' % (row.file.get_folder(), row.file.path)
+            if not check_path(path):
+                with open(full_path(path), 'rb') as f:
+                    response = HttpResponse(f.read(), content_type=row.file.mime)
+                response['Content-Disposition'] = row.file.content_disposition_for_cyrillic_name(row.file.name)
+                return response
+
+    elif request.method == 'POST':
+        pass_fields = ()
+        mh.post_vars(pass_fields=pass_fields)
+        if action == 'create' or (action == 'edit' and row):
+            if action == 'create':
+                if mh.permissions['create']:
+                    mh.row = mh.model()
+                    mh.save_row()
+                    context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+            if action == 'edit':
+                if mh.permissions['edit']:
+                    if mh.row.welding_joint.state == 3:
+                        context['error'] = 'Нельзя изменить принятую заявку'
+                    else:
+                        mh.save_row()
+                        context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+        elif action == 'img' and request.FILES:
+            mh.uploads()
+    if mh.row:
+        context['row'] = object_fields(mh.row)
+        if mh.row.file:
+            context['row']['file'] = object_fields(mh.row.file)
+        context['redirect'] = mh.get_url_edit()
+    if request.is_ajax() or action == 'img':
+        return JsonResponse(context, safe=False)
+    template = '%sedit.html' % (mh.template_prefix, )
+    return render(request, template, context)

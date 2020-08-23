@@ -77,7 +77,8 @@ def imagine(img: str, size: str, source: str, alt: str = ''):
        :param img: имя файла, например 1.jpg
        :param size: размер, например 150х150, x разделитель
        :param source: папка с исходным изображением, например, logos
-       :param alt: текст alt для изображения, если тип bool вернем просто путь до изображения
+       :param alt: текст alt для изображения,
+                   если тип bool вернем просто путь до изображения
        USAGE:
        <img src="{% imagine 'help.png' '150x150' 'img' %}"/>
        {% imagine 'help.png' '150x150' 'img' True %} - просто путь

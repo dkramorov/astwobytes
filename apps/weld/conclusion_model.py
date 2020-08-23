@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
+from apps.files.models import Files
 from apps.main_functions.models import Standard
+
 from apps.weld.enums import WELDING_TYPE_DESCRIPTIONS, CONCLUSION_STATES
 from apps.weld.models import WeldingJoint
 from apps.weld.welder_model import Defectoscopist
-
 
 class JointConclusion(Standard):
     """Заключения (акты) на заявки на сварку (стык)
@@ -125,6 +126,17 @@ class JointConclusion(Standard):
             self.state = self.uzk_state
         super(JointConclusion, self).save(*args, **kwargs)
 
+    def get_files(self):
+        """Получить файлы в виде списка"""
+        files = self.jointconclusionfile_set.select_related('file').all()
+        return [{
+            'id': item.id,
+            'path': item.file.path,
+            'name': item.file.name,
+            'mime': item.file.mime,
+            'folder': item.file.get_folder(),
+        } for item in files]
+
 class RKFrames(Standard):
     """Снимки на РК контроль для РК заключения
     """
@@ -149,3 +161,28 @@ class RKFrames(Standard):
         verbose_name = 'Сварочные соединения - Снимок на РК заключение'
         verbose_name_plural = 'Сварочные соединения - Снимки на РК заключения'
         default_permissions = []
+
+class JointConclusionFile(models.Model):
+    """Файлы для заключений, например,
+       снимки дефектов
+    """
+    joint_conclusion = models.ForeignKey(JointConclusion,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Заключение на заявку на стык')
+    file = models.ForeignKey(Files,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Файл для заключения')
+    position = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Позиция файла')
+
+    class Meta:
+        verbose_name = 'Сварочные соединения - Файл заключения на заявку'
+        verbose_name_plural = 'Сварочные соединения - Файлы заключений на заявки'
+        #default_permissions = []
+
+    def delete(self, *args, **kwargs):
+        """Переопределяем метод удаления,
+           надо похерить файл, который привязан"""
+        if self.file:
+            self.file.delete()
+        super(JointConclusionFile, self).delete(*args, **kwargs)

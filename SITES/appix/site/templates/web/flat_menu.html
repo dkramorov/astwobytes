@@ -16,16 +16,9 @@
 </div>
 {% endifequal %}
 {% ifequal tag "bottommenu" %}
+  <ul class="footer-menu">
   {% for menu in menus %}
-    <div class="col-lg-2 col-md-2">
-      <div class="block-footer">
-        <h4 class="title-footer">{{ menu.name }}</h4>
-        <ul>
-          {% for item in menu.sub %}
-            <li><a title="{{ item.name|textize }}" href="{{ item.link }}">{{ item.name }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
+    <li><a href="{{ menu.link }}">{{ menu.name }}</a></li>
   {% endfor %}
+  </ul>
 {% endifequal %}

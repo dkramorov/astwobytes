@@ -216,7 +216,7 @@ class WeldingJointFile(models.Model):
         verbose_name='Заявка на стык')
     file = models.ForeignKey(Files,
         blank=True, null=True, on_delete=models.CASCADE,
-        verbose_name='Файл для линии')
+        verbose_name='Файл для заявки на стык')
     position = models.IntegerField(blank=True, null=True, db_index=True,
         verbose_name='Позиция файла')
 

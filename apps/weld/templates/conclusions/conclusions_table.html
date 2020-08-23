@@ -28,25 +28,37 @@ $(document).ready(function(){
       {{ conclusion_state.0 }}: "{{ conclusion_state.1 }}",
     {% endfor %}
   };
-  var pdfVIKFormatter = function(cell, formatterParams, onRendered){
+  var actionsConclusionFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
+    var rowIndex = row.getIndex();
     var pk = cell.getValue();
     var data = row.getData();
+    var actions = "<div class='padding-rl5'>";
+    actions += " <a class='btn-xs btn btn-primary pull-left ml' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right ml' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
+    actions += "</div>";
+    return actions;
+  };
+  var pdfVIKFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var data = row.getData();
+    var pk = data['id'];
     var actions = "<div class='padding-rl5' style='white-space:normal;'>";
     actions += " <a class='btn-xs btn btn-info' href='{{ root_url }}pdf_vik/" + pk + "/' title='ВИК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
-    if(data['vik']){
-      defects = data['vik']['defects'];
-      if(defects){
-        actions += "<hr>Дефекты: " + defects;
-      }
+    defects = data['vik'] ? data['vik']['defects'] : '';
+    if(defects){
+      actions += "<hr>Дефекты: " + defects;
     }
     actions += "</div>";
     return actions;
   };
   var pdfRKFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
-    var pk = cell.getValue();
     var data = row.getData();
+    var pk = data['id'];
     var actions = "<div class='padding-rl5' style='white-space:normal;'>";
     actions += " <a class='btn-xs btn btn-info' href='{{ root_url }}pdf_rk/" + pk + "/' title='РК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
     if(data['rk']){
@@ -63,8 +75,8 @@ $(document).ready(function(){
   };
   var pdfPVKFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
-    var pk = cell.getValue();
     var data = row.getData();
+    var pk = data['id'];
     var actions = "<div class='padding-rl5' style='white-space:normal;'>";
     actions += " <a class='btn-xs btn btn-info' href='{{ root_url }}pdf_pvk/" + pk + "/' title='ПВК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
     if(data['pvk']){
@@ -78,8 +90,8 @@ $(document).ready(function(){
   };
   var pdfUZKFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
-    var pk = cell.getValue();
     var data = row.getData();
+    var pk = data['id'];
     var actions = "<div class='padding-rl5' style='white-space:normal;'>";
     actions += " <a class='btn-xs btn btn-info' href='{{ root_url }}pdf_uzk/" + pk + "/' title='УЗК заключение' target='_blank'><i class='fa fa-file-pdf-o'></i></a> ";
     if(data['uzk']){
@@ -104,6 +116,42 @@ $(document).ready(function(){
   var accessor_not_empty = function(value, data, type, params, column){
     return value ? value : '';
   }
+  var accessor_request_number = function(value, data, type, params, column){
+    return data['welding_joint'] ? data['welding_joint']['request_number'] : '';
+  }
+  var accessor_state = function(value, data, type, params, column){
+    return conclusion_states[value];
+  }
+  var accessor_vik = function(value, data, type, params, column){
+    return data['vik'] ? "Дефекты: " + data['vik']['defects'] : '';
+  };
+  var accessor_rk = function(value, data, type, params, column){
+    var result = "";
+    if(data['rk']){
+      for(var i=0; i<data['rk'].length; i++){
+        defects = data['rk'][i]['defects'];
+        notice = data['rk'][i]['notice'];
+        if(defects || notice){
+          result += "Дефекты: " + defects + "\nПримечание: " + notice + "\n\n";
+        }
+      }
+    }
+    return result;
+  };
+  var accessor_pvk = function(value, data, type, params, column){
+    return data['pvk'] ? "Дефекты: " + data['pvk']['defects'] : '';
+  };
+  var accessor_uzk = function(value, data, type, params, column){
+    var result = "";
+    if(data['uzk']){
+      defects = data['uzk']['defects'];
+      notice = data['uzk']['notice'];
+      if(defects || notice){
+        result += "Дефекты: " + defects + "\nПримечание: " + notice + "\n\n";
+      }
+    }
+    return result;
+  };
 
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
@@ -116,6 +164,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         formatter: weldingJointFormatter,
         minWidth: 240,
+        accessorDownload: accessor_request_number,
       },
       {
         title: "Дата заключения",
@@ -124,6 +173,7 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "=",
         minWidth: 90,
+        accessorDownload: accessor_not_empty,
       },
       {
         title: "Результат заключения",
@@ -138,40 +188,48 @@ $(document).ready(function(){
         editor: "select",
         formatter: conclusionStateFormatter,
         width: 90,
+        accessorDownload: accessor_state,
       },
       {
         title: "ВИК",
-        field: "id",
+        field: "vik",
         headerSort: false,
         formatter: pdfVIKFormatter,
         width: 150,
-        download: false,
+        accessorDownload: accessor_vik,
       },
       {
         title: "РК",
-        field: "id",
+        field: "rk",
         headerSort: false,
         formatter: pdfRKFormatter,
         width: 150,
-        download: false,
+        accessorDownload: accessor_rk,
       },
       {
         title: "ПВК",
-        field: "id",
+        field: "pvk",
         headerSort: false,
         formatter: pdfPVKFormatter,
         width: 150,
-        download: false,
+        accessorDownload: accessor_pvk,
       },
       {
         title: "УЗК",
-        field: "id",
+        field: "uzk",
         headerSort: false,
         formatter: pdfUZKFormatter,
         width: 150,
+        accessorDownload: accessor_uzk,
+      },
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsConclusionFormatter,
+        width: 120,
         download: false,
       },
-      {% include "core/tabulator_cell/actions.html" %}
     ],
   });
   $(".tabulator-headers .tabulator-col").each(function(){

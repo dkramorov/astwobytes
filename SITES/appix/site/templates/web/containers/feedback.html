@@ -1,0 +1,43 @@
+{% load mtags %}
+<section id="contact">
+  <div class="contact-us-area"{% if container.img %} style="background-image: url('{% imagine container.img '1920x1080' container.get_folder True %}');"{% endif %}>
+    <div class="overlay-color pt-70">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="themeix-section-heading-title">
+              <h2 class="head-title themeix-title-a-b-col-change title-color-change">{{ container.name }}</h2>
+              {% if container.description %}<div class="light-300 para-color-change change-color">{{ container.description|safe }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 col-md-push-3">
+            <div class="contact-form">
+              <form action="/feedback/" method="post" class="contact-form">
+                <div class="form-group">
+                  <input class="form-control" type="text" id="name" placeholder="Ваше имя" required>
+                </div>
+                <div class="form-group">
+                  <input class="form-control" type="text" id="phone" placeholder="Ваш телефон" required>
+                </div>
+                <div class="form-group">
+                  <input class="form-control" type="email" id="email" placeholder="Ваш Email" required>
+                </div>
+                <div class="form-group">
+                  <textarea rows="5" class="form-control" name="msg" placeholder="Ваше сообщение" required></textarea>
+                </div>
+                <div class="form-group">
+                  <div class="themeix-button-group">
+                    <button type="submit" class="themeix-submit-btn">Отправить</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

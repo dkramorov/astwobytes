@@ -1384,7 +1384,6 @@ ul.pricing-plan li {
 }
 .play-store-button:after {
     position: absolute;
-    content: "Download From";
     left: 0;
     top: 16px;
     font-size: 13px;

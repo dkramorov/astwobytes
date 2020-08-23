@@ -1,0 +1,24 @@
+{% load mtags %}
+<section id="get-apps" class="get-appix-setion section-ptb">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="themeix-section-heading-title">
+          <h2 class="head-title">{{ container.name }}</h2>
+          {% if container.description %}<div class="light-300">{{ container.description|safe }}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="display-middle">
+          <div class="table-middle">
+            {% for block in blocks %}
+              <a href="{{ block.link }}" class="play-store-button{% cycle '' ' itune-change-bg-color' %}"><i class="fa fa-{{ block.icon }}"></i> {{ block.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
