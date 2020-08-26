@@ -26,6 +26,12 @@
       </div>
     </div>
     <div class="form-group">
+      <label class="col-lg-2 control-label">Условная чувствительность зарубка (2) в мм</label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Условная чувствительность зарубка (2) в мм" class="form-control" name="uzk_sensitivity2" value="{% if row.uzk_sensitivity2 %}{{ row.uzk_sensitivity2 }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
       <label class="col-lg-2 control-label">Дефекты</label>
       <div class="col-lg-10">
         <input type="text" placeholder="Дефекты" class="form-control" name="uzk_defects" value="{% if row.uzk_defects %}{{ row.uzk_defects }}{% endif %}" autocomplete="off">

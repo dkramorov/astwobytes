@@ -44,17 +44,23 @@ $(document).ready(function(){
     var data = row.getData();
     var actions = "<div class='padding-rl5'>";
 
+    {% if permissions.create %}
+      actions += "<a class='btn-xs btn btn-info pull-left' href='{{ root_url }}conclusion/" + pk + "/' title='Заключения'><i class='fa fa-gavel'></i></a> ";
+    {% endif %}
+
     {% if perms.weld.change_weldingjointstate %}
       if(data.state == 1){
-        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left' href='javascript:void(0);' onclick='state_to_progress(" + pk + ", " + rowIndex + ")' title='Принять заявку в работу'><i class='fa fa-check-square-o'></i></a> ";
+        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left ml' href='javascript:void(0);' onclick='state_to_progress(" + pk + ", " + rowIndex + ")' title='Принять заявку в работу'><i class='fa fa-check-square-o'></i></a> ";
       }else if(data.state == 2){
-        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-success pull-left' href='javascript:void(0);' onclick='state_to_complete(" + pk + ", " + rowIndex + ")' title='Принять стык как готовый'><i class='fa fa-check-square-o'></i></a> ";
+/* Принять стык - опасная операция - пусть делают из редактирования
+        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-success pull-left ml' href='javascript:void(0);' onclick='state_to_complete(" + pk + ", " + rowIndex + ")' title='Принять стык как готовый'><i class='fa fa-check-square-o'></i></a> ";
+*/
       }
     {% endif %}
 
     {% if perms.weld.repair_completed %}
       if(data.state == 4){
-        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left' href='javascript:void(0);' onclick='state_to_new(" + pk + ", " + rowIndex + ")' title='Ремонт выполнен'><i class='fa fa-check-square-o'></i></a> ";
+        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left ml' href='javascript:void(0);' onclick='state_to_new(" + pk + ", " + rowIndex + ")' title='Ремонт выполнен'><i class='fa fa-check-square-o'></i></a> ";
       }
     {% endif %}
 
@@ -196,7 +202,29 @@ $(document).ready(function(){
     var data = cell.getRow().getData();
     return data['joint_conclusion'] ? conclusion_states[data['joint_conclusion']['state']] : '';
   };
-
+  var noticeFormatter = function(cell, formatterParams, onRendered){
+    var result = "<div style='white-space:normal;'>";
+    var data = cell.getRow().getData();
+    if(data['joint_conclusion']){
+      if(data['joint_conclusion']['vik_defects']){
+        result += "ВИК дефекты:<br>" + data['joint_conclusion']['vik_defects'] + "<br>";
+      }
+      if(data['joint_conclusion']['rk_frames']){
+        result += "РК дефекты:<br>";
+        for(var i=0; i<data['joint_conclusion']['rk_frames'].length; i++){
+          result += data['joint_conclusion']['rk_frames'][i] + "<br>";
+        }
+      }
+      if(data['joint_conclusion']['pvk_defects']){
+        result += "ПВК дефекты:<br>" + data['joint_conclusion']['pvk_defects'] + "<br>";
+      }
+      if(data['joint_conclusion']['uzk_defects']){
+        result += "УЗК дефекты:<br>" + data['joint_conclusion']['uzk_defects'] + "<br>";
+      }
+    }
+    result += "</div>";
+    return result;
+  };
 
   var accessor_not_empty = function(value, data, type, params, column){
     return value ? value : '';
@@ -245,6 +273,27 @@ $(document).ready(function(){
   }
   var accessor_joint = function(value, data, type, params, column){
     return data['joint'] ? data['joint']['name'] : '';
+  }
+  var accessor_notice = function(value, data, type, params, column){
+    var result = "";
+    if(data['joint_conclusion']){
+      if(data['joint_conclusion']['vik_defects']){
+        result += "ВИК дефекты:\n" + data['joint_conclusion']['vik_defects'] + "\n";
+      }
+      if(data['joint_conclusion']['rk_frames']){
+        result += "РК дефекты:\n";
+        for(var i=0; i<data['joint_conclusion']['rk_frames'].length; i++){
+          result += data['joint_conclusion']['rk_frames'][i] + "\n";
+        }
+      }
+      if(data['joint_conclusion']['pvk_defects']){
+        result += "ПВК дефекты:\n" + data['joint_conclusion']['pvk_defects'] + "\n";
+      }
+      if(data['joint_conclusion']['uzk_defects']){
+        result += "УЗК дефекты:\n" + data['joint_conclusion']['uzk_defects'] + "\n";
+      }
+    }
+    return result;
   }
 
   main_table = new Tabulator("#main-table", {
@@ -508,17 +557,16 @@ $(document).ready(function(){
         minWidth: 90,
         accessorDownload: accessor_conclusion_date,
       },
-/*
+      // В примечание пишем дефекты,
+      // если они есть по заключениям
       {
         title: "Примечание",
         field: "notice",
-        headerFilterPlaceholder: "Примечание",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        minWidth: 120,
-        accessorDownload: accessor_not_empty,
+        headerSort: false,
+        formatter: noticeFormatter,
+        minWidth: 250,
+        accessorDownload: accessor_notice,
       },
-*/
       {
         title: "PDF",
         field: "id",
@@ -548,7 +596,7 @@ $(document).ready(function(){
         field: "actions",
         headerSort: false,
         formatter: actionsJointFormatter,
-        width: 120,
+        width: 160,
         download: false,
       },
     ],

@@ -1,4 +1,4 @@
-{% load mtags %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+{% load mtags welding_tags %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>{% block title %}{% endblock %}</title>
@@ -15,6 +15,21 @@
    src: url("{{ font_bold }}");
    font-weight: bold;
 }
+
+@font-face {
+  font-family: TimesNewRoman;
+  src: url("{{ font_times }}");}
+@font-face {
+   font-family: TimesNewRoman;
+   src: url("{{ font_times_bold }}");
+   font-weight: bold;
+}
+
+body{
+  font-family: TimesNewRoman;
+  font-size: 11px;
+}
+
 @page {
   size: {{ pagesize }};
   @frame main_frame {
@@ -45,6 +60,19 @@ p, ul, ul li {
 .text-center {
   text-align: center;
 }
+table.two_col tr td.first {
+  text-align: left;
+  padding: 3px 0 1px 0;
+  border: 0;
+}
+table.two_col tr td.second {
+  text-align: right;
+  padding: 3px 0 1px 0;
+  border: 0;
+}
+table.two_col tr.noborder th,
+table.two_col tr th.noborder,
+table.two_col tr.noborder td,
 table.two_col tr td.noborder {
   border: 0;
 }
@@ -78,6 +106,22 @@ table.two_col .inner tr td.nopadding {
 .underline{
   text-decoration: underline;
 }
+table.two_col .inner .signs tr td {
+  vertical-align: top;
+  padding: 3px 0 3px 0;
+}
+.sign_notice {
+  margin-top: -8px;
+  display: block;
+  position: relative;
+  /*text-decoration: line-through;*/
+  border-top: 1px solid #000;
+}
+.sign_notice2 {
+  margin-top: -3px;
+  display: block;
+  position: relative;
+}
 </style>
 </head>
 <body>
@@ -92,141 +136,98 @@ table.two_col .inner tr td.nopadding {
         <th width="60%">&nbsp;</th>
       </tr>
       <tr>
-        <td>
+        <td class="first">
           <p>
             Министерство
             {% if joint.line.titul.subject.company.customer %}
               {{ joint.line.titul.subject.company.customer }}
             {% else %}-{% endif %}
           </p>
-        </td>
-        <td>
-          </p>
-            Форма № 2.9
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
           <p>
             Объединение, трест
             {% if joint.line.titul.subject.company.fitter %}
               {{ joint.line.titul.subject.company.fitter }}
             {% else %}-{% endif %}
           </p>
-        </td>
-        <td>
-          <p>
-            Основание: ВСН 012-88 (Часть II)
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
           <p>Обособленное подразделение ЛНК г. Иркутск</p>
-        </td>
-        <td>
-          <p>
-            Миннефтегазстрой
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
           <p>Свидетельство об аттестации № 58A171196</p>
           <p>действительно до 14.03.2022 г.</p>
-        </td>
-        <td>
-          <p>
-            Строительство:
-            {% if joint.line.titul.subject.name %}
-              {{ joint.line.titul.subject.name }}
-            {% else %}-{% endif %}
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
           <p>
             СМУ, СУ, ПМК, КТП
             {% if joint.line.titul.subject.company.name %}
               {{ joint.line.titul.subject.company.name }}
             {% else %}-{% endif %}
           </p>
+          <p>
+            Участок:
+            {% if joint.line.titul.subject.name %}
+              {{ joint.line.titul.subject.name }}
+            {% else %}-{% endif %}
+          </p>
         </td>
-        <td class="inner">
-          <table>
-            <tr>
-              <td>
-                {% if joint.line.titul.description %}
-                  {{ joint.line.titul.description }}
-                {% else %}Титул без описания{% endif %}
-              </td>
-              <td>
-                {% if joint.line.titul.name %}
-                  {{ joint.line.titul.name }}
-                {% else %}-{% endif %}
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p>&nbsp;</p>
-        </td>
-        <td class="inner">
-          <table>
-            <tr>
-              <td>Линия</td>
-              <td>
-                {% if joint.line.name %}
-                  {{ joint.line.name }}
-                {% else %}-{% endif %}
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p>&nbsp;</p>
-        </td>
-        <td class="inner">
-          <table>
-            <tr>
-              <td>категория трубопровода</td>
-              <td>
-                {% if row.welding_joint.category %}
-                  {{ row.welding_joint.get_category_display }}
-                {% else %}-{% endif %}
-              </td>
-            </tr>
-          </table>
+        <td class="second">
+          <p>Форма № 2.9</p>
+          <p>Основание: ВСН 012-88 (Часть II)</p>
+          <p>Миннефтегазстрой</p>
+          <p>
+            Строительство:
+            {% if joint.line.titul.code %}
+              {{ joint.line.titul.code }}
+            {% else %}-{% endif %}
+            {% if joint.line.titul.name %}
+              {{ joint.line.titul.name }}
+            {% else %}-{% endif %}
+          </p>
+          <p>
+            {% if joint.line.titul.description %}
+              {{ joint.line.titul.description }}
+            {% else %}Титул без описания{% endif %}
+          </p>
+          <p>
+            {% if joint.line.titul.subject.name %}
+              {{ joint.line.titul.subject.name }}
+            {% else %}-{% endif %}
+          </p>
+          <p>
+            Линия
+            {% if joint.line.name %}
+              {{ joint.line.name }}
+            {% else %}-{% endif %}
+          </p>
+          <p>
+            Категория трубопровода
+            {% if row.welding_joint.category %}
+              {{ row.welding_joint.get_category_display }}
+            {% else %}-{% endif %}
+          </p>
         </td>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td class="noborder">&nbsp;</td>
-        <td class="noborder">&nbsp;</td>
+      <tr class="noborder">
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
       </tr>
-      <tr>
-        <td colspan="2" class="noborder">
+      <tr class="noborder">
+        <td colspan="2">
           <p class="text-center title">
-            Заключение № {{ row.id }} УЗК от
-            {% if row.date %}
-              {{ row.date|date:'d/m/Y' }}
-            {% else %}
-              {{ today|date:'d/m/Y' }}
-            {% endif %}
+            <strong>
+              Заключение № {{ uzk_number }} от
+              {% if row.date %}
+                {{ row.date|date:'d/m/Y' }}
+              {% else %}
+                {{ today|date:'d/m/Y' }}
+              {% endif %}
+            </strong>
           </p>
           <p class="text-center">
-            по ультразвуковому контролю качества сварных соединений
+            <strong>
+              по ультразвуковому контролю качества сварных соединений
+            </strong>
           </p>
         </td>
       </tr>
-      <tr>
+      <tr class="noborder">
         <td>
           <p>Контроль качества сварных стыков</p>
         </td>
@@ -239,7 +240,7 @@ table.two_col .inner tr td.nopadding {
           </p>
         </td>
       </tr>
-      <tr>
+      <tr class="noborder">
         <td>
           <p>Сварное соединение</p>
         </td>
@@ -252,37 +253,49 @@ table.two_col .inner tr td.nopadding {
           </p>
         </td>
       </tr>
-      <tr>
-        <td colspan="2" class="noborder">
-          <p class="text-center">
-            Выполняется ультразвуковым дефектоскопом типа A1212 MASTER зав № 4142899
+      <tr class="noborder">
+        <td colspan="2">
+          <p>
+            Выполняется ультразвуковым дефектоскопом типа
+            <span class="underline">A1212 MASTER зав № 4142899</span>
           </p>
-          <p class="text-center">
-            свидетельство о проверке № 28833-15 до 05.12.2020 г. Рабочая частота 2.5 МГц, 5.0 МГц
+          <p>
+            свидетельство о проверке
+            <span class="underline">№ 28833-15 до 05.12.2020г</span>
+            Рабочая частота 2.5 МГц, 5.0 МГц
           </p>
         </td>
       </tr>
-     <tr>
-        <td>
-          <p>
-            Оператор
-            {% if row.operator.name %}
-              {{ row.operator.name }}
-            {% else %}-{% endif %}
-          </p>
-        </td>
-        <td>
-          <p>
-            Удостоверение
-            {% if row.operator.stigma %}
-              {{ row.operator.stigma }}
-            {% else %}-{% endif %}
-          </p>
+      <tr class="noborder">
+        <td colspan="2" class="inner">
+          <table>
+            <tr style="height:0;">
+              <td width="20%">&nbsp;</td>
+              <td width="25%">&nbsp;</td>
+              <td width="55%">&nbsp;</td>
+            </tr>
+            <tr>
+              <td>Оператор</td>
+              <td class="text-center">
+                {% if row.uzk_operator.name %}
+                  {{ row.uzk_operator.name|surname_and_initials }}
+                {% else %}-{% endif %}
+                <br>
+                <sup class="sign_notice2">(фамилия, инициалы)</sup>
+              </td>
+              <td>
+                Удостоверение
+                {% if row.uzk_operator.stigma %}
+                 {{ row.uzk_operator.stigma }}
+                {% else %}-{% endif %}
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
-      <tr>
-        <td class="noborder">&nbsp;</td>
-        <td class="noborder">&nbsp;</td>
+      <tr class="noborder">
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
         <td colspan="2">
@@ -296,13 +309,14 @@ table.two_col .inner tr td.nopadding {
               <tr style="height: 0;">
                 <th width="4%">&nbsp;</th>
                 <th width="8%">&nbsp;</th>
-                <th width="15%">&nbsp;</th>
-                <th width="9%">&nbsp;</th>
-                <th width="9%">&nbsp;</th>
+                <th width="10%">&nbsp;</th>
+                <th width="10%">&nbsp;</th>
                 <th width="8%">&nbsp;</th>
-                <th width="9%">&nbsp;</th>
+                <th width="8%">&nbsp;</th>
+                <th width="8%">&nbsp;</th>
+                <th width="8%">&nbsp;</th>
                 <th width="13%">&nbsp;</th>
-                <th width="12%">&nbsp;</th>
+                <th width="10%">&nbsp;</th>
                 <th width="13%">&nbsp;</th>
               </tr>
               <tr>
@@ -313,12 +327,13 @@ table.two_col .inner tr td.nopadding {
                 <th>Шифр сварщика</th>
                 <th>Угол ввода луча, градусы</th>
                 <th>Условная чувстви- тельность зарубка, мм</th>
+                <th>Условная чувстви- тельность зарубка, мм</th>
                 <th>Описание обнаруженных дефектов</th>
-                <th>Заключения: годен, исправить, вырезать</th>
+                <th>Заклю- чения: годен, исправить, вырезать</th>
                 <th>Примечание</th>
               </tr>
               <tr>
-                {% for i in '1234567890' %}
+                {% for i in '12345678901' %}
                   <th>{% if forloop.counter > 9 %}1{% endif %}{{ i }}</th>
                 {% endfor %}
               </tr>
@@ -354,6 +369,7 @@ table.two_col .inner tr td.nopadding {
                 </td>
                 <td>{% if row.uzk_ray_angle %}{{ row.uzk_ray_angle }}{% else %}-{% endif %}</td>
                 <td>{% if row.uzk_sensitivity %}{{ row.uzk_sensitivity }}{% else %}-{% endif %}</td>
+                <td>{% if row.uzk_sensitivity2 %}{{ row.uzk_sensitivity2 }}{% else %}-{% endif %}</td>
                 <td>{% if row.uzk_defects %}{{ row.uzk_defects }}{% else %}-{% endif %}</td>
                 <td>{% if row.uzk_state %}{{ row.get_uzk_state_display }}{% else %}-{% endif %}</td>
                 <td>{% if row.uzk_notice %}{{ row.uzk_notice }}{% else %}-{% endif %}</td>
@@ -368,74 +384,119 @@ table.two_col .inner tr td.nopadding {
         <td class="noborder">&nbsp;</td>
         <td class="noborder">&nbsp;</td>
       </tr>
-      <tr>
-        <td class="noborder">&nbsp;</td>
-        <td class="inner noborder">
-          <table>
-            <tr>
-              <td>
+      <tr class="noborder">
+        <td>&nbsp;</td>
+        <td class="inner">
+          <table class="signs">
+            <tr style="height: 0;">
+              <td width="41%"></td>
+              <td width="33%"></td>
+              <td width="12%"></td>
+              <td width="14%"></td>
+            </tr>
+            <tr class="text-center">
+              <td class="text-right">
                 Стык принял по внешнему виду
                 <br>дефектоскопист
               </td>
               <td>
                 {% if row.uzk_defectoscopist1.name %}
-                  {{ row.uzk_defectoscopist1.name }}
+                  {{ row.uzk_defectoscopist1.name|surname_and_initials }}
                 {% else %}-{% endif %}
+                <br>
+                <sup class="sign_notice">(фамилия, инициалы)</sup>
+              </td>
+              <td>
+                <br>
+                <sup class="sign_notice">(подпись)</sup>
               </td>
               <td>
                 {% if row.date %}
                   {{ row.date|date:'d/m/Y' }}
                 {% else %}{{ today|date:'d/m/Y' }}{% endif %}
+                <br>
+                <sup class="sign_notice">(дата)</sup>
               </td>
             </tr>
-            <tr>
-              <td>
+            <tr class="text-center">
+              <td class="text-right">
                 Контроль произвел
                 <br>дефектоскопист
               </td>
               <td>
                 {% if row.uzk_defectoscopist2.name %}
-                  {{ row.uzk_defectoscopist2.name }}
+                  {{ row.uzk_defectoscopist2.name|surname_and_initials }}
                 {% else %}-{% endif %}
+                <br>
+                <sup class="sign_notice">(фамилия, инициалы)</sup>
+              </td>
+              <td>
+                <br>
+                <sup class="sign_notice">(подпись)</sup>
               </td>
               <td>
                 {% if row.date %}
                   {{ row.date|date:'d/m/Y' }}
                 {% else %}{{ today|date:'d/m/Y' }}{% endif %}
+                <br>
+                <sup class="sign_notice">(дата)</sup>
               </td>
             </tr>
-            <tr>
-              <td>
+            <tr class="text-center">
+              <td class="text-right">
                 Заключение выдал
                 <br>дефектоскопист
               </td>
               <td>
                 {% if row.uzk_defectoscopist3.name %}
-                  {{ row.uzk_defectoscopist3.name }}
+                  {{ row.uzk_defectoscopist3.name|surname_and_initials }}
                 {% else %}-{% endif %}
-                <br>удостоверение
+                <br>
+                <sup class="sign_notice">(фамилия, инициалы)</sup>
+              </td>
+              <td>
+                <br>
+                <sup class="sign_notice">(подпись)</sup>
+              </td>
+              <td>
+                {% if row.date %}
+                  {{ row.date|date:'d/m/Y' }}
+                {% else %}{{ today|date:'d/m/Y' }}{% endif %}
+                <br>
+                <sup class="sign_notice">(дата)</sup>
+              </td>
+            </tr>
+            <tr class="text-center">
+              <td>&nbsp;</td>
+              <td>
+                удостоверение №
+              </td>
+              <td colspan="2">
                 {% if row.uzk_defectoscopist3.stigma %}
                   {{ row.uzk_defectoscopist3.stigma }}
                 {% else %}-{% endif %}
               </td>
-              <td>
-                {% if row.date %}
-                  {{ row.date|date:'d/m/Y' }}
-                {% else %}{{ today|date:'d/m/Y' }}{% endif %}
-              </td>
             </tr>
-            <tr>
-              <td>Производитель сварочно-монтажных работ с результатами контроля ознакомлен</td>
+            <tr class="text-center">
+              <td class="text-right">Производитель сварочно-монтажных работ с результатами контроля ознакомлен</td>
               <td>
-                &nbsp;
+                <br>
+                <sup class="sign_notice">(должность, фамилия, инициалы)</sup>
+              </td>
+              <td>
+                <br>
+                <sup class="sign_notice">(подпись)</sup>
               </td>
               <td>
                 {% if row.date %}
                   {{ row.date|date:'d/m/Y' }}
                 {% else %}{{ today|date:'d/m/Y' }}{% endif %}
+                <br>
+                <sup class="sign_notice">(дата)</sup>
               </td>
             </tr>
           </table>
+
         </td>
       </tr>
     </tfoot>

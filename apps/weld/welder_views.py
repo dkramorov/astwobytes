@@ -531,20 +531,26 @@ defectoscopists_vars = {
 @login_required
 def show_defectoscopists(request, *args, **kwargs):
     """Вывод дефектоскопистов"""
+    extra_vars = {
+        'state_choices': Defectoscopist.state_choices,
+    }
     return show_view(request,
                      model_vars = defectoscopists_vars,
                      cur_app = CUR_APP,
-                     extra_vars = None, )
+                     extra_vars = extra_vars, )
 
 @login_required
 def edit_defectoscopist(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование дефектоскопистов"""
+    extra_vars = {
+        'state_choices': Defectoscopist.state_choices,
+    }
     return edit_view(request,
                      model_vars = defectoscopists_vars,
                      cur_app = CUR_APP,
                      action = action,
                      row_id = row_id,
-                     extra_vars = None, )
+                     extra_vars = extra_vars, )
 
 @login_required
 def defectoscopists_positions(request, *args, **kwargs):

@@ -282,6 +282,7 @@ def get_cat_for_site(request, link: str = None,
                 cond = Q()
                 cond.add(Q(cat=page), Q.OR)
                 cond.add(Q(cat__parents='_%s' % page.id), Q.OR)
+                cond.add(Q(cat__parents__startswith='%s_%s_' % (page.parents, page.id)), Q.OR)
                 query = query.filter(cond)
 
             breadcrumbs.append({'name': page.name, 'link': page.link})

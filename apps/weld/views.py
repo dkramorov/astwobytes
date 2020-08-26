@@ -29,7 +29,7 @@ from apps.weld.enums import (WELDING_TYPES,
                              get_welding_joint_state, )
 from apps.weld.welder_model import (Welder,
                                     LetterOfGuarantee, )
-from apps.weld.conclusion_model import JointConclusion
+from apps.weld.conclusion_model import JointConclusion, RKFrames
 from .models import (WeldingJoint,
                      JointWelder,
                      WeldingJointFile,
@@ -143,6 +143,9 @@ def show_welding(request, *args, **kwargs):
             'state',
             'joint_conclusion__date',
             'joint_conclusion__state',
+            'joint_conclusion__vik_defects',
+            'joint_conclusion__pvk_defects',
+            'joint_conclusion__uzk_defects',
         )
         rows = mh.standard_show(only_fields=only_fields,
                                 related_fields=('joint_conclusion', ))
@@ -153,14 +156,31 @@ def show_welding(request, *args, **kwargs):
             'titul': ('name', ),
             'subject': ('name', ),
             'company': ('name', ),
-            'joint_conclusion': ('date', 'state'),
+            'joint_conclusion': (
+                'date',
+                'state',
+                'vik_defects',
+                'pvk_defects',
+                'uzk_defects', ),
         }
+        # Только для ремонта
+        conclusions = {row.joint_conclusion.id: [] for row in rows if hasattr(row, 'joint_conclusion')}
+        rk_frames = []
+        if conclusions:
+            rk_frames = RKFrames.objects.filter(
+                joint_conclusion__in=conclusions.keys(),
+            ).exclude(state=1).values('joint_conclusion', 'defects')
+        for rk_frame in rk_frames:
+            conclusions[rk_frame['joint_conclusion']].append(rk_frame['defects'])
         for row in rows:
             item = object_fields(row,
                                  only_fields=only_fields,
                                  fk_only_keys=fk_keys,
                                  related_fields=('joint_conclusion', ))
             item['actions'] = row.id
+            if hasattr(row, 'joint_conclusion'):
+                if row.joint_conclusion.id in conclusions:
+                    item['joint_conclusion']['rk_frames'] = conclusions[row.joint_conclusion.id]
             result.append(item)
         if request.GET.get('page'):
             result = {'data': result,
@@ -209,9 +229,14 @@ def update_welding_joint_state(request, mh):
         new_state = get_welding_joint_state(new_state)
     # Новая => В работе
     new2progress = state == 1 and new_state == 2 and permissions['edit']
+    # Новая => Отклоненнные заявки
+    # В работе => Отклоненные заявки
+    new2rejected = state in (1, 2) and new_state == 5 and permissions['edit']
+    # Отклоненная => В работе
+    rejected2new = state == 5 and new_state == 1 and permissions['repair_completed']
     # В работе => В ремонте
     progress2repair = state == 2 and new_state == 4 and permissions['edit']
-    # В ремонте => В работе
+    # В ремонте => Новая
     repair2new = state == 4 and new_state == 1 and permissions['repair_completed']
     # В работе => Готово
     progress2complete = state == 2 and new_state == 3 and permissions['edit']
@@ -220,7 +245,7 @@ def update_welding_joint_state(request, mh):
     # -----------------
     # Установить статус
     # -----------------
-    if new2progress or progress2repair or repair2new or progress2complete or none2new:
+    if new2progress or progress2repair or repair2new or progress2complete or none2new or new2rejected or rejected2new:
         WeldingJointState.objects.create(
             from_state=state,
             to_state=new_state,
@@ -414,6 +439,12 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 else:
                     context['error'] = 'Недостаточно прав'
             elif action == 'form':
+                # Заявки в ремонте даем редактировать,
+                # чтобы гондоны смогли хотя бы со второго
+                # раза правильно подать, а кто то с пятого
+                if mh.row.state in (1, 5) and mh.permissions['repair']:
+                    mh.permissions['edit'] = True
+
                 if mh.permissions['edit'] and mh.row:
                     # Принятую заявку не редактируем
                     if mh.row.state == 3:

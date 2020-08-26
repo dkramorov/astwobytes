@@ -29,6 +29,12 @@ function state_to_new(pk, ind){
   // :param ind: индекс строки в таблице
   state_helper(pk, ind, 'new', 1)
 }
+function state_to_rejected(pk, ind){
+  // Переместить в новые заявки (Принять ремонт)
+  // :param pk: ид заявки на стык
+  // :param ind: индекс строки в таблице
+  state_helper(pk, ind, 'rejected', 1)
+}
 function state_helper(pk, ind, new_state, state){
   // Вспомогательная функция для смены статуса заявки
   // :param pk: ид заявки на стык
@@ -62,6 +68,7 @@ function state_helper(pk, ind, new_state, state){
       }
       $("#state_for_" + pk).addClass("hidden");
       $("#state_for_" + pk + "_r").addClass("hidden"); // В ремонт
+      $("#state_for_" + pk + "_r2").addClass("hidden"); // Отклонить заявку
     }
     $.notify({
       message: msg,

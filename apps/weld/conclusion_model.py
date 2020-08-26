@@ -87,6 +87,8 @@ class JointConclusion(Standard):
         verbose_name='Угол ввода луча в градусах')
     uzk_sensitivity = models.IntegerField(blank=True, null=True, db_index=True,
         verbose_name='Условная чувствительность зарубка в мм')
+    uzk_sensitivity2 = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Условная чувствительность зарубка в мм')
     uzk_defects = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Выявленные дефекты УЗК')
@@ -136,6 +138,32 @@ class JointConclusion(Standard):
             'mime': item.file.mime,
             'folder': item.file.get_folder(),
         } for item in files]
+
+    def get_conclusion_numbers(self, welding_joint):
+        """Получить номера заключений из заявки на стык
+           :param welding_joint: заявка на стык
+        """
+        conclusion_number = self.id
+        obj = welding_joint
+        if obj.joint and obj.joint.line and obj.joint.line.titul and obj.joint.line.titul.subject and obj.joint.line.titul.subject.company:
+            repair = ''
+            if obj.repair:
+                repair = 'р%s' % obj.repair
+            conclusion_number = '%s-%s-%s-%s-%s-%s%s' % (
+                obj.joint.line.titul.subject.company.code or '',
+                obj.joint.line.titul.subject.code or '',
+                obj.joint.line.titul.name or '',
+                obj.joint.line.name or '',
+                '{}',
+                obj.joint.name or '',
+                repair,
+            )
+        return {
+            'vik_number': conclusion_number.format('ВИК'),
+            'rk_number': conclusion_number.format('РК'),
+            'pvk_number': conclusion_number.format('ПВК'),
+            'uzk_number': conclusion_number.format('УЗК'),
+        }
 
 class RKFrames(Standard):
     """Снимки на РК контроль для РК заключения

@@ -443,7 +443,8 @@ def edit_joint(request, action: str, row_id: int = None, *args, **kwargs):
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
         can_edit = True
-        if row and row.welding_joint and row.welding_joint.state:
+
+        if row and hasattr(row, 'welding_joint') and row.welding_joint.state:
             state = row.welding_joint.state
             if state > 1:
                 can_edit = False
@@ -462,9 +463,6 @@ def edit_joint(request, action: str, row_id: int = None, *args, **kwargs):
             if action == 'edit' and can_edit:
                 if mh.permissions['edit']:
                     mh.save_row()
-                    # Обновляем номер заявки, если она есть
-                    if mh.row.welding_joint:
-                        mh.row.welding_joint.update_request_number()
                     if mh.error:
                         context['error'] = mh.error
                     else:

@@ -55,6 +55,7 @@
         <label class="col-lg-2 control-label">Иконка</label>
         <div class="col-lg-10">
           <select name="icon" id="icon_fontawesome" autocomplete="off">
+            <option value=""></option>
             {% if row.icon %}
               <option value="{{ row.icon }}" selected>{{ row.icon }}</option>
             {% endif %}

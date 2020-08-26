@@ -31,6 +31,14 @@ $(document).ready(function(){
     columns:[
       {% include "core/tabulator_cell/name.html" %}
       {
+        title: "Шифр",
+        field: "code",
+        headerFilterPlaceholder: "Шифр",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
         title: "Описание",
         field: "description",
         headerFilterPlaceholder: "Описание",

@@ -2,9 +2,6 @@
 import os
 import logging
 
-from openpyxl import load_workbook
-from io import BytesIO
-
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
@@ -263,7 +260,7 @@ def analyze_daily_report_weldings():
         code = 'ТПС',
     )
     subject = Subject.objects.create(
-      name = 'Усть-Кутская ГФУ',
+      name = 'Усть-Кутская газофракционирующая установка',
       code = 'ГФУ',
       company = company,
     )

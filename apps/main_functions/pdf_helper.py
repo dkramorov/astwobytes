@@ -50,12 +50,16 @@ def render_pdf(request,
 
     font = os.path.join(settings.STATIC_ROOT, 'fonts/DejaVuSans.ttf')
     font_bold = os.path.join(settings.STATIC_ROOT, 'fonts/DejaVuSans-Bold.ttf')
+    font_times = os.path.join(settings.STATIC_ROOT, 'fonts/TimesNewRomanPSMT.ttf')
+    font_times_bold = os.path.join(settings.STATIC_ROOT, 'fonts/TimesNewRomanPS-BoldMT.ttf')
     default_context = {
         'pagesize': pagesize,
         'page_orientation': page_orientation,
         'page_size': page_size,
         'font': font,
         'font_bold': font_bold,
+        'font_times': font_times,
+        'font_times_bold': font_times_bold,
     }
     context.update(default_context)
 

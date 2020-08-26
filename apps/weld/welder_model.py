@@ -26,14 +26,23 @@ class Welder(Standard):
 
 class Defectoscopist(Standard):
     """Дефектоскописты"""
+    state_choices = (
+        (1, 'Начальник лаборатории'),
+        (2, 'Дефектоскопист'),
+        (3, 'Ведущий специалист ЛНК'),
+    )
     name = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True)
+        blank=True, null=True, db_index=True,
+        verbose_name='Полное имя, например, Проскоков Никита Владимирович')
     stigma = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Номер удостоверения, например, 0048-1962')
     notice = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Примечание')
+    state = models.IntegerField(choices=state_choices,
+        blank=True, null=True, db_index=True,
+        verbose_name='Должность')
     # is_active - уволен/не уволен
     class Meta:
         verbose_name = 'Контроль - Дефектоскопист'

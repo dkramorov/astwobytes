@@ -274,7 +274,7 @@ def search_view(request,
     for sfield in sfields:
         if hasattr(model, sfield):
             exists_fields.append(sfield)
-    mh.search_fields = (sfield)
+    mh.search_fields = (exists_fields)
 
     voca = []
     useful_fk = []

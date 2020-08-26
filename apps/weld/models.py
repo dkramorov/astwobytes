@@ -28,12 +28,13 @@ class WeldingJoint(Standard):
         (3, 'ВИК'), # Визуально-измерительный контроль
         (4, 'РК-ВИК'),
         (5, 'УК'),
-        (6, 'РК-УЗК-ЦД'),
+        (6, 'УЗК-ЦД'),
         (7, 'РК-УЗК'),
-        (8, 'ПВК'), # Капиллярный метод проверки
-        (9, 'МК'), # Магнитный контроль
-        (10, 'ВК'), # Входной контроль
-        (11, 'СР'), # Скрытые работы
+        (8, 'РК-УЗК-ЦД'),
+        (9, 'ПВК'), # Капиллярный метод проверки
+        (10, 'МК'), # Магнитный контроль
+        (11, 'ВК'), # Входной контроль
+        (12, 'СР'), # Скрытые работы
     )
     # Вид сварного соединения
     welding_conn_view_choices = (
@@ -160,14 +161,14 @@ class WeldingJoint(Standard):
             repair = ''
             if self.repair:
                 repair = 'р%s' % self.repair
-            request_number = '%s-%s-%s-%s-%s-%s%s' % (
+            request_number = '%s%s-%s-%s-%s-%s-%s' % (
+                obj.joint.name or '',
+                repair,
                 obj.joint.line.titul.subject.company.code or '',
                 obj.joint.line.titul.subject.code or '',
                 obj.joint.line.titul.name or '',
                 obj.joint.line.name or '',
                 obj.get_control_type_display() or '',
-                obj.joint.name or '',
-                repair,
             )
             #print('numbers {} and {}'.format(self.request_number, request_number))
             if not self.request_number == request_number:

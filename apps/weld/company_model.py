@@ -75,6 +75,11 @@ class Titul(Standard):
     subject = models.ForeignKey(Subject,
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Объект, например ТПС-ГФУ')
+    # Шифр НЕ используется для нумерации документов,
+    # он используется для вывода формах PDF заключений
+    code = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Шифр титула')
     class Meta:
         verbose_name = 'Структура - Титул'
         verbose_name_plural = 'Структура - Титулы'
@@ -153,3 +158,10 @@ class Joint(Standard):
         verbose_name_plural = 'Структура - Стыки'
         #default_permissions = []
         unique_together = ('name', 'line',)
+
+    def save(self, *args, **kwargs):
+        exist = self.id
+        super(Joint, self).save(*args, **kwargs)
+        # Обновляем номер заявки, если она есть
+        if exist and hasattr(self, 'welding_joint'):
+            self.welding_joint.update_request_number()

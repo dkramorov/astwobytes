@@ -15,7 +15,8 @@ from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 from apps.main_functions.string_parser import analyze_digit
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
-                                              search_view, )
+                                              search_view,
+                                              special_model_vars, )
 
 from apps.flatcontent.models import Containers, Blocks
 from .models import (Products,
@@ -318,6 +319,7 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
     mh.get_permissions(Products) # Права от товаров/услуг
     row = mh.get_row(row_id)
     context = mh.context
+    special_model_vars(mh, mh_vars, context)
 
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
@@ -400,8 +402,9 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
             result['row'] = object_fields(prop, pass_fields=('prop', ))
             return JsonResponse(result, safe=False)
     if mh.row:
+        kwargs = {'action': 'pvalue', 'row_id': mh.row.id}
         context['url_edit_pvalue'] = reverse('%s:%s' % (CUR_APP, 'edit_prop'),
-                                         kwargs={'action': 'pvalue', 'row_id': mh.row.id})
+                                             kwargs=kwargs)
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()

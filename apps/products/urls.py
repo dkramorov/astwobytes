@@ -16,7 +16,7 @@ urlpatterns = [
     url('^admin/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_product, name='edit_product'),
     path('admin/positions/', views.products_positions, name='products_positions'),
     # аякс-поиск товаров
-    path('products/search/', views.search_products, name='search_products'),
+    path('search/', views.search_products, name='search_products'),
     # фотки товаров/услуг
     path('admin/photos/', views.show_photos, name='show_photos'),
     url('^admin/photos/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_photo, name='edit_photo'),

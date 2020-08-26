@@ -38,7 +38,7 @@
         <div class="panel-heading">
           {{ singular_obj }}
           {% if row.joint %}
-            №{{ row.joint.name }}, линия {{ row.joint.line.name }}, титул {{ row.joint.line.titul.name }}, объект {{ row.joint.line.titul.subject.name }}, {{ row.joint.line.titul.subject.company.name }}
+            <a href="{% url 'welding:edit_joint' 'edit' row.joint.id %}">№{{ row.joint.name }}</a>, линия {{ row.joint.line.name }}, титул {{ row.joint.line.titul.name }}, объект {{ row.joint.line.titul.subject.name }}, {{ row.joint.line.titul.subject.company.name }}
           {% endif %}
           {% if row.state %}
             <h4>Статус: <span id="current_request_state">{{ state }}</span></h4> заявка создана {{ row.created }}
@@ -402,6 +402,13 @@
                   </div>
                 </div>
               </div>
+              <div class="form-group">
+                <div class="col-lg-offset-6 col-lg-6">
+                  <div class="checkbox c-checkbox">
+                    <a id="state_for_{{ row.id }}_r2" class="btn-xs btn btn-danger pull-left" href="javascript:void(0);" onclick="state_to_rejected({{ row.id }}, 0)" title='Отклонить заявку'><i class='fa fa-repeat'></i> Отклонить заявку</a>
+                  </div>
+                </div>
+              </div>
             {% endif %}
             {% if row.state == 2 %}
               <!-- Принять стык как готовый -->
@@ -415,14 +422,22 @@
               <div class="form-group">
                 <div class="col-lg-offset-6 col-lg-6">
                   <div class="checkbox c-checkbox">
-                    <a id="state_for_{{ row.id }}_r" class="btn-xs btn btn-danger pull-left" href="javascript:void(0);" onclick="state_to_repair({{ row.id }}, 0)" title='Отправить стык в ремонт'><i class='fa fa-check-square-o'></i> Отправить стык в ремонт</a>
+                    <a id="state_for_{{ row.id }}_r2" class="btn-xs btn btn-danger pull-left" href="javascript:void(0);" onclick="state_to_rejected({{ row.id }}, 0)" title='Отклонить заявку'><i class='fa fa-repeat'></i> Отклонить заявку</a>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-lg-offset-6 col-lg-6">
+                  <div class="checkbox c-checkbox">
+                    <a id="state_for_{{ row.id }}_r" class="btn-xs btn btn-danger pull-left" href="javascript:void(0);" onclick="state_to_repair({{ row.id }}, 0)" title='Отправить стык в ремонт'><i class='fa fa-unlink'></i> Отправить стык в ремонт</a>
                   </div>
                 </div>
               </div>
             {% endif %}
-          {% else %}<!-- Сварщик не имеет прав на редактирование заявки -->
-            {% if welding_joint_state_permissions.repair_completed and row.state == 4%}
-              <!-- Ремонт выполнен отправляет заявку в работу -->
+          {% endif %}
+            <!-- Сварщик не имеет прав на редактирование заявки -->
+            {% if welding_joint_state_permissions.repair_completed and row.state == 4 %}
+              <!-- Ремонт выполнен отправляет заявку в новые -->
               <div class="form-group">
                 <div class="col-lg-offset-6 col-lg-6">
                   <div class="checkbox c-checkbox">
@@ -431,7 +446,16 @@
                 </div>
               </div>
             {% endif %}
-          {% endif %}
+            {% if welding_joint_state_permissions.repair_completed and row.state == 5 %}
+              <!-- Повторно отправляет заявку в новые -->
+              <div class="form-group">
+                <div class="col-lg-offset-6 col-lg-6">
+                  <div class="checkbox c-checkbox">
+                    <a id="state_for_{{ row.id }}" class="btn-xs btn btn-warning pull-left" href="javascript:void(0);" onclick="state_to_new({{ row.id }}, 0)" title='Заявка исправлена'><i class='fa fa-check-square-o'></i> Заявка исправлена</a>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
 
           <div class="form-group">
             <div class="col-lg-6">

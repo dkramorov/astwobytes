@@ -18,8 +18,10 @@ from apps.main_functions.views_helper import (show_view,
 from apps.main_functions.pdf_helper import render_pdf
 from apps.files.models import Files
 
-from apps.weld.enums import WELDING_TYPE_DESCRIPTIONS, CONCLUSION_STATES
-from apps.weld.models import WeldingJoint
+from apps.weld.enums import (WELDING_TYPE_DESCRIPTIONS,
+                             CONCLUSION_STATES,
+                             WELDING_JOINT_STATES, )
+from apps.weld.models import WeldingJoint, WeldingJointState
 from apps.weld.conclusion_model import (JointConclusion,
                                         RKFrames,
                                         JointConclusionFile, )
@@ -157,6 +159,7 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
 
     # Права на файлы к заключению
     context['files_permissions'] = get_user_permissions(request.user, JointConclusionFile)
+    context['welding_joint_state_permissions'] = get_user_permissions(request.user, WeldingJointState)
 
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
@@ -166,15 +169,29 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
         # ---------------------------------------------------
         welding_joint_str = request.GET.get('welding_joint')
         if welding_joint_str and not mh.row:
-            welding_joint = WeldingJoint.objects.filter(pk=welding_joint_str).values('id', 'request_number').first()
-            context['welding_joint'] = welding_joint
+            welding_joint = WeldingJoint.objects.filter(pk=welding_joint_str).first()
             if not welding_joint:
                 return redirect('%s?error=not_found' % (mh.root_url, ))
+
+            welding_joint.join_type_from = welding_joint.get_join_type_from_display()
+            welding_joint.join_type_to = welding_joint.get_join_type_to_display()
+            welding_joint.material = welding_joint.get_material_display()
+            welding_joint.welding_conn_view = welding_joint.get_welding_conn_view_display()
+            context['welding_joint'] = welding_joint
+            context['welding_type'] = '%s и %s' % (
+                WELDING_TYPE_DESCRIPTIONS[0][1],
+                WELDING_TYPE_DESCRIPTIONS[1][1],
+            )
+            for item in WELDING_TYPE_DESCRIPTIONS:
+                if welding_joint.welding_type == item[0]:
+                    context['welding_type'] = item[1]
+                    break
 
         if action in ('create', 'edit'):
             context['welding_type_descriptions'] = WELDING_TYPE_DESCRIPTIONS
             context['conclusion_states'] = CONCLUSION_STATES
             context['pvk_control_choices'] = JointConclusion.pvk_control_choices
+            context['state_choices'] = WELDING_JOINT_STATES
 
         if action in ('edit', 'pdf_vik', 'pdf_rk', 'pdf_pvk', 'pdf_uzk'):
             context['welding_type'] = '%s и %s' % (
@@ -186,6 +203,8 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                     context['welding_type'] = item[1]
                     break
             context['rk_frames'] = row.rkframes_set.all().order_by('position')
+            # Номера заключений
+            context.update(row.get_conclusion_numbers(row.welding_joint))
 
         if action == 'create':
             mh.breadcrumbs_add({
@@ -201,8 +220,19 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                 context['welding_joint'] = {
                     'id': row.welding_joint.id,
                     'request_number': row.welding_joint.request_number,
+                    'join_type_from': row.welding_joint.get_join_type_from_display(),
+                    'join_type_to': row.welding_joint.get_join_type_to_display(),
+                    'material': row.welding_joint.get_material_display(),
+                    'welding_conn_view': row.welding_joint.get_welding_conn_view_display(),
+                    'created': row.welding_joint.created.strftime('%d-%m-%Y %H:%M:%S'),
+                    'state': row.welding_joint.state,
+                    'get_state_display': row.welding_joint.get_state_display(),
                 }
             context['files'] = row.get_files()
+
+            welders = row.welding_joint.jointwelder_set.select_related('welder').all()
+            context['welders'] = {welder.position: welder.welder for welder in welders}
+
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()

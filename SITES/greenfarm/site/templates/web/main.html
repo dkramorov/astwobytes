@@ -1,8 +1,8 @@
 {% extends "skeleton.html" %}
-{% load flatcontent_tags %}
+{% load flatcontent_tags tags %}
 
 {% block left %}
-  {% flatcontent request page "catalogue" %}
+  {% catalogue request %}
 {% endblock %}
 
 {% block right %}

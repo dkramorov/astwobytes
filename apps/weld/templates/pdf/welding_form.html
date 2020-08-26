@@ -15,6 +15,21 @@
    src: url("{{ font_bold }}");
    font-weight: bold;
 }
+
+@font-face {
+  font-family: TimesNewRoman;
+  src: url("{{ font_times }}");}
+@font-face {
+   font-family: TimesNewRoman;
+   src: url("{{ font_times_bold }}");
+   font-weight: bold;
+}
+
+body{
+  font-family: TimesNewRoman;
+  font-size: 11px;
+}
+
 @page {
   size: {{ pagesize }};
   @frame main_frame {

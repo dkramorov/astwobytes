@@ -69,6 +69,123 @@
               {% endif %}
             </div>
           </div>
+          {% if welding_joint %}
+            <div class="box-placeholder">
+              <div class="form-group">
+                <label class="col-lg-2 control-label">Свариваемые элементы</label>
+                <div class="col-lg-10">
+                  <input type="text" class="form-control" value="{{ welding_joint.join_type_from }} - {{ welding_joint.join_type_to }}" readonly />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-2 control-label">Тип сварки</label>
+                <div class="col-lg-10">
+                  <input type="text" class="form-control" value="{{ welding_type }}" readonly />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-2 control-label">Тип соединения</label>
+                <div class="col-lg-10">
+                  <input type="text" class="form-control" value="{{ welding_joint.welding_conn_view }}" readonly />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-2 control-label">Материал</label>
+                <div class="col-lg-10">
+                  <input type="text" class="form-control" value="{{ welding_joint.material }}" readonly />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-2 control-label">Толщина стенки, мм</label>
+                <div class="col-lg-10">
+                  <input type="text" class="form-control" value="{{ row.welding_joint.side_thickness }}" readonly />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-2 control-label">Диаметр трубопровода, мм</label>
+                <div class="col-lg-10">
+                  <input type="text" class="form-control" value="{{ row.welding_joint.diameter }}" readonly />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-2 control-label">Дата сварки</label>
+                <div class="col-lg-10">
+                  <input type="text" class="form-control" value="{{ row.welding_joint.welding_date }}" readonly />
+                </div>
+              </div>
+              {% if welders.1 %}
+                <div class="form-group">
+                  <label class="col-lg-2 control-label">Сварщик 1</label>
+                  <div class="col-lg-10">
+                    <input type="text" class="form-control" value="{{ welders.1.name }} {{ welders.1.stigma }}" readonly />
+                  </div>
+                </div>
+              {% endif %}
+              {% if welders.2 %}
+                <div class="form-group">
+                  <label class="col-lg-2 control-label">Сварщик 2</label>
+                  <div class="col-lg-10">
+                    <input type="text" class="form-control" value="{{ welders.2.name }} {{ welders.2.stigma }}" readonly />
+                  </div>
+                </div>
+              {% endif %}
+              {% if welders.3 %}
+                <div class="form-group">
+                  <label class="col-lg-2 control-label">Сварщик 1 по факту</label>
+                  <div class="col-lg-10">
+                    <input type="text" class="form-control" value="{{ welders.3.name }} {{ welders.3.stigma }}" readonly />
+                  </div>
+                </div>
+              {% endif %}
+              {% if welders.4 %}
+                <div class="form-group">
+                  <label class="col-lg-2 control-label">Сварщик 2 по факту</label>
+                  <div class="col-lg-10">
+                    <input type="text" class="form-control" value="{{ welders.4.name }} {{ welders.4.stigma }}" readonly />
+                  </div>
+                </div>
+              {% endif %}
+
+              <div class="form-group">
+                <label class="col-lg-2 control-label">
+                  <h4>Статус:</h4>
+                </label>
+                <div class="col-lg-5">
+                  <p>
+                    <span id="current_request_state">{{ welding_joint.get_state_display }}</span>
+                  </p>
+                  <p>заявка создана {{ welding_joint.created }}</p>
+                </div>
+                <div class="col-lg-5">
+                  {% if welding_joint_state_permissions.edit and row.id %}
+                    {% if welding_joint.state == 1 or not welding_joint.state %}
+                      <!-- Принять заявку в работу -->
+                      <div class="form-group text-right">
+                        <a id="state_for_{{ welding_joint.id }}" class="btn-xs btn btn-warning pull-left" href="javascript:void(0);" onclick="state_to_progress({{ welding_joint.id }}, 0)" title='Принять заявку в работу'><i class='fa fa-check-square-o'></i> Принять заявку в работу</a>
+                      </div>
+                      <div class="form-group text-right">
+                        <a id="state_for_{{ welding_joint.id }}_r2" class="btn-xs btn btn-danger pull-left" href="javascript:void(0);" onclick="state_to_rejected({{ welding_joint.id }}, 0)" title='Отклонить заявку'><i class='fa fa-repeat'></i> Отклонить заявку</a>
+                      </div>
+                    {% endif %}
+                    {% if welding_joint.state == 2 %}
+                      <!-- Принять стык как готовый -->
+                      <div class="form-group text-right">
+                        <a id="state_for_{{ welding_joint.id }}" class="btn-xs btn btn-success pull-left" href="javascript:void(0);" onclick="state_to_complete({{ welding_joint.id }}, 0)" title='Принять стык как готовый'><i class='fa fa-check-square-o'></i> Принять стык как готовый</a>
+                      </div>
+                      <div class="form-group text-right">
+                        <a id="state_for_{{ welding_joint.id }}_r2" class="btn-xs btn btn-danger pull-left" href="javascript:void(0);" onclick="state_to_rejected({{ welding_joint.id }}, 0)" title='Отклонить заявку'><i class='fa fa-repeat'></i> Отклонить заявку</a>
+                      </div>
+                      <div class="form-group text-right">
+                        <a id="state_for_{{ welding_joint.id }}_r" class="btn-xs btn btn-danger pull-left" href="javascript:void(0);" onclick="state_to_repair({{ welding_joint.id }}, 0)" title='Отправить стык в ремонт'><i class='fa fa-unlink'></i> Отправить стык в ремонт</a>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+
+            </div>
+          {% endif %}
+
           <div class="form-group">
             <label class="col-lg-2 control-label">Дата акта (заключения)</label>
             <div class="col-lg-10">
@@ -135,6 +252,13 @@
 {% endblock %}
 
 {% block extrascripts %}
+  <!-- Необходимый фикс для ссылки,
+       сломается если поменять ссыль
+  -->
+  {% with '/weld/admin/' as root_url %}
+    {% include "welding_js.html" %}
+  {% endwith %}
+
   <div id="ajax_drop_file" tabindex="-1" role="dialog" aria-labelledby="myModalLabelFile" aria-hidden="true" class="modal fade">
     <div class="modal-dialog">
       <div class="modal-content">

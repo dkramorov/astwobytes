@@ -4638,7 +4638,6 @@ p.result-show-message {
       .sidebar-area .sidebar h3.sidebar-title {
         font-size: 15px; }
  }
-
   .sidebar-area .sidebar ul.product-categories li {
     padding-right: 25px;
     margin-bottom: 7px; }
@@ -4666,6 +4665,18 @@ p.result-show-message {
           border-color: #80bb01;
           color: #80bb01;
           font-size: 8px; }
+  .sidebar-area .sidebar ul.level2{
+    padding-left: 10px;
+  }
+  .sidebar-area .sidebar ul.level3{
+    padding-left: 20px;
+  }
+  .sidebar-area .sidebar ul.level2 li,
+  .sidebar-area .sidebar ul.level3 li{
+    padding: 0;
+    margin: 0;
+  }
+
   .sidebar-area .sidebar ul.product-list {
     margin-bottom: 20px;
     padding: 0; }

@@ -107,6 +107,7 @@ WELDING_JOINT_STATES = (
     (2, 'На контроле ЗНК'), # В работе
     (3, 'Годен'), # Готов
     (4, 'В ремонте'),
+    (5, 'Заявка отклонена'),
 )
 # Оценка качества в заключениях
 CONCLUSION_STATES = (
@@ -127,6 +128,7 @@ def get_welding_joint_state(state: str = None):
         'in_progress': 2, # 'В работе'
         'complete':    3, # 'Готовый стык'
         'in_repair':   4, # 'В ремонте'
+        'rejected':    5, # 'Заявка отклонена'
     }
     if not state in state_choices:
         return None

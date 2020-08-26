@@ -17,6 +17,21 @@
 window.disableMovableRows = true;
 var main_table = null;
 $(document).ready(function(){
+
+  var state_choices = {
+    "": "Без фильтра",
+    {% for state in state_choices %}
+      {{ state.0 }}: "{{ state.1 }}",
+    {% endfor %}
+  };
+  var stateFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return state_choices[pk];
+  };
+  var accessor_state = function(value, data, type, params, column){
+    return state_choices[value];
+  }
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -35,6 +50,21 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 150,
+      },
+      {
+        title: "Должность",
+        field: "state",
+        headerFilterPlaceholder: "Должность",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: state_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: stateFormatter,
+        width: 90,
+        accessorDownload: accessor_state,
       },
       {
         title: "Примечание",

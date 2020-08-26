@@ -19,7 +19,7 @@
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
         <div class="panel-heading">
           {{ singular_obj }}
-          {% if row %}, линия {{ row.line.name }}, титул {{ row.line.titul.name }}, объект {{ row.line.titul.subject.name }}, компания {{ row.line.titul.subject.company.name }}{% endif %}
+          {% if row %}{{ row.name }}, линия {{ row.line.name }}, титул {{ row.line.titul.name }}, объект {{ row.line.titul.subject.name }}, компания {{ row.line.titul.subject.company.name }}{% endif %}
         </div>
         <div class="panel-body">
           {% csrf_token %}

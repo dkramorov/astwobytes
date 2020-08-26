@@ -14,7 +14,7 @@ urlpatterns = [
     # заявки на стыки
     # ---------------
     path('admin/', views.show_welding, name='show_welding'),
-    url('^admin/(?P<state>new|in_progress|complete|in_repair)/$', views.show_welding, name='show_welding'),
+    url('^admin/(?P<state>new|in_progress|complete|in_repair|rejected)/$', views.show_welding, name='show_welding'),
     url('^admin/(?P<action>create|form|conclusion)/$', views.edit_welding, name='create_welding'),
     url('^admin/(?P<action>edit|drop|img|form|pdf|file|state|conclusion)/(?P<row_id>[0-9]{1,11})/$', views.edit_welding, name='edit_welding'),
     path('admin/positions/', views.welding_positions, name='welding_positions'),

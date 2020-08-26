@@ -580,7 +580,7 @@ class ModelHelper:
             # RAW / сырой поиск
             # -----------------
             raw_qqize = []
-            q_array = q.split(" ")
+            q_array = q.split(' ')
             for item in q_array:
                 tmp_cond = Q()
                 for field in self.search_fields:
@@ -594,20 +594,20 @@ class ModelHelper:
                         # --------------------------------------
                         # По дате производим нестандартный поиск
                         # --------------------------------------
-                        if types[field] in ("date", "datetime"):
+                        if types[field] in ('date', 'datetime'):
                             d = str_to_date(q)
                             if d:
                                 tmp_cond.add(Q(**{field:d}), Q.OR)
                             continue
                         else:
-                            key = "%s__icontains" % field
+                            key = '%s__icontains' % field
                             tmp_cond.add(Q(**{key: item}), Q.OR)
                             raw_qqize.append(item)
                     elif '__' in field:
                         # Похоже ищем foreign_key
                         fkey = field.rsplit('__', 1)[0]
                         if fkey in self.select_related:
-                            key = "%s__icontains" % field
+                            key = '%s__icontains' % field
                             tmp_cond.add(Q(**{key: item}), Q.OR)
                             raw_qqize.append(item)
                 if tmp_cond:
