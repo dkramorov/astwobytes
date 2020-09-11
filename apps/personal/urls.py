@@ -6,8 +6,8 @@ from . import views
 
 app_name = 'personal'
 urlpatterns = [
-    # получение по апи всех данных (т/к не секретно)
-    url('^(?P<action>shoppers)/api/$', views.api, name='api'),
+    # получение по апи всех данных (секретно, по токену?)
+    #url('^(?P<action>shoppers)/api/$', views.api, name='api'),
     # админка
     path('admin/', views.show_shoppers, name='show_shoppers'),
     url('^admin/(?P<action>create)/$', views.edit_shopper, name='create_shopper'),

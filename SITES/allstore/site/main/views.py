@@ -73,21 +73,24 @@ def cat_on_site(request, link: str = None):
        :param link: ссылка на рубрику (без /cat/ префикса)
     """
     mh_vars = cat_vars.copy()
-    context = get_cat_for_site(request, link)
+    kwargs = {
+        'q_string': {
+            'by': 30,
+        },
+    }
+    context = get_cat_for_site(request, link, **kwargs)
     if not context.get('catalogue'):
         raise Http404
-    q_string = {}
     containers = {}
 
     if request.is_ajax():
         return JsonResponse(context, safe=False)
     template = 'web/cat/%slist.html' % (mh_vars['template_prefix'], )
 
-    page = SearchLink(q_string, request, containers)
-    #context['page'] = page
+    page = SearchLink(context['q_string'], request, containers)
+    if page:
+        context['page'] = page
     context['containers'] = containers
-
-    return render(request, template, context)
 
 def product_by_link(request, link: str):
     """Вытаскиваем код товара по ссылке и возвращаем товар

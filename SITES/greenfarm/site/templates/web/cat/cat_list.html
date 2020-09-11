@@ -64,7 +64,7 @@
         {% if page.img %}
           <div class="shop-page-banner mb-35">
             <a href="javascript:void(0);">
-              <img src="{% imagine page.img '800x600' page.get_folder True %}" class="img-fluid" alt="{{ page.name|textize }}">
+              <img src="{% imagine page.img '800x600' page.get_folder True %}" class="img-fluid" alt="{{ page.name|textize }}" loading="lazy">
             </a>
           </div>
         {% endif %}
@@ -78,10 +78,11 @@
             </div>
             <div class="col-lg-8 col-md-8 col-sm-12 d-flex flex-column flex-sm-row justify-content-between align-items-left align-items-sm-center">
               <div class="sort-by-dropdown d-flex align-items-center mb-xs-10">
-                <p class="mr-10">Сортировка: </p>
+                <p class="mr-10">Сортировка:</p>
                 <select name="sort-by" id="sort-by" class="nice-select">
-                  <option value="1">По популярности</option>
-                  <option value="2">По цене</option>
+                  <option value="">По популярности</option>
+                  <option value="price"{% ifequal q_string.q.sort 'price' %} selected{% endifequal %}>Цена по возрастанию</option>
+                  <option value="-price"{% ifequal q_string.q.sort '-price' %} selected{% endifequal %}>Цена по убыванию</option>
                 </select>
               </div>
               <p class="result-show-message">{{ my_paginator.total_records }} {{ my_paginator.ends }}</p>
@@ -96,16 +97,19 @@
                 <div class="image">
                   <a href="/product/{{ product.id }}/">
                     {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
-                    <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+                    <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                   </a>
-{% comment %}<!--
                   <div class="product-hover-icons">
-                    <a href="#" data-tooltip="Add to cart"> <span class="icon_cart_alt"></span></a>
+                    <a href="javascript:void(0);" onclick="add_to_cart({{ product.id }})" data-tooltip="Добавить в корзину">
+                      <span class="icon_cart_alt"></span>
+                    </a>
+{% comment %}<!--
                     <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> </a>
                     <a href="#" data-tooltip="Compare"> <span class="arrow_left-right_alt"></span> </a>
                     <a href="#" data-tooltip="Quick view" data-toggle = "modal" data-target="#quick-view-modal-container"> <span class="icon_search"></span> </a>
-                  </div>
 -->{% endcomment %}
+                  </div>
+
                 </div>
                 <div class="product-content">
                   <div class="product-categories">
@@ -123,7 +127,7 @@
 
                   <a href="/product/{{ product.id }}/">
                     {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
-                    <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+                    <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                   </a>
 {% comment %}<!--
                   <div class="product-hover-icons">
@@ -141,13 +145,16 @@
                     <span class="discounted-price">{{ product.price|money_format }} руб</span>
                   </div>
                   <div class="product-description">{% if product.mini_info %}{{ product.mini_info|safe }}{% else %}{% endif %}</div>
-{% comment %}<!--
+
                   <div class="list-product-icons">
-                    <a href="#" data-tooltip="Add to cart"> <span class="icon_cart_alt"></span></a>
+                    <a href="javascript:void(0);" onclick="add_to_cart({{ product.id }})" data-tooltip="Добавить в корзину">
+                      <span class="icon_cart_alt"></span>
+                    </a>
+{% comment %}<!--
                     <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> </a>
                     <a href="#" data-tooltip="Compare"> <span class="arrow_left-right_alt"></span> </a>
-                  </div>
 -->{% endcomment %}
+                  </div>
                 </div>
               </div>
             </div>
@@ -161,6 +168,7 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/js/cat.js"></script>
 {% if search_terms %}
 <script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
 <script type="text/javascript">
@@ -171,4 +179,15 @@
   });
 </script>
 {% endif %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#sort-by").change(function(){
+      var value = $(this).val();
+      var new_url = rebuild_query_path_with_param("sort", value);
+      if(decodeURIComponent(location.search.substr(1)) !== new_url){
+        window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
+      }
+    });
+  });
+</script>
 {% endblock %}

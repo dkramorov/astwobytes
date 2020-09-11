@@ -1,0 +1,124 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+
+$(document).ready(function(){
+  // Websocket соединение для телефонов
+  var ws = new WebSocket("{% if cert_path %}wss{% else %}ws{% endif %}://{{ host }}:{{ port }}");
+  ws.onopen = function(e) {
+    ws.send(JSON.stringify({'get_phones': true, 'token': '{{ token }}'}));
+  };
+  ws.onmessage = function(event) {
+    //alert(`[message] Данные получены с сервера: ${event.data}`);
+    console.log('raw msg', event.data);
+    try {
+      var msg = JSON.parse(event.data);
+    } catch(e) {
+      console.log('[ERROR]', e);
+      return;
+    }
+    if(msg.constructor == Object){
+      console.log('json msg', msg);
+      if(msg['get_phones']){
+        var phones = msg['get_phones'];
+        $(".icc_id").each(function(){
+          var pk = $(this).attr('id').replace('icc_id_', '');
+          if(phones.indexOf(pk) > -1){
+            $(this).html('<a href="javascript:void(0);" id="find_phone_' + pk + '"><i class="fa fa-check"></i></a>');
+            $("#find_phone_" + pk).click(function(){
+              ws.send(JSON.stringify({'find_phone': pk, 'token': '{{ token }}'}));
+            });
+          }else{
+            $(this).html('<i class="fa fa-minus"></i>');
+          }
+        });
+      }
+    }
+  };
+  ws.onclose = function(event) {
+    if (event.wasClean) {
+      //alert(`[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+    } else {
+      // например, сервер убил процесс или сеть недоступна
+      // обычно в этом случае event.code 1006
+      //alert('[close] Соединение прервано');
+    }
+  };
+  ws.onerror = function(error) {
+    //alert(`[error] ${error.message}`);
+  };
+  var phoneStatusFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var data = row.getData();
+    var actions = "<div class='padding-rl5 icc_id' id='icc_id_" + data['code'] + "'></div>";
+    return actions;
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {% include "core/tabulator_cell/name.html" %}
+      {
+        title: "Телефон",
+        field: "phone",
+        headerFilterPlaceholder: "Телефон",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Код",
+        field: "code",
+        headerFilterPlaceholder: "Код",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Отправлено",
+        field: "sent",
+        headerFilterPlaceholder: "Отправлено",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 90,
+      },
+      {
+        title: "Лимит",
+        field: "limit",
+        headerFilterPlaceholder: "Лимит",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 90,
+      },
+      {
+        title: "Статус",
+        field: "icc_id",
+        headerFilterPlaceholder: "Статус",
+        formatter: phoneStatusFormatter,
+        headerSort: false,
+        width: 90,
+      },
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+});
+</script>
+{% endblock %}

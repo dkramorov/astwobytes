@@ -57,7 +57,7 @@ def show_redirects(request, *args, **kwargs):
 def edit_redirect(request, action:str, row_id:int = None, *args, **kwargs):
     """Создание/редактирование переадресации"""
     return edit_view(request,
-                     model_vars = costs_vars,
+                     model_vars = redirects_vars,
                      cur_app = CUR_APP,
                      action = action,
                      row_id = row_id,
@@ -239,13 +239,13 @@ def show_users(request, *args, **kwargs):
         for row in rows:
             item = object_fields(row)
             user = item['user']
-            item['user'] = user.username
-            item['user__username'] = user.username
+            item['user'] = user['username']
+            item['user__username'] = user['username']
 
             personal_user = item['personal_user']
             if personal_user:
-                item['personal_user'] = personal_user.username
-                item['personal_user__username'] = personal_user.username
+                item['personal_user'] = personal_user['username']
+                item['personal_user__username'] = personal_user['username']
 
             item['actions'] = row.id
             item['folder'] = row.get_folder()

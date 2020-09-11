@@ -2,8 +2,8 @@
     <div class="form-group">
         <label class="col-lg-2 control-label">Изображение</label>
         <div class="col-lg-7 img_block">
-            <a href="{{ row.imagine }}" target="_blank" id="preview_img_full">
-                <img src="{{ row.thumb }}" class="img-responsive" id="preview_img">
+            <a href="{% if row.img %}{{ row.imagine }}{% else %}/static/img/empty.png{% endif %}" target="_blank" id="preview_img_full">
+                <img src="{% if row.img %}{{ row.thumb }}{% else %}/static/img/empty.png{% endif %}" class="img-responsive" id="preview_img">
             </a>
         </div>
         <div class="col-lg-3">

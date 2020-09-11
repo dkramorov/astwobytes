@@ -84,7 +84,7 @@ def imagine(img: str, size: str, source: str, alt: str = ''):
        {% imagine 'help.png' '150x150' 'img' True %} - просто путь
     """
     ups_path = UPS_PATH
-    ups_image = '<img src="%s" />' % ups_path
+    ups_image = '<img loading="lazy" src="%s" />' % ups_path
     if not img:
         if isinstance(alt, bool):
             return ups_path
@@ -98,7 +98,7 @@ def imagine(img: str, size: str, source: str, alt: str = ''):
     if img.startswith('http'):
         if isinstance(alt, bool):
             return img
-        return '<img data-original="%s?size=%s" alt="%s" class="lazy" src="/static/img/misc/loading.gif"/>' % (img, size, kill_quotes(alt, 'strict_text', ' '))
+        return '<img data-original="%s?size=%s" alt="%s" class="lazy" src="/static/img/misc/loading.gif" loading="lazy" />' % (img, size, kill_quotes(alt, 'strict_text', ' '))
 
     path_resized_img = imagine_image(img, size, source)
     if not path_resized_img:
@@ -109,7 +109,7 @@ def imagine(img: str, size: str, source: str, alt: str = ''):
     if isinstance(alt, bool):
         return path_resized_img
 
-    return '<img src="%s" alt="%s" />' % (path_resized_img, kill_quotes(alt, 'strict_text', ' '))
+    return '<img src="%s" alt="%s" loading="lazy" />' % (path_resized_img, kill_quotes(alt, 'strict_text', ' '))
 
 def reduce_opacity(im, opacity: float):
     """Возвращает изображение с пониженной прозрачностью,

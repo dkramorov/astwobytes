@@ -9,9 +9,19 @@ class Welder(Standard):
     """Сварщики"""
     name = models.CharField(max_length=255,
         blank=True, null=True, db_index=True)
+    first_name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    last_name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    middle_name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
     stigma = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Клеймо, например, 9SZN')
+    stigma2 = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Клеймо по приказу, например, 9SZN')
+
     notice = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Примечание, например, нет закл. ВИК, РК, ДЛ')
@@ -23,6 +33,55 @@ class Welder(Standard):
         verbose_name = 'Сварщики - Сварщик'
         verbose_name_plural = 'Сварщики - Сварщики'
         #default_permissions = []
+
+class Certification(Standard):
+    """Удостоверения для сварщиков"""
+    welder = models.ForeignKey(Welder,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Сварщик')
+    number = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Номер удостоверения')
+    welding_type = models.IntegerField(choices=WELDING_TYPES,
+        blank=True, null=True, db_index=True,
+        verbose_name='Способ сварки')
+    class Meta:
+        verbose_name = 'Сварщики - Удостоверение'
+        verbose_name_plural = 'Сварщики - Удостоверения'
+        default_permissions = []
+
+class CertSections(Standard):
+    """Группы технических устройств опасных производственных объектов"""
+    group_choices = (
+        (1, 'ПАО "Транснефть"'),
+        (2, 'ПАО "Газпром"'),
+        (3, 'ГДО Горнодобывающее оборудование'),
+        (4, 'ГО Газовое оборудование'),
+        (5, 'КО Котельное оборудование'),
+        (6, 'КСМ Конструкции стальных мостов'),
+        (7, 'МО Металлургическое оборудование'),
+        (8, 'НГДО Нефтегазодобывающее оборудование'),
+        (9, 'ОТОГ Оборудование для транспортировки опасных грузов'),
+        (10, 'ОХНВП Оборудование химических, нефтехимических, нефтеперерабатывающих и взрывопожароопасных производств'),
+        (11, 'ПТО Подъемно-транспортное оборудование'),
+        (12, 'СК Строительные конструкции'),
+    )
+    certification = models.ForeignKey(Certification,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Удостоверение сварщика')
+    welder = models.ForeignKey(Welder,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Сварщик')
+    group = models.IntegerField(choices=group_choices,
+        blank=True, null=True, db_index=True,
+        verbose_name='Группы технических устройств опасных производственных объектов, например, "ПАО "Газпром" "')
+    points = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Пункты технических устройств опасных производственных объектов, например, 1,3')
+    class Meta:
+        verbose_name = 'Сварщики - Тех. устройство'
+        verbose_name_plural = 'Сварщики - Тех. устройства'
+        default_permissions = []
 
 class Defectoscopist(Standard):
     """Дефектоскописты"""

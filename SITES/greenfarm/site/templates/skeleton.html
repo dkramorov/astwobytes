@@ -24,8 +24,18 @@
               {% include "web/currency_and_language_dropdown.html" %}
             -->{% endcomment %}
           </div>
-          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12  text-center text-sm-right">
-            {% flatmenu request "topmenu" %}
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-center text-sm-right">
+            <div class="header-top-menu">
+              <ul>
+                {% if request.session.shopper %}
+                  <li><a href="/profile/">Ваш аккаунт</a></li>
+                  <li><a href="/logout/">Выход, {{ request.session.shopper.name }}</a></li>
+
+                {% else %}
+                  <li><a href="/registration/">Вход / Регистрация</a></li>
+                {% endif %}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -60,19 +70,20 @@
               </div>
 
               <div class="shopping-cart" id="shopping-cart">
-{% comment %}<!--
+
                 <a href="/shop/cart/">
                   <div class="cart-icon d-inline-block">
                     <span class="icon_bag_alt"></span>
                   </div>
                   <div class="cart-info d-inline-block">
                     <p>Корзина
-                      <span>0 - 0.00 Р</span>
+                      <span><span class="items">0</span> - <span class="total">0.00</span></span>
                     </p>
                   </div>
                 </a>
-                {% ajax_cart request %}
--->{% endcomment %}
+                <div class="cart-floating-box" id="cart-floating-box">
+                  {% ajax_cart request %}
+                </div>
               </div>
             </div>
             {% flatmenu request "mainmenu" %}
@@ -240,23 +251,13 @@
   <a href="#" class="scroll-top"></a>
 {% endblock %}
 <script src="/media/js/jquery.min.js"></script>
+<script type="text/javascript">
+  var cart_id = "#cart-floating-box";
+</script>
+{% include "shop_js.html" %}
 <script src="/media/js/popper.min.js"></script>
 <script src="/media/js/bootstrap.min.js"></script>
 <script src="/media/js/plugins.js"></script>
-
-<!-- DEBUG:
-{% for cont in page.containers %}
-  {{ cont.container.name }} - {{ cont.container.tag }}<br />
-  {% ifequal cont.container.tag 'main' %}
-    {% for block in cont.blocks %}
-      __ {{ block.name }}<br />
-      {% for item in block.sub %}
-        __ __ {{ item.name }}<br />
-      {% endfor %}
-    {% endfor %}
-  {% endifequal %}
-{% endfor %}
--->
 {% include "check_feedback_form.html" %}
 {% block extrascripts %}{% endblock %}
 <script src="/media/js/main.js"></script>

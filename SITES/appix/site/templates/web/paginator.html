@@ -1,52 +1,38 @@
-<div class="toolbar">
-  <div class="toolbar-inner">
-    <div class="sorter">
-      <p class="view-mode">
-        <a href="javascript:void(0);" title="Сетка" class="grid gridview active"><span>Сетка</span></a>
-        <a href="javascript:void(0);" title="Список" class="list listview"><span>Список</span></a>
-      </p>
-      <p class="amount">{{ paginator.total_records }} {{ ends }}</p>
-    </div>
-    <div class="sortby-limiter">
-      <form class="limiter">
-        <label>Кол-во</label>
-        <select class="set_count_by">
-          <option value="12"{% ifequal q_string.by 12 %} selected{% endifequal %}>12</option>
-          <option value="24"{% ifequal q_string.by 24 %} selected{% endifequal %}>24</option>
-          <option value="36"{% ifequal q_string.by 36 %} selected{% endifequal %}>36</option>
-        </select>
-        <label>на страничке</label>
-      </form>
-      <form class="sort-by">
-        <label>Сортировка</label>
-        <select class="set_sort_by">
-          <option value="" selected="selected">Без сортировки</option>
-          <option value="price"{% ifequal q_string.q.sort "price" %} selected{% endifequal %}>Цена по возрастанию</option>
-          <option value="-price"{% ifequal q_string.q.sort "-price" %} selected{% endifequal %}>Цена по убыванию</option>
-        </select>
-      </form>
-    </div>
-    <div class="pager">
-      <div class="pages">
-        <ol>
-          {% if paginator.prev_link %}
-            <li><a class="prev i-prev" href="{{ paginator.prev_link }}" title="Назад"><span>Назад</span></a></li>
+<div class="row">
+  <div class="col-md-12">
+    <div class="cust-pagi">
+      <ul class="pagination">
+        {% if paginator.prev_link %}
+          <li>
+            <a href="{{ paginator.prev_link }}" aria-label="Назад">
+              <i class="fa fa-angle-double-left"></i>
+            </a>
+          </li>
+        {% endif %}
+
+        {% for page in pages %}
+          {% if page.ellipsis %}
+            <li>...</li>
+          {% else %}
+            <li>
+              {% if page.active %}
+                {{ page.content }}
+              {% else %}
+                <a class="{% if page.active %}active{% endif %}" href="{{ page.link }}">{{ page.content }}</a>
+              {% endif %}
+            </li>
           {% endif %}
-          {% for page in pages %}
-            {% if page.ellipsis %}
-              <li><span>...</span></li>
-            {% else %}
-              <li class="{% if page.active %}current{% endif %}">
-                {% if page.active %}
-                  {{ page.content }}
-                {% else %}
-                  <a href="{{ page.link }}">{{ page.content }}</a>
-                {% endif %}
-              </li>
-            {% endif %}
-          {% endfor %}
-        </ol>
-      </div>
+        {% endfor %}
+        {% if paginator.next_link %}
+          <li>
+            <a href="{{ paginator.next_link }}" aria-label="Вперед">
+              <i class="fa fa-angle-double-right"></i>
+            </a>
+          </li>
+        {% endif %}
+        <li>{{ paginator.total_records }} {{ ends }}</li>
+      </ul>
     </div>
   </div>
 </div>
+

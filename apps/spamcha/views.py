@@ -17,10 +17,25 @@ from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper
 
+from apps.main_functions.views_helper import (show_view,
+                                              edit_view,
+                                              search_view,
+                                              special_model_vars, )
+
 from .models import (SpamTable,
                      SpamRow,
                      EmailAccount,
-                     EmailBlackList, )
+                     EmailBlackList,
+                     SMSPhone, )
+
+# Локальный .env из папки
+from envparse import env
+env.read_envfile()
+TOKEN = env('TOKEN', default='')
+API_URL = env('API_URL', default='')
+PORT = env('PORT', default='', cast=int)
+HOST = env('HOST', default='')
+CERT_PATH = env('CERT_PATH', default='')
 
 CUR_APP = 'spamcha'
 root_breadcrumbs = {'name': 'Email-рассылка', 'link': ''}
@@ -631,3 +646,62 @@ def black_list_positions(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
+
+sms_phones_vars = {
+    'singular_obj': 'Телефон для смс',
+    'plural_obj': 'Телефоны для смс',
+    'rp_singular_obj': 'телефона для смс',
+    'rp_plural_obj': 'телефонов для смс',
+    'template_prefix': 'sms_phones_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'spamcha',
+    'submenu': 'sms_phones',
+    'show_urla': 'show_sms_phones',
+    'create_urla': 'create_sms_phone',
+    'edit_urla': 'edit_sms_phone',
+    'model': SMSPhone,
+}
+
+@login_required
+def show_sms_phones(request, *args, **kwargs):
+    """Вывод телефонов для смс"""
+    extra_vars = {
+        'token': TOKEN,
+        'api_url': API_URL,
+        'port': PORT,
+        'host': '127.0.0.1' if settings.DEBUG else request.META['HTTP_HOST'],
+        'cert_path': CERT_PATH,
+    }
+    return show_view(request,
+                     model_vars = sms_phones_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = extra_vars, )
+
+@login_required
+def edit_sms_phone(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование телефонов для смс"""
+    return edit_view(request,
+                     model_vars = sms_phones_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
+
+@login_required
+def sms_phones_positions(request, *args, **kwargs):
+    """Изменение позиций телефонов для смс"""
+    result = {}
+    mh_vars = sms_phones_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_sms_phones(request, *args, **kwargs):
+    """Поиск телефонов для смс"""
+    return search_view(request,
+                       model_vars = sms_phones_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('name', 'phone', 'code'), )
+

@@ -77,7 +77,7 @@ def get_product_for_site(request, price_id: int):
             cond.add(Q(pk=pcat[0]), Q.OR)
             parents = []
             if pcat[1]:
-                parents_arr = pcat[1].slit('_')
+                parents_arr = pcat[1].split('_')
                 for parent in parents_arr:
                     if not parent:
                         continue

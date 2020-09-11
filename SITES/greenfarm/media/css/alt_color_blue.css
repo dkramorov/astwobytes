@@ -21,12 +21,17 @@ a.readmore-btn:hover,
 .shop-list-view-product .product-content .product-categories a:hover,
 .tab-slider-sub-product .product-content .price-box .discounted-price,
 .best-seller-sub-product .product-content .price-box .discounted-price,
-.product-feature-details h2.product-price{
+.product-feature-details h2.product-price,
+.cart-table td.pro-title a:hover,
+.cart-floating-box .cart-float-single-item .cart-float-single-item-desc p.product-title a:hover,
+.sub-menu li.active > a,
+.sub-menu li:hover > a{
   color:#4b7ea9; /* Light */
 }
 .slider .slick-arrow:hover i.fa,
 .sidebar-area .sidebar ul.product-categories li a:hover:before,
-.sidebar-area .sidebar ul.product-categories li a.active:before{
+.sidebar-area .sidebar ul.product-categories li a.active:before,
+.cart-floating-box .cart-float-single-item .cart-float-single-item-image a:hover{
   border-color: #416e93; /* Dark */
   color: #416e93; /* Dark */
 }
@@ -45,7 +50,11 @@ a.scroll-top:hover,
 .view-mode-icons a:hover,
 .view-mode-icons a.active,
 .product-hover-icons a,
-.list-product-icons a{
+.list-product-icons a,
+.place-order,
+.register-button,
+.myaccount-tab-menu a:hover,
+.myaccount-tab-menu a.active{
   background-color:#4b7ea9; /* Light */
 }
 .newsletter-section,
@@ -53,19 +62,35 @@ a.scroll-top:hover,
 .header-advance-search button:hover,
 a.slider-two-btn:hover,
 .product-hover-icons a:hover,
-.list-product-icons a:hover{
+.list-product-icons a:hover,
+.place-order:hover,
+.register-button:hover{
   background-color: #416e93; /* Dark */
 }
 .category-toggle-wrap:after,
 .slider .section-title h3:after{
   border-top: 15px solid #416e93; /* Dark */
 }
-.single-product-tab-section .ratting-form input[type="submit"]{
+.single-product-tab-section .ratting-form input[type="submit"],
+.single-product-content-container .product-feature-details .add-to-cart-btn a,
+.discount-coupon form input[type="submit"],
+.cart-summary .cart-summary-button button.checkout-btn,
+.myaccount-content button.save-change-btn,
+.myaccount-content a.edit-address-btn{
   background-color:#4b7ea9; /* Light */
-  border: 1px solid #4b7ea9; /* Dark */
+  border: 1px solid #4b7ea9; /* Light */
 }
 .single-product-tab-section .ratting-form input[type="submit"]:hover,
-.contact-form-btn:hover{
-  background-color: #416e93;/* Light */
+.contact-form-btn:hover,
+.single-product-content-container .product-feature-details .add-to-cart-btn a:hover,
+.floating-cart-btn a:hover,
+.discount-coupon form input[type="submit"]:hover,
+.cart-summary .cart-summary-button button.checkout-btn:hover,
+.myaccount-content button.save-change-btn:hover,
+.myaccount-content a.edit-address-btn:hover{
+  background-color: #416e93;/* Dark */
   border: 1px solid #416e93; /* Dark */
+}
+.saved-message{
+  border-color: #4b7ea9;
 }

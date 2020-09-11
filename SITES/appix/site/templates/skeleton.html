@@ -42,7 +42,83 @@
       </div>
     </div>
   </header>
+
+  {% if breadcrumbs %}
+    <div class="page-header-bg">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h2>{% block title %}{% if page.title %}{{ page.title }}{% endif %}{% endblock %}</h2>
+              <ul class="page-list">
+                <li><a href="/">Главная</a></li>
+                {% for crumb in breadcrumbs %}
+                  {% if forloop.last %}
+                    <li>{{ crumb.name }}</li>
+                  {% else %}
+                    <li><a href="{{ crumb.link }}">{{ crumb.name }}</a></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
   {% block content %}{% endblock %}
+
+  <div class="footer-area section-ptb-3">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-md-3">
+          <div class="column">
+            <div class="widget-title">
+              <h3>Контакты</h3>
+            </div>
+            {% if containers.main.tags.phone.html %}
+              <p><i class="fa fa-phone"></i> {{ containers.main.tags.phone.html|safe }}</p>
+            {% endif %}
+            {% if containers.main.tags.address.html %}
+              <p><i class="fa fa-map-marker"></i> {{ containers.main.tags.address.html|safe }}</p>
+            {% endif %}
+            {% if containers.main.tags.email.html %}
+              <p><i class="fa fa-envelope"></i> {{ containers.main.tags.email.html|safe }}</p>
+            {% endif %}
+            <div class="themeix-social-area">
+              {% for block in containers.main.tags.social.sub %}
+                <a class="themeix-tool" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}" target="_blank">
+                  <i class="fa fa-{{ block.icon }}"></i>
+                  <div id="colorbox" class="themeix-color {{ block.icon }}-color"></div>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% flatmenu request "othermenu" %}
+        <div class="col-sm-6 col-md-3">
+          <div class="column">
+            <div class="widget-title">
+              <h3>Подпишись на новости</h3>
+            </div>
+            <div class="widget-content">
+              <p>Не пропустите наши скидки</p>
+              <div class="newsletter">
+                <form method="post" action="/feedback/">
+                  <input type="email" name="name" placeholder="Ваш Email">
+                  <button type="submit"><i class="fa fa-paper-plane"></i></button>
+                </form>
+                <p class="mar-top">Мы никогда не отправляем спам</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <section id="contact">
     <div class="overlay-color">
       <div class="footer-overlay">

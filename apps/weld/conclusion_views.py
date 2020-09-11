@@ -178,10 +178,7 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
             welding_joint.material = welding_joint.get_material_display()
             welding_joint.welding_conn_view = welding_joint.get_welding_conn_view_display()
             context['welding_joint'] = welding_joint
-            context['welding_type'] = '%s и %s' % (
-                WELDING_TYPE_DESCRIPTIONS[0][1],
-                WELDING_TYPE_DESCRIPTIONS[1][1],
-            )
+            context['welding_type'] = '?'
             for item in WELDING_TYPE_DESCRIPTIONS:
                 if welding_joint.welding_type == item[0]:
                     context['welding_type'] = item[1]
@@ -228,8 +225,8 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                     'state': row.welding_joint.state,
                     'get_state_display': row.welding_joint.get_state_display(),
                 }
+                context['all_conclusions'] = JointConclusion.objects.filter(welding_joint=row.welding_joint).values_list('id', flat=True).order_by('repair')
             context['files'] = row.get_files()
-
             welders = row.welding_joint.jointwelder_set.select_related('welder').all()
             context['welders'] = {welder.position: welder.welder for welder in welders}
 
@@ -266,7 +263,7 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
             )
     elif request.method == 'POST':
         # Общий статус ставится в save по заключениям
-        pass_fields = ('state', )
+        pass_fields = ('state', 'repair')
         mh.post_vars(pass_fields=pass_fields)
         if action == 'create' or (action == 'edit' and row):
             # ---------------------------------
@@ -280,11 +277,8 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                 context['error'] = 'Выберите заявку на стык'
                 return JsonResponse(context)
             else:
-                analogs = JointConclusion.objects.filter(welding_joint=welding_joint)
-                if mh.row:
-                    analogs = analogs.exclude(pk=mh.row.id)
-                if analogs:
-                    analog = analogs[0]
+                analog = JointConclusion.objects.filter(welding_joint=welding_joint).order_by('-repair').first()
+                if not mh.row and analog:
                     context['error'] = 'Вы создаете дубликат, переадресовываем на заключение...'
                     link = reverse(
                         '%s:%s' % (CUR_APP, mh_vars['edit_urla']),

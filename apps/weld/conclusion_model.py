@@ -15,10 +15,12 @@ class JointConclusion(Standard):
         (1, 'первичный'),
         (2, 'вторичный'),
     )
-    welding_joint = models.OneToOneField(WeldingJoint,
+    welding_joint = models.ForeignKey(WeldingJoint,
         blank=True, null=True, on_delete=models.CASCADE,
         related_name='joint_conclusion',
         verbose_name='Заявка на стык')
+    repair = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Номер ремонта')
     date = models.DateField(blank=True, null=True, db_index=True,
         verbose_name='Дата актов/заключений')
     # Если ВИК не пройдет - сюда пишем ВИК заключение,
@@ -110,6 +112,7 @@ class JointConclusion(Standard):
     uzk_defectoscopist3 = models.ForeignKey(Defectoscopist, related_name='uzk_defectoscopist3',
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Заключение выдал дефектоскопист')
+
     class Meta:
         verbose_name = 'Сварочные соединения - Заключение (акт) на стык'
         verbose_name_plural = 'Сварочные соединения - Заключения (акты) на стыки'
@@ -149,14 +152,18 @@ class JointConclusion(Standard):
             repair = ''
             if obj.repair:
                 repair = 'р%s' % obj.repair
-            conclusion_number = '%s-%s-%s-%s-%s-%s%s' % (
+            conclusion_repair = ''
+            if self.repair:
+                conclusion_repair = '-%s' % self.repair
+            conclusion_number = '%s%s-%s-%s-%s-%s-%s%s' % (
+                obj.joint.name or '',
+                repair,
                 obj.joint.line.titul.subject.company.code or '',
                 obj.joint.line.titul.subject.code or '',
                 obj.joint.line.titul.name or '',
                 obj.joint.line.name or '',
                 '{}',
-                obj.joint.name or '',
-                repair,
+                conclusion_repair,
             )
         return {
             'vik_number': conclusion_number.format('ВИК'),

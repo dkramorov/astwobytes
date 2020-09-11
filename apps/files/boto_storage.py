@@ -14,6 +14,25 @@ logger = logging.getLogger('main')
 """
 Работа с https://mcs.mail.ru
 Access key ID и Secret access key вы можете создать в административном интерфейсе сервиса Cloud Storage в разделе «Аккаунты»
+
+Действия с ключами (Keys) можно делать через Bucket
+TODO: исключить django_boto из схемы
+
+import mimetypes
+from boto.s3.connection import Bucket, Key
+from boto import connect_s3
+a = connect_s3(aws_access_key_id=settings.GS_ACCESS_KEY_ID, aws_secret_access_key=settings.GS_SECRET_ACCESS_KEY, host=settings.GS_HOST, is_secure=False)
+S3Connection:storage.googleapis.com
+bucket = a.get_bucket(settings.GS_BUCKET_NAME)
+fname = '/home/jocker/Downloads/test.txt'
+mime = mimetypes.guess_type(fname)[0]
+content = open(fname).read()
+k = Key(bucket)
+k.key = 'test/text.txt'
+k.set_metadata('Content-Type', mime)
+k.set_contents_from_string(content) # .set_contents_from_filename(open(fname))
+k.set_acl('public-read')
+# k.delete()
 """
 
 class StorageS3(S3Storage):
@@ -63,3 +82,42 @@ class StorageS3(S3Storage):
         self.delete(fname)
 
 
+class CustomBotoStorage:
+    def __init__(self):
+        self.conn = connect_s3(
+            aws_access_key_id=settings.GS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.GS_SECRET_ACCESS_KEY,
+            host=settings.GS_HOST,
+            is_secure=False, )
+        self.bucket = self.conn.get_bucket(settings.GS_BUCKET_NAME)
+
+    def update_file_by_content(self,
+                               fname: str,
+                               content: str,
+                               mime: str = 'text/xml',
+                               acl: str = 'public-read'):
+        """Обновление файла в хранилище
+           :param fname: путь до файла в хранилище
+           :param content: содержимое файла
+           :param mime: mimetype файла
+           :param acl: разрешение на файл
+        """
+        k = Key(self.bucket)
+        k.key = fname
+        k.set_metadata('Content-Type', mime)
+        k.set_contents_from_string(content)
+        k.set_acl(acl)
+
+    def get_content(self, fname: str):
+        """Получить файл из хранилища
+           :param fname: путь до файла в хранилище
+        """
+        k = Key(self.bucket)
+        k.key = fname
+        return k.get_contents_as_string()
+
+    def is_exists(self, fname: str):
+        """Узнать, существует ли файл в хранилище
+           :param fname: путь до файла в хранилище
+        """
+        return self.bucket.get_key(fname)

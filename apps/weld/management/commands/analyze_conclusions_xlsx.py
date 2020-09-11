@@ -7,6 +7,7 @@ from io import BytesIO
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.db.models import Q
 
 from apps.main_functions.date_time import str_to_date
 from apps.main_functions.functions import object_fields
@@ -21,7 +22,7 @@ from apps.weld.enums import (WELDING_TYPES,
                              JOIN_TYPES,
                              replace_rus2eng,
                              replace_eng2rus, )
-from apps.weld.welder_model import Welder
+from apps.weld.welder_model import Welder, Defectoscopist
 from apps.weld.company_model import Company, Subject, Titul, Base, Line
 from apps.weld.models import WeldingJoint, Joint, JointWelder, WeldingJointState, recalc_joints
 from apps.weld.conclusion_model import JointConclusion, RKFrames
@@ -94,8 +95,13 @@ def analyze_conclusion(path: str, titul: str):
     for item in wb:
         if item.title == 'ВИК':
             sheet = item
-            analyze_vik(sheet, titul, path)
+            #analyze_vik(sheet, titul, path)
             #exit()
+    for item in wb:
+        if item.title == 'РК':
+            sheet = item
+            analyze_rk(sheet, titul, path)
+
 
 # Определяем шифт для титула по совпадениям
 titul_code_decider = {}
@@ -210,18 +216,56 @@ def get_material(text):
         welding_type = 2
     elif '20' in welding_type_str:
         welding_type = 3
+    elif '18' in welding_type_str:
+        welding_type = 5
     return material, welding_type
 
 def get_welding_type(text):
     """Поиск типа сварки
        :param text: строка, где ищем тип сварки
     """
-    if 'аргонодуго' in text and ' дуго' in text:
+    if 'комб' in text:
         return 3
-    if 'аргонодуго' in text:
+    if 'аргон' in text:
         return 1
-    if ' дуго' in text:
+    if 'дуго' in text:
         return 2
+
+def get_welders(text):
+    """Поиск сварщиков
+       :param text: строка, где ищем сварщиков
+    """
+    ids_welders = []
+    welders = []
+    text = text.replace('.', ' ')
+    text_arr = text.split(' ')
+    #print(text_arr)
+    for item in text_arr:
+        if len(item) < 3:
+            continue
+        welder = Welder.objects.filter(Q(name__icontains=item)|Q(stigma__icontains=item)).first()
+        if welder:
+            if welder.id in ids_welders:
+                continue
+            ids_welders.append(welder.id)
+            welders.append(welder)
+    return welders
+
+def get_defectoscopists(text):
+    """Поиск дефектоскопистов
+       :param text: строка, где ищем дефектоскопистов
+    """
+    defectoscopists = []
+    text = text.replace('.', ' ')
+    text_arr = text.split(' ')
+    #print(text_arr)
+    for item in text_arr:
+        if len(item) < 4:
+            continue
+        defectoscopist = Defectoscopist.objects.filter(name__icontains=item).first()
+        if defectoscopist:
+            defectoscopists.append(defectoscopist)
+    return defectoscopists
 
 def analyze_vik(sheet, titul: str, path: str):
     """Разбираем заибучее ВИК заключение,
@@ -286,12 +330,12 @@ def analyze_vik(sheet, titul: str, path: str):
     # -------------------
     # Находим дату сварки
     # -------------------
-    welding_date = get_welding_date(sheet['G11'].value)
-    if not welding_date:
-        welding_date = get_welding_date(sheet['H11'].value)
-    if not welding_date:
-        welding_date = get_welding_date(sheet['G10'].value)
-    if not welding_date:
+    request_control_date = get_welding_date(sheet['G11'].value)
+    if not request_control_date:
+        request_control_date = get_welding_date(sheet['H11'].value)
+    if not request_control_date:
+        request_control_date = get_welding_date(sheet['G10'].value)
+    if not request_control_date:
         logger.info('--- DATE INCORRENT %s ---' % path)
     # --------------------------------
     # Находим толщину стенки и диаметр
@@ -378,6 +422,49 @@ def analyze_vik(sheet, titul: str, path: str):
         welding_type = get_welding_type(welding_type_str)
     if not welding_type:
         logger.info('--- WELDING_TYPE NOT FOUND %s ---' % path)
+    # -------------
+    # Ищем сварщика
+    # -------------
+    welders = []
+    welder_row_number = welding_type_row_number + 1
+    for letter in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'):
+        welders_str = sheet['%s%s' % (
+            letter,
+            welder_row_number,
+        )].value
+        if not welders_str:
+            continue
+        welders += get_welders(welders_str)
+    # Следующую строчку ищем тоже
+    welder_row_number += 1
+    if not welders:
+        for letter in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'):
+            welders_str = sheet['%s%s' % (
+                letter,
+                welder_row_number,
+            )].value
+            if not welders_str:
+                continue
+            welders += get_welders(welders_str)
+
+    if not welders:
+        logger.info('--- WELDERS NOT FOUND %s ---' % path)
+
+    # ---------------------
+    # Ищем дефектоскопистов
+    # Контроль выполнил:
+    # ---------------------
+    defectoscopists = []
+    letters = ('G', 'H', 'I', 'J')
+    for letter in letters:
+        for number in range(36, 46):
+            adr = '%s%s' % (letter, number)
+            value = sheet[adr].value
+            if not value:
+                continue
+            defectoscopists += get_defectoscopists(value)
+    if not defectoscopists:
+        logger.info('--- DEFECTOSCOPISTS NOT FOUND %s ---' % path)
 
     for joint_str in joints_arr:
         joint_str = joint_str.replace('.', '/').replace('\\', '/').strip()
@@ -388,42 +475,99 @@ def analyze_vik(sheet, titul: str, path: str):
         digits = kill_quotes(joint_str, 'int')
         if not digits:
             logger.info('--- BAD JOINT %s, %s ---' % (joint_str, path))
+            continue
+
+        joint = Joint.objects.filter(line=line, name=joint_str).first()
+        if not joint:
+            logger.info('--- JOINT NOT FOUND %s, %s ---' % (joint_str, line.name))
+            # Ну создаем, блеать, раз линия найдена
+            joint = Joint.objects.create(line=line, name=joint_str)
+        # Стык найден - надо найти заключение,
+        # если нету - создать или обновить
+        welding_joints = WeldingJoint.objects.filter(joint=joint)
+        if len(welding_joints) > 1:
+            logger.info('--- MORE THAN 1 WeldingJoint %s' % joint)
+            return
+        if welding_joints:
+            welding_joint = welding_joints[0]
         else:
-            joint = Joint.objects.filter(line=line, name=joint_str).first()
-            if not joint:
-                logger.info('--- JOINT NOT FOUND %s, %s ---' % (joint_str, line.name))
-                # Ну создаем, блеать, раз линия найдена
-                joint = Joint.objects.create(line=line, name=joint_str)
-            # Стык найден - надо найти заключение,
-            # если нету - создать или обновить
-            welding_joints = WeldingJoint.objects.filter(joint=joint)
-            if len(welding_joints) > 1:
-                logger.info('--- MORE THAN 1 WeldingJoint %s' % joint)
-                return
-            if welding_joints:
-                welding_joint = welding_joints[0]
-            else:
-                welding_joint = WeldingJoint(joint=joint)
-            welding_joint.state = 3
-            welding_joint.diameter = diameter
-            welding_joint.side_thickness = side_thickness
-            welding_joint.welding_date = welding_date
-            welding_joint.material = material
-            welding_joint.welding_conn_view = welding_conn_view
-            welding_joint.welding_type = welding_type
+            welding_joint = WeldingJoint(joint=joint)
+        welding_joint.state = 3
+        welding_joint.diameter = diameter
+        welding_joint.side_thickness = side_thickness
+        welding_joint.request_control_date = request_control_date
+        welding_joint.material = material
+        welding_joint.welding_conn_view = welding_conn_view
+        welding_joint.welding_type = welding_type
+        welding_joint.save()
+        for i, welder in enumerate(welders):
+            if i > 3:
+                break
+            analog = JointWelder.objects.filter(
+                welder=welder,
+                welding_joint=welding_joint,
+            )
+            if not analog:
+                JointWelder.objects.create(
+                    welder=welder,
+                    welding_joint=welding_joint,
+                    position=i + 1,
+                )
+        joint_conclusion = JointConclusion.objects.filter(welding_joint=welding_joint).first()
+        if not joint_conclusion:
+            joint_conclusion = JointConclusion(welding_joint=welding_joint)
+        joint_conclusion.date = welding_joint.request_control_date
+        joint_conclusion.vik_active = True
+        joint_conclusion.vik_state = 1
+        if defectoscopists:
+            joint_conclusion.vik_controller = defectoscopists[0]
+        if len(defectoscopists) > 1:
+            joint_conclusion.vik_director = defectoscopists[1]
+        joint_conclusion.save()
+
 
 """
     repair
     join_type_from
     join_type_to
     workshift
-    request_control_date
+    welding_date
     control_type
     category
     control_result
     notice
     state
 """
+def analyze_rk(sheet, titul: str, path: str):
+    """Разбираем заибучее РК заключение,
+       это второй лист в экселевском файле
+       :param sheet: лист эксельки
+       :param titul: экземпляр Titul
+       :param path: путь до файла (для отладки)
+    """
+    # ----------------
+    # Определяем линию
+    # ----------------
+    line_str = sheet['F8'].value
+    if not line_str or not 'Линия' in line_str:
+        line_str = sheet['F9'].value
+    if not line_str or not 'Линия' in line_str:
+        logger.info('--- LINE ABSENT %s---' % path)
+
+    line_str = line_str.replace('Линия', '').strip()
+    line_str = line_str.replace('0 H', '0H')
+    line_str = line_str.replace('  ', ' ')
+    try:
+        line_str = replace_rus2eng(line_str)
+    except Exception as e:
+        logger.info(e)
+        return
+    line = Line.objects.filter(name=line_str, titul=titul).first()
+    if not line:
+        logger.info('--- LINE NOT FOUND %s ---' % line_str)
+        # Создаем линию, если название адекватное
+        if len(line_str) < 5:
+            return
 
 class Command(BaseCommand):
     def handle(self, *args, **options):

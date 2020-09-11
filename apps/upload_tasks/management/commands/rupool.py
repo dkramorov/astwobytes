@@ -11,6 +11,7 @@ from lxml import html as lxml_html
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.db.models import Count
 
 from apps.main_functions.string_parser import kill_html
 from apps.flatcontent.models import Containers, Blocks
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 default_folder = settings.MEDIA_ROOT
 cookies = {
-    'PHPSESSID': '4799930f2f5a1e71f3610f23f0b59c75',
+    'PHPSESSID': 'b6a37587437bab89fd127234625cb677',
     'cookie[valuta]': '0',
     'cookie[page_rows]': '10000',
     'cookie[city]': '29',
@@ -46,6 +47,13 @@ cookies = {
     '_ym_isad': '1',
 }
 
+def clear_tables():
+    """Очистка таблиц"""
+    for prop in Property.objects.all():
+        prop.delete()
+    Products.objects.all().update(img=None)
+    ProductsPhotos.objects.all().delete()
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
         # Named (optional) arguments
@@ -62,9 +70,11 @@ class Command(BaseCommand):
             help = 'Set cat tag for update')
     def handle(self, *args, **options):
         started = time.time()
-        for prop in Property.objects.all():
-            prop.delete()
+        #clear_tables()
         rp = RupoolPrices()
+        ahrefs = rp.fetch_mapa()
+        rp.fill_rubrics(ahrefs) # Вызывает обновление рубрик и товаров
+        #rp.fix_rubrics(ahrefs) # Вызывает обновление рубрик
         elapsed = time.time() - started
         print('%.2f' % elapsed)
 
@@ -76,6 +86,8 @@ class RupoolPrices(object):
         self.bad_image = 'shablon_foto.jpg'
         self.user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         self.headers = {'User-Agent': self.user_agent, 'X-Requested-With': 'XMLHttpRequest'}
+        self.fixed_rubrics = []
+
         # Создаем/находим каталог
         container = Containers.objects.filter(
             tag='catalogue',
@@ -86,7 +98,7 @@ class RupoolPrices(object):
                 name='Каталог',
             )
         self.container = container
-        self.fetch_mapa() # Хаваем ссылки на рубрики
+        #self.fetch_mapa() # Хаваем ссылки на рубрики
 
     def fetch_mapa(self):
         """Скачать карту сайта (все ссылки на рубрики)"""
@@ -102,7 +114,7 @@ class RupoolPrices(object):
         tree = lxml_html.fromstring(content)
         box = tree.xpath('//div[@id="page_in_bottom"]')[0]
         ahrefs = box.xpath('.//a[@class="list-group-item"]')
-        self.fill_rubrics(ahrefs)
+        return ahrefs
 
     def fill_rubrics(self, ahrefs):
         """Заполнить рубрики
@@ -136,16 +148,30 @@ class RupoolPrices(object):
                 tag=tag, )
         if parents:
             cat.parents = parents
-        cat.name = name
+        cat.name = name.strip()
         cat.save()
         return cat
 
-    def fill_products(self, cat):
-        """Заполнение товарами по каталогу
+    def fix_rubrics(self, ahrefs):
+        """Пофиксить рубрики
+           :param ahrefs: ссылки на рубрики
+        """
+        for ahref in ahrefs:
+            href = ahref.attrib.get('href')
+            name = ahref.text
+            if not name:
+                name = ahref.xpath('.//p')[0].text
+            cat = self.fill_rubric(name, href)
+            self.fix_rubric(cat)
+
+    def fix_rubric(self, cat):
+        """Пост-обработка рубрики,
+           подтягиваем изображение,
+           заполняем parents
            :param cat: рубрика каталога
         """
-        cat_id = cat.tag.replace('_cat_', '')
         content = None
+        cat_id = cat.tag.replace('_cat_', '')
         link = '%s/catalog/%s' % (self.domain, cat_id)
         while not content:
             try:
@@ -154,8 +180,8 @@ class RupoolPrices(object):
             except Exception as e:
                 logger.info('[ERROR]: %s' % e)
         tree = lxml_html.fromstring(content)
-
-        breadcrumbs = tree.xpath('//ol[@class="breadcrumb"]')[0]
+        content = tree.xpath('//div[@id="page_in_bottom"]')[0]
+        breadcrumbs = content.xpath('.//ol[@class="breadcrumb"]')[0]
         ahrefs = breadcrumbs.xpath('.//a')
         parents = None
         for ahref in ahrefs:
@@ -164,7 +190,42 @@ class RupoolPrices(object):
                 href = ahref.attrib.get('href')
                 parent_cat = self.fill_rubric(name, href, parents)
                 parents = '%s_%s' % (parent_cat.parents or '', parent_cat.id)
-        Blocks.objects.filter(pk=cat.id).update(parents=parents)
+                if not parent_cat.id in self.fixed_rubrics:
+                    self.fixed_rubrics.append(parent_cat.id)
+                    self.fix_rubric(parent_cat)
+
+        html = None
+        desc = content.xpath('.//div[@class="article_dop"]')
+        if desc:
+            image = desc[0].xpath('.//div/img')
+            if not cat.img and image:
+                image = image[0]
+                img_path = image.attrib.get('src')
+                if not img_path.startswith(self.domain):
+                    img_path = '%s%s' % (self.domain, img_path)
+                img = cat.upload_img(img_path)
+
+            search_html = desc[0].xpath('.//div[@class="epigraph_body"]/p')
+            if search_html:
+                try:
+                    html = search_html[0].text.strip()
+                except Exception as e:
+                    print(e)
+                    print('[ERROR]: description text not found %s' % cat.id)
+
+        Blocks.objects.filter(pk=cat.id).update(
+            parents=parents,
+            html=html,
+        )
+
+        return cat_id
+
+    def fill_products(self, cat):
+        """Заполнение товарами по каталогу
+           :param cat: рубрика каталога
+        """
+        #cat_id = self.fix_rubric(cat)
+        cat_id = cat.tag.replace('_cat_', '')
 
         s = requests.Session()
         s.cookies.update(cookies)
@@ -191,6 +252,7 @@ class RupoolPrices(object):
            :param tr: элемент таблицы с инфой о товаре
         """
         # Изображение
+        imga = None
         search_img = tr.xpath('.//td[@class="td_img"]')[0]
         images = search_img.xpath('.//a[@class="highslide"]')
         photos = []
@@ -220,7 +282,6 @@ class RupoolPrices(object):
             props = self.get_props_array(props_arr)
 
         # Цена/свойства
-        print(product_id, product_name)
         search_price = tr.xpath('.//td[@class="right_block"]')[0]
         # Цены может не быть
         product_price = None
@@ -237,9 +298,9 @@ class RupoolPrices(object):
         analog.name = product_name
         analog.price = product_price
         analog.save()
-
         self.update_props(analog, props)
         self.update_cat(analog, cat)
+        self.update_photos(analog, photos)
 
     def get_props_array(self, props_arr):
         """Найти свойства товара/услуги
@@ -318,4 +379,20 @@ class RupoolPrices(object):
                 product_prop = ProductsProperties.objects.create(
                     product=product,
                     prop=pvalue, )
+
+    def update_photos(self, analog, photos):
+        """Обновление фоток
+           :param analog: товар/услуга
+           :param photos: фотки товара
+        """
+        if not analog:
+            return
+        if not analog.img and photos:
+            analog.img = photos[0]
+            Products.objects.filter(pk=analog.id).update(img='%s%s' % (self.domain, photos[0]))
+        photos_count = ProductsPhotos.objects.filter(product=analog).aggregate(Count('id'))['id__count']
+        if not photos_count and len(photos) > 1:
+            for photo in photos[1:]:
+                ProductsPhotos.objects.create(product=analog, img='%s%s' % (self.domain, photo))
+
 

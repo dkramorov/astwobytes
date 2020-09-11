@@ -1,0 +1,91 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="text-center">Удостоверения</h4>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div id="main-table"></div>
+      <br>
+      <div class="text-center">
+      <a id="add_certification" href="javascript:void(0);" class="btn btn-default">Добавить удостоверение</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="certification_form"></div>
+
+<script type="text/javascript">
+var certification_table = null;
+
+function fill_certification_form(){
+  // Заполнение формы по удостоверениям,
+  // вызываем перед отправкой в $("#current_edit_form").submit
+  $("#certification_form").html();
+  var certification_data = "";
+  var certifications = certification_table.getRows();
+  var cdata = null;
+  for(var i=0; i<certifications.length; i++){
+    cdata = certifications[i].getData();
+    certification_data += "<input type='hidden' name='cert_number_" + i + "' value='" + cdata['number'] + "' />";
+    certification_data += "<input type='hidden' name='cert_welding_type_" + i + "' value='" + cdata['welding_type'] + "' />";
+  }
+  certification_data += "<input type='hidden' name='certifications' value='" + certifications.length + "' />";
+  $("#certification_form").html($(certification_data));
+}
+var cert_arr = [
+  {% for cert in certifications %}
+    {
+        'id': '{{ cert.id }}',
+        'number': '{{ cert.number }}',
+        'welding_type': '{{ cert.welding_type }}',
+    },
+  {% endfor %}
+];
+$(document).ready(function(){
+  var welding_types = {
+    {% for item in welding_types %}
+      '{{ item.0 }}': '{{ item.1 }}',
+    {% endfor %}
+  };
+  var weldingTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return welding_types[pk];
+  };
+  certification_table = new Tabulator("#main-table", {
+    layout: "fitColumns",
+    data: cert_arr,
+    columns:[
+      {
+        title: "Номер удостоверения",
+        field: "number",
+        editor: "input",
+        minWidth: 120,
+      },
+      {
+        title: "Способ сварки",
+        field: "welding_type",
+        editor: "select",
+        editorParams: welding_types,
+        formatter: weldingTypeFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Действия",
+        formatter: "buttonCross",
+        width: 120,
+        align:"center",
+        cellClick:function(e, cell){
+          cell.getRow().delete();
+        }
+      },
+    ],
+  });
+  $("#add_certification").click(function(){
+    certification_table.addRow({
+      'number': '',
+      'welding_type': '',
+    });
+  });
+});
+</script>

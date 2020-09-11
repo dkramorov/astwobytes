@@ -19,6 +19,10 @@ $(document).ready(function(){
   var flat_tree = $("#flat_tree");
   //$.jstree.defaults.search.ajax = true;
 
+  // Для ссылки на редактирование блока нужна ссылка
+  var current_edit_form_link = '{% url "flatcontent:edit_block" ftype row.id "edit" "000" %}';
+  $("#edit_form_link").attr('target', '_blank');
+
   $("#current_edit_form").submit(function(e) {
 
     update_sorted_select2("linkcontainer");
@@ -207,6 +211,13 @@ $(document).ready(function(){
     }).success(function(r) {
       var row = r['row'];
       container.parent().removeClass("hidden");
+
+      var rname = '<i class="fa fa-edit"></i> ' + row['name'];
+      container.find('#edit_form_link')
+               .removeClass('hidden')
+               .html(rname)
+               .attr('href', current_edit_form_link.replace('000', row['id']));
+
       container.find('input[name="name"]').val(row['name']);
       if(row['html'] !== null){
         container.find('#html_redactor').setCode(row['html']);

@@ -2,6 +2,7 @@
 from django.db import models
 
 from apps.main_functions.models import Standard
+from apps.main_functions.string_parser import kill_quotes
 
 class EmailBlackList(Standard):
     """Список email'ов на которые нельзя отправлять почту
@@ -87,3 +88,28 @@ class SpamRow(Standard):
     class Meta:
         verbose_name = 'Рассылка - Записи в таблицах рассылок'
         verbose_name_plural = 'Рассылка - Записи в таблицах рассылок'
+
+class SMSPhone(Standard):
+    """Телефоны для смс рассылки"""
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Название телефона, например, Samsung Galaxy A5')
+    phone = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Номер телефона, например, 89501100222')
+    code = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='ИД телефона, например, 123321')
+    sent = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Кол-во отправленных смс')
+    limit = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Максимальное кол-во для отправки')
+    class Meta:
+        verbose_name = 'Рассылка - Телефон для смс'
+        verbose_name_plural = 'Рассылка - Телефоны для смс'
+        #default_permissions = []
+
+    def save(self, *args, **kwargs):
+        if self.phone:
+            self.phone = kill_quotes(self.phone, 'int')
+        super(SMSPhone, self).save(*args, **kwargs)

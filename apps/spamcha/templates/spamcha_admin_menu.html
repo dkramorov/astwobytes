@@ -3,9 +3,9 @@
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-envelope"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
-    <span class="item-text">Email-рассылка</span>
+    <span class="item-text">Спамчик</span>
   </a>
-  <ul class="nav collapse{% ifequal menu 'afisha' %} in{% endifequal %}">
+  <ul class="nav collapse{% ifequal menu 'spamcha' %} in{% endifequal %}">
     <li{% ifequal submenu 'spam_tables' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_spam_tables' %}">
         <span class="item-text">Рассылки</span>
@@ -19,6 +19,11 @@
     <li{% ifequal submenu 'black_list' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_black_list' %}">
         <span class="item-text">Черный список</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'sms_phones' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_sms_phones' %}">
+        <span class="item-text">Телефоны для смс</span>
       </a>
     </li>
   </ul>

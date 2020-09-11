@@ -15,6 +15,24 @@
   </nav>
 </div>
 {% endifequal %}
+{% ifequal tag "othermenu" %}
+  {% for menu in menus %}
+  <div class="col-sm-6 col-md-3">
+    <div class="column">
+      <div class="widget-title">
+        <h3>{{ menu.name }}</h3>
+      </div>
+      <div class="widget-content">
+        <ul>
+          {% for item in menu.sub %}
+            <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endifequal %}
 {% ifequal tag "bottommenu" %}
   <ul class="footer-menu">
   {% for menu in menus %}

@@ -15,6 +15,11 @@ from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
 from apps.main_functions.api_helper import ApiHelper
 
+from apps.main_functions.views_helper import (show_view,
+                                              edit_view,
+                                              search_view,
+                                              special_model_vars, )
+
 from .models import Daemon
 
 CUR_APP = 'demonology'

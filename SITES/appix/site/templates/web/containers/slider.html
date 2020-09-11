@@ -15,7 +15,7 @@
                   {% endif %}
                   <div class="themeix-button-group">
                     {% if block.link %}
-                      <a href="{{ block.link }}" class="themeix-btn smoothScroll">{{ block.name }}</a>
+                      <a href="{{ block.link }}" class="themeix-btn smoothScroll">{% if block.title %}{{ block.title }}{% else %}Подробнее{% endif %}</a>
                     {% endif %}
                   </div>
                 </div>
@@ -26,4 +26,4 @@
       </div>
     </div>
   </div>
-</section>
+</section><br><br>

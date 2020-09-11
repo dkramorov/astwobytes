@@ -24,7 +24,6 @@ from apps.weld.enums import (WELDING_TYPES,
                              MATERIALS,
                              JOIN_TYPES,
                              WELDING_JOINT_STATES,
-                             WELDING_TYPE_DESCRIPTIONS,
                              CONCLUSION_STATES,
                              get_welding_joint_state, )
 from apps.weld.welder_model import (Welder,
@@ -94,7 +93,7 @@ def show_welding(request, *args, **kwargs):
     mh.select_related_add('joint__line__titul')
     mh.select_related_add('joint__line__titul__subject')
     mh.select_related_add('joint__line__titul__subject__company')
-    mh.select_related_add('joint_conclusion')
+    #mh.select_related_add('joint_conclusion')
     context = mh.context
     context['welding_joint_state_permissions'] = get_user_permissions(request.user, WeldingJointState)
 
@@ -141,14 +140,14 @@ def show_welding(request, *args, **kwargs):
             'control_result',
             'notice',
             'state',
-            'joint_conclusion__date',
-            'joint_conclusion__state',
-            'joint_conclusion__vik_defects',
-            'joint_conclusion__pvk_defects',
-            'joint_conclusion__uzk_defects',
+            #'joint_conclusion__date',
+            #'joint_conclusion__state',
+            #'joint_conclusion__vik_defects',
+            #'joint_conclusion__pvk_defects',
+            #'joint_conclusion__uzk_defects',
         )
-        rows = mh.standard_show(only_fields=only_fields,
-                                related_fields=('joint_conclusion', ))
+        rows = mh.standard_show(only_fields=only_fields, )
+                                #related_fields=('joint_conclusion', ))
         result = []
         fk_keys = {
             'joint': ('name', ),
@@ -156,31 +155,59 @@ def show_welding(request, *args, **kwargs):
             'titul': ('name', ),
             'subject': ('name', ),
             'company': ('name', ),
-            'joint_conclusion': (
-                'date',
-                'state',
-                'vik_defects',
-                'pvk_defects',
-                'uzk_defects', ),
+            #'joint_conclusion': (
+            #    'date',
+            #    'state',
+            #    'vik_defects',
+            #    'pvk_defects',
+            #    'uzk_defects', ),
         }
-        # Только для ремонта
-        conclusions = {row.joint_conclusion.id: [] for row in rows if hasattr(row, 'joint_conclusion')}
+        # У нас может быть много заключений на одну заявку,
+        # поэтому надо вытащить последнее заключение по ремонту
+        # именно из него будем выводить дефекты
+        #conclusions = {row.joint_conclusion.id: [] for row in rows if hasattr(row, 'joint_conclusion')}
+        ids_rows = [row.id for row in rows]
+        conclusions = JointConclusion.objects.filter(welding_joint__in=ids_rows).order_by('-repair')
+        last_conclusion_arr = {}
+        ids_conclusions = {}
+        for conclusion in conclusions:
+            if conclusion.welding_joint_id in last_conclusion_arr:
+                continue
+            last_conclusion_arr[conclusion.welding_joint_id] = conclusion
+            ids_conclusions[conclusion.id] = []
+
         rk_frames = []
-        if conclusions:
+        if ids_conclusions:
             rk_frames = RKFrames.objects.filter(
-                joint_conclusion__in=conclusions.keys(),
-            ).exclude(state=1).values('joint_conclusion', 'defects')
+                joint_conclusion__in=ids_conclusions.keys(),
+            ).exclude(state=1).values('joint_conclusion', 'defects', 'notice')
         for rk_frame in rk_frames:
-            conclusions[rk_frame['joint_conclusion']].append(rk_frame['defects'])
+            ids_conclusions[rk_frame['joint_conclusion']].append(
+                '%s%s' % (
+                    rk_frame['defects'],
+                    ' (%s)' % rk_frame['notice'] if rk_frame['notice'] else '',
+                )
+            )
         for row in rows:
             item = object_fields(row,
                                  only_fields=only_fields,
-                                 fk_only_keys=fk_keys,
-                                 related_fields=('joint_conclusion', ))
+                                 fk_only_keys=fk_keys, )
+                                 #related_fields=('joint_conclusion', ))
             item['actions'] = row.id
-            if hasattr(row, 'joint_conclusion'):
-                if row.joint_conclusion.id in conclusions:
-                    item['joint_conclusion']['rk_frames'] = conclusions[row.joint_conclusion.id]
+            if row.id in last_conclusion_arr:
+                conclusion = last_conclusion_arr[row.id]
+                item['joint_conclusion'] = object_fields(
+                    conclusion,
+                    only_fields=(
+                        'date',
+                        'state',
+                        'vik_defects',
+                        'pvk_defects',
+                        'uzk_defects',
+                    )
+                )
+                if conclusion.id in ids_conclusions:
+                    item['joint_conclusion']['rk_frames'] = ids_conclusions[conclusion.id]
             result.append(item)
         if request.GET.get('page'):
             result = {'data': result,
@@ -257,6 +284,8 @@ def update_welding_joint_state(request, mh):
         if progress2repair:
             params['repair'] = mh.row.repair or 0
             params['repair'] += 1
+            # Создаем новое заключение
+            repair_conclusion = JointConclusion.objects.create(welding_joint=mh.row, repair=params['repair'])
         WeldingJoint.objects.filter(pk=mh.row.id).update(**params)
         for k, v in params.items():
             setattr(mh.row, k, v)
@@ -369,7 +398,8 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
             })
             context['joint'] = mh.row.joint
             context['state'] = mh.row.get_state_display()
-            context['joint_conclusion'] = JointConclusion.objects.filter(welding_joint=mh.row).first()
+            # Берем по последнему ремонту
+            context['joint_conclusion'] = JointConclusion.objects.filter(welding_joint=mh.row).order_by('-repair').first()
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -390,7 +420,8 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
         elif action == 'conclusion' and row:
             # Если по акту нет заключения,
             # переадресовываем на создание,
-            conclusion = JointConclusion.objects.filter(welding_joint=row).first()
+            # Если есть - берем последнее по ремонту
+            conclusion = JointConclusion.objects.filter(welding_joint=row).order_by('-repair').first()
             # -------------------------------
             # Ссылки не импортирую тупо меняю
             # welding на conclusion
@@ -442,7 +473,7 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 # Заявки в ремонте даем редактировать,
                 # чтобы гондоны смогли хотя бы со второго
                 # раза правильно подать, а кто то с пятого
-                if mh.row.state in (1, 5) and mh.permissions['repair']:
+                if mh.row and mh.row.state in (1, 5) and mh.permissions['repair']:
                     mh.permissions['edit'] = True
 
                 if mh.permissions['edit'] and mh.row:

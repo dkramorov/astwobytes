@@ -54,11 +54,11 @@
     -----------------------------------*/
 
     $("#shopping-cart").mouseenter(function () {
-    	$("#cart-floating-box").stop().slideDown(1000);
+    	$("#cart-floating-box").stop().slideDown(200);
     });
 
     $("#shopping-cart").mouseleave(function () {
-    	$("#cart-floating-box").stop().slideUp(1000);
+    	$("#cart-floating-box").stop().slideUp(200);
     });
 
 
@@ -762,23 +762,6 @@
 	--------------------------------*/
 	$('.pro-qty').append('<a href="#" class="inc qty-btn">+</a>');
 	$('.pro-qty').append('<a href="#" class= "dec qty-btn">-</a>');
-	$('.qty-btn').on('click', function (e) {
-		e.preventDefault();
-		var $button = $(this);
-		var oldValue = $button.parent().find('input').val();
-		if ($button.hasClass('inc')) {
-			var newVal = parseFloat(oldValue) + 1;
-		} else {
-			// Don't allow decrementing below zero
-			if (oldValue > 0) {
-				var newVal = parseFloat(oldValue) - 1;
-			} else {
-				newVal = 0;
-			}
-		}
-		$button.parent().find('input').val(newVal);
-	});
-
 
 	/*----- 
 	Activate countdown
@@ -1008,7 +991,9 @@
       var fb = new FeedBack($(this).attr('id'));
     }
   });
-  $("input.phone").mask("8(999)9 999-999");
+  if($.mask){
+    $("input.phone").mask("8(999)9 999-999");
+  }
 
 
 

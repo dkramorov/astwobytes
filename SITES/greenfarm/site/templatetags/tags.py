@@ -4,7 +4,8 @@ from django.conf import settings
 from django.core.cache import cache
 
 from apps.flatcontent.flatcat import get_catalogue
-from apps.products.models import Products
+from apps.products.models import Products, ProductsCats
+from apps.shop.cart import calc_cart, get_shopper
 
 register = template.Library()
 
@@ -12,24 +13,37 @@ register = template.Library()
 def test_tag():
     return "test_tag"
 
-@register.inclusion_tag('web/ajax_cart.html')
+@register.inclusion_tag('web/order/ajax_cart.html')
 def ajax_cart(request):
     """Аякс-корзинка"""
     result = {}
-    if request.session.get("shopper"):
-      shopper = request.session['shopper']
-      #result['cart'] = CalcCart(shopper, 1)
+    shopper = get_shopper(request)
+    result['cart'] = calc_cart(shopper, min_info=False)
     result['request'] = request
     return result
 
-@register.inclusion_tag('web/tags/catalogue.html')
-def catalogue(request):
-    """Каталог в виде меню - левый блок"""
+@register.inclusion_tag('web/tags/catalogue_home.html')
+def catalogue_home(request):
+    """Каталог в виде меню на главной страничке
+       левый блок
+    """
     result = get_catalogue(
         request,
         tag = 'catalogue',
         cache_time = 60,
         force_new = False)
+    result['request'] = request
+    return result
+
+@register.inclusion_tag('web/tags/catalogue.html')
+def catalogue(request, with_count: bool = False):
+    """Каталог в виде меню - левый блок"""
+    result = get_catalogue(
+        request,
+        tag = 'catalogue',
+        cache_time = 60,
+        force_new = False,
+        with_count = with_count)
     result['request'] = request
     return result
 
@@ -86,4 +100,18 @@ def random_products(request,
     cache.set(cache_var, result, cache_time)
 
     result['request'] = request
+    return result
+
+@register.inclusion_tag('web/containers/products_sidebar_slider.html')
+def products_sidebar_slider(product, limit: int = 12):
+    """Вывод на страничке товара других товаров из той же рубрики
+       :param product: товар
+       :param limit: количество аналогов
+    """
+    cat_id = ProductsCats.objects.filter(product=product).values_list('cat', flat=True)
+    products = ProductsCats.objects.select_related('product').filter(cat__in=cat_id).exclude(product=product)[:limit]
+    result = {
+        'container': {'name': 'Похожие товары'},
+        'products': [product.product for product in products],
+    }
     return result

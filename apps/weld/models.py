@@ -42,6 +42,7 @@ class WeldingJoint(Standard):
         (2, 'У19'),
         (3, 'У20'),
         (4, 'С17/У20'),
+        (5, 'У18'),
     )
     # Категория
     category_choices = (

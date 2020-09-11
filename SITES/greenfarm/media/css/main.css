@@ -687,6 +687,7 @@ header {
         .cart-floating-box .cart-float-single-item .cart-float-single-item-image a:hover {
           border: 1px solid #80bb01; }
     .cart-floating-box .cart-float-single-item .cart-float-single-item-desc p {
+      padding-right: 20px;
       margin-bottom: 5px; }
     .cart-floating-box .cart-float-single-item .cart-float-single-item-desc p.product-title a {
       font-weight: 500;
@@ -3755,8 +3756,11 @@ a.single-sale-add-to-cart-btn {
 
   .category-mega-menu > li > a.megamenu-head .image{
     float: left;
-    width: 55px;
+    width: 50px;
     text-align: center;
+  }
+  .category-mega-menu > li > a.megamenu-head .image img{
+    max-width: 100%;
   }
   .category-mega-menu > li > a.megamenu-head .text{
     position: relative;
@@ -5172,7 +5176,7 @@ p.result-show-message {
 
     .cart-summary .cart-summary-button button {
       margin-top: 10px;
-      width: 140px;
+      max-width: 180px;
       border-radius: 50px;
       height: 36px;
       border: 1px solid #999999;
@@ -5478,7 +5482,7 @@ p.result-show-message {
 /*-- Place Order --*/
 .place-order {
   margin-top: 40px;
-  width: 140px;
+  max-width: 180px;
   border-radius: 50px;
   height: 36px;
   border: none;

@@ -1,0 +1,167 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/media/css/checkout.css" />
+<style type="text/css">
+  label.error{
+    color: #d20000 !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-section section mb-50">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        {% if not cart %}
+          <h2 class="text-center pt-100 pb-100">Ваша корзина пуста, сначала выберите, что хотите купить</h2>
+        {% else %}
+          {% for error in errors %}
+            <label class="error mistake">{{ error }}</label><br />
+          {% endfor %}
+          <form action="/shop/checkout/" method="POST" id="confirm_order" class="checkout-form">
+            {% csrf_token %}
+            <div class="row row-40">
+              <div class="col-lg-7 mb-20">
+                <div id="billing-form" class="mb-40">
+                  <h4 class="checkout-title">Контактная информация</h4>
+                  <div class="row">
+                    <div class="col-md-6 col-12 mb-20">
+                      <label>Как к вам обращаться</label>
+                      <input type="text" class="form-control required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}">
+                    </div>
+                    <div class="col-md-6 col-12 mb-20">
+                      <label>Ваше имя</label>
+                      <input type="text" class="form-control" name="first_name" value="{% if shopper_data.first_name %}{{ shopper_data.first_name }}{% endif %}">
+                    </div>
+                    <div class="col-md-6 col-12 mb-20">
+                      <label>Ваша фамилия</label>
+                      <input type="text" class="form-control" name="last_name" value="{% if shopper_data.last_name %}{{ shopper_data.last_name }}{% endif %}">
+                    </div>
+                    <div class="col-md-6 col-12 mb-20">
+                      <label>Ваше отчество</label>
+                      <input type="text" class="form-control" name="middle_name" value="{% if shopper_data.middle_name %}{{ shopper_data.middle_name }}{% endif %}">
+                    </div>
+                    <div class="col-md-6 col-12 mb-20">
+                      <label>Ваш email</label>
+                      <input type="text" class="form-control required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}">
+                    </div>
+                    <div class="col-md-6 col-12 mb-20">
+                      <label>Ваш телефон</label>
+                      <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}">
+                    </div>
+                    <div class="col-12 mb-20">
+                      <label>Ваш адрес</label>
+                      <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}">
+                    </div>
+{% comment %}<!--
+                    <div class="col-md-6 col-12 mb-20">
+                      <label>Country*</label>
+                      <select class="nice-select">
+                        <option>Bangladesh</option>
+                      </select>
+                    </div>
+-->{% endcomment %}
+                    <div class="col-12 mb-20">
+                      <div class="check-box">
+                        <input type="checkbox" id="create_account">
+                        <label for="create_account">Создать аккаунт?</label>
+                      </div>
+                      <div class="check-box">
+                        <input type="checkbox" id="shiping_address" data-shipping>
+                        <label for="shiping_address">Указать адрес доставки</label>
+                      </div>
+                    </div>
+                 </div>
+                </div>
+                <div id="shipping-form" class="mb-40">
+                  <h4 class="checkout-title">Адрес доставки</h4>
+                  <div class="row">
+                    <div class="col-12 mb-20">
+                      <label>Адрес</label>
+                      <input type="text" placeholder="Адрес">
+                    </div>
+                    <div class="col-md-6 col-12 mb-20">
+                      <label>Почтовый индекс</label>
+                      <input type="text" placeholder="Почтовый индекс">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-5">
+                <div class="row">
+                  <div class="col-12 mb-60">
+                    <h4 class="checkout-title">Заказ на {{ cart.total|money_format }} ₽</h4>
+                    <div class="checkout-cart-total">
+                      <h4>Наименование <span>Итого</span></h4>
+                      <ul>
+                        {% for purchase in cart.purchases %}
+                          <li>{{ purchase.product_name }} X {{ purchase.count }} <span>{{ purchase.total|money_format }} ₽</span></li>
+                        {% endfor %}
+                      </ul>
+                      <p>Без скидки <span>{{ cart.total|money_format }} ₽</span></p>
+                      <p>Скидка{% if cart.promocode %} (промокод <strong>{{ cart.promocode }}</strong>){% endif %} <span>{{ cart.discount|money_format }} ₽</span></p>
+                      <h4>Итого <span>{{ cart.total_with_discount|money_format }} ₽</span></h4>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <h4 class="checkout-title">Способ оплаты</h4>
+                    <div class="checkout-payment-method">
+                      <div class="single-method">
+                        <input type="radio" id="payment_check" name="payment-method" value="check">
+                        <label for="payment_check">Наличный</label>
+                        <p data-method="check">Мы позвоним вам и уточним где вам удобнее произвести оплату (магазин/склад/водителю)</p>
+                      </div>
+                      <div class="single-method">
+                        <input type="radio" id="payment_bank" name="payment-method" value="bank">
+                        <label for="payment_bank">Безналичный</label>
+                        <p data-method="bank">Онлайн оплата недоступна. На данный момент беналичный расчет возможен только по терминалу</p>
+                      </div>
+                      <div class="single-method">
+                        <input type="checkbox" id="accept_terms">
+                        <label for="accept_terms">Мной прочитано соглашение о покупке</label>
+                      </div>
+                    </div>
+                    <button class="place-order">Оформить заказ</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+
+<script type="text/javascript">
+  jQuery(document).ready(function($){
+    //demo_fill_order();
+    $("input[type='text'].phone").mask("8(999)9 999-999");
+    $("#confirm_order input[type='submit']").attr("disabled", false);
+    $("#confirm_order").validate({
+      messages: {
+        name: "Введите ваше имя, чтобы мы могли знать как к вам обращаться",
+        phone: "Введите телефон, чтобы мы связались с вами по заказу",
+        email: "Введите email, чтобы вы могли восстановить доступ к аккаунту",
+      },
+      submitHandler: function(form) {
+        $("#confirm_order button[type='submit']").html("Ждите...").attr("disabled", "disabled");
+        form.submit();
+      }
+    });
+  });
+</script>
+{% endblock %}

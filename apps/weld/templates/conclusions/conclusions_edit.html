@@ -21,23 +21,17 @@
 </div>
 {% if row.id %}
 <div class="col-md-9">
-  <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_uzk/{{ row.id }}/" target="_blank">
-    <em class="fa fa-file-pdf-o fa-fw mr-sm mt-sm"></em> УЗК заключение
-  </a>
-  <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_pvk/{{ row.id }}/" target="_blank">
-    <em class="fa fa-file-pdf-o fa-fw mr-sm mt-sm"></em> ПВК заключение
-  </a>
-  <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_rk/{{ row.id }}/" target="_blank">
-    <em class="fa fa-file-pdf-o fa-fw mr-sm mt-sm"></em> РК заключение
-  </a>
-  <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_vik/{{ row.id }}/" target="_blank">
-    <em class="fa fa-file-pdf-o fa-fw mr-sm mt-sm"></em> ВИК акт
-  </a>
   {% if welding_joint.id %}
     <a class="btn btn-primary pull-right mr-sm mt-sm" href="{% url 'welding:edit_welding' 'form' welding_joint.id %}">
       <em class="fa fa-unlink fa-fw mr-sm"></em> Заявка на стык
     </a>
   {% endif %}
+  <div class="clearfix"></div>
+  {% for item in all_conclusions %}
+    <a class="btn btn-primary pull-right mr-sm mt-sm" href="{% url 'welding:edit_conclusion' 'edit' item %}">
+      <em class="fa fa-unlink fa-fw mr-sm"></em> Заключение{% ifequal forloop.counter0 0 %}{% else %} - ремонт {{ forloop.counter0 }}{% endifequal %}
+    </a>
+  {% endfor %}
 </div>
 {% endif %}
 <div class="clearfix"></div>
@@ -48,8 +42,7 @@
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
         <div class="panel-heading">
-          {{ singular_obj }}
-          {{ welding_joint.request_number }}, создано {{ row.created }}
+          {{ singular_obj }}{% if row.repair %} - ремонт №{{ row.repair }}{% endif %}, создано {{ row.created }}
         </div>
         <div class="panel-body">
           {% csrf_token %}

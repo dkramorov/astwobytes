@@ -1,11 +1,16 @@
 // ---------------------------------------
 // Класс для отправки формы обратной связи
+// requirements:
+// jquery.form.min.js
+// jquery.validate.min.js
+// в input data-msg="Введите вашу почту"
 // ---------------------------------------
 class FeedBack {
     constructor(form_id, custom_fm) {
         // :param form_id: id формы
         // :param fm: feedback_messages сообщени по состоянию
         var $ = jQuery;
+        var instance = this;
 
         this.form_id = form_id;
         var fid = "#" + this.form_id;
@@ -45,14 +50,7 @@ class FeedBack {
             fb_alerts.html(alerts);
         }
         var input_submit = $(fid + " [type='submit']:not(.freeze)");
-
-        $(fid + " .close").on("click", function(){
-            $(fid + " .errorMessage").hide();
-            $(fid + " .successMessage").hide();
-            $(fid + " .notifyMessage").hide();
-            $(fid + " .errorCaptcha").hide();
-        });
-
+        instance.close_listener(fid);
         // ---------------------------
         // Запоминаем названия кнопок,
         // чтобы вернуть их обратно
@@ -78,6 +76,12 @@ class FeedBack {
                 }
                 return is_valid;
             },
+            error: function(responseText, statusText, xhr, $form){
+                $(fid + " .errorMessage").show();
+                $(fid + " .successMessage").hide();
+                $(fid + " .notifyMessage").hide();
+                $(fid + " .errorCaptcha").hide();
+            },
             success: function(responseText, statusText, xhr, $form){
                 $(fid + " .errorMessage").hide();
                 $(fid + " .successMessage").hide();
@@ -91,12 +95,17 @@ class FeedBack {
                 input_submit.each(function(){
                     $(this).val($(this).attr("data-original-name"));
                 });
-
-                if(responseText['error']){
+                // Выводим либо стандартную ошибку,
+                // либо ошибки responseText['errors']
+                if(responseText['error'] || responseText['errors']){
                     $(fid + " .notifyMessage").hide();
                     if(responseText['error_captcha']){
                         $(fid + " .errorCaptcha").show();
                         return;
+                    }
+                    if(responseText['errors']){
+                        $(fid + " .errorMessage").html(fb_close + responseText['errors'].join('<br>'));
+                        instance.close_listener(fid);
                     }
                     $(fid + " .errorMessage").show();
                     if(fm['callback_error']){
@@ -113,6 +122,17 @@ class FeedBack {
                     $(fid)[0].reset();
                 }
             }
+        });
+    }
+    close_listener(fid){
+        $(fid + " .close").on("click", function(){
+            $(this).parent().hide();
+/*
+            $(fid + " .errorMessage").hide();
+            $(fid + " .successMessage").hide();
+            $(fid + " .notifyMessage").hide();
+            $(fid + " .errorCaptcha").hide();
+*/
         });
     }
 }

@@ -1,0 +1,116 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="text-center">Группы технических устройств опасных производственных объектов</h4>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div id="main-table2"></div>
+      <br>
+      <div class="text-center">
+      <a id="add_cert_section" href="javascript:void(0);" class="btn btn-default">Добавить группу</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cert_sections_form"></div>
+
+<script type="text/javascript">
+var cert_sections_table = null;
+
+function fill_cert_sections_form(){
+  // Заполнение формы по удостоверениям,
+  // вызываем перед отправкой в $("#current_edit_form").submit
+  $("#cert_sections_form").html();
+  var cert_sections_data = "";
+  var cert_sections = cert_sections_table.getRows();
+  var section = null;
+  for(var i=0; i<cert_sections.length; i++){
+    section = cert_sections[i].getData();
+    cert_sections_data += "<input type='hidden' name='section_group_" + i + "' value='" + section['group'] + "' />";
+    cert_sections_data += "<input type='hidden' name='section_certification_" + i + "' value='" + section['certification'] + "' />";
+    cert_sections_data += "<input type='hidden' name='section_points_" + i + "' value='" + section['points'] + "' />";
+  }
+  cert_sections_data += "<input type='hidden' name='section_sections' value='" + cert_sections.length + "' />";
+  $("#cert_sections_form").html($(cert_sections_data));
+}
+$(document).ready(function(){
+  var group_choices = {
+    {% for group in group_choices %}
+      '{{ group.0 }}': '{{ group.1 }}',
+    {% endfor %}
+  };
+  var groupFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return group_choices[pk];
+  };
+  var certFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return cert_choices[pk];
+  };
+  var cert_sections_arr = [
+    {% for cert_section in cert_sections %}
+      {
+          'id': '{{ cert_section.id }}',
+          'group': '{{ cert_section.group }}',
+          'certification': '{{ cert_section.certification.number }}',
+          'points': '{{ cert_section.points }}',
+      },
+    {% endfor %}
+  ];
+  cert_sections_table = new Tabulator("#main-table2", {
+    layout: "fitColumns",
+    data: cert_sections_arr,
+    columns:[
+      {
+        title: "Группы технических устройств опасных производственных объектов",
+        field: "group",
+        editor: "select",
+        editorParams: group_choices,
+        formatter: groupFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Удостоверение",
+        field: "certification",
+        editor: "select",
+        editorParams: cert_choices,
+        formatter: certFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Пункты технических устройств опасных производственных объектов",
+        field: "points",
+        editor: "input",
+        minWidth: 120,
+      },
+      {
+        title: "Действия",
+        formatter: "buttonCross",
+        width: 120,
+        align:"center",
+        cellClick:function(e, cell){
+          cell.getRow().delete();
+        }
+      },
+    ],
+  });
+  $("#add_cert_section").click(function(){
+
+    var cert_table_rows = certification_table.getRows();
+    var cert = null;
+    for(var i=0; i<cert_table_rows.length; i++){
+      cert = cert_table_rows[i].getData();
+      if(!cert_choices[cert['number']]){
+        cert_choices[cert['number']] = cert['number'];
+      }
+    }
+
+    cert_sections_table.addRow({
+      'group': '',
+      'certification': '',
+      'points': '',
+    });
+  });
+});
+</script>

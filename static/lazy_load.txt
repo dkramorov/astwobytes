@@ -1,0 +1,20 @@
+https://caniuse.com/#feat=loading-lazy-attr
+
+https://github.com/scott-little/lazyload:
+if ('loading' in HTMLImageElement.prototype) alert("yes"); else alert("no");
+
+  // lazy load by browser staff
+  if ('loading' in HTMLImageElement.prototype){
+    console.log('lazyload support enabled');
+  }
+
+
+<body onload='console.log("Body has loaded!");'>
+<img src='visible-cat.jpg' onload='console.log("visible cat");' /> - сразу грузится
+<div style='height:10000px;'></div>
+<img loading='lazy' src='lazy-cat.jpg' onload='console.log("lazy cat");' /> - отложенно грузится
+<img loading='eager' src='eager-cat.jpg' onload='console.log("eager cat");' /> - сразу грузится в неблокирующем режиме
+</body>
+
+Пример,
+<img loading='lazy' src='1.jpg' onload='console.log("visible 1.jpg");' />

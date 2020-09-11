@@ -9,6 +9,7 @@ class Daemon(Standard):
     """Создание скрипта для системного демона"""
     exec_choices = (
         ('binary_com/binary_bot.py', 'Бинарные опционы'),
+        ('spamcha/sms_hub.py', 'Телефоны для смс'),
     )
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     api_url = models.CharField(max_length=255, blank=True, null=True, db_index=True)

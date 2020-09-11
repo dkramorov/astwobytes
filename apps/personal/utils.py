@@ -39,4 +39,3 @@ def remove_user_from_request(request):
     """
     if request.session.get('shopper'):
         del request.session['shopper']
-

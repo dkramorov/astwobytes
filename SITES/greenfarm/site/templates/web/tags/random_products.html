@@ -6,7 +6,7 @@
       <div class="single-top-rated-product d-flex align-content-center">
         <div class="image">
           <a href="single-product.html">
-            <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+            <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
           </a>
         </div>
         <div class="content">

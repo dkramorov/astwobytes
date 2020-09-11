@@ -14,12 +14,12 @@
               <div class="nav small-image-slider-single-product" role="tablist">
                 {% if product.img %}
                   <div class="single-small-image img-full">
-                    <a data-toggle="tab" id="single-slide-tab-0" href="#single-slide0"><img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}"></a>
+                    <a data-toggle="tab" id="single-slide-tab-0" href="#single-slide0"><img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy"></a>
                   </div>
                 {% endif %}
                 {% for photo in photos %}
                   <div class="single-small-image img-full">
-                    <a data-toggle="tab" id="single-slide-tab-{{ forloop.counter }}" href="#single-slide{{ forloop.counter }}"><img src="{% imagine photo.img '600x400' photo.get_folder True %}" class="img-fluid" alt=""></a>
+                    <a data-toggle="tab" id="single-slide-tab-{{ forloop.counter }}" href="#single-slide{{ forloop.counter }}"><img src="{% imagine photo.img '600x400' photo.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy"></a>
                   </div>
                 {% endfor %}
               </div>
@@ -28,7 +28,7 @@
                 {% if product.img %}
                   <div class="tab-pane fade show active" id="single-slide0" role="tabpanel" aria-labelledby="single-slide-tab-0">
                     <div class="single-product-img easyzoom img-full">
-                      <img src="{% imagine product.img '600x400' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+                      <img src="{% imagine product.img '600x400' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                       <a href="{{ product.imagine }}" class="big-image-popup"><i class="fa fa-search-plus"></i></a>
                     </div>
                   </div>
@@ -36,7 +36,7 @@
                 {% for photo in photos %}
                   <div class="tab-pane fade" id="single-slide{{ forloop.counter }}" role="tabpanel" aria-labelledby="single-slide-tab-{{ forloop.counter }}">
                     <div class="single-product-img easyzoom img-full">
-                      <img src="{% imagine photo.img '600x400' photo.get_folder True %}" class="img-fluid" alt="">
+                      <img src="{% imagine photo.img '600x400' photo.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                       <a href="{{ photo.imagine }}" class="big-image-popup"><i class="fa fa-search-plus"></i></a>
                     </div>
                   </div>
@@ -60,16 +60,16 @@
                 <span class="discounted-price"> {{ product.price|money_format }} руб</span>
               </h2>
               {% if product.mini_info %}<p class="product-description mb-20">{{ product.mini_info|safe }}</p>{% endif %}
-{% comment %}<!--
+
               <div class="cart-buttons mb-20">
                 <div class="pro-qty mr-20 mb-xs-20">
                   <input type="text" value="1">
                 </div>
                 <div class="add-to-cart-btn">
-                  <a href="#"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+                  <a href="javascript:void(0);" onclick="add_to_cart({{ product.id }})"><i class="fa fa-shopping-cart"></i> Добавить в корзину</a>
                 </div>
               </div>
-
+{% comment %}<!--
               <div class="single-product-action-btn mb-20">
                 <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> Add to wishlist</a>
                 <a href="#" data-tooltip="Add to compare"> <span class="arrow_left-right_alt"></span> Add to compare</a>

@@ -51,7 +51,7 @@ class Subject(Standard):
     """
     name = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
-        verbose_name='Наименование сооружаемого объекта, например, ')
+        verbose_name='Наименование сооружаемого объекта, например, Усть-Кутская газофракционирующая установка')
     code = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Код объекта, например, ГФУ')

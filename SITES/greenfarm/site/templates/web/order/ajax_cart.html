@@ -1,0 +1,37 @@
+{% load mtags %}
+<div class="cart-items">
+  {% if not cart.purchases %}
+    <p>Корзина пуста</p>
+  {% else %}
+    {% for purchase in cart.purchases %}
+      <div class="cart-float-single-item d-flex">
+        <span class="remove-item"><a href="javascript:void(0);"><i class="fa fa-times"></i></a></span>
+        <div class="cart-float-single-item-image">
+          <a href="{{ purchase.link }}">
+            <img src="{{ purchase.thumb }}" class="img-fluid" alt="{{ purchase.product_name|textize }}" loading="lazy"></a>
+        </div>
+        <div class="cart-float-single-item-desc">
+          <p class="product-title">
+            <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
+          </p>
+          <p class="price">
+            <span class="count">{{ purchase.count }}x</span> {{ purchase.product_price|money_format }}
+          </p>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% if cart.purchases %}
+<div class="cart-calculation">
+  <div class="calculation-details">
+    <p class="total">Итого <span>{{ cart.total|money_format }}</span></p>
+  </div>
+  <div class="floating-cart-btn text-center">
+    <a href="/shop/cart/">Оформить заказ</a>
+    <a href="/shop/cart/">В корзину</a>
+  </div>
+</div>
+{% endif %}
+<!-- usage: items and total puts into items-selector and total-selector -->
+<div class="hidden" id="ajax_cart_info" data-items="{% if cart.items %}{{ cart.items }}{% else %}0{% endif %}" data-total="{% if cart.total %}{{ cart.total|money_format }} ₽{% else %}0{% endif %}" data-items-selector="#shopping-cart .items" data-total-selector="#shopping-cart .total"></div>

@@ -8,15 +8,6 @@ from apps.main_functions.catcher import check_email, check_phone
 
 from .models import Orders, Purchases, PromoCodes
 
-PRODUCT_FIELDS = (
-    'name',
-    'manufacturer',
-    'measure',
-    'old_price',
-    'price',
-    'code',
-)
-
 def get_purchase(pk: int,
                  shopper: Shopper,
                  is_purchase: bool = True,
@@ -44,6 +35,15 @@ def calc_cart(shopper, min_info: bool = False):
        :param shopper: покупатель Shopper или json из сессии
        :param min_info: с товарами или без
     """
+    PRODUCT_FIELDS = (
+        'name',
+        'manufacturer',
+        'measure',
+        'old_price',
+        'price',
+        'code',
+    )
+
     shopper_id = None
     promocode = None
     if isinstance(shopper, dict):

@@ -37,4 +37,13 @@ urlpatterns = [
     url('^admin/black_list/(?P<action>create)/$', views.edit_black_list, name='create_black_list'),
     url('^admin/black_list/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_black_list, name='edit_black_list'),
     path('admin/black_list/positions/', views.black_list_positions, name='black_list_positions'),
+    # ------------
+    # Смс телефоны
+    # ------------
+    path('admin/sms_phones/', views.show_sms_phones, name='show_sms_phones'),
+    url('^admin/sms_phones/(?P<action>create)/$', views.edit_sms_phone, name='create_sms_phone'),
+    url('^admin/sms_phones/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_sms_phone, name='edit_sms_phone'),
+    path('admin/sms_phones/positions/', views.sms_phones_positions, name='sms_phones_positions'),
+    # аякс-поиск
+    path('sms_phones/search/', views.search_sms_phones, name='search_sms_phones'),
 ]

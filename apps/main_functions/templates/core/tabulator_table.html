@@ -98,7 +98,7 @@ var imgFormatter = function(cell, formatterParams, onRendered){
   if(value){
     result += "<div class='tabulator_img'>";
     result += "<a href='" + data.imagine + "' target='_blank'>";
-    result += "<img src='" + data.thumb + "' />";
+    result += "<img loading='lazy' src='" + data.thumb + "' onload='console.log(\"visible "+ data.thumb +"\");'/>";
     result += "</a>";
     result += "</div>";
   }

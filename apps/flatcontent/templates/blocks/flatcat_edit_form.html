@@ -3,7 +3,10 @@
     <input type="hidden" name="state" value="4" />
     <input type="hidden" name="container" value="{{ container.id }}" />
 
-    <div class="panel-heading">{{ singular_obj }}</div>
+    <div class="panel-heading">
+      <!-- ссылка на редактирование для режима иерархии -->
+      <a href="javascript:void(0);" id="edit_form_link">{{ singular_obj }} {% if row.name %}"{{ row.name }}"{% endif %}</a>
+    </div>
     <div class="panel-body">
       {% csrf_token %}
       {% include "core/forms/row_name.html" %}

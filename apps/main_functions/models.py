@@ -209,13 +209,16 @@ class Standard(models.Model):
             img_path = '/media/%s%s' % (self.get_folder(), self.img)
         return img_path
 
-    def thumb(self, size:str = '150x150'):
-        """Путь до миниатюры"""
+    def thumb(self, size: str = '150x150'):
+        """Путь до миниатюры
+           :param size: размер фото через x, например, 123х321
+        """
         if self.img:
             if self.img.startswith('http'):
                 return '%s?size=150x150' % self.img
             return imagine_image(self.img, size, self.get_folder())
-        return ''
+        # можно в settings положить путь к пустой картинке
+        return '/static/img/ups.png'
 
 class Config(Standard):
     """Различные настройки"""
