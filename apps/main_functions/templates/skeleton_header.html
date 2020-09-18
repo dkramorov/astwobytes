@@ -2,7 +2,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 {% if q_string.title or page.title %}
-    <title>{% if q_string.title %}{{ q_string.title|textize }}{% else %}{{ page.title|textize }}{% endif %} - {{ containers.main.tags.company_name.title }}</title>
+    <title>{% if q_string.title %}{{ q_string.title|textize }}{% else %}{{ page.title|textize }}{% endif %}{% if containers.main.tags.company_name %} - {{ containers.main.tags.company_name.title }}{% endif %}</title>
 {% endif %}
 
 <meta name="description" content="{% if q_string.description %}{{ q_string.description|textize }}{% else %}{{ page.description|textize }}{% endif %}" />

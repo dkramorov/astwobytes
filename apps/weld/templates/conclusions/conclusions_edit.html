@@ -91,19 +91,19 @@
               <div class="form-group">
                 <label class="col-lg-2 control-label">Толщина стенки, мм</label>
                 <div class="col-lg-10">
-                  <input type="text" class="form-control" value="{{ row.welding_joint.side_thickness }}" readonly />
+                  <input type="text" class="form-control" value="{{ welding_joint.side_thickness }}" readonly />
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-lg-2 control-label">Диаметр трубопровода, мм</label>
                 <div class="col-lg-10">
-                  <input type="text" class="form-control" value="{{ row.welding_joint.diameter }}" readonly />
+                  <input type="text" class="form-control" value="{{ welding_joint.diameter }}" disabled />
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-lg-2 control-label">Дата сварки</label>
                 <div class="col-lg-10">
-                  <input type="text" class="form-control" value="{{ row.welding_joint.welding_date }}" readonly />
+                  <input type="text" class="form-control" value="{{ welding_joint.welding_date }}" disabled />
                 </div>
               </div>
               {% if welders.1 %}

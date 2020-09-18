@@ -1,0 +1,181 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+  var actionsUserFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var rowIndex = row.getIndex();
+    var pk = cell.getValue();
+    var actions = "<div class='padding-rl5'>";
+    {% if permissions.edit %}
+      actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% endif %}
+    actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}perms/" + pk + "/'><i class='fa fa-key'></i></a> ";
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
+    actions += "</div>";
+    return actions;
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Логин",
+        field: "username",
+        headerFilterPlaceholder: "Логин",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "username",
+        minWidth: 120,
+      },
+      {
+        title: "Изображение",
+        field: "thumb",
+        headerSort: false,
+        formatter: imgFormatter,
+        download: false,
+        minWidth: 120,
+      },
+      {
+        title: "Входил",
+        field: "last_login",
+        headerFilterPlaceholder: "Последний вход",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        download: false,
+        minWidth: 150,
+      },
+      {
+        title: "Админ",
+        field: "is_superuser",
+        editor: "select",
+        headerFilterPlaceholder: "Админ?",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        formatter: booleanFormatter,
+        downloadTitle: "is_superuser",
+        accessorDownload: accessor_is_active,
+        width: 110,
+      },
+      {
+        title: "Имя",
+        field: "first_name",
+        headerFilterPlaceholder: "Имя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "first_name",
+        minWidth: 120,
+      },
+      {
+        title: "Фамилия",
+        field: "last_name",
+        headerFilterPlaceholder: "Фамилия",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "last_name",
+        minWidth: 120,
+      },
+      {
+        title: "Телефон",
+        field: "customuser__phone",
+        headerFilterPlaceholder: "Телефон",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "customuser__phone",
+        minWidth: 120,
+      },
+      {
+        title: "Email",
+        field: "email",
+        headerFilterPlaceholder: "Email",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        downloadTitle: "email",
+        minWidth: 180,
+      },
+      {
+        title: "В штате",
+        field: "is_staff",
+        editor: "select",
+        headerFilterPlaceholder: "В штате?",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values:{"": "Без фильтра", true: "Да", false: "Нет"}
+        },
+        formatter: booleanFormatter,
+        downloadTitle: "is_staff",
+        accessorDownload: accessor_is_active,
+        width: 110,
+      },
+      {% include "core/tabulator_cell/is_active.html" %}
+/*
+      {
+        title: "Создан",
+        field: "date_joined",
+        headerFilterPlaceholder: "Создан",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        minWidth: 150,
+      },
+*/
+      {% include "core/tabulator_cell/position.html" %}
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsUserFormatter,
+        width: 120,
+        download: false,
+      },
+    ],
+  });
+
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "date_joined"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "left top",
+        todayButton: new Date(),
+      });
+    }else if($(this).attr("tabulator-field") === "last_login"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -33,7 +33,7 @@
             <div class="col-lg-10">
               <select name="exec_path" id="exec_path_select2" data-parsley-required>
                 {% for exec_path in exec_paths %}
-                  <option value="{{ exec_path.0 }}">{{ exec_path.1 }}</option>
+                  <option value="{{ exec_path.0 }}"{% ifequal exec_path.0 row.exec_path %} selected{% endifequal %}>{{ exec_path.1 }}</option>
                 {% endfor %}
               </select>
             </div>

@@ -38,18 +38,7 @@
               </select>
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Диаметр</label>
-            <div class="col-lg-10">
-              <input type="number" step="0.01" placeholder="Диаметр" class="form-control" name="diameter" value="{% if row.diameter %}{{ row.diameter }}{% endif %}" autocomplete="off">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Толщина стенки</label>
-            <div class="col-lg-10">
-              <input type="number" step="0.01" placeholder="Толщина стенки" class="form-control" name="side_thickness" value="{% if row.side_thickness %}{{ row.side_thickness }}{% endif %}" autocomplete="off">
-            </div>
-          </div>
+
           <div class="form-group">
             <label class="col-lg-2 control-label">Материал (сталь)</label>
             <div class="col-lg-10">
@@ -80,12 +69,7 @@
               </select>
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Дата сварки</label>
-            <div class="col-lg-10">
-              <input id="welding_date" type="text" placeholder="Дата сварки" class="form-control" name="welding_date" value="{% if row.welding_date %}{{ row.welding_date }}{% endif %}" autocomplete="off">
-            </div>
-          </div>
+
           <div class="form-group">
             <label class="col-lg-2 control-label">Номер смены</label>
             <div class="col-lg-10">
@@ -254,12 +238,6 @@
       var upload_img_url = '{% url "welding:edit_welding" "img" row.id %}';
     {% endif %}
     $(document).ready(function(){
-      $("#welding_date").datepicker({
-        onSelect: function (fd, d, calendar) {
-          calendar.hide();
-        },
-        todayButton: new Date(),
-      });
       $("#request_control_date").datepicker({
         onSelect: function (fd, d, calendar) {
           calendar.hide();
@@ -384,70 +362,70 @@
       });
 
       $('#repair_select2').select2({
-          placeholder: 'Выберите номер ремонта',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Выберите номер ремонта',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#workshift_select2').select2({
-          placeholder: 'Выберите смену',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Выберите смену',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#control_type_select2').select2({
-          placeholder: 'Выберите вид контроля',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Выберите вид контроля',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#welding_conn_view_select2').select2({
-          placeholder: 'Выберите вид сварного соединения',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Выберите вид сварного соединения',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#welding_type_select2').select2({
-          placeholder: 'Выберите тип сварки',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Выберите тип сварки',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#category_select2').select2({
-          placeholder: 'Выберите категорию',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Выберите категорию',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#control_result_select2').select2({
-          placeholder: 'Выберите результат контроля',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Выберите результат контроля',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#material_select2').select2({
-          placeholder: 'Выберите материал',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Выберите материал',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#join_type_from_select2').select2({
-          placeholder: 'Свариваемый элемент',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Свариваемый элемент',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#join_type_to_select2').select2({
-          placeholder: 'Свариваемый элемент',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Свариваемый элемент',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
       $('#state_select2').select2({
-          placeholder: 'Статус',
-          allowClear: true,
-          width: '100%',
-          tags: true,
+        placeholder: 'Статус',
+        allowClear: true,
+        width: '100%',
+        tags: true,
       });
     });
   </script>

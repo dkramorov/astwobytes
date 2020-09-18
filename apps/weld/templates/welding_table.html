@@ -90,12 +90,6 @@ $(document).ready(function(){
       {{ repair_choice.0 }}: "{{ repair_choice.1 }}",
     {% endfor %}
   };
-  var workshift_choices = {
-    "": "Без фильтра",
-    {% for workshift_choice in workshift_choices %}
-      {{ workshift_choice.0 }}: "{{ workshift_choice.1 }}",
-    {% endfor %}
-  };
   var control_type_choices = {
     "": "Без фильтра",
     {% for control_choice in control_choices %}
@@ -112,12 +106,6 @@ $(document).ready(function(){
     "": "Без фильтра",
     {% for welding_type_choice in welding_type_choices %}
       {{ welding_type_choice.0 }}: "{{ welding_type_choice.1 }}",
-    {% endfor %}
-  };
-  var category_choices = {
-    "": "Без фильтра",
-    {% for category_choice in category_choices %}
-      {{ category_choice.0 }}: "{{ category_choice.1 }}",
     {% endfor %}
   };
   var material_choices = {
@@ -158,14 +146,6 @@ $(document).ready(function(){
     var data = cell.getRow().getData();
     return data['joint']['line']['titul']['subject']['company'] ? data['joint']['line']['titul']['subject']['company']['name'] : '';
   };
-  var repairFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return repair_choices[pk];
-  };
-  var workshiftFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return workshift_choices[pk];
-  };
   var controlTypeFormatter = function(cell, formatterParams, onRendered){
     var pk = cell.getValue();
     return control_type_choices[pk];
@@ -177,10 +157,6 @@ $(document).ready(function(){
   var weldingTypeFormatter = function(cell, formatterParams, onRendered){
     var pk = cell.getValue();
     return welding_type_choices[pk];
-  };
-  var categoryFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return category_choices[pk];
   };
   var materialFormatter = function(cell, formatterParams, onRendered){
     var pk = cell.getValue();
@@ -201,6 +177,18 @@ $(document).ready(function(){
   var conclusionStateFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['joint_conclusion'] ? conclusion_states[data['joint_conclusion']['state']] : '';
+  };
+  var diameterFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint'] ? data['joint']['diameter']  : '';
+  };
+  var sideThicknessFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint'] ? data['joint']['side_thickness']  : '';
+  };
+  var weldingDateFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['joint'] ? data['joint']['welding_date']  : '';
   };
   var noticeFormatter = function(cell, formatterParams, onRendered){
     var result = "<div style='white-space:normal;'>";
@@ -238,9 +226,6 @@ $(document).ready(function(){
   var accessor_conclusion_state = function(value, data, type, params, column){
     return data['joint_conclusion'] ? conclusion_states[data['joint_conclusion']['state']] : '';
   }
-  var accessor_category = function(value, data, type, params, column){
-    return category_choices[value];
-  }
   var accessor_welding_type = function(value, data, type, params, column){
     return welding_type_choices[value];
   }
@@ -249,9 +234,6 @@ $(document).ready(function(){
   }
   var accessor_control_type = function(value, data, type, params, column){
     return control_type_choices[value];
-  }
-  var accessor_workshift = function(value, data, type, params, column){
-    return workshift_choices[value];
   }
   var accessor_join_type = function(value, data, type, params, column){
     return join_types[value];
@@ -273,6 +255,15 @@ $(document).ready(function(){
   }
   var accessor_joint = function(value, data, type, params, column){
     return data['joint'] ? data['joint']['name'] : '';
+  }
+  var accessor_diameter = function(value, data, type, params, column){
+    return data['joint'] ? data['joint']['diameter'] : '';
+  }
+  var accessor_side_thickness = function(value, data, type, params, column){
+    return data['joint'] ? data['joint']['side_thickness'] : '';
+  }
+  var accessor_welding_date = function(value, data, type, params, column){
+    return data['joint'] ? data['joint']['welding_date'] : '';
   }
   var accessor_notice = function(value, data, type, params, column){
     var result = "";
@@ -367,38 +358,25 @@ $(document).ready(function(){
         minWidth: 90,
         accessorDownload: accessor_company,
       },
-/*
-      {
-        title: "Ремонт",
-        field: "repair",
-        headerFilterPlaceholder: "Ремонт",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: repair_choices,
-        },
-        editable: false,
-        editor: "select",
-        formatter: repairFormatter,
-        width: 70,
-        downloadTitle: "repair",
-      },
-*/
       {
         title: "Диаметр",
-        field: "diameter",
+        field: "joint__diameter",
         headerFilterPlaceholder: "Диаметр",
         headerFilter: "input",
         headerFilterFunc: "like",
+        formatter: diameterFormatter,
         minWidth: 70,
+        accessorDownload: accessor_diameter,
       },
       {
         title: "Толщина стенки",
-        field: "side_thickness",
+        field: "joint__side_thickness",
         headerFilterPlaceholder: "Толщина стенки",
         headerFilter: "input",
         headerFilterFunc: "like",
+        formatter: sideThicknessFormatter,
         minWidth: 70,
+        accessorDownload: accessor_side_thickness,
       },
       {
         title: "Материал",
@@ -447,29 +425,14 @@ $(document).ready(function(){
       },
       {
         title: "Дата сварки",
-        field: "welding_date",
+        field: "joint__welding_date",
         headerFilterPlaceholder: "Дата сварки",
         headerFilter: "input",
         headerFilterFunc: "=",
+        formatter: weldingDateFormatter,
         minWidth: 90,
+        accessorDownload: accessor_welding_date,
       },
-/*
-      {
-        title: "Смена",
-        field: "workshift",
-        headerFilterPlaceholder: "Смена",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: workshift_choices,
-        },
-        editable: false,
-        editor: "select",
-        formatter: workshiftFormatter,
-        width: 70,
-        accessorDownload: accessor_workshift,
-      },
-*/
       {
         title: "Вид контроля",
         field: "control_type",
@@ -515,23 +478,6 @@ $(document).ready(function(){
         width: 90,
         accessorDownload: accessor_welding_type,
       },
-/*
-      {
-        title: "Категория",
-        field: "category",
-        headerFilterPlaceholder: "Категория",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: category_choices,
-        },
-        editable: false,
-        editor: "select",
-        formatter: categoryFormatter,
-        width: 70,
-        accessorDownload: accessor_category,
-      },
-*/
       {
         title: "Результат контроля",
         field: "joint_conclusion__state",
@@ -602,7 +548,7 @@ $(document).ready(function(){
     ],
   });
   $(".tabulator-headers .tabulator-col").each(function(){
-    if($(this).attr("tabulator-field") === "welding_date" || $(this).attr("tabulator-field") === "request_control_date" || $(this).attr("tabulator-field") === "joint_conclusion__date"){
+    if($(this).attr("tabulator-field") === "joint__welding_date" || $(this).attr("tabulator-field") === "request_control_date" || $(this).attr("tabulator-field") === "joint_conclusion__date"){
       $(this).find("input").datepicker({
         onSelect: function (fd, d, calendar) {
           calendar.hide();

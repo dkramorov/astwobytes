@@ -53,7 +53,7 @@
             </div>
             <div class="col-lg-6">
               <p>{% if row.joint %}{{ row.joint.line.titul.subject.company.contractor }}{% else %}-{% endif %}</p>
-              <p>наименование генподрядной и строильеной оргганизации и ее ведомственная принадлежность</p>
+              <p>наименование генподрядной и строительной организации и ее ведомственная принадлежность</p>
             </div>
             <div class="clearfix"></div>
           </div>
@@ -165,7 +165,7 @@
               <p class="text-right">Толщина стенки, мм</p>
             </div>
             <div class="col-lg-6">
-              <input type="text" placeholder="Толщина стенки, мм" class="form-control" name="side_thickness" value="{% if row.side_thickness %}{{ row.side_thickness }}{% endif %}" autocomplete="off">
+              <input type="text" placeholder="Толщина стенки, мм" class="form-control" name="side_thickness" value="{% if row.joint.side_thickness %}{{ row.joint.side_thickness }}{% endif %}" autocomplete="off" disabled>
             </div>
           </div>
 
@@ -174,7 +174,7 @@
               <p class="text-right">Диаметр трубопровода, мм</p>
             </div>
             <div class="col-lg-6">
-              <input type="text" placeholder="Диаметр трубопровода, мм" class="form-control" name="diameter" value="{% if row.diameter %}{{ row.diameter }}{% endif %}" autocomplete="off">
+              <input type="text" placeholder="Диаметр трубопровода, мм" class="form-control" name="diameter" value="{% if row.joint.diameter %}{{ row.joint.diameter }}{% endif %}" autocomplete="off" disabled>
             </div>
           </div>
 
@@ -267,7 +267,7 @@
               <p class="text-right">Дата сварки</p>
             </div>
             <div class="col-lg-6">
-              <input id="welding_date" type="text" placeholder="Дата сварки" class="form-control" name="welding_date" value="{% if row.welding_date %}{{ row.welding_date }}{% else %}{{ today }}{% endif %}" autocomplete="off">
+              <input id="welding_date" type="text" placeholder="Дата сварки" class="form-control" name="welding_date" value="{% if row.joint.welding_date %}{{ row.joint.welding_date }}{% else %}{{ today }}{% endif %}" autocomplete="off" disabled>
             </div>
           </div>
 

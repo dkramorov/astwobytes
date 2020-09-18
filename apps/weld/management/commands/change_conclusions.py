@@ -49,6 +49,10 @@ class Command(BaseCommand):
        то есть, пока не переносим дефекты
     """
     def handle(self, *args, **options):
+        #for conclusion in JointConclusion.objects.all():
+        #    conclusion.delete()
+
+        return
         for welding_joint in WeldingJoint.objects.filter(repair__gte=1):
             repair = welding_joint.repair
             conclusions = JointConclusion.objects.filter(welding_joint=welding_joint)

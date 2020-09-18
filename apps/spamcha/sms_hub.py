@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import re
 import sys
 import time
 import datetime
@@ -40,17 +41,20 @@ API_URL = env('API_URL', default='')
 PORT = env('PORT', default='', cast=int)
 HOST = env('HOST', default='')
 CERT_PATH = env('CERT_PATH', default='')
+logger.info('listen %s:%s' % (HOST, PORT))
 
 DB_HOST = env('DB_HOST', default='')
 DB_USER = env('DB_USER', default='')
 DB_PASSWD = env('DB_PASSWD', default='')
 DB_NAME = env('DB_NAME', default='')
 
-logger.info('Arguments: %s: %s', len(sys.argv), sys.argv)
 if len(sys.argv) > 1:
     TOKEN = sys.argv[1]
-if len(sys.argv) > 2:
-    API_URL = sys.argv[2]
+    if len(sys.argv) > 2:
+        API_URL = sys.argv[2]
+    logger.info('Arguments: %s: %s', len(sys.argv), sys.argv)
+
+rega_int = re.compile('[^0-9]', re.U+re.I+re.DOTALL)
 
 class DB:
     """Класс для запросов к базе данных"""
@@ -91,8 +95,9 @@ def json_pretty_print(json_obj):
     return json.dumps(json_obj, sort_keys=True, indent=2, separators=(',', ': '), ensure_ascii=False)
 
 async def consumer_handler(websocket, path):
+    #logger.info('consumer %s' % websocket)
     async for message in websocket:
-        print('received', message)
+        logger.info('received %s' % message)
         try:
             json_obj = json.loads(message)
         except Exception as e:
@@ -108,8 +113,10 @@ async def consumer_handler(websocket, path):
         if 'register' in json_obj:
             table_name = 'spamcha_smsphone'
             reg_obj = json_obj['register']
+            icc_ids = []
             for key, data in reg_obj.items():
                 icc_id = data.get('icc_id')
+                icc_ids.append(icc_id)
                 number = data.get('number')
                 display_name = data.get('display_name')
                 query = 'select id from {} where code=%s'.format(table_name)
@@ -123,24 +130,40 @@ async def consumer_handler(websocket, path):
                 params = (display_name, number, icc_id, created, created)
                 cursor = db.query(query, params)
                 logger.info('new phone %s' % icc_id)
-            websocket.icc_id = icc_id
+            websocket.icc_ids = icc_ids
             await websocket.send(json.dumps({'register': 'success'}))
         # получение списка телефонов
         elif 'get_phones' in json_obj:
-            phones = {'get_phones': [ws.icc_id for ws in PHONES if hasattr(ws, 'icc_id')]}
+            phones = {'get_phones': [ws.icc_ids for ws in PHONES if hasattr(ws, 'icc_ids')]}
             await websocket.send(json.dumps(phones))
         # найти телефон
         elif 'find_phone' in json_obj:
-            find_phones = [ws for ws in PHONES if hasattr(ws, 'icc_id') and ws.icc_id == json_obj['find_phone']]
+            find_phones = [ws for ws in PHONES if hasattr(ws, 'icc_ids') and json_obj['find_phone'] in ws.icc_ids]
             for ws in find_phones:
-                await ws.send(json.dumps({'find_phone': ws.icc_id}))
+                await ws.send(json.dumps({'find_phone': ws.icc_ids[0]}))
+        # отправить смсочку через send_sms (icc_id) симку
+        elif 'send_sms' in json_obj:
+            phone_str = json_obj['receiver']
+            phone = rega_int.sub('', phone_str)
+            if not len(phone) == 11:
+                logger.info('phone len not equal 11 %s' % phone_str)
+                return
+            if not json_obj['text']:
+                logger.info('text is empty')
+                return
+            find_phones = [ws for ws in PHONES if hasattr(ws, 'icc_ids') and json_obj['send_sms'] in ws.icc_ids]
+            for ws in find_phones:
+                for icc_id in ws.icc_ids:
+                    if icc_id == json_obj['send_sms']:
+                        await ws.send(json.dumps({'send_sms': icc_id, 'text': json_obj['text'], 'receiver': phone}))
 
 async def producer_handler(websocket, path):
     rand = random.random()
-    if rand > 0.9:
-        now = '%s' % time.time()
-        print('send', now)
-        await websocket.send(now)
+    #logger.info('producer %s' % websocket)
+    #if rand > 0.9:
+    #    now = '%s' % time.time()
+    #    print('send', now)
+    #    await websocket.send(now)
 
 async def main_loop(websocket, path):
     """Основной цикл websocket соединений
@@ -185,6 +208,6 @@ if CERT_PATH:
     logger.info('privkey=>%s' % (ca_cert, ))
     ssl_context.load_cert_chain(localhost_pem, keyfile=ca_cert)
 
-start_server = websockets.server.serve(handler, HOST, PORT, ssl=ssl_context)
+start_server = websockets.serve(handler, HOST, PORT, ssl=ssl_context)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

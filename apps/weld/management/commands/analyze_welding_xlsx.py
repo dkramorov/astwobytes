@@ -75,23 +75,25 @@ def get_welding_joint_analog(joint, new_joint: dict):
        :param joint: экземпляр модели WeldingJoint
        :param new_joint: словарь для новой заявки на стык
     """
+    show_diff = False
     analog = WeldingJoint.objects.filter(joint=joint).first()
     if analog:
         # Пишем различия
-        print(" ### analog ### ")
-        analog_obj = object_fields(analog)
-        for key, value in analog_obj.items():
-            new_value = new_joint.get(key)
-            if not value == new_value:
-                print('diff %s %s' % (value, new_value))
+        if show_diff:
+            print(" ### analog ### ")
+            analog_obj = object_fields(analog)
+            for key, value in analog_obj.items():
+                new_value = new_joint.get(key)
+                if not value == new_value:
+                    print('diff %s %s' % (value, new_value))
         return analog
     return None
 
-def more_lines_helper(subject: Subject, path: str):
+def more_lines_helper(path: str):
     """Загрузка дополнительных узлов в дополнительным линиям
-       :param subject: объект
        :param path: путь до эксельки
     """
+    subject = Subject.objects.all().first()
     wb = open_wb(path)
     sheet = wb.active
     rows = sheet.rows
@@ -116,10 +118,11 @@ def more_lines_helper(subject: Subject, path: str):
             titul_str = titul_str.split('.')[0]
             titul = Titul.objects.filter(name=titul_str).first()
             if not titul:
-                #logger.info('[ERROR]: titul not found %s' % titul_str)
+                logger.info('[ERROR]: titul not found %s' % titul_str)
                 cur_titul = Titul.objects.create(name=titul_str, subject=subject)
             else:
                 cur_titul = titul
+            #logger.info('TITUL %s' % cur_titul.name)
 
         diameter = side_thickness = date = stigma = welding_conn_view = welding_type = None
         joint_str = row[2].value
@@ -132,6 +135,11 @@ def more_lines_helper(subject: Subject, path: str):
                diameter, side_thickness = size.split('х')
            elif 'x' in size:
                diameter, side_thickness = size.split('x')
+           diameter = diameter.strip().replace(',', '.')
+           side_thickness = side_thickness.strip().replace(',', '.')
+           if '/' in side_thickness:
+               side_thickness = side_thickness.split('/')[0]
+
         if row[4].value:
             date = str_to_date(str(row[4].value))
         if row[5].value:
@@ -176,7 +184,7 @@ def more_lines_helper(subject: Subject, path: str):
                 repair = 1
             #print(state_str)
         if not analogs:
-            #print('Линия не найдена %s в титуле %s, стык %s' % (line_str, cur_titul.name, joint_str))
+            print('Линия не найдена %s в титуле %s, стык %s' % (line_str, cur_titul.name, joint_str))
             continue
         elif len(analogs) > 1:
             print('Найдено больше 1 линии по "%s", это %s в титуле %s, стык %s' % (line_str, [item.name for item in analogs], cur_titul.name, joint_str))
@@ -197,48 +205,26 @@ def more_lines_helper(subject: Subject, path: str):
                 'state': state,
                 'repair': repair,
             }
-
+            #print(welding_joint_obj)
             # Ищем аналог
             analog = get_welding_joint_analog(joint, welding_joint_obj)
             if analog:
                 continue
 
             welding_joint = WeldingJoint.objects.create(**welding_joint_obj)
-
+            print(' --- добавлен в титул %s линию %s стык %s' % (cur_titul.name, line.name, joint.name))
+            if not stigma:
+                continue
             welder = Welder.objects.filter(stigma__icontains=stigma).first()
             if not welder:
-                print('welder not found %s' % stigma)
+                ###print('welder not found %s' % stigma)
                 continue
             JointWelder.objects.create(welding_joint=welding_joint, welder=welder, position=1)
 
-def more_lines(subject: Subject):
+def more_lines():
     """Загрузка доп. линий из more_lines.xlsx
        папка more_lines должна содержать все файлы по доп. линиям
-       :param subject: объект
     """
-    wb = open_wb('more_lines.xlsx')
-    sheet = wb.active
-    rows = sheet.rows
-    for row in rows:
-        cell_values = [cell.value for cell in row]
-        if not any(cell_values):
-            logger.info('EOF reached')
-            break
-
-        titul_str = cell_values[0]
-        line_str = cell_values[1]
-        if not titul_str or not line_str or not '-' in line_str:
-            continue
-        # Титул
-        titul = get_object(row, 0, Titul, {'subject': subject})
-        if not titul:
-            continue
-        # Линия
-        try:
-            line = get_object(row, 1, Line, {'titul': titul})
-        except Exception:
-            print('Русские буквы даже после всех замен %s' % line_str)
-            continue
     folder = 'more_lines'
     files = ListDir(folder)
     for item in files:
@@ -247,7 +233,7 @@ def more_lines(subject: Subject):
             continue
         path = os.path.join(folder, item)
         print('Анализ файла %s' % item)
-        more_lines_helper(subject, path)
+        more_lines_helper(path)
 
 def analyze_daily_report_weldings():
     """Заполнение базы уникальными значениями из эксельки"""
@@ -470,12 +456,6 @@ def analyze_daily_report_weldings():
     #logger.info('WeldingJoints: %s' % welding_joints)
     logger.info('JoinTypes: %s' % join_types)
 
-    # -----------------------------
-    # Загрузка дополнительных линий
-    # из more_lines.xlsx
-    # -----------------------------
-    more_lines(subject)
-
 def clean_tables():
     """Похерить данные в таблицах перед заливочкой"""
     JointWelder.objects.all().delete()
@@ -492,7 +472,13 @@ def clean_tables():
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        clean_tables()
-        analyze_daily_report_weldings()
-        for line in Line.objects.all():
-            recalc_joints(line)
+        # -----------------------------
+        # Загрузка дополнительных линий
+        # из more_lines.xlsx
+        # -----------------------------
+        more_lines()
+
+        #clean_tables()
+        #analyze_daily_report_weldings()
+        #for line in Line.objects.all():
+        #    recalc_joints(line)

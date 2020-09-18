@@ -5,20 +5,60 @@
 
 {% block content %}
 {% include "core/forms/default_create.html" %}
+<button class="mb-sm mr-sm ml-sm btn btn-primary pull-right" type="button" id="update_phones_states">
+  <em class="fa fa-file-text fa-fw mr-sm"></em>Обновить статусы телефонов
+</button>
 
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
+<div class="panel panel-default">
+  <div class="panel-heading">Отправка смс
+    <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
+      <em class="fa fa-times"></em>
+    </a>
+    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть/Развернуть" class="pull-right">
+      <em class="fa fa-plus"></em>
+    </a>
+  </div>
+  <div class="clearfix"></div>
+  <div class="panel-wrapper collapse">
+    <div class="panel-body">
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Получатель</label>
+          <div class="col-lg-10">
+            <input type="text" placeholder="Получатель" class="form-control phone" id="send_sms_phone" autocomplete="off">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Текст</label>
+          <div class="col-lg-10">
+            <textarea id="send_sms_text" placeholder="Текст" class="form-control" autocomplete="off"></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% include "core/tabulator_table.html" %}
 {% endblock %}
 
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
+// Websocket соединение для телефонов
+var ws = new WebSocket("{% if cert_path %}wss{% else %}ws{% endif %}://{{ host }}:{{ port }}");
 
+function send_sms(code){
+  var phone = $("#send_sms_phone").val();
+  var text = $("#send_sms_text").val();
+  var body = {'send_sms': code, 'token': '{{ token }}', 'text': text, "receiver": phone};
+  console.log('send', body);
+  ws.send(JSON.stringify(body));
+}
 $(document).ready(function(){
-  // Websocket соединение для телефонов
-  var ws = new WebSocket("{% if cert_path %}wss{% else %}ws{% endif %}://{{ host }}:{{ port }}");
   ws.onopen = function(e) {
     ws.send(JSON.stringify({'get_phones': true, 'token': '{{ token }}'}));
   };
@@ -34,7 +74,14 @@ $(document).ready(function(){
     if(msg.constructor == Object){
       console.log('json msg', msg);
       if(msg['get_phones']){
-        var phones = msg['get_phones'];
+        var phones_arr = msg['get_phones'];
+        var phones = Array();
+        for(var i=0; i<phones_arr.length; i++){
+          for(var j=0; j<phones_arr[i].length; j++){
+            phones.push(phones_arr[i][j]);
+          }
+        }
+
         $(".icc_id").each(function(){
           var pk = $(this).attr('id').replace('icc_id_', '');
           if(phones.indexOf(pk) > -1){
@@ -61,10 +108,19 @@ $(document).ready(function(){
   ws.onerror = function(error) {
     //alert(`[error] ${error.message}`);
   };
+  $("#update_phones_states").click(function(){
+    ws.send(JSON.stringify({'get_phones': true, 'token': '{{ token }}'}));
+  });
   var phoneStatusFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
     var data = row.getData();
     var actions = "<div class='padding-rl5 icc_id' id='icc_id_" + data['code'] + "'></div>";
+    return actions;
+  };
+  var smsFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var data = row.getData();
+    var actions = "<div class='text-center'><a title='Отправить смс' onclick='send_sms(\"" + data['code'] + "\")'><i class='fa fa-envelope'></i></a></div>";
     return actions;
   };
 
@@ -111,6 +167,15 @@ $(document).ready(function(){
         field: "icc_id",
         headerFilterPlaceholder: "Статус",
         formatter: phoneStatusFormatter,
+        headerSort: false,
+        width: 90,
+      },
+      {
+        title: "SMS",
+        field: "sms",
+        headerFilterPlaceholder: "SMS",
+        formatter: smsFormatter,
+        headerFilter: false,
         headerSort: false,
         width: 90,
       },

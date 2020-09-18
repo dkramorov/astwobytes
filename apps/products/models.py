@@ -67,6 +67,68 @@ class Products(Standard):
             link = '/product/%s-%s/' % (translit(self.name), self.id)
         return link
 
+    def fill_seo(self, **kwargs):
+        """Заполнение сео-полей для товара,
+           просто создаем ссылку с сео-полями по ссылке товара
+        """
+        if not self.id:
+            return
+        seo_tag = 'seo_for_products'
+        product_tag = 'product_%s' % self.id
+        link = self.link()
+        seo_container = Containers.objects.filter(state=4, tag=seo_tag).first()
+        if not seo_container:
+            seo_container = Containers.objects.create(
+                state=4,
+                tag=seo_tag,
+                name='Сео-тексты для товаров/услуг'
+            )
+        seo_blocks = seo_container.blocks_set.filter(models.Q(tag=product_tag)|models.Q(link=link))
+        # Если по id не найден блок,
+        # тогда пробуем найти по ссылке
+        if not seo_blocks:
+            seo_block = Blocks(
+                state=4,
+                container=seo_container,
+                tag=product_tag,
+            )
+        else:
+            for block in seo_blocks:
+                if block.tag == product_tag:
+                    seo_block = block
+                    break
+            if not seo_block:
+                seo_block = seo_blocks[0]
+        seo_block.link = link
+        seo_block.name = self.name
+        for key in ('seo_title', 'seo_description', 'seo_keywords'):
+            field = key.replace('seo_', '')
+            setattr(seo_block, field, kwargs.get(key))
+        seo_block.save()
+
+    def get_seo(self):
+        """Получить сео для товара"""
+        if not self.id:
+            return
+        seo_tag = 'seo_for_products'
+        product_tag = 'product_%s' % self.id
+        seo_block = None
+        link = self.link()
+        seo_container = Containers.objects.filter(state=4, tag=seo_tag).first()
+        if not seo_container:
+            return
+        seo_block = None
+        seo_blocks = seo_container.blocks_set.filter(models.Q(tag=product_tag)|models.Q(link=link))
+        # Если по id не найден блок,
+        # тогда пробуем найти по ссылке
+        for block in seo_blocks:
+            if block.tag == product_tag:
+                seo_block = block
+                break
+        if not seo_block and seo_blocks:
+            seo_block = seo_blocks[0]
+        return seo_block
+
 class Property(Standard):
     """Свойство для товара"""
     ptype_choices = (

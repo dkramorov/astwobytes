@@ -13,14 +13,50 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
 <script type="text/javascript">
 window.disableMovableRows = true;
 var main_table = null;
 $(document).ready(function(){
+  var welding_types = {
+    "": "Без фильтра",
+    {% for welding_type in welding_types %}
+      {{ welding_type.0 }}: "{{ welding_type.1 }}",
+    {% endfor %}
+  };
+  var group_choices = {
+    "": "Без фильтра",
+    {% for group_choice in group_choices %}
+      {{ group_choice.0 }}: "{{ group_choice.1 }}",
+    {% endfor %}
+  };
   var subjectFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['subject'] ? data['subject']['name']  : '';
   };
+  var weldingTypeFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    var html = "";
+    var welding_type;
+    if(data['certs']){
+      for(var i=0; i<data['certs'].length; i++){
+        welding_type = data['certs'][i]['welding_type'];
+        html += welding_types[welding_type] + "<br>";
+      }
+    }
+    return html;
+  };
+  var certNumberFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    var html = "";
+    if(data['certs']){
+      for(var i=0; i<data['certs'].length; i++){
+        html += data['certs'][i]['number'] + "<br>";
+      }
+    }
+    return html;
+  };
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -32,6 +68,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         minWidth: 150,
       },
+/*
       {
         title: "Имя",
         field: "first_name",
@@ -56,13 +93,22 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         minWidth: 150,
       },
+*/
       {
         title: "Клеймо",
         field: "stigma",
         headerFilterPlaceholder: "Клеймо",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 150,
+        width: 90,
+      },
+      {
+        title: "Клеймо по приказу",
+        field: "stigma2",
+        headerFilterPlaceholder: "Клеймо по приказу",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 90,
       },
       {
         title: "На объекте",
@@ -90,7 +136,6 @@ $(document).ready(function(){
         headerFilterParams: {
           values: {"": "Без фильтра", true: "Да", false: "Нет"},
         },
-        editable: false,
         editor: "select",
         formatter: booleanFormatter,
         width: 90,
@@ -100,6 +145,7 @@ $(document).ready(function(){
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });
+
 });
 </script>
 {% endblock %}

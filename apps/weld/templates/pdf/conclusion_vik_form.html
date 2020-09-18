@@ -238,10 +238,10 @@ table.two_col thead tr td {
         </td>
         <td>
           <p>
-            Ø{% if row.welding_joint.diameter %}
-               {{ row.welding_joint.diameter|money_format }}
-            {% endif %}x{% if row.welding_joint.side_thickness %}
-              {{ row.welding_joint.side_thickness|money_format }}
+            Ø{% if row.welding_joint.joint.diameter %}
+               {{ row.welding_joint.joint.diameter|money_format }}
+            {% endif %}x{% if row.welding_joint.joint.side_thickness %}
+              {{ row.welding_joint.joint.side_thickness|money_format }}
             {% endif %}
           </p>
         </td>
@@ -308,8 +308,8 @@ table.two_col thead tr td {
           <p>
             Ø{% if row.welding_joint.diameter %}
                {{ row.welding_joint.diameter|money_format }}
-            {% endif %}x{% if row.welding_joint.side_thickness %}
-              {{ row.welding_joint.side_thickness|money_format }}
+            {% endif %}x{% if row.welding_joint.joint.side_thickness %}
+              {{ row.welding_joint.joint.side_thickness|money_format }}
             {% endif %}
           </p>
         </td>
@@ -329,8 +329,8 @@ table.two_col thead tr td {
         </td>
         <td>
           <p class="ml15">
-            Ø{% if row.welding_joint.diameter %}
-               {{ row.welding_joint.diameter|money_format }}
+            Ø{% if row.welding_joint.joint.diameter %}
+               {{ row.welding_joint.joint.diameter|money_format }}
             {% endif %}x{% if row.welding_joint.side_thickness %}
               {{ row.welding_joint.side_thickness|money_format }}
             {% endif %}

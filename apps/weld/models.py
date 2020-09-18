@@ -63,12 +63,6 @@ class WeldingJoint(Standard):
     repair = models.IntegerField(choices=repair_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Ремонт, например, 2 (второй ремонт)')
-    diameter = models.DecimalField(blank=True, null=True, db_index=True,
-        max_digits=9, decimal_places=2,
-        verbose_name='Диаметр в мм, например, 355.6')
-    side_thickness = models.DecimalField(blank=True, null=True, db_index=True,
-        max_digits=9, decimal_places=2,
-        verbose_name='Толщина стенки, например, 4,78')
     material = models.IntegerField(choices=MATERIALS,
         blank=True, null=True, db_index=True,
         verbose_name='Материал - сталь, например, 09Г2С')
@@ -78,8 +72,6 @@ class WeldingJoint(Standard):
     join_type_to = models.IntegerField(choices=JOIN_TYPES,
         blank=True, null=True, db_index=True,
         verbose_name='Свариваемые элементы, например, тройник/труба')
-    welding_date = models.DateField(blank=True, null=True, db_index=True,
-        verbose_name='Дата сварки, например, 12.03.2020')
     workshift = models.IntegerField(choices=workshift_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Номер, смены, например, 1')
@@ -106,9 +98,6 @@ class WeldingJoint(Standard):
     notice = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Примечание, например, только ВИК')
-    dinc = models.DecimalField(blank=True, null=True, db_index=True,
-        max_digits=9, decimal_places=2,
-        verbose_name='D-inc, например, 6.30, нужен для отчетов, рассчитывается динамически, например, диаметр(160)/константа(25.4)=6.30')
     state = models.IntegerField(choices=WELDING_JOINT_STATES,
         blank=True, null=True, db_index=True,
         verbose_name='Статус заявки, например, в работе')
@@ -129,12 +118,6 @@ class WeldingJoint(Standard):
         #default_permissions = []
 
     def save(self, *args, **kwargs):
-        self.dinc = None
-        if self.diameter:
-            try:
-                self.dinc = float(self.diameter) / 25.4
-            except ValueError:
-                pass
         super(WeldingJoint, self).save(*args, **kwargs)
         self.request_number = self.update_request_number()
 
@@ -198,8 +181,8 @@ class JointWelder(models.Model):
     welding_joint = models.ForeignKey(WeldingJoint,
         blank=True, null=True, on_delete=models.CASCADE,
         verbose_name='Заявка на стык')
-    actually = models.BooleanField(blank=True, null=True,
-        db_index=True, default=False,
+    actually = models.BooleanField(default=False,
+        blank=True, null=True, db_index=True,
         verbose_name='Фактический сварщик (тот, кто проводит работы), другие сващики могут быть указаны в заявках, потому что у фактических нет допуска')
     position = models.IntegerField(blank=True, null=True, db_index=True,
         verbose_name='Позиция (от 1 до 4)')

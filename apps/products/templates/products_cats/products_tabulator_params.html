@@ -1,0 +1,58 @@
+window.cat_products_fordel = Array();
+var pkFormatter = function(cell, formatterParams, onRendered){
+  var data = cell.getRow().getData();
+  return data['product'] ? data['product']['id']  : '';
+};
+var productFormatter = function(cell, formatterParams, onRendered){
+  var data = cell.getRow().getData();
+  return data['product'] ? data['product']['name']  : '';
+};
+var codeFormatter = function(cell, formatterParams, onRendered){
+  var data = cell.getRow().getData();
+  return data['product'] ? data['product']['code']  : '';
+};
+main_table = new Tabulator("#main-table", {
+  {% include "core/tabulator_table_params.html" %}
+  columns:[
+    {
+      title: "Ид",
+      field: "product__id",
+      headerFilterPlaceholder: "Ид",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: pkFormatter,
+      minWidth: 90,
+    },
+    {
+      title: "Наименование",
+      field: "product__name",
+      headerFilterPlaceholder: "Наименование",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: productFormatter,
+      minWidth: 120,
+    },
+    {
+      title: "Код",
+      field: "product__code",
+      headerFilterPlaceholder: "Код",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: codeFormatter,
+      minWidth: 90,
+    },
+    {
+      title: "Действия",
+      field: "id", // id линковки
+      formatter: "buttonCross",
+      width: 70,
+      align: "center",
+      headerSort: false,
+      cellClick:function(e, cell){
+        window.cat_products_fordel.push(cell.getValue());
+        cell.getRow().delete();
+        console.log(window.cat_products_fordel);
+      }
+    },
+  ],
+});

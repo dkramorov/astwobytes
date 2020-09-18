@@ -21,7 +21,6 @@ var certification_table = null;
 function fill_certification_form(){
   // Заполнение формы по удостоверениям,
   // вызываем перед отправкой в $("#current_edit_form").submit
-  $("#certification_form").html();
   var certification_data = "";
   var certifications = certification_table.getRows();
   var cdata = null;
@@ -29,6 +28,8 @@ function fill_certification_form(){
     cdata = certifications[i].getData();
     certification_data += "<input type='hidden' name='cert_number_" + i + "' value='" + cdata['number'] + "' />";
     certification_data += "<input type='hidden' name='cert_welding_type_" + i + "' value='" + cdata['welding_type'] + "' />";
+    certification_data += "<input type='hidden' name='cert_best_before_" + i + "' value='" + cdata['best_before'] + "' />";
+    certification_data += "<input type='hidden' name='cert_place_" + i + "' value='" + cdata['place'] + "' />";
   }
   certification_data += "<input type='hidden' name='certifications' value='" + certifications.length + "' />";
   $("#certification_form").html($(certification_data));
@@ -39,6 +40,8 @@ var cert_arr = [
         'id': '{{ cert.id }}',
         'number': '{{ cert.number }}',
         'welding_type': '{{ cert.welding_type }}',
+        'best_before': '{{ cert.best_before|date:"d-m-Y" }}',
+        'place': '{{ cert.place }}',
     },
   {% endfor %}
 ];
@@ -71,6 +74,18 @@ $(document).ready(function(){
         minWidth: 120,
       },
       {
+        title: "Годен до",
+        field: "best_before",
+        editor: dateEditor,
+        minWidth: 120,
+      },
+      {
+        title: "Место удостоверения",
+        field: "place",
+        editor: "input",
+        minWidth: 120,
+      },
+      {
         title: "Действия",
         formatter: "buttonCross",
         width: 120,
@@ -85,6 +100,8 @@ $(document).ready(function(){
     certification_table.addRow({
       'number': '',
       'welding_type': '',
+      'best_before': '',
+      'place': '',
     });
   });
 });

@@ -2,9 +2,27 @@
 {% with ''|installed_apps as apps %}
 <ul class="nav">
   <li class="nav-heading">&nbsp;</li>
-  {% include "users_admin_menu.html" %}
-  {% include "flatcontent_admin_menu.html" %}
-  {% include "main_functions_admin_menu.html" %}
+  {% if perms.auth.view_user %}
+  <li{% ifequal menu 'users' %} class="active"{% endifequal %}>
+    <a class="has-submenu" data-toggle="collapse-next" href="">
+      <em class="fa fa-user"></em>
+      <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+      <span class="item-text">Пользователи</span>
+    </a>
+    <ul class="nav collapse{% ifequal menu 'users' %} in{% endifequal %}">
+      <li{% ifequal submenu 'users' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'login:show_users' %}">
+          <span class="item-text">Пользователи</span>
+        </a>
+      </li>
+      <li{% ifequal submenu 'groups' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'login:show_groups' %}">
+          <span class="item-text">Группы</span>
+        </a>
+      </li>
+    </ul>
+  </li>
+  {% endif %}
   {% include "welding_admin_menu.html" %}
 </ul><br><br><br><br>
 {% endwith %}

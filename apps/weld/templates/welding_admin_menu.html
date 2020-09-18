@@ -21,7 +21,7 @@
         </a>
       </li>
     {% endif %}
-
+{% comment %}<!--
     {% if perms.weld.view_base %}
       <li{% ifequal submenu 'bases' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_bases' %}">
@@ -29,7 +29,7 @@
         </a>
       </li>
     {% endif %}
-
+-->{% endcomment %}
     {% if perms.weld.view_titul %}
       <li{% ifequal submenu 'tituls' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_tituls' %}">
@@ -126,24 +126,10 @@
         </a>
       </li>
     {% endif %}
-    {% if perms.weld.view_letter_of_guarantee %}
-      <li{% ifequal submenu 'letters_of_guarantee' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_letters_of_guarantee' %}">
-          <span class="item-text">Гарантийные письма</span>
-        </a>
-      </li>
-    {% endif %}
-    {% if perms.weld.view_vik %}
-      <li{% ifequal submenu 'viks' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_viks' %}">
-          <span class="item-text">Акты ВИК</span>
-        </a>
-      </li>
-    {% endif %}
-    {% if perms.weld.view_controlk %}
-      <li{% ifequal submenu 'controlk' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_controlk' %}">
-          <span class="item-text">УЗК/РК контроль</span>
+    {% if perms.weld.view_certifications %}
+      <li{% ifequal submenu 'certifications' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_certifications' %}">
+          <span class="item-text">Удостоверения</span>
         </a>
       </li>
     {% endif %}
@@ -154,17 +140,17 @@
         </a>
       </li>
     {% endif %}
+    {% if perms.weld.view_letter_of_guarantee %}
+      <li{% ifequal submenu 'letters_of_guarantee' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_letters_of_guarantee' %}">
+          <span class="item-text">Гарантийные письма</span>
+        </a>
+      </li>
+    {% endif %}
     {% if perms.weld.view_mechtest %}
       <li{% ifequal submenu 'mechtest' %} class="active"{% endifequal %}>
         <a class="no-submenu" data-toggle="" href="{% url 'welding:show_mechtest' %}">
           <span class="item-text">Мехиспытания</span>
-        </a>
-      </li>
-    {% endif %}
-    {% if perms.weld.view_nax %}
-      <li{% ifequal submenu 'nax' %} class="active"{% endifequal %}>
-        <a class="no-submenu" data-toggle="" href="{% url 'welding:show_nax' %}">
-          <span class="item-text">Аттестаты (НАКС)</span>
         </a>
       </li>
     {% endif %}

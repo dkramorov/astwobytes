@@ -257,7 +257,7 @@ lines_vars = {
         'titul__subject',
         'titul__subject__company',
     ),
-    'search_result_format': ('{}', 'name'),
+    'search_result_format': ('{} титул {}', 'name titul__name'),
 }
 
 @login_required
@@ -361,10 +361,10 @@ def show_joints(request, *args, **kwargs):
             'id',
             'name',
             'img',
-            'welding_joint__welding_date',
-            'welding_joint__side_thickness',
-            'welding_joint__diameter',
-            'welding_joint__dinc',
+            'diameter',
+            'side_thickness',
+            'dinc',
+            'welding_date',
             'welding_joint__state',
             'line__name',
             'line__titul__name',
@@ -379,11 +379,7 @@ def show_joints(request, *args, **kwargs):
             'titul': ('name', ),
             'subject': ('name', ),
             'company': ('name', ),
-            'welding_joint': ('welding_date',
-                              'side_thickness',
-                              'diameter',
-                              'dinc',
-                              'state', ),
+            'welding_joint': ('state', ),
         }
         for row in rows:
             item = object_fields(row,
@@ -397,13 +393,13 @@ def show_joints(request, *args, **kwargs):
             result.append(item)
 
         if request.GET.get('page'):
-            dinc = mh.query.aggregate(Sum('welding_joint__dinc'))
+            dinc = mh.query.aggregate(Sum('dinc'))
             result = {'data': result,
                       'last_page': mh.raw_paginator['total_pages'],
                       'total_records': mh.raw_paginator['total_records'],
                       'cur_page': mh.raw_paginator['cur_page'],
                       'by': mh.raw_paginator['by'],
-                      'dinc': dinc['welding_joint__dinc__sum'],
+                      'dinc': dinc['dinc__sum'],
             }
 
         return JsonResponse(result, safe=False)

@@ -52,10 +52,6 @@ $(document).ready(function(){
     var data = cell.getRow().getData();
     return data['line']['titul'] ? data['line']['titul']['name']  : '';
   };
-  var baseFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['line']['base'] ? data['line']['base']['name']  : '';
-  };
   var subjectFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['line']['titul']['subject'] ? data['line']['titul']['subject']['name']  : '';
@@ -63,22 +59,6 @@ $(document).ready(function(){
   var companyFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['line']['titul']['subject']['company'] ? data['line']['titul']['subject']['company']['name']  : '';
-  };
-  var weldingDateFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['welding_joint'] ? data['welding_joint']['welding_date']  : '';
-  };
-  var sideThicknessFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['welding_joint'] ? data['welding_joint']['side_thickness']  : '';
-  };
-  var diameterFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['welding_joint'] ? data['welding_joint']['diameter']  : '';
-  };
-  var dincFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['welding_joint'] ? data['welding_joint']['dinc']  : '';
   };
   var stateFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
@@ -117,38 +97,34 @@ $(document).ready(function(){
       },
       {
         title: "Дата сварки",
-        field: "welding_joint__welding_date",
+        field: "welding_date",
         headerFilterPlaceholder: "Дата сварки",
         headerFilter: "input",
         headerFilterFunc: "=",
-        formatter: weldingDateFormatter,
         minWidth: 90,
       },
       {
         title: "Толщина стенки",
-        field: "welding_joint__side_thickness",
+        field: "side_thickness",
         headerFilterPlaceholder: "Толщина стенки",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: sideThicknessFormatter,
         minWidth: 90,
       },
       {
         title: "Диаметр",
-        field: "welding_joint__diameter",
+        field: "diameter",
         headerFilterPlaceholder: "Диаметр",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: diameterFormatter,
         minWidth: 90,
       },
       {
         title: "D'Inch",
-        field: "welding_joint__dinc",
+        field: "dinc",
         headerFilterPlaceholder: "D'Inch",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: dincFormatter,
         minWidth: 90,
       },
       {
@@ -213,7 +189,7 @@ $(document).ready(function(){
     ],
   });
   $(".tabulator-headers .tabulator-col").each(function(){
-    if($(this).attr("tabulator-field") === "welding_joint__welding_date"){
+    if($(this).attr("tabulator-field") === "welding_date"){
       $(this).find("input").datepicker({
         onSelect: function (fd, d, calendar) {
           calendar.hide();

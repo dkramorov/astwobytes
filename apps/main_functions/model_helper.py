@@ -243,7 +243,7 @@ class ModelHelper:
                         'field': item.field.name,
                         'accessor_name':accessor_name
                     })
-                   # -------------------------------------
+                    # -------------------------------------
                     # Просто заполняем accessor_name: count
                     # - затем, сможем уже во view сделать
                     # getattr(l.row, accessor_name).all())
@@ -279,6 +279,8 @@ class ModelHelper:
                        if not field.name in pass_fields]
         for key in form_fields:
             value = self.request.POST.get(key, '')
+            if value:
+                value = value.strip()
             # ---------------------------------------------------
             # Обработка данных в соответствии с типом поля модели
             # данные из POST, там None НЕТУ
@@ -298,7 +300,7 @@ class ModelHelper:
                         value = True
                 elif types[key] == 'float':
                     try:
-                        value = float(value)
+                        value = float(value.replace(',', '.'))
                     except ValueError:
                         value = None
                 elif types[key] in ('date', 'datetime'):

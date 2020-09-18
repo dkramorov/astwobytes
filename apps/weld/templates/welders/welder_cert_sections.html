@@ -21,14 +21,12 @@ var cert_sections_table = null;
 function fill_cert_sections_form(){
   // Заполнение формы по удостоверениям,
   // вызываем перед отправкой в $("#current_edit_form").submit
-  $("#cert_sections_form").html();
   var cert_sections_data = "";
   var cert_sections = cert_sections_table.getRows();
   var section = null;
   for(var i=0; i<cert_sections.length; i++){
     section = cert_sections[i].getData();
     cert_sections_data += "<input type='hidden' name='section_group_" + i + "' value='" + section['group'] + "' />";
-    cert_sections_data += "<input type='hidden' name='section_certification_" + i + "' value='" + section['certification'] + "' />";
     cert_sections_data += "<input type='hidden' name='section_points_" + i + "' value='" + section['points'] + "' />";
   }
   cert_sections_data += "<input type='hidden' name='section_sections' value='" + cert_sections.length + "' />";
@@ -44,16 +42,12 @@ $(document).ready(function(){
     var pk = cell.getValue();
     return group_choices[pk];
   };
-  var certFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return cert_choices[pk];
-  };
+
   var cert_sections_arr = [
     {% for cert_section in cert_sections %}
       {
           'id': '{{ cert_section.id }}',
           'group': '{{ cert_section.group }}',
-          'certification': '{{ cert_section.certification.number }}',
           'points': '{{ cert_section.points }}',
       },
     {% endfor %}
@@ -68,14 +62,6 @@ $(document).ready(function(){
         editor: "select",
         editorParams: group_choices,
         formatter: groupFormatter,
-        minWidth: 120,
-      },
-      {
-        title: "Удостоверение",
-        field: "certification",
-        editor: "select",
-        editorParams: cert_choices,
-        formatter: certFormatter,
         minWidth: 120,
       },
       {
@@ -96,19 +82,8 @@ $(document).ready(function(){
     ],
   });
   $("#add_cert_section").click(function(){
-
-    var cert_table_rows = certification_table.getRows();
-    var cert = null;
-    for(var i=0; i<cert_table_rows.length; i++){
-      cert = cert_table_rows[i].getData();
-      if(!cert_choices[cert['number']]){
-        cert_choices[cert['number']] = cert['number'];
-      }
-    }
-
     cert_sections_table.addRow({
       'group': '',
-      'certification': '',
       'points': '',
     });
   });

@@ -97,6 +97,14 @@ urlpatterns = [
     # аякс-поиск
     path('welding/welders/search/', welder_views.search_welders, name='search_welders'),
 
+    # удостоверения
+    path('admin/certifications/', welder_views.show_certifications, name='show_certifications'),
+    url('^admin/certifications/(?P<action>create)/$', welder_views.edit_certification, name='create_certification'),
+    url('^admin/certifications/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_certification, name='edit_certification'),
+    path('admin/certifications/positions/', welder_views.certifications_positions, name='certifications_positions'),
+    # аякс-поиск
+    path('welding/certifications/search/', welder_views.search_certifications, name='search_certifications'),
+
     # дефектоскописты (welder_views)
     path('admin/defectoscopists/', welder_views.show_defectoscopists, name='show_defectoscopists'),
     url('^admin/defectoscopists/(?P<action>create)/$', welder_views.edit_defectoscopist, name='create_defectoscopist'),
@@ -113,22 +121,6 @@ urlpatterns = [
     # аякс-поиск
     path('welding/letters_of_guarantee/search/', welder_views.search_letters_of_guarantee, name='search_letters_of_guarantee'),
 
-    # сварщики - акты ВИК (welder_views)
-    path('admin/viks/', welder_views.show_viks, name='show_viks'),
-    url('^admin/viks/(?P<action>create)/$', welder_views.edit_vik, name='create_vik'),
-    url('^admin/viks/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_vik, name='edit_vik'),
-    path('admin/viks/positions/', welder_views.viks_positions, name='viks_positions'),
-    # аякс-поиск
-    path('welding/viks/search/', welder_views.search_viks, name='search_viks'),
-
-    # сварщики - УЗК/РК контроль (welder_views)
-    path('admin/controlk/', welder_views.show_controlk, name='show_controlk'),
-    url('^admin/controlk/(?P<action>create)/$', welder_views.edit_controlk, name='create_controlk'),
-    url('^admin/controlk/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_controlk, name='edit_controlk'),
-    path('admin/controlk/positions/', welder_views.controlk_positions, name='controlk_positions'),
-    # аякс-поиск
-    path('welding/controlk/search/', welder_views.search_controlk, name='search_controlk'),
-
     # сварщики - проведение КСС (welder_views)
     path('admin/holding_kss/', welder_views.show_holding_kss, name='show_holding_kss'),
     url('^admin/holding_kss/(?P<action>create)/$', welder_views.edit_holding_kss, name='create_holding_kss'),
@@ -144,14 +136,6 @@ urlpatterns = [
     path('admin/mechtest/positions/', welder_views.mechtest_positions, name='mechtest_positions'),
     # аякс-поиск
     path('welding/mechtest/search/', welder_views.search_mechtest, name='search_mechtest'),
-
-    # сварщики - НАКС (welder_views)
-    path('admin/nax/', welder_views.show_nax, name='show_nax'),
-    url('^admin/nax/(?P<action>create)/$', welder_views.edit_nax, name='create_nax'),
-    url('^admin/nax/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', welder_views.edit_nax, name='edit_nax'),
-    path('admin/nax/positions/', welder_views.nax_positions, name='nax_positions'),
-    # аякс-поиск
-    path('welding/nax/search/', welder_views.search_nax, name='search_nax'),
 
     # сварщики - Лист допуска (welder_views)
     path('admin/admission_sheet/', welder_views.show_admission_sheet, name='show_admission_sheet'),

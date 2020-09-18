@@ -19,15 +19,22 @@
           <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
         </div>
       </div>
+
       {% if is_products %}
-      <!-- Привязанные товары -->
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Наполнение, привязанные товары</label>
-        <div class="col-lg-10">
-          {% include "blocks/linked_products_select2.html" %}
+        <!-- Привязанные товары -->
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Привязанные товары ({{ products_count }})</label>
+          <div class="col-lg-10">
+            {% include "blocks/linked_products_select2.html" %}
+            <!-- Плавно переходим на таблицу товаров от select2
+                 Нужно передать в таблицу заготовленные фильтры под рубрику
+            -->
+            {% include "products_cats/products_tabulator_table.html" %}
+          </div>
         </div>
-      </div>
+        <input type="hidden" id="cat_products_fordel" name="cat_products_fordel" value="" autocomplete="off"/>
       {% endif %}
+
       <div class="form-group">
         <label class="col-lg-2 control-label">Содержимое (html)</label>
         <div class="col-lg-10">

@@ -153,6 +153,18 @@ class Joint(Standard):
     line = models.ForeignKey(Line,
         blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name='Номер линии, например, 913A')
+    diameter = models.DecimalField(blank=True, null=True, db_index=True,
+        max_digits=9, decimal_places=2,
+        verbose_name='Диаметр в мм, например, 355.6')
+    side_thickness = models.DecimalField(blank=True, null=True, db_index=True,
+        max_digits=9, decimal_places=2,
+        verbose_name='Толщина стенки, например, 4,78')
+    dinc = models.DecimalField(blank=True, null=True, db_index=True,
+        max_digits=9, decimal_places=2,
+        verbose_name='D-inc, например, 6.30, нужен для отчетов, рассчитывается динамически, например, диаметр(160)/константа(25.4)=6.30')
+    welding_date = models.DateField(blank=True, null=True, db_index=True,
+        verbose_name='Дата сварки, например, 12.03.2020')
+
     class Meta:
         verbose_name = 'Структура - Стык'
         verbose_name_plural = 'Структура - Стыки'
@@ -161,7 +173,14 @@ class Joint(Standard):
 
     def save(self, *args, **kwargs):
         exist = self.id
+        self.dinc = None
+        if self.diameter:
+            try:
+                self.dinc = float(self.diameter) / 25.4
+            except ValueError:
+                pass
         super(Joint, self).save(*args, **kwargs)
         # Обновляем номер заявки, если она есть
         if exist and hasattr(self, 'welding_joint'):
             self.welding_joint.update_request_number()
+

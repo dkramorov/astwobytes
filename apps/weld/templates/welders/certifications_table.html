@@ -19,10 +19,10 @@
 window.disableMovableRows = true;
 var main_table = null;
 $(document).ready(function(){
-  var materials = {
+  var welding_types = {
     "": "Без фильтра",
-    {% for material in materials %}
-      {{ material.0 }}: "{{ material.1 }}",
+    {% for welding_type in welding_types %}
+      {{ welding_type.0 }}: "{{ welding_type.1 }}",
     {% endfor %}
   };
   var group_choices = {
@@ -31,13 +31,11 @@ $(document).ready(function(){
       {{ group_choice.0 }}: "{{ group_choice.1 }}",
     {% endfor %}
   };
-  var welding_types = {
-    "": "Без фильтра",
-    {% for welding_type in welding_types %}
-      {{ welding_type.0 }}: "{{ welding_type.1 }}",
-    {% endfor %}
+  var subjectFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['welder']['subject'] ? data['welder']['subject']['name']  : '';
   };
-  var welderFormatter = function(cell, formatterParams, onRendered){
+  var welderNameFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['welder'] ? data['welder']['name']  : '';
   };
@@ -49,21 +47,13 @@ $(document).ready(function(){
     var data = cell.getRow().getData();
     return data['welder'] ? data['welder']['stigma2']  : '';
   };
+  var weldingTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return welding_types[pk];
+  };
   var noticeFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['welder'] ? data['welder']['notice']  : '';
-  };
-  var materialFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return materials[pk];
-  };
-  var weldingTypeFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['certification'] ? welding_types[data['certification']['welding_type']] : '';
-  };
-  var bestBeforeFormatter = function(cell, formatterParams, onRendered){
-    var data = cell.getRow().getData();
-    return data['certification'] ? data['certification']['best_before']  : '';
   };
   var sectionsFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
@@ -80,20 +70,18 @@ $(document).ready(function(){
     }
     return html;
   };
-  var accessor_material = function(value, data, type, params, column){
-    return materials[value];
-  }
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
       {
-        title: "Сварщик",
+        title: "ФИО",
         field: "welder__name",
-        headerFilterPlaceholder: "Сварщик",
+        headerFilterPlaceholder: "ФИО",
         headerFilter: "input",
         headerFilterFunc: "like",
-        formatter: welderFormatter,
-        minWidth: 120,
+        formatter: welderNameFormatter,
+        minWidth: 150,
       },
       {
         title: "Клеймо",
@@ -114,55 +102,8 @@ $(document).ready(function(){
         width: 90,
       },
       {
-        title: "Типоразмер",
-        field: "standard_size",
-        headerFilterPlaceholder: "Типоразмер",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 120,
-      },
-      {
-        title: "Материал",
-        field: "material",
-        headerFilterPlaceholder: "Материал",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: materials,
-        },
-        editable: false,
-        editor: "select",
-        formatter: materialFormatter,
-        width: 90,
-        accessorDownload: accessor_material,
-      },
-      {
-        title: "Номер КСС",
-        field: "number",
-        headerFilterPlaceholder: "Номер КСС",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        width: 90,
-      },
-      {
-        title: "Номер ВИК/УЗК/РК",
-        field: "test_number",
-        headerFilterPlaceholder: "Номер ВИК/УЗК/РК",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        width: 90,
-      },
-      {
-        title: "Дата ВИК/УЗК/РК",
-        field: "test_date",
-        headerFilterPlaceholder: "Дата ВИК/УЗК/РК",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 90,
-      },
-      {
-        title: "ТТ/МК",
-        field: "certification__certsections__group",
+        title: "Вид сварочных работ",
+        field: "certsections__group",
         headerFilterPlaceholder: "Вид сварочных работ",
         headerFilter: true,
         headerFilterFunc: "=",
@@ -173,8 +114,16 @@ $(document).ready(function(){
         width: 120,
       },
       {
+        title: "Номер удостоверения",
+        field: "number",
+        headerFilterPlaceholder: "Номер удостоверения",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
         title: "Способ сварки",
-        field: "certification__welding_type",
+        field: "welding_type",
         headerFilterPlaceholder: "Способ сварки",
         headerFilter: true,
         headerFilterFunc: "=",
@@ -187,21 +136,38 @@ $(document).ready(function(){
       },
       {
         title: "Годен до",
-        field: "certification__best_before",
+        field: "best_before",
         headerFilterPlaceholder: "Годен до",
         headerFilter: "input",
         headerFilterFunc: "=",
-        formatter: bestBeforeFormatter,
+        download: false,
         minWidth: 120,
       },
       {
-        title: "НГДО/СК",
-        field: "certification__certsections__points",
-        headerFilterPlaceholder: "НГДО/СК",
+        title: "Область аттестации",
+        field: "certsections__points",
+        headerFilterPlaceholder: "Область аттестации",
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: sectionsFormatter,
         minWidth: 120,
+      },
+      {
+        title: "Место удостоверения",
+        field: "place",
+        headerFilterPlaceholder: "Место удостоверения",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 120,
+      },
+      {
+        title: "На объекте",
+        field: "welder__subject__name",
+        headerFilterPlaceholder: "На объекте",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: subjectFormatter,
+        minWidth: 90,
       },
       {
         title: "Примечание",
@@ -215,13 +181,13 @@ $(document).ready(function(){
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });
+
   $(".tabulator-headers .tabulator-col").each(function(){
-    if($(this).attr("tabulator-field") === "test_date" || $(this).attr("tabulator-field") === "certification__best_before"){
+    if($(this).attr("tabulator-field") === "best_before"){
       $(this).find("input").datepicker({
         onSelect: function (fd, d, calendar) {
           calendar.hide();
         },
-        position: "left top",
         todayButton: new Date(),
       });
     }

@@ -125,13 +125,13 @@ def show_welding(request, *args, **kwargs):
             'joint__line__titul__name',
             'joint__line__titul__subject__name',
             'joint__line__titul__subject__company__name',
+            'joint__diameter',
+            'joint__side_thickness',
+            'joint__welding_date',
             'repair',
-            'diameter',
-            'side_thickness',
             'material',
             'join_type_from',
             'join_type_to',
-            'welding_date',
             'workshift',
             'control_type',
             'welding_conn_view',
@@ -140,27 +140,15 @@ def show_welding(request, *args, **kwargs):
             'control_result',
             'notice',
             'state',
-            #'joint_conclusion__date',
-            #'joint_conclusion__state',
-            #'joint_conclusion__vik_defects',
-            #'joint_conclusion__pvk_defects',
-            #'joint_conclusion__uzk_defects',
         )
         rows = mh.standard_show(only_fields=only_fields, )
-                                #related_fields=('joint_conclusion', ))
         result = []
         fk_keys = {
-            'joint': ('name', ),
+            'joint': ('name', 'diameter', 'side_thickness', 'welding_date'),
             'line': ('name', ),
             'titul': ('name', ),
             'subject': ('name', ),
             'company': ('name', ),
-            #'joint_conclusion': (
-            #    'date',
-            #    'state',
-            #    'vik_defects',
-            #    'pvk_defects',
-            #    'uzk_defects', ),
         }
         # У нас может быть много заключений на одну заявку,
         # поэтому надо вытащить последнее заключение по ремонту

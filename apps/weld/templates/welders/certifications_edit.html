@@ -1,0 +1,195 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group bordered">
+            <div class="col-lg-2">
+              <p class="text-right">Сварщик</p>
+            </div>
+            <div class="col-lg-10">
+              <select id="welder_select2" name="welder" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.welder %}
+                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }} - {{ row.welder.stigma }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Номер удостоверения</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Номер удостоверения" class="form-control" name="number" value="{% if row.number %}{{ row.number }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Способ сварки</label>
+            <div class="col-lg-10">
+              <select id="welding_type_select2" name="welding_type" autocomplete="off">
+                <option value="">Не выбрано</option>
+                {% for welding_type in welding_types %}
+                  <option value="{{ welding_type.0 }}"{% ifequal welding_type.0 row.welding_type %} selected{% endifequal %}>{{ welding_type.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Годно до</label>
+            <div class="col-lg-10">
+              <input id="best_before_date" type="text" placeholder="Годно до" class="form-control" name="best_before" value="{% if row.best_before %}{{ row.best_before }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Место удостоверения</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Место удостоверения" class="form-control" name="place" value="{% if row.place %}{{ row.place }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="hidden">
+            {% include "core/forms/hidden_fields.html" %}
+          </div>
+          {% include "welders/welder_cert_sections.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript">
+  {% if row %}
+    var upload_img_url = '';
+  {% endif %}
+  $(document).ready(function(){
+    $('#welding_type_select2').select2({
+      placeholder: 'Выберите способ сварки',
+      allowClear: true,
+      width: '100%',
+      tags: true,
+    });
+    $("#best_before_date").datepicker({
+      onSelect: function (fd, d, calendar) {
+        calendar.hide();
+      },
+      todayButton: new Date(),
+    });
+    $('#welder_select2').select2({
+      placeholder: 'Выберите сварщика',
+      allowClear: true,
+      width: '100%',
+      ajax: {
+        url: "{% url 'welding:search_welders' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+
+    $("#current_edit_form").parsley();
+    $("#current_edit_form").submit(function(e) {
+      var $form = $(this);
+      // --------------------------------------
+      // Добавляем группы технических устройств
+      // опасных производственных объектов
+      // --------------------------------------
+      fill_cert_sections_form();
+
+      var data = $form.serialize();
+      var msg = 'Произошла ошибка, обновите страничку';
+      var status = 'danger'; // success, warning, info, danger
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: data,
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+        }
+        $.notify({
+            message: msg,
+        },{
+            status: status,
+        });
+        // Переадресация, если создается дубликат
+        if(r.redirect_on_error){
+          window.location.href = r.redirect_on_error;
+        }
+        // Обновление ссылок
+        update_links(r);
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+      //отмена действия по умолчанию для кнопки submit
+      e.preventDefault();
+    });
+
+    function update_links(r){
+      var thumb = r['row']['thumb'];
+      if(thumb === ''){
+        thumb = '/static/img/empty.png';
+      }
+      $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+    }
+    {% if row %}
+      var progressbar = $('#progressbar-files'),
+      bar         = progressbar.find('.progress-bar-files'),
+      settings    = {
+        action: '{% url "welding:edit_welder" "img" row.id %}', // upload url
+        allow : '*.*',
+        param: 'img',
+        params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+        loadstart: function() {
+          bar.css('width', '0%').text('0%');
+          progressbar.removeClass('hidden');
+        },
+        progress: function(percent) {
+          percent = Math.ceil(percent);
+          bar.css('width', percent+'%').text(percent+'%');
+        },
+        allcomplete: function(response) {
+          bar.css('width', '100%').text('100%');
+          setTimeout(function(){
+            progressbar.addClass('hidden');
+          }, 750);
+          // Upload Completed
+          // Обновление ссылок
+          var r = JSON.parse(response);
+          update_links(r);
+        }
+      };
+      var select = new $.upload.select($('#upload-select-files'), settings),
+      drop = new $.upload.drop($('#upload-drop-files'), settings);
+    {% endif %}
+  });
+</script>
+{% endblock %}

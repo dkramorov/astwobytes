@@ -1,5 +1,6 @@
+<!-- Используется для быстрого вывода товаров/услуг в Контент - Каталоги -->
 <div class="panel panel-default">
-  <div class="panel-heading">{{ plural_obj }} - действия
+  <div class="panel-heading">Действия
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
       <em class="fa fa-times"></em>
     </a>
@@ -11,24 +12,15 @@
   <div class="panel-wrapper collapse">
     <div class="panel-body">
       {% block tabulator_actions %}
-        <button class="mb-sm btn btn-primary" type="button" id="download-csv">
-          <em class="fa fa-file-text fa-fw mr-sm"></em>Скачать csv
-        </button>
-        <button class="mb-sm btn btn-primary" type="button" id="download-json">
-          <em class="fa fa-file-text-o fa-fw mr-sm"></em>Скачать json
-        </button>
         <button class="mb-sm btn btn-primary" type="button" id="download-xlsx">
           <em class="fa fa-files-o fa-fw mr-sm"></em>Скачать xlsx
         </button>
-        <a class="mb-sm btn btn-primary" id="main-table-link">
-          <em class="fa fa-link fa-fw mr-sm"></em>Ссылка на таблицу
-        </a>
       {% endblock %}
     </div>
   </div>
 </div>
 <div class="panel panel-default main_panel">
-  <div class="panel-heading"><strong>{{ plural_obj }}</strong>
+  <div class="panel-heading"><strong>Наименования</strong>
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
       <em class="fa fa-times"></em>
     </a>
@@ -119,24 +111,9 @@ var accessor_is_active = function(value, data, type, params, column){
   return value ? 1: 0;
 }
 $(document).ready(function(){
-  //trigger download of data.csv file
-  $("#download-csv").click(function(){
-    main_table.download("csv", "{{ plural_obj }}.csv");
-  });
-  //trigger download of data.json file
-  $("#download-json").click(function(){
-    main_table.download("json", "{{ plural_obj }}.json");
-  });
   //trigger download of data.xlsx file
   $("#download-xlsx").click(function(){
     main_table.download("xlsx", "{{ plural_obj }}.xlsx", {sheetName:"{{ plural_obj }}"});
-  });
-  //trigger download of data.pdf file
-  $("#download-pdf").click(function(){
-    main_table.download("pdf", "{{ plural_obj }}.pdf", {
-      orientation:"portrait", //set page orientation to portrait
-      title:"{{ plural_obj }}", //add title to report
-    });
   });
 });
 </script>

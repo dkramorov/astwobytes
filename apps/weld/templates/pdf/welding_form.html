@@ -215,8 +215,8 @@ table.two_col .welder tr td {
         </td>
         <td>
           <p>
-            {% if row.side_thickness %}
-              {{ row.side_thickness|money_format }}
+            {% if row.joint.side_thickness %}
+              {{ row.joint.side_thickness|money_format }}
             {% else %}-{% endif %}
           </p>
         </td>
@@ -227,8 +227,8 @@ table.two_col .welder tr td {
         </td>
         <td>
           <p>
-            {% if row.diameter %}
-              {{ row.diameter|money_format }}
+            {% if row.joint.diameter %}
+              {{ row.joint.diameter|money_format }}
             {% else %}-{% endif %}
           </p>
         </td>
@@ -301,8 +301,8 @@ table.two_col .welder tr td {
         </td>
         <td>
           <p>
-            {% if row.welding_date %}
-              {{ row.welding_date|date:'d-m-Y' }}
+            {% if row.joint.welding_date %}
+              {{ row.joint.welding_date|date:'d-m-Y' }}
             {% else %}-{% endif %}
           </p>
         </td>

@@ -54,6 +54,7 @@
       </div>
     </div>
   </div>
+  {% if row %}
   <div class="panel-footer">
     <div class="col-sm-12 padding-tb5">
       <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_rk/{{ row.id }}/" target="_blank">
@@ -62,6 +63,7 @@
     </div>
     <div class="clearfix"></div>
   </div>
+  {% endif %}
 </div>
 
 <div id="rk_frames_form"></div>
@@ -97,6 +99,41 @@ $(document).ready(function(){
     var pk = cell.getValue();
     return conclusion_states[pk];
   };
+  var defectsFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return pk;
+  };
+  var defectsEditor = function(cell, onRendered, success, cancel, editorParams){
+    var cellValue = cell.getValue(),
+    input = document.createElement("input");
+    input.setAttribute("type", "text");
+    input.value = $('<div/>').html(cellValue).text();
+    onRendered(function(){
+        input.focus();
+        input.style.height = "100%";
+    });
+    function onChange(){
+      if(input.value != cellValue){
+        success(input.value);
+      }else{
+        cancel();
+      }
+    }
+    //submit new value on blur or change
+    input.addEventListener("change", onChange);
+    input.addEventListener("blur", onChange);
+
+    //submit new value on enter
+    $(input).on("keydown", function(e){
+      if(e.keyCode == 13){
+        success($(input).val());
+      }
+      if(e.keyCode == 27){
+        cancel();
+      }
+    });
+    return input;
+  }
   var rk_frames = [
     {% for frame in rk_frames %}
       {
@@ -109,6 +146,7 @@ $(document).ready(function(){
       },
     {% endfor %}
   ];
+
   rk_frames_table = new Tabulator("#main-table", {
     layout: "fitColumns",
     data: rk_frames,
@@ -128,7 +166,8 @@ $(document).ready(function(){
       {
         title: "Выявленные дефекты",
         field: "defects",
-        editor: "input",
+        editor: defectsEditor,
+        formatter: defectsFormatter,
         minWidth: 120,
       },
       {
@@ -142,7 +181,8 @@ $(document).ready(function(){
       {
         title: "Примечание",
         field: "notice",
-        editor: "input",
+        editor: defectsEditor,
+        formatter: defectsFormatter,
         minWidth: 120,
       },
       {
@@ -230,5 +270,62 @@ $(document).ready(function(){
       dataType: 'json',
     }
   });
+
+// Таблица зависимостей диаметров от рк заключений
+// с тире чувствительность 0.2/0.3, без тире 0.1
+var RK_DIAMETER = {
+  11: ['1'],
+  25: ['1'],
+  32: ['1', '2'],
+  50: ['1'],
+  57: ['1', '2'],
+  89: ['1', '2'],
+  108: ['0-110', '110-220', '220-0'],
+  159: ['0-170', '170-340', '340-0'],
+  219: ['0-230', '230-460', '460-0'],
+  273: ['0-230', '230-460', '460-690', '690-0'],
+  279: ['0-230', '230-460', '460-690', '690-0'],
+  325: ['0-350', '350-700', '700-0'],
+  355: ['0-300', '300-600', '600-900', '900-0'],
+  377: ['0-300', '300-600', '600-900', '900-0'],
+  426: ['0-350', '350-700', '700-1050', '1050-0'],
+  477: ['0-300', '300-600', '600-900', '900-0'],
+  530: ['0-300', '300-600', '600-900', '900-1200', '1200-1500', '1500-0'],
+  820: ['0-300', '300-600', '600-910', '900-1200', '1200-1500', '1500-1800', '1800-2100', '2100-2400', '2400-0'],
+}
+var RK_SIDE_THICKNESS = {
+  0: 0.1,
+  5: 0.2,
+  9: 0.3,
+  12: 0.4,
+}
+
+  {% if not rk_frames %}
+    {% if welding_joint.diameter %}
+      var diameter = parseInt("{{ welding_joint.diameter }}");
+      var side_thickness = parseInt("{{ welding_joint.side_thickness }}");
+      var frame;
+      var sensitivity = 0.1;
+      var sensitivities = Object.keys(RK_SIDE_THICKNESS);
+      for(var j=0; j<sensitivities.length; j++){
+        if(side_thickness >= sensitivities[j]){
+          sensitivity = RK_SIDE_THICKNESS[sensitivities[j]];
+        }
+      }
+
+      if(RK_DIAMETER[diameter]){
+        for(var i=0; i<RK_DIAMETER[diameter].length; i++){
+          frame = RK_DIAMETER[diameter][i];
+          rk_frames_table.addRow({
+            'number': frame,
+            'sensitivity': sensitivity,
+            'defects': '',
+            'state': 1,
+            'notice': '',
+          });
+        }
+      }
+    {% endif %}
+  {% endif %}
 });
 </script>

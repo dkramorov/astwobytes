@@ -95,7 +95,7 @@
             <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
               <div class="gf-product shop-grid-view-product">
                 <div class="image">
-                  <a href="/product/{{ product.id }}/">
+                  <a href="{{ product.link }}">
                     {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
                     <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                   </a>
@@ -115,7 +115,7 @@
                   <div class="product-categories">
                     <a href="{{ page.link }}">{{ page.name }}</a>
                   </div>
-                  <h3 class="product-title"><a href="/product/{{ product.id }}/">{{ product.name }}</a></h3>
+                  <h3 class="product-title"><a href="{{ product.link }}">{{ product.name }}</a></h3>
                   <div class="price-box">
                     {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
                     <span class="discounted-price">{{ product.price|money_format }} руб</span>
@@ -125,7 +125,7 @@
               <div class="gf-product shop-list-view-product">
                 <div class="image">
 
-                  <a href="/product/{{ product.id }}/">
+                  <a href="{{ product.link }}">
                     {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
                     <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                   </a>
@@ -139,7 +139,7 @@
                   <div class="product-categories">
                     <a href="{{ page.link }}">{{ page.name }}</a>
                   </div>
-                  <h3 class="product-title"><a href="/product/{{ product.id }}/">{{ product.name }}</a></h3>
+                  <h3 class="product-title"><a href="{{ product.link }}">{{ product.name }}</a></h3>
                   <div class="price-box mb-20">
                     {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
                     <span class="discounted-price">{{ product.price|money_format }} руб</span>

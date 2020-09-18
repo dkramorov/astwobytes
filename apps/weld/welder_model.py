@@ -35,7 +35,8 @@ class Welder(Standard):
         #default_permissions = []
 
 class Certification(Standard):
-    """Удостоверения для сварщиков"""
+    """Удостоверения для сварщиков
+       это Аттестаты НАКС"""
     welder = models.ForeignKey(Welder,
         blank=True, null=True, on_delete=models.CASCADE,
         verbose_name='Сварщик')
@@ -45,10 +46,14 @@ class Certification(Standard):
     welding_type = models.IntegerField(choices=WELDING_TYPES,
         blank=True, null=True, db_index=True,
         verbose_name='Способ сварки')
+    best_before = models.DateField(blank=True, null=True, db_index=True,
+        verbose_name='НАКС годен до, например, 27/04/20')
+    place = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Место удостоверения')
     class Meta:
         verbose_name = 'Сварщики - Удостоверение'
         verbose_name_plural = 'Сварщики - Удостоверения'
-        default_permissions = []
 
 class CertSections(Standard):
     """Группы технических устройств опасных производственных объектов"""
@@ -125,67 +130,36 @@ class LetterOfGuarantee(Standard):
         verbose_name_plural = 'Сварщики - Гарантийные письма'
         #default_permissions = []
 
-class Vik(Standard):
-    """Акт ВИК (vik)"""
-    number = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True,
-        verbose_name='Номер, например, 2226 или D/5')
-    date = models.DateField(blank=True, null=True, db_index=True,
-        verbose_name='Дата для номера, например, 20/10/2018')
-    welder = models.ForeignKey(Welder,
-        blank=True, null=True, on_delete=models.CASCADE,
-        verbose_name='Сварщик')
-
-    class Meta:
-        verbose_name = 'Сварщики - Акт ВИК'
-        verbose_name_plural = 'Сварщики - Акты ВИК'
-        #default_permissions = []
-
-class ControlK(Standard):
-    """УЗК/РК (control)"""
-    number = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True,
-        verbose_name='УЗК/РК номер, например, 13-РК')
-    date = models.DateField(blank=True, null=True, db_index=True,
-        verbose_name='Дата для УЗК/РК номера, например, 10/20/2018')
-    welder = models.ForeignKey(Welder,
-        blank=True, null=True, on_delete=models.CASCADE,
-        verbose_name='Сварщик')
-
-    class Meta:
-        verbose_name = 'Сварщики - УЗК/РК контроль'
-        verbose_name_plural = 'Сварщики - УЗК/РК контроль'
-        #default_permissions = []
-
 class HoldingKSS(Standard):
-    """Проведение КСС (holding)"""
-    # TT/MK
-    holding_choices = (
-        (1, 'ТТ / МК'),
-        (2, 'МК'),
-        (3, 'ТТ'),
-        (4, 'Уволен'),
-        (5, 'Увольняется'),
-        (6, 'Уехал'),
-    )
-    spent_length_choices = (
-        (1, 0.3),
-    )
+    """Проведение КСС
+       для каждого КСС ВИК, УЗК, РК можно заливать файлы
+    """
+    certification = models.ForeignKey(Certification,
+        blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name='Удостоверение, на которое проводим КСС')
+    place = models.ForeignKey(Subject,
+        blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name='Место проведения КСС (объект)')
+    number = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Номер КСС, например, КСС-195/2')
     standard_size = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Типоразмер, например, 100х300')
     material = models.IntegerField(choices=MATERIALS,
         blank=True, null=True, db_index=True,
         verbose_name='Материал - сталь, например, 12Х18Н10Т')
-    spent_length = models.IntegerField(choices=spent_length_choices,
+    test_number = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
-        verbose_name='Затрачиваемая длина 150мм*2, например, 0.3')
-    number = models.CharField(max_length=255,
+        verbose_name='Номер акта ВИК или УЗК/РК, например, 931')
+    test_date = models.DateField(blank=True, null=True, db_index=True,
+        verbose_name='Дата проведения ВИК или УЗК/РК)')
+    with_rk = models.BooleanField(default=False,
         blank=True, null=True, db_index=True,
-        verbose_name='Номер КСС, например, КСС-2226/1')
-    state = models.IntegerField(choices=holding_choices,
+        verbose_name='Проведен РК')
+    with_uzk = models.BooleanField(default=False,
         blank=True, null=True, db_index=True,
-        verbose_name='ТТ/МК, например, ТТ')
+        verbose_name='Проведен УЗК')
     welder = models.ForeignKey(Welder,
         blank=True, null=True, on_delete=models.CASCADE,
         verbose_name='Сварщик')
@@ -226,38 +200,3 @@ class AdmissionSheet(Standard):
         verbose_name = 'Сварщики - Лист допуска'
         verbose_name_plural = 'Сварщики - Листы допуска'
         #default_permissions = []
-
-class NAX(Standard):
-    """Номер НАКС (nax)
-       Аттестат"""
-    identification_choices = (
-        (1, 'офис Иркутск'),
-    )
-    number = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True,
-        verbose_name='Номер удостоверения, например, ВСР-1ГАЦ-I-08121')
-    best_before = models.DateField(blank=True, null=True, db_index=True,
-        verbose_name='НАКС годен до, например, 27/04/20')
-    welding_type = models.IntegerField(choices=WELDING_TYPES,
-        blank=True, null=True, db_index=True,
-        verbose_name='Тип сварки, например, РД')
-    half_year_mark = models.BooleanField(blank=True, null=True,
-        db_index=True, default=False,
-        verbose_name='Полугодовая отметка, например, есть')
-    identification = models.IntegerField(choices=identification_choices,
-        blank=True, null=True, db_index=True,
-        verbose_name='Место идентификации, например, офис Иркутск')
-    # НГДО - нефтегазодобывающее оборудование (3,4,5,12)
-    # СК - стальные конструкции (листы, металлические трубы) (1,3)
-    acl = models.CharField(max_length=255,
-        blank=True, null=True, db_index=True,
-        verbose_name='Допуск')
-    welder = models.ForeignKey(Welder,
-        blank=True, null=True, on_delete=models.CASCADE,
-        verbose_name='Сварщик')
-
-    class Meta:
-        verbose_name = 'Сварщики - Аттестат (НАКС)'
-        verbose_name_plural = 'Сварщики - Аттестаты (НАКС)'
-        #default_permissions = []
-

@@ -19,189 +19,182 @@
 <h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
-<!-- START row-->
 <div class="row">
   <div class="col-sm-12">
     {% block form %}{% endblock %}
   </div>
 </div>
-<!-- END row-->
 {% endblock %}
 
 {% block extrascripts %}
-  <script src="/static/admin/js/fontawesome_select2.js"></script>
-  <script src="/static/redactor/jquery.browser.js"></script>
-  <script src="/static/redactor/redactor.js"></script>
-  <script src="/static/admin/js/parsley.min.js"></script>
-
-  <!-- Drag and Drop sortable for select2 -->
-  <script src="/static/jquery-ui/jquery-ui.min.js"></script>
-
-  <script type="text/javascript">
-    function update_sorted_select2(container_id){
-      // Обновление скрытого поля input по multiple select
-      // чтобы соблюсти сортировку в multiple select
-      var sorted_options = Array();
-      var select2_selector = "#" + container_id + "_select2";
-      $(select2_selector).parent().find('li.select2-selection__choice').each(function(index) {
-        var title = $(this).attr('title');
-        $(select2_selector + " option").each(function(){
-          if($(this).text() === title){
-            sorted_options.push([$(this).val(), title]);
-          }
-        });
-      });
-      $(select2_selector).empty();
-      $(select2_selector).trigger("change");
-      for(var i=0; i<sorted_options.length; i++){
-        var item = sorted_options[i];
-        $(select2_selector).append($("<option value='" + item[0] + "' selected>" + item[1] + "</option>"));
+<script src="/static/admin/js/fontawesome_select2.js"></script>
+<script src="/static/redactor/jquery.browser.js"></script>
+<script src="/static/redactor/redactor.js"></script>
+<script src="/static/admin/js/parsley.min.js"></script>
+<!-- Drag and Drop sortable for select2 -->
+<script src="/static/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript">
+var main_table = null;
+function fill_cat_products_fordel(){
+  $("#cat_products_fordel").val(window.cat_products_fordel.join(","));
+}
+function update_sorted_select2(container_id){
+  // Обновление скрытого поля input по multiple select
+  // чтобы соблюсти сортировку в multiple select
+  var sorted_options = Array();
+  var select2_selector = "#" + container_id + "_select2";
+  $(select2_selector).parent().find('li.select2-selection__choice').each(function(index) {
+    var title = $(this).attr('title');
+    $(select2_selector + " option").each(function(){
+      if($(this).text() === title){
+        sorted_options.push([$(this).val(), title]);
       }
-      $(select2_selector).trigger("change");
-    }
-    $(document).ready(function(){
-      $("#current_edit_form").parsley();
-      $("#current_edit_form").submit(function(e) {
-
-        update_sorted_select2("linkcontainer");
-        {% if is_products %}update_sorted_select2("products");{% endif %}
-
-        var $form = $(this);
-        var msg = 'Произошла ошибка, обновите страничку';
-        var status = 'danger'; // success, warning, info, danger
-        $.ajax({
-          type: $form.attr('method'),
-          url: $form.attr('action'),
-          data: $form.serialize()
-        }).done(function(r) {
-          if(r.error){
-            msg = r.error;
-          }else if(r.success){
-            msg =  r.success;
-            status = 'success';
-            //$("#current_edit_form").attr("action", r.redirect);
-            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
-          }
-          $.notify({
-            message: msg,
-          },{
-            status: status,
-          });
-          // Обновление ссылок
-          update_links(r);
-        }).fail(function() {
-          $.notify({
-            message: msg,
-          },{
-            status: status,
-          });
-        });
-        //отмена действия по умолчанию для кнопки submit
-        e.preventDefault();
-      });
-
-      $('#linkcontainer_select2').select2({
-        placeholder: 'Какие странички привязать',
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'flatcontent:search_containers' %}",
-
-          data: function (params) {
-            var query = {
-              q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
-              page: params.page || 1,
-            }
-            return query;
-          },
-
-          //data: "without_templates=1&without_menus=1&without_main=1",
-          cache: false,
-          dataType: 'json',
-        }
-      });
-      {% if is_products %}
-      $('#products_select2').select2({
-        placeholder: 'Какие товары привязать',
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'products:search_products' %}",
-
-          data: function (params) {
-            var query = {
-              q: params.term,
-              page: params.page || 1,
-            }
-            return query;
-          },
-
-          cache: false,
-          dataType: 'json',
-        }
-      });
-      {% endif %}
-      // init sortable
-      $("ul.select2-selection__rendered").sortable({
-        containment: 'parent'
-      });
-
-      $("#html_redactor").redactor({
-        //air: true,
-      });
-
-      function update_links(r){
-        $("#field_link").val(r['row']['link']);
-        var thumb = r['row']['thumb'];
-        if(thumb === ''){
-          thumb = '/static/img/empty.png';
-        }
-        var date_now = Date.now()
-        $("#preview_img").attr("src", thumb + "?_=" + date_now);
-        $("#preview_img_full").attr("href", r['row']['imagine'] + "?_=" + date_now);
-      }
-      {% if row %}
-        var progressbar = $('#progressbar-files'),
-          bar         = progressbar.find('.progress-bar-files'),
-          settings    = {
-            action: '{% url "flatcontent:edit_block" ftype container.id "img" row.id %}', // upload url
-            allow : '*.*',
-            param: 'img',
-            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
-            loadstart: function() {
-              bar.css('width', '0%').text('0%');
-              progressbar.removeClass('hidden');
-            },
-            progress: function(percent) {
-              percent = Math.ceil(percent);
-              bar.css('width', percent+'%').text(percent+'%');
-            },
-            allcomplete: function(response) {
-              bar.css('width', '100%').text('100%');
-              setTimeout(function(){
-                progressbar.addClass('hidden');
-              }, 750);
-              // Upload Completed
-              //alert(response);
-
-              // Обновление ссылок
-              var r = JSON.parse(response);
-              update_links(r);
-            }
-          };
-        var select = new $.upload.select($('#upload-select-files'), settings),
-        drop   = new $.upload.drop($('#upload-drop-files'), settings);
-      {% endif %}
-
-      // --------------------------
-      // Получение файла с иконками
-      // и подстановка их в select2
-      // --------------------------
-      fontawesome_select2("icon_fontawesome");
-
     });
-  </script>
+  });
+  $(select2_selector).empty();
+  $(select2_selector).trigger("change");
+  for(var i=0; i<sorted_options.length; i++){
+    var item = sorted_options[i];
+    $(select2_selector).append($("<option value='" + item[0] + "' selected>" + item[1] + "</option>"));
+  }
+  $(select2_selector).trigger("change");
+}
+$(document).ready(function(){
+  $("#current_edit_form").parsley();
+  $("#current_edit_form").submit(function(e) {
+    update_sorted_select2("linkcontainer");
+    {% if is_products %}
+      update_sorted_select2("products");
+      fill_cat_products_fordel();
+    {% endif %}
+    var $form = $(this);
+    var msg = 'Произошла ошибка, обновите страничку';
+    var status = 'danger'; // success, warning, info, danger
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: $form.serialize()
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+        //$("#current_edit_form").attr("action", r.redirect);
+        {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      // Обновление ссылок
+      update_links(r);
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    });
+    //отмена действия по умолчанию для кнопки submit
+    e.preventDefault();
+  });
+  $('#linkcontainer_select2').select2({
+    placeholder: 'Какие странички привязать',
+    width: '100%',
+    tags: true,
+    ajax: {
+      url: "{% url 'flatcontent:search_containers' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          without_templates: 1,
+          without_menus: 1,
+          without_main: 1,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      //data: "without_templates=1&without_menus=1&without_main=1",
+      cache: false,
+      dataType: 'json',
+    }
+  });
+  {% if is_products %}
+    $('#products_select2').select2({
+      placeholder: 'Какие товары привязать',
+      width: '100%',
+      tags: false,
+      ajax: {
+        url: "{% url 'products:search_products' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    window.tabulatorAjaxURL = "{% url 'products:show_cats_products' %}";
+    window.tabulatorAjaxParams = {'cat_id': '{{ row.id }}'};
+    {% include "products_cats/products_tabulator_params.html" %}
+  {% endif %}
+  // init sortable
+  $("ul.select2-selection__rendered").sortable({
+    containment: 'parent'
+  });
+  $("#html_redactor").redactor({
+    //air: true,
+  });
+  function update_links(r){
+    $("#field_link").val(r['row']['link']);
+    var thumb = r['row']['thumb'];
+    if(thumb === ''){
+      thumb = '/static/img/empty.png';
+    }
+    var date_now = Date.now()
+    $("#preview_img").attr("src", thumb + "?_=" + date_now);
+    $("#preview_img_full").attr("href", r['row']['imagine'] + "?_=" + date_now);
+  }
+  {% if row %}
+    var progressbar = $('#progressbar-files'),
+      bar         = progressbar.find('.progress-bar-files'),
+      settings    = {
+        action: '{% url "flatcontent:edit_block" ftype container.id "img" row.id %}', // upload url
+        allow : '*.*',
+        param: 'img',
+        params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+        loadstart: function() {
+          bar.css('width', '0%').text('0%');
+          progressbar.removeClass('hidden');
+        },
+        progress: function(percent) {
+          percent = Math.ceil(percent);
+          bar.css('width', percent+'%').text(percent+'%');
+        },
+        allcomplete: function(response) {
+          bar.css('width', '100%').text('100%');
+          setTimeout(function(){
+            progressbar.addClass('hidden');
+          }, 750);
+          // Upload Completed
+          // Обновление ссылок
+          var r = JSON.parse(response);
+          update_links(r);
+        }
+      };
+    var select = new $.upload.select($('#upload-select-files'), settings),
+    drop   = new $.upload.drop($('#upload-drop-files'), settings);
+  {% endif %}
+  // --------------------------
+  // Получение файла с иконками
+  // и подстановка их в select2
+  // --------------------------
+  fontawesome_select2("icon_fontawesome");
+});
+</script>
 {% endblock %}

@@ -178,8 +178,9 @@ class RKFrames(Standard):
     joint_conclusion = models.ForeignKey(JointConclusion,
         blank=True, null=True, on_delete=models.CASCADE,
         verbose_name='Акт/заключение по заявке на стык')
-    number = models.IntegerField(blank=True, null=True, db_index=True,
-        verbose_name='Номер снимка, координаты мерного пояса')
+    number = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Номер снимка, координаты мерного пояса, например, 0-300')
     sensitivity = models.DecimalField(blank=True, null=True, db_index=True,
         max_digits=6, decimal_places=2,
         verbose_name='Чувствительность снимка в мм или %') # 9000,00

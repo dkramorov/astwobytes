@@ -264,16 +264,16 @@ table.two_col tbody tr td.vertical-center {
             <tbody>
               {% for frame in rk_frames %}
                 <tr>
-                  <td>{{ forloop.counter }}</td>
                   {% if forloop.first %}
+                    <td rowspan="{{ rk_frames|length }}" class="vertical-center">1</td>
                     <td rowspan="{{ rk_frames|length }}" class="vertical-center">
                       {% if joint.name %}{{ joint.name }}{% else %}-{% endif %}
                     </td>
                     <td rowspan="{{ rk_frames|length }}" class="vertical-center">
-                      Ø{% if row.welding_joint.diameter %}
-                        {{ row.welding_joint.diameter|money_format }}
-                      {% endif %}x{% if row.welding_joint.side_thickness %}
-                        {{ row.welding_joint.side_thickness|money_format }}
+                      Ø{% if row.welding_joint.joint.diameter %}
+                        {{ row.welding_joint.joint.diameter|money_format }}
+                      {% endif %}x{% if row.welding_joint.joint.side_thickness %}
+                        {{ row.welding_joint.joint.side_thickness|money_format }}
                       {% endif %}
                     </td>
                     <td rowspan="{{ rk_frames|length }}" class="vertical-center">

@@ -45,6 +45,7 @@ products_vars = {
     'create_urla': 'create_product',
     'edit_urla': 'edit_product',
     'model': Products,
+    'search_result_format': ('{}, id={}, код={}', 'name id code'),
 }
 
 def api(request, action: str = 'products'):
@@ -121,6 +122,7 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
             context['cats'] = row.productscats_set.select_related('cat', 'cat__container').all()
             context['props'] = row.productsproperties_set.select_related('prop', 'prop__prop').all()
             context['photos'] = row.productsphotos_set.all()
+            context['seo'] = row.get_seo()
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -154,6 +156,9 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                 cats = Blocks.objects.filter(pk__in=ids_cats)
                 for cat in cats:
                     ProductsCats.objects.create(product=mh.row, cat=cat)
+            # SEO
+            seo = {k: request.POST.get(k) for k in ('seo_title', 'seo_description', 'seo_keywords')}
+            mh.row.fill_seo(**seo)
 
             # Загрузка в галерею,
             # причем только по ссылке, т/к
@@ -176,6 +181,7 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
+        context['row']['link'] = mh.row.link()
         context['redirect'] = mh.get_url_edit()
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
@@ -234,7 +240,7 @@ def edit_photo(request, action: str, row_id: int = None, *args, **kwargs):
     mh.get_permissions(Products) # Права от товаров/услуг
     row = mh.get_row(row_id)
     context = mh.context
-
+    special_model_vars(mh, mh_vars, context)
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
@@ -627,3 +633,88 @@ def costs_positions(request, *args, **kwargs):
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
+products_cats_vars = {
+    'singular_obj': 'Товар в рубрике',
+    'plural_obj': 'Товары в рубриках',
+    'rp_singular_obj': 'товара из рубрики',
+    'rp_plural_obj': 'товаров из рубрик',
+    'template_prefix': 'products_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'products',
+    'submenu': 'products',
+    'show_urla': 'show_cats_products',
+    'create_urla': 'create_cat_product',
+    'edit_urla': 'edit_cat_product',
+    'model': ProductsCats,
+    'custom_model_permissions': Products,
+}
+
+@login_required
+def show_cats_products(request, *args, **kwargs):
+    """Вывод привязок товаров к рубрикам"""
+    mh_vars = products_cats_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh.select_related_add('product')
+    #mh.select_related_add('cat')
+    context = mh.context
+    # Условие под выборку определенной категории
+    if request.method == 'GET':
+        cat_id = request.GET.get('cat_id')
+        if cat_id:
+            try:
+                cat_id = int(cat_id)
+            except ValueError:
+                logger.exception('cat_id not int')
+                cat_id = None
+            if cat_id:
+                cat = Blocks.objects.filter(pk=cat_id).first()
+                if cat:
+                    mh.filter_add(Q(cat=cat))
+    special_model_vars(mh, mh_vars, context)
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        only_fields = (
+            'id',
+            'product__id',
+            'product__name',
+            'product__code',
+            #'cat__name'
+        )
+        rows = mh.standard_show(only_fields=only_fields)
+        result = []
+        fk_keys = {
+            'product': ('id', 'name', 'code'),
+            #'cat': ('name', ),
+        }
+        for row in rows:
+            item = object_fields(row,
+                                 only_fields=only_fields,
+                                 fk_only_keys=fk_keys, )
+            item['actions'] = row.id
+            #item['folder'] = row.get_folder()
+            #item['thumb'] = row.thumb()
+            #item['imagine'] = row.imagine()
+            result.append(item)
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+@login_required
+def edit_cat_product(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование линковки товара к категории"""
+    return edit_view(request,
+                     model_vars = products_cats_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )

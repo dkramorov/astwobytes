@@ -53,6 +53,7 @@
       </div>
     </div>
   </div>
+  {% if row %}
   <div class="panel-footer">
     <div class="col-sm-12 padding-tb5">
       <a class="btn btn-primary pull-right mr-sm mt-sm" href="{{ root_url }}pdf_vik/{{ row.id }}/" target="_blank">
@@ -61,6 +62,7 @@
     </div>
     <div class="clearfix"></div>
   </div>
+  {% endif %}
 
 </div>
 <script type="text/javascript">

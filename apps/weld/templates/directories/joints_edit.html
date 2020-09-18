@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 
 {% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -34,6 +35,24 @@
               </select>
             </div>
           </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Диаметр</label>
+            <div class="col-lg-10">
+              <input type="number" step="0.01" placeholder="Диаметр" class="form-control" name="diameter" value="{% if row.diameter %}{{ row.diameter }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Толщина стенки</label>
+            <div class="col-lg-10">
+              <input type="number" step="0.01" placeholder="Толщина стенки" class="form-control" name="side_thickness" value="{% if row.side_thickness %}{{ row.side_thickness }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Дата сварки</label>
+            <div class="col-lg-10">
+              <input id="welding_date" type="text" placeholder="Дата сварки" class="form-control" name="welding_date" value="{% if row.welding_date %}{{ row.welding_date }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
           {% include "core/forms/row_image.html" %}
           {% include "core/forms/hidden_fields.html" %}
         </div>
@@ -45,30 +64,36 @@
 {% endblock %}
 
 {% block extrascripts %}
-  <script type="text/javascript">
-    {% if row %}
-      var upload_img_url = '{% url "welding:edit_joint" "img" row.id %}';
-    {% endif %}
-    $(document).ready(function(){
-      $('#line_select2').select2({
-        placeholder: 'Линия узла',
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_lines' %}",
-
-          data: function (params) {
-            var query = {
-              q: params.term,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
-        }
-      });
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script type="text/javascript">
+  {% if row %}
+    var upload_img_url = '{% url "welding:edit_joint" "img" row.id %}';
+  {% endif %}
+  $(document).ready(function(){
+    $("#welding_date").datepicker({
+      onSelect: function (fd, d, calendar) {
+        calendar.hide();
+      },
+      todayButton: new Date(),
     });
-  </script>
-  {% include "core/forms/row_js.html" %}
+    $('#line_select2').select2({
+      placeholder: 'Линия узла',
+      width: '100%',
+      tags: false,
+      ajax: {
+        url: "{% url 'welding:search_lines' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+  });
+</script>
+{% include "core/forms/row_js.html" %}
 {% endblock %}

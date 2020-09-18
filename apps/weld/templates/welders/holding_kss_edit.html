@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 
 {% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -14,6 +15,32 @@
         <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
+          <div class="form-group bordered">
+            <div class="col-lg-2">
+              <p class="text-right">Сварщик</p>
+            </div>
+            <div class="col-lg-10">
+              <select id="welder_select2" name="welder" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.welder %}
+                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }} - {{ row.welder.stigma }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group bordered">
+            <div class="col-lg-2">
+              <p class="text-right">Удостоверение</p>
+            </div>
+            <div class="col-lg-10">
+              <select id="certification_select2" name="certification" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.certification %}
+                  <option value="{{ row.certification.id }}" selected>{{ row.certification.number }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">Номер КСС</label>
             <div class="col-lg-10">
@@ -29,48 +56,59 @@
           <div class="form-group">
             <label class="col-lg-2 control-label">Материал (сталь)</label>
             <div class="col-lg-10">
-              <select id="material_select2" name="material" autocomplete="off" data-parsley-required>
+              <select id="material_select2" name="material" autocomplete="off">
                 <option value="">Не выбрано</option>
-                {% if row.material %}
-                  <option value="{{ row.material.id }}" selected>{{ row.material.name }}</option>
-                {% endif %}
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Затрачиваемая длина 150мм*2</label>
-            <div class="col-lg-10">
-              <select id="spent_length_select2" name="spent_length" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% for spent_length in spent_length_choices %}
-                  <option value="{{ spent_length.0 }}"{% ifequal spent_length.0 row.spent_length %} selected{% endifequal %}>{{ spent_length.1 }}</option>
+                {% for material in materials %}
+                  <option value="{{ material.0 }}"{% ifequal material.0 row.material %} selected{% endifequal %}>{{ material.1 }}</option>
                 {% endfor %}
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">ТТ/МК</label>
+            <label class="col-lg-2 control-label">Место проведения КСС</label>
             <div class="col-lg-10">
-              <select id="state_select2" name="state" autocomplete="off">
+              <select id="subject_select2" name="subject" autocomplete="off">
                 <option value="">Не выбрано</option>
-                {% for holding_choice in holding_choices %}
-                  <option value="{{ holding_choice.0 }}"{% ifequal holding_choice.0 row.state %} selected{% endifequal %}>{{ holding_choice.1 }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Сварщик</label>
-            <div class="col-lg-10">
-              <select id="welder_select2" name="welder" autocomplete="off"  data-parsley-required>
-                <option value="">Не выбрано</option>
-                {% if row.welder %}
-                  <option value="{{ row.welder.id }}" selected>{{ row.welder.name }}</option>
+                {% if row.subject %}
+                  <option value="{{ row.subject.id }}" selected>{{ row.subject.name }}</option>
                 {% endif %}
               </select>
             </div>
           </div>
-          {% include "core/forms/row_image.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Номер ВИК/РК/УЗК</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Номер ВИК/РК/УЗК" class="form-control" name="test_number" value="{% if row.test_number %}{{ row.test_number }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Дата ВИК/РК/УЗК</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Дата ВИК/РК/УЗК" class="form-control" name="test_date" id="test_date" value="{% if row.test_date %}{{ row.test_date }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="with_rk" {% if row.with_rk %} checked{% endif %} autocomplete="off">
+                  <span class="fa fa-check"></span> Проведен РК?
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="with_uzk" {% if row.with_uzk %} checked{% endif %} autocomplete="off">
+                  <span class="fa fa-check"></span> Проведен УЗК?
+                </label>
+              </div>
+            </div>
+          </div>
+          <!-- 4 раздела для загрузки - ВИК, РК, УЗК, фото -->
+
           {% include "core/forms/hidden_fields.html" %}
         </div>
         {% include "core/forms/footer_buttons.html" %}
@@ -81,61 +119,120 @@
 {% endblock %}
 
 {% block extrascripts %}
-  <script type="text/javascript">
-    {% if row %}
-      var upload_img_url = '{% url "welding:edit_holding_kss" "img" row.id %}';
-    {% endif %}
-    $(document).ready(function(){
-
-      $('#welder_select2').select2({
-        placeholder: 'Выберите сварщика',
-        allowClear: true,
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_welders' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#current_edit_form").parsley();
+    $("#current_edit_form").submit(function(e) {
+      var $form = $(this);
+      var data = $form.serialize();
+      var msg = 'Произошла ошибка, обновите страничку';
+      var status = 'danger'; // success, warning, info, danger
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: data,
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
         }
-      });
-      $('#material_select2').select2({
-        placeholder: 'Выберите материал',
-        allowClear: true,
-        width: '100%',
-        tags: true,
-        ajax: {
-          url: "{% url 'welding:search_materials' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
+        $.notify({
+            message: msg,
+        },{
+            status: status,
+        });
+        // Переадресация, если создается дубликат
+        if(r.redirect_on_error){
+          window.location.href = r.redirect_on_error;
         }
+        // Обновление ссылок
+        //update_links(r);
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
       });
-      $('#spent_length_select2').select2({
-          placeholder: 'Выберите затрачиваемую длину 150мм*2',
-          allowClear: true,
-          width: '100%',
-          tags: true,
-      });
-      $('#state_select2').select2({
-          placeholder: 'Выберите ТТ/МК',
-          allowClear: true,
-          width: '100%',
-          tags: true,
-      });
+      //отмена действия по умолчанию для кнопки submit
+      e.preventDefault();
     });
-  </script>
-  {% include "core/forms/row_js.html" %}
+    $('#welder_select2').select2({
+      placeholder: 'Выберите сварщика',
+      allowClear: true,
+      width: '100%',
+      ajax: {
+        url: "{% url 'welding:search_welders' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    $('#certification_select2').select2({
+      placeholder: 'Выберите удостоверение',
+      allowClear: true,
+      width: '100%',
+      ajax: {
+        url: "{% url 'welding:search_certifications' %}",
+        data: function (params) {
+          var welder_filter = $("#welder_select2 option:selected").text().replace('-', ' ');
+          if($("#welder_select2").val() == ""){
+            welder_filter = "";
+          }
+          if (params.term){
+            welder_filter += " " + params.term;
+          }
+          var query = {
+            q: welder_filter,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    $('#subject_select2').select2({
+      placeholder: 'Выберите объект',
+      allowClear: true,
+      width: '100%',
+      tags: false,
+      ajax: {
+        url: "{% url 'welding:search_subjects' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    $('#material_select2').select2({
+      placeholder: 'Выберите материал',
+      allowClear: true,
+      width: '100%',
+      tags: false,
+    });
+    $("#test_date").datepicker({
+      onSelect: function (fd, d, calendar) {
+        calendar.hide();
+      },
+      todayButton: new Date(),
+    });
+  });
+</script>
 {% endblock %}

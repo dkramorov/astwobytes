@@ -1,0 +1,100 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="text-center">Акты ВИК. УЗК/РК контроль</h4>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div id="conclusions-table"></div>
+      <br>
+      <div class="text-center">
+      <a id="add_conclusions" href="javascript:void(0);" class="btn btn-default">Добавить запись</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="conclusions_form"></div>
+
+<script type="text/javascript">
+var conclusions_table = null;
+
+function fill_conclusions_form(){
+  // Заполнение формы по актам ВИК и заключениям УЗК/РК,
+  // вызываем перед отправкой в $("#current_edit_form").submit
+  var conclusions_data = "";
+  var conclusions = conclusions_table.getRows();
+  var cdata = null;
+  for(var i=0; i<conclusions.length; i++){
+    cdata = conclusions[i].getData();
+    conclusions_data += "<input type='hidden' name='conclusion_number_" + i + "' value='" + cdata['number'] + "' />";
+    conclusions_data += "<input type='hidden' name='conclusion_type_" + i + "' value='" + cdata['type'] + "' />";
+    conclusions_data += "<input type='hidden' name='conclusion_date_" + i + "' value='" + cdata['date'] + "' class='conclusion_date' />";
+  }
+  conclusions_data += "<input type='hidden' name='conclusions' value='" + conclusions.length + "' />";
+  $("#conclusions_form").html($(conclusions_data));
+}
+var conclusions_arr = [
+  {% for conclusion in conclusions %}
+    {
+        'id': '{{ conclusion.id }}',
+        'number': '{{ conclusion.number }}',
+        'type': '{{ conclusion.type }}',
+        'date': '{{ cert.date|date:"d-m-Y" }}',
+    },
+  {% endfor %}
+];
+$(document).ready(function(){
+  var conclusion_types = {
+    {% for item in conclusion_types %}
+      '{{ item.0 }}': '{{ item.1 }}',
+    {% endfor %}
+  };
+  var conclusionTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return conclusion_types[pk];
+  };
+
+  conclusions_table = new Tabulator("#conclusions-table", {
+    layout: "fitColumns",
+    data: conclusions_arr,
+    columns:[
+      {
+        title: "Номер",
+        field: "number",
+        editor: "input",
+        minWidth: 120,
+      },
+      {
+        title: "Тип",
+        field: "conclusion_type",
+        editor: "select",
+        editorParams: conclusion_types,
+        formatter: conclusionTypeFormatter,
+        minWidth: 120,
+      },
+      {
+        title: "Дата",
+        field: "date",
+        editor: dateEditor,
+        minWidth: 120,
+      },
+      {
+        title: "Действия",
+        formatter: "buttonCross",
+        width: 120,
+        align:"center",
+        cellClick:function(e, cell){
+          cell.getRow().delete();
+        }
+      },
+    ],
+  });
+  $("#add_conclusions").click(function(){
+    conclusions_table.addRow({
+      'number': '',
+      'conclusion_type': '',
+      'date': '',
+    });
+  });
+});
+</script>

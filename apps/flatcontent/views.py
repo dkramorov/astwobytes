@@ -212,6 +212,11 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
     row = mh.get_row(row_id)
     context = mh.context
     context['is_products'] = is_products
+    # ----------------------------
+    # Не грузим таблицу по товарам
+    # ----------------------------
+    if ftype in ('flatmenu', 'flatmain'):
+        context['is_products'] = False
     context['ftype_state'] = ftype_state
 
     if mh.error:
@@ -631,32 +636,47 @@ def update_productscats(request, container, row):
     """
     if not is_products:
         return
+    is_container = False
     old = ProductsCats.objects.all()
     if row:
         old = old.filter(cat=row)
     elif container:
+        is_container = True
         old = old.filter(container=container, cat__isnull=True)
     else:
         return
 
+    # Сначала удаляем
+    cat_products_fordel = request.POST.get('cat_products_fordel')
+    if cat_products_fordel:
+        fordel = [pk for pk in cat_products_fordel.split(',') if pk.isdigit()]
+        if fordel:
+            old.filter(pk__in=fordel).delete()
+
+    # Затем добавляем новые
+    new_productscats = []
     productscats = [int(pk) for pk in request.POST.getlist('products')]
     if productscats:
         all_links = old.values_list('product', flat=True)
-        fordel = [item for item in all_links if not item in productscats]
-        if fordel:
-            old = old.filter(product__in=fordel)
-            old.delete()
         exists = [item for item in productscats if item in all_links]
-        productscats = [item for item in productscats if not item in exists]
-    else:
-        old.delete()
+        new_productscats = [item for item in productscats if not item in exists]
 
-    if productscats:
+    # Удалем товары, которые не встретились
+    # для контейнера
+    if is_container:
+        all_links = old.values_list('product', flat=True)
+        absent = [item for item in all_links if not item in productscats]
+        if absent:
+            ProductsCats.objects.filter(container=container,
+                                        cat=row,
+                                        product__in=absent).delete()
+
+    if new_productscats:
         # Без моделей работаем с листом
         # учитываем это при сохранении через product_id=int
-        ids_products = list(Products.objects.filter(pk__in=productscats).values_list('id', flat=True))
+        ids_products = list(Products.objects.filter(pk__in=new_productscats).values_list('id', flat=True))
         # Соблюдаем последовательность
-        for item in productscats:
+        for item in new_productscats:
             if item in ids_products:
                 ProductsCats.objects.create(container=container,
                                             cat=row,
@@ -725,7 +745,8 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
             })
             context['containers'] = LinkContainer.objects.select_related('container').filter(block=row)
             if is_products:
-                context['products'] = ProductsCats.objects.select_related('product').filter(cat=row).values_list('product__id', 'product__name', 'product__code')
+                #context['products'] = ProductsCats.objects.select_related('product').filter(cat=row).values_list('product__id', 'product__name', 'product__code')
+                context['products_count'] = ProductsCats.objects.filter(cat=row).aggregate(Count('product'))['product__count']
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -869,15 +890,19 @@ def tree_co(request):
                         })
 
                 # Привязка товаров к рубрикам
+                # лучше tabulator таблицей пользоваться,
+                # а через select2 добавлять, т/к слишком много
+                # товаров может быть привязано - медленно
                 elif is_products:
-                    result['products'] = [
-                        {
-                            'name': product[1],
-                            'id': product[0],
-                            'tag': product[2],
-                        }
-                        for product in ProductsCats.objects.select_related('product').filter(cat=node).values_list('product__id', 'product__name', 'product__code')
-                    ]
+                    result['products_count'] = ProductsCats.objects.filter(cat=node).aggregate(Count('product'))['product__count']
+                #    result['products'] = [
+                #        {
+                #            'name': product[1],
+                #            'id': product[0],
+                #            'tag': product[2],
+                #        }
+                #        for product in ProductsCats.objects.select_related('product').filter(cat=node).values_list('product__id', 'product__name', 'product__code')
+                #    ]
 
                 result = {'row': result}
         # Получить каталог
