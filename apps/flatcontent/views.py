@@ -566,7 +566,11 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
         cond.add(Q(parents__in=ids_parents), Q.OR)
         for parent in ids_parents:
             cond.add(Q(parents__startswith='%s_' % (parent, )), Q.OR)
-        subrows = Blocks.objects.filter(container=mh_containers.row).filter(cond)
+        # Если слишком много сложенных рубрик (больше 500) то не выводим
+        total_subrows = Blocks.objects.filter(container=mh_containers.row).filter(cond).aggregate(Count('id'))['id__count']
+        subrows = []
+        if total_subrows < 500:
+            subrows = Blocks.objects.filter(container=mh_containers.row).filter(cond)
 
         result = []
         for row in rows:

@@ -51,10 +51,9 @@ $(document).ready(function(){
     {% if perms.weld.change_weldingjointstate %}
       if(data.state == 1){
         actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-warning pull-left ml' href='javascript:void(0);' onclick='state_to_progress(" + pk + ", " + rowIndex + ")' title='Принять заявку в работу'><i class='fa fa-check-square-o'></i></a> ";
+        actions += " <a id='state_for_" + pk + "_r2' class='btn-xs btn btn-danger pull-left ml' href='javascript:void(0);' onclick='state_to_rejected(" + pk + ", " + rowIndex + ")' title='Отклонить заявку'><i class='fa fa-repeat'></i></a> ";
       }else if(data.state == 2){
-/* Принять стык - опасная операция - пусть делают из редактирования
-        actions += " <a id='state_for_" + pk + "' class='btn-xs btn btn-success pull-left ml' href='javascript:void(0);' onclick='state_to_complete(" + pk + ", " + rowIndex + ")' title='Принять стык как готовый'><i class='fa fa-check-square-o'></i></a> ";
-*/
+        actions += " <a id='state_for_" + pk + "_r2' class='btn-xs btn btn-danger pull-left ml' href='javascript:void(0);' onclick='state_to_rejected(" + pk + ", " + rowIndex + ")' title='Отклонить заявку'><i class='fa fa-repeat'></i></a> ";
       }
     {% endif %}
 
@@ -132,18 +131,30 @@ $(document).ready(function(){
   };
   var lineFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
+    if(!data['joint']){
+      return "";
+    }
     return data['joint']['line'] ? data['joint']['line']['name']  : '';
   };
   var titulFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
+    if(!data['joint'] || !data['joint']['line'] || !data['joint']['line']['titul']){
+      return "";
+    }
     return data['joint']['line']['titul'] ? data['joint']['line']['titul']['name'] : '';
   };
   var subjectFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
+    if(!data['joint'] || !data['joint']['line'] || !data['joint']['line']['titul'] || !data['joint']['line']['titul']){
+      return "";
+    }
     return data['joint']['line']['titul']['subject'] ? data['joint']['line']['titul']['subject']['name'] : '';
   };
   var companyFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
+    if(!data['joint'] || !data['joint']['line'] || !data['joint']['line']['titul'] || !data['joint']['line']['titul']['subject']){
+      return "";
+    }
     return data['joint']['line']['titul']['subject']['company'] ? data['joint']['line']['titul']['subject']['company']['name'] : '';
   };
   var controlTypeFormatter = function(cell, formatterParams, onRendered){
@@ -242,15 +253,27 @@ $(document).ready(function(){
     return material_choices[value];
   }
   var accessor_company = function(value, data, type, params, column){
+    if(!data['joint'] || !data['joint']['line'] || !data['joint']['line']['titul'] || !data['joint']['line']['titul']['subject']){
+      return "";
+    }
     return data['joint']['line']['titul']['subject']['company'] ? data['joint']['line']['titul']['subject']['company']['name'] : '';
   }
   var accessor_subject = function(value, data, type, params, column){
+    if(!data['joint'] || !data['joint']['line'] || !data['joint']['line']['titul']){
+      return "";
+    }
     return data['joint']['line']['titul']['subject'] ? data['joint']['line']['titul']['subject']['name'] : '';
   }
   var accessor_titul = function(value, data, type, params, column){
+    if(!data['joint'] || !data['joint']['line']){
+      return "";
+    }
     return data['joint']['line']['titul'] ? data['joint']['line']['titul']['name'] : '';
   }
   var accessor_line = function(value, data, type, params, column){
+    if(!data['joint']){
+      return "";
+    }
     return data['joint']['line'] ? data['joint']['line']['name'] : '';
   }
   var accessor_joint = function(value, data, type, params, column){

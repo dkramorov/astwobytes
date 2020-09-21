@@ -92,6 +92,8 @@ def cat_on_site(request, link: str = None):
         context['page'] = page
     context['containers'] = containers
 
+    return render(request, template, context)
+
 def product_by_link(request, link: str):
     """Вытаскиваем код товара по ссылке и возвращаем товар
        :param request: HttpRequest

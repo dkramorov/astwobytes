@@ -155,6 +155,7 @@ def show_users(request, *args, **kwargs):
             # -------------------------------------
             item['customuser'] = object_fields(row.customuser, only_fields=('phone', 'function'))
             item['thumb'] = row.customuser.thumb()
+            item['imagine'] = row.customuser.imagine()
             item['position'] = row.customuser.position
             result.append(item)
 

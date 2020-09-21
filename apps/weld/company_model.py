@@ -2,7 +2,7 @@
 from django.db import models
 
 from apps.main_functions.models import Standard
-
+from apps.files.models import Files
 """
 Верхний объект иерархии - это компания, затем объект,
 объект делится на титулы - области с установками,
@@ -145,6 +145,43 @@ class Line(Standard):
         if self.complete_joints:
             result += self.complete_joints
         return result
+
+    def get_files(self):
+        """Получить файлы в виде списка"""
+        files = self.linefile_set.select_related('file').all()
+        return [{
+            'id': item.id,
+            'path': item.file.path,
+            'name': item.file.name,
+            'mime': item.file.mime,
+            'folder': item.file.get_folder(),
+        } for item in files]
+
+
+class LineFile(models.Model):
+    """Файлы для линий, например,
+       изометрическая схема, либо изображение
+    """
+    line = models.ForeignKey(Line,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Линия')
+    file = models.ForeignKey(Files,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Файл для линии')
+    position = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Позиция файла')
+
+    class Meta:
+        verbose_name = 'Структура - Файл для линии'
+        verbose_name_plural = 'Структура - Файлы для линий'
+        #default_permissions = []
+
+    def delete(self, *args, **kwargs):
+        """Переопределяем метод удаления,
+           надо похерить файл, который привязан"""
+        if self.file:
+            self.file.delete()
+        super(LineFile, self).delete(*args, **kwargs)
 
 class Joint(Standard):
     """Стык, например, 26А"""

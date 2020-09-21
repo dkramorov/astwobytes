@@ -74,10 +74,14 @@ urlpatterns = [
     # линии
     path('admin/lines/', company_views.show_lines, name='show_lines'),
     url('^admin/lines/(?P<action>create)/$', company_views.edit_line, name='create_line'),
-    url('^admin/lines/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', company_views.edit_line, name='edit_line'),
+    url('^admin/lines/(?P<action>edit|drop|img|file)/(?P<row_id>[0-9]{1,11})/$', company_views.edit_line, name='edit_line'),
     path('admin/lines/positions/', company_views.lines_positions, name='lines_positions'),
     # аякс-поиск
     path('welding/lines/search/', company_views.search_lines, name='search_lines'),
+
+    # файлы линий
+    path('admin/lines/line_files/', company_views.show_line_files, name='show_line_files'),
+    url('^admin/lines/line_files/(?P<action>edit|drop|download)/(?P<row_id>[0-9]{1,11})/$', company_views.edit_line_file, name='edit_line_file'),
 
     # стыки
     path('admin/joints/', company_views.show_joints, name='show_joints'),

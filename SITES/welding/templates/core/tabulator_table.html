@@ -12,6 +12,9 @@
   <div class="panel-wrapper collapse">
     <div class="panel-body">
       {% block tabulator_actions %}
+        <a class="mb-sm btn btn-primary" id="reset-table-settings">
+          <em class="fa fa-times fa-fw mr-sm"></em>Сброс настроек таблицы
+        </a>
         <button class="mb-sm btn btn-primary" type="button" id="download-xlsx">
           <em class="fa fa-files-o fa-fw mr-sm"></em>Скачать xlsx
         </button>
@@ -124,6 +127,16 @@ $(document).ready(function(){
       orientation:"portrait", //set page orientation to portrait
       title:"{{ plural_obj }}", //add title to report
     });
+  });
+  //reset persistence settings
+  $("#reset-table-settings").click(function(){
+    if(window.localStorage.getItem("tabulator-{{ root_url }}")){
+      window.localStorage.removeItem("tabulator-{{ root_url }}");
+    }
+    if(window.localStorage.getItem("tabulator-{{ root_url }}-sort")){
+      window.localStorage.removeItem("tabulator-{{ root_url }}-sort");
+    }
+    window.location.href = "{{ root_url }}";
   });
 });
 </script>

@@ -642,18 +642,38 @@ class ModelHelper:
                     if key in types:
                         query = self.cond_for_query(key, value, types, query)
                     elif '__' in key:
-                        # -----------------------
-                        # Проверка на OneToOneRel
-                        # -----------------------
+                        key_arr = key.split('__')
+                        related_model = key_arr[-2]
+                        related_field = key_arr[-1]
+                        # --------------------------
+                        # Обратная связь OneToOneRel
+                        # --------------------------
                         if related_types:
-                            key_arr = key.split('__')
-                            related_model = key_arr[-2]
-                            related_field = key_arr[-1]
                             if related_model in related_types and related_field in related_types[related_model]:
                                 prefix = '__'.join(key_arr[:-1])
                                 custom_types = {'%s__%s' % (prefix, k): v for k, v in related_types[related_model].items() if k == related_field}
                                 query = self.cond_for_query(key, value, custom_types, query)
                                 continue
+                        # ------------------------------
+                        # Прямая связь на OneToOneRel/FK
+                        # ForwardOneToOneDescriptor
+                        # field.field.model - эта модель
+                        # field.field.remote_field.model
+                        # на связанную модель
+                        # ------------------------------
+                        if related_model in types and types[related_model] == 'foreign_key':
+                            field = getattr(self.model, related_model)
+                            remote_types = object_fields_types(field.field.remote_field.model())
+                            prefix = '__'.join(key_arr[:-1])
+                            remote_types = {
+                                '%s__%s' % (prefix, k): v
+                                for k, v in remote_types.items()
+                                if k == related_field
+                            }
+                            rfield = '%s__%s' % (prefix, related_field)
+                            query = self.cond_for_query(rfield, value, remote_types, query)
+                            continue
+
                         query = query.filter(**{key: value})
 
                 elif isinstance(item, Q):

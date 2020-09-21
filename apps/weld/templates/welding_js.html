@@ -33,7 +33,7 @@ function state_to_rejected(pk, ind){
   // Переместить в новые заявки (Принять ремонт)
   // :param pk: ид заявки на стык
   // :param ind: индекс строки в таблице
-  state_helper(pk, ind, 'rejected', 1)
+  state_helper(pk, ind, 'rejected', 5)
 }
 function state_helper(pk, ind, new_state, state){
   // Вспомогательная функция для смены статуса заявки

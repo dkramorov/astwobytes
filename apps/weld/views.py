@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
+from apps.main_functions.date_time import str_to_date
 from apps.main_functions.files import full_path, check_path, file_size
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper, get_user_permissions
@@ -111,6 +112,13 @@ def show_welding(request, *args, **kwargs):
     if state and not 'state' in context['fas']['filters']:
         context['fas']['filters']['state'] = get_welding_joint_state(state)
         context['submenu'] = '%s_%s' % (mh_vars['submenu'], state)
+    #if 'joint__welding_date' in context['fas']['filters']:
+        #fdate = str_to_date(context['fas']['filters']['joint__welding_date'])
+        #context['fas']['filters']['joint__welding_date'] = fdate
+        #print(mh.filters)
+        #for i, fkey in enumerate(mh.filters_and_sorters['filters']):
+        #    if fkey == 'joint__welding_date':
+        #        mh.filters_and_sorters['filters'][i] = fdate
 
     # -----------------------------
     # Вся выборка только через аякс
@@ -141,7 +149,7 @@ def show_welding(request, *args, **kwargs):
             'notice',
             'state',
         )
-        rows = mh.standard_show(only_fields=only_fields, )
+        rows = mh.standard_show(only_fields=only_fields)
         result = []
         fk_keys = {
             'joint': ('name', 'diameter', 'side_thickness', 'welding_date'),

@@ -10,7 +10,9 @@ from django.conf import settings
 from django.db.models import Sum
 
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import create_model_helper, get_user_permissions
+from apps.main_functions.files import check_path, full_path
+from apps.files.models import Files
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view,
@@ -18,7 +20,13 @@ from apps.main_functions.views_helper import (show_view,
 
 from apps.weld.enums import WELDING_JOINT_STATES
 from apps.weld.models import WeldingJoint
-from apps.weld.company_model import Company, Subject, Titul, Base, Line, Joint
+from apps.weld.company_model import (Company,
+                                     Subject,
+                                     Titul,
+                                     Base,
+                                     Line,
+                                     Joint,
+                                     LineFile, )
 from apps.weld.views import CUR_APP
 
 companies_vars = {
@@ -280,28 +288,206 @@ def show_lines(request, *args, **kwargs):
         'subject': ('name', ),
         'company': ('name', ),
     }
-
+    # Права на файлы к линии
+    extra_vars = {
+        'files_permissions': get_user_permissions(request.user, LineFile),
+    }
     return show_view(request,
                      model_vars = lines_vars,
                      cur_app = CUR_APP,
                      only_fields = only_fields,
                      fk_only_keys = fk_keys,
-                     extra_vars = None, )
+                     extra_vars = extra_vars, )
 
 @login_required
 def edit_line(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование линий"""
-    pass_fields = ('new_joints',
-                   'in_progress_joints',
-                   'repair_joints',
-                   'complete_joints', )
-    return edit_view(request,
-                     model_vars = lines_vars,
+    mh_vars = lines_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    context = mh.context
+    # Права на файлы к линии
+    context['files_permissions'] = get_user_permissions(request.user, LineFile)
+    special_model_vars(mh, mh_vars, context)
+    row = mh.get_row(row_id)
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+    if request.method == 'GET':
+        if action == 'create':
+            mh.breadcrumbs_add({
+                'link': mh.url_create,
+                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
+            })
+        elif action == 'edit' and row:
+            mh.breadcrumbs_add({
+                'link': mh.url_edit,
+                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+            })
+            context['files'] = row.get_files()
+        elif action == 'drop' and row:
+            if mh.permissions['drop']:
+                row.delete()
+                mh.row = None
+                context['success'] = '%s удален' % (mh.singular_obj, )
+            else:
+                context['error'] = 'Недостаточно прав'
+    elif request.method == 'POST':
+        pass_fields = ('new_joints',
+                       'in_progress_joints',
+                       'repair_joints',
+                       'complete_joints', )
+        mh.post_vars(pass_fields=pass_fields)
+        if action == 'create' or (action == 'edit' and row):
+            if action == 'create':
+                if mh.permissions['create']:
+                    mh.row = mh.model()
+                    mh.save_row()
+                    if mh.error:
+                        context['error'] = mh.error
+                    else:
+                        context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+            if action == 'edit':
+                if mh.permissions['edit']:
+                    mh.save_row()
+                    if mh.error:
+                        context['error'] = mh.error
+                    else:
+                        context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+
+        elif action == 'file' and request.FILES:
+            # Загрузка файла в LineFile
+            mh.files_add('path')
+            new_file = Files.objects.create(
+                desc = mh.row.name,
+                name = request.FILES['path'].name,
+            )
+            mh.uploads(row=new_file)
+            if new_file.path:
+                line_file = LineFile.objects.create(
+                    line=mh.row,
+                    file=new_file, )
+                new_file.update_mimetype()
+                context['success'] = 'Файл загружен'
+                context['file'] = {
+                    'id': line_file.id,
+                    'path': new_file.path,
+                    'name': new_file.name,
+                    'mime': new_file.mime,
+                    'folder': new_file.get_folder(),
+                }
+            else:
+                new_file.delete()
+                context['error'] = 'Не удалось загрузить файл'
+
+        elif not mh.error and action == 'img' and request.FILES:
+            mh.uploads()
+    if not mh.error and mh.row:
+        if not 'row' in context:
+            context['row'] = object_fields(mh.row)
+        context['row']['folder'] = mh.row.get_folder()
+        context['row']['thumb'] = mh.row.thumb()
+        context['row']['imagine'] = mh.row.imagine()
+        context['redirect'] = mh.get_url_edit()
+    if request.is_ajax() or action in ('img', 'file'):
+        return JsonResponse(context, safe=False)
+    template = '%sedit.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+line_files_vars = {
+    'singular_obj': 'Файл линии',
+    'plural_obj': 'Файлы линий',
+    'rp_singular_obj': 'файла линии',
+    'rp_plural_obj': 'файлов линий',
+    'template_prefix': 'line_files_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'welding',
+    'submenu': 'line_files',
+    'show_urla': 'show_line_files',
+    #'create_urla': 'create_line_file',
+    'edit_urla': 'edit_line_file',
+    'model': LineFile,
+    'select_related_list': ('file', 'line'),
+}
+
+@login_required
+def show_line_files(request, *args, **kwargs):
+    """Вывод файлов для линий"""
+    return show_view(request,
+                     model_vars = line_files_vars,
                      cur_app = CUR_APP,
-                     action = action,
-                     row_id = row_id,
-                     pass_fields = pass_fields,
                      extra_vars = None, )
+
+@login_required
+def edit_line_file(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование файла линии"""
+    mh_vars = line_files_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    mh.select_related_add('line')
+    row = mh.get_row(row_id)
+    context = mh.context
+
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+    if request.method == 'GET':
+        if action == 'create':
+            mh.breadcrumbs_add({
+                'link': mh.url_create,
+                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
+            })
+        elif action == 'edit' and row:
+            mh.breadcrumbs_add({
+                'link': mh.url_edit,
+                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+            })
+        elif action == 'drop' and row:
+            if mh.permissions['drop']:
+                row.delete()
+                mh.row = None
+                context['success'] = '%s удален' % (mh.singular_obj, )
+            else:
+                context['error'] = 'Недостаточно прав'
+        elif action == 'download' and row:
+            # Возвращаем файл по имени
+            path = '%s%s' % (row.file.get_folder(), row.file.path)
+            if not check_path(path):
+                with open(full_path(path), 'rb') as f:
+                    response = HttpResponse(f.read(), content_type=row.file.mime)
+                response['Content-Disposition'] = row.file.content_disposition_for_cyrillic_name(row.file.name)
+                return response
+
+    elif request.method == 'POST':
+        pass_fields = ()
+        mh.post_vars(pass_fields=pass_fields)
+        if action == 'create' or (action == 'edit' and row):
+            if action == 'create':
+                if mh.permissions['create']:
+                    mh.row = mh.model()
+                    mh.save_row()
+                    context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+            if action == 'edit':
+                if mh.permissions['edit']:
+                    mh.save_row()
+                    context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+        elif action == 'img' and request.FILES:
+            mh.uploads()
+    if mh.row:
+        context['row'] = object_fields(mh.row)
+        if mh.row.file:
+            context['row']['file'] = object_fields(mh.row.file)
+        context['redirect'] = mh.get_url_edit()
+    if request.is_ajax() or action == 'img':
+        return JsonResponse(context, safe=False)
+    template = '%sedit.html' % (mh.template_prefix, )
+    return render(request, template, context)
 
 @login_required
 def lines_positions(request, *args, **kwargs):
