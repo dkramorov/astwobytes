@@ -11,8 +11,9 @@ from django.db.models import Q
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.files import open_file
 from apps.main_functions.date_time import str_to_date
+from apps.main_functions.api_helper import open_wb
 
-from apps.weld.company_model import Joint
+from apps.weld.company_model import Joint, Subject, Titul, Line
 from apps.weld.models import WeldingJoint
 from apps.weld.conclusion_model import JointConclusion
 
@@ -68,8 +69,91 @@ def drop_till_september():
             welding_joint.delete()
         joint.delete()
 
+def load_lines():
+    """Загрузка линий"""
+    for conclusion in JointConclusion.objects.all():
+        conclusion.delete()
+    for welding_joint in WeldingJoint.objects.all():
+        welding_joint.delete()
+    for joint in Joint.objects.all():
+        joint.delete()
+    for line in Line.objects.all():
+        line.delete()
+    for titul in Titul.objects.all():
+        titul.delete()
+
+    subject = Subject.objects.all().first()
+    wb = open_wb('more_lines.xlsx')
+    sheet = wb.active
+    rows = sheet.rows
+    cur_titul = None
+    for row in rows:
+        value = row[1].value
+        if not value:
+            continue
+        value = '%s' % value
+        value = value.strip()
+        if value.startswith('У'):
+            titul = Titul.objects.filter(name=value).first()
+            if not titul:
+                #logger.info('[ERROR]: titul not found %s' % value)
+                cur_titul = Titul.objects.create(name=value, subject=subject)
+            else:
+                cur_titul = titul
+        else:
+            if not cur_titul:
+                continue
+            line = Line.objects.filter(name=value).first()
+            if not line:
+                #logger.info('[ERROR]: line not found %s' % value)
+                cur_line = Line.objects.create(name=value, titul=cur_titul)
+            else:
+                cur_line = line
+
+def load_titul():
+    cur_titul = Titul.objects.filter(name='У920').first()
+    if not cur_titul:
+        logger.info('[ERROR]: titul У920 not found')
+        return
+    i = 0
+    wb = open_wb('920.xlsx')
+    sheet = wb.active
+    rows = sheet.rows
+    for row in rows:
+        if i < 2:
+            i += 1
+            continue
+        cell_values = [cell.value for cell in row]
+        line_str = cell_values[1].replace('ЖСР', '').strip()
+        joint_str = '%s' % cell_values[2]
+        joint_str = joint_str.strip()
+        diameter = '%s' % cell_values[5]
+        diameter = diameter.strip().replace(',', '.')
+        side_thickness = '%s' % cell_values[6]
+        side_thickness = side_thickness.strip().replace(',', '.')
+        welding_date = '%s' % cell_values[6]
+        welding_date = welding_date.strip()
+        welding_date = str_to_date(welding_date)
+
+        line = Line.objects.filter(name=line_str).first()
+        if line:
+            joint = Joint.objects.filter(name=joint_str, line=line).first()
+            if not joint:
+                Joint.objects.create(
+                    line=line,
+                    name=joint_str,
+                    diameter=diameter,
+                    side_thickness=side_thickness,
+                    welding_date=welding_date,
+                )
+        else:
+            print('линия не найдена %s стык %s' % (line_str, joint_str))
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        logger.info('')
         #prepare_migrate_joints()
         #migrate_joints()
-        drop_till_september()
+        #drop_till_september()
+        #load_lines()
+        load_titul()
