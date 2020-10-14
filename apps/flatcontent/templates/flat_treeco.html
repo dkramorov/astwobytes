@@ -74,12 +74,20 @@ $(document).ready(function(){
 
   var noname = "Без названия";
   flat_tree.jstree({
+    // state будет помнить состояние
     "plugins": ["search", "wholerow", "dnd", "contextmenu"],
     "core" : {
       "check_callback" : true,
       "data" : {
         "cache": false,
-        "url" : root_url + "?container_id={{ row.id }}&operation=get_children",
+        "url" : root_url,
+        "data" : function (node) {
+          return {
+            "node_id" : node.id == "#" ? "" : node.id,
+            "container_id": "{{ row.id }}",
+            "operation": "get_children{% if lazy %}_lazy{% endif %}",
+          };
+        },
         "worker": false,
       },
       "check_callback": function(operation, node, node_parent, node_position, more){
@@ -144,7 +152,9 @@ $(document).ready(function(){
   })
   .bind("loaded.jstree", function(e, data) {
     //console.log("--- jstree loaded ---");
-    flat_tree.jstree('open_all');
+    {% if not lazy %}
+      flat_tree.jstree('open_all');
+    {% endif %}
   })
   .on("rename_node.jstree", function (e, data) {
     if(data.old === data.text && data.text !== noname){

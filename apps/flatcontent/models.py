@@ -5,6 +5,9 @@ from django.conf import settings
 from apps.main_functions.models import Standard
 from apps.main_functions.string_parser import translit
 
+# Если слишком много рубрик, то грузить надо lazy
+FAT_HIER = 250
+
 def get_ftype(ftype, by_id: bool = False):
     """Получение типа контейнера
        :param ftype: число или тег контейнера
@@ -146,7 +149,8 @@ def update_blocks_vars(ftype, mh_vars):
 class Containers(Standard):
     """Контейнер служит как меню, в него можно
        вкладывать блоки, которые могут быть как
-       ссылками меню так и блоками на страничке"""
+       ссылками меню так и блоками на страничке
+    """
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     description = models.TextField(blank=True, null=True)
     tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
@@ -163,9 +167,16 @@ class Containers(Standard):
             child.delete()
         super(Containers, self).delete(*args, **kwargs)
 
+    def cat_link(self):
+        """Получение ссылки для корня каталога"""
+        if self.tag and not self.tag == settings.DEFAULT_CATALOGUE_TAG:
+            return '/cat/%s/' % self.tag
+        return '/cat/'
+
 class Blocks(Standard):
     """Блоки - динамический контент
-       картинка, текст, html, ссылка (пункт меню)"""
+       картинка, текст, html, ссылка (пункт меню)
+    """
     state_choices = (
         (1, "Текст"),
         (2, "Изображение"),
@@ -197,11 +208,11 @@ class Blocks(Standard):
               Только с типом контейнера меню (state=1)
            :param force: создать ссылку независимо от типа контейнера
         """
-        if not self.state == 4 or self.link or not self.name:
+        if not self.state == 4 or not self.name:
             return
 
         if not force:
-            if not self.container.state == 1:
+            if not self.container.state == 1 or self.link:
                 return
         link = None
         # --------------------------------------------------
@@ -225,23 +236,28 @@ class Blocks(Standard):
             link = '/' + translit(self.name) + '/'
         self.link = link
 
-    def create_cat_link(self):
+    def create_cat_link(self, force: bool = False):
         """Создание ссылки для рубрики каталога
            1) Только тип ссылка (state=4)
               Только без уже имеющейся ссылки
            2) Только с именем
               Только с типом контейнера рубрика (state=7)
         """
-        if not self.state == 4 or self.link:
+        if not self.state == 4 or not self.name:
             return
-        if not self.name or not self.container.state == 7:
-            return
+
+        if not force:
+            if not self.container.state == 7 or self.link:
+                return
+
         self.create_menu_link(force=True)
         # Для подуровней не надо /cat
         # /cat уже будет у верхнего уровня
         prefix = ''
         if not self.parents:
             prefix = '/cat'
+            if not self.container.tag == settings.DEFAULT_CATALOGUE_TAG:
+                prefix = '/cat/%s' % self.container.tag
         self.link = '%s%s' % (prefix, self.link)
 
     def save(self, *args, **kwargs):
@@ -254,7 +270,8 @@ class Blocks(Standard):
 
 class LinkContainer(Standard):
     """Линковка пункта меню к контейнеру
-       Ссылка на стр. может быть ссылкой на контейнер"""
+       Ссылка на стр. может быть ссылкой на контейнер
+    """
     block = models.ForeignKey(Blocks, on_delete=models.CASCADE)
     container = models.ForeignKey(Containers, on_delete=models.CASCADE)
 

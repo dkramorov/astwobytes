@@ -1930,6 +1930,11 @@ ul.b-crumbs {
   width: auto;
   height: auto;
 }
+.prod-items.gridview .prod-i-img img{
+  position:absolute;
+  left: 0;
+  overflow: hidden;
+}
 .prod-sticker {
   position: absolute;
   top: 5px;

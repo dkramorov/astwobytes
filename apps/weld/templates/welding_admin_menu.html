@@ -193,6 +193,28 @@
   </ul>
 </li>
 
+<li{% ifequal menu 'scripts' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="javascript:void(0);">
+    <em class="fa fa-superscript"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Скрипты</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'scripts' %} in{% endifequal %}">
+    <li{% ifequal submenu 'titul' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'welding:script_titul' %}">
+        <span class="item-text">Анализ титула</span>
+      </a>
+    </li>
+    {% if perms.weld.edit_line %}
+      <li{% ifequal submenu 'titul_import' %} class="active"{% endifequal %}>
+        <a class="no-submenu" data-toggle="" href="{% url 'welding:script_titul_import' %}">
+          <span class="item-text">Загрузка титула</span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</li>
+
 <li{% ifequal menu 'manual' %} class="active"{% endifequal %}>
   <a class="has-submenu" data-toggle="collapse-next" href="javascript:void(0);">
     <em class="fa fa-book"></em>

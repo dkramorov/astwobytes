@@ -1,6 +1,4 @@
 # -*- coding:utf-8 -*-
-import json
-
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, resolve
@@ -19,6 +17,7 @@ from apps.main_functions.views_helper import (show_view,
 
 from .models import Redirects, CdrCsv, FSUser, PhonesWhiteList, PersonalUsers
 from .backend import FreeswitchBackend
+from .services import voice_code
 
 CUR_APP = 'freeswitch'
 redirects_vars = {
@@ -532,4 +531,29 @@ def is_phone_in_white_list(request):
         analog = PhonesWhiteList.objects.filter(phone=phone).first()
         if analog:
             result['success'] = True
+    return JsonResponse(result, safe=False)
+
+def send_sms(request):
+    """Апи-метод, чтобы отправить sms через spamcha,
+       1) достаем из spamcha телефоны для рассылки,
+          смотрим по лимитам кто может отправить смс,
+          следим за балансировкой - кто сколько отправил
+       2) у нас должен работать sms_hub.py на порту (5009)
+          подключаемся в него и отправляем смс на телефон
+    """
+    from apps.spamcha.sms_helper import send_sms_helper
+    result = send_sms_helper(request)
+
+    return JsonResponse(result, safe=False)
+
+def say_code(request):
+    """Апи-метод, чтобы позвонить на телефон и продиктовать код
+       :param dest: номер назначение
+       :param digit: число, которое сообщаем в назначение
+       Вызывается скрипт hello/say_digit.py
+    """
+    result = {}
+    dest = request.GET.get('phone')
+    digit = request.GET.get('digit')
+    result['result'] = voice_code(dest=dest, digit=digit)
     return JsonResponse(result, safe=False)

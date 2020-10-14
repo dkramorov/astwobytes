@@ -131,15 +131,6 @@ def fill_rk_frames(request, row):
         frame['joint_conclusion'] = row
         RKFrames.objects.create(**frame)
 
-def welders_fields(welding_joint):
-    """Вспомогательная функция, чтобы вернуть сварщиков по стыку
-       :param welding_joint: стык
-    """
-    if not welding_joint:
-        return {}
-    welders = welding_joint.jointwelder_set.select_related('welder').all()
-    return {welder.position: welder.welder for welder in welders}
-
 def welding_joint_fields(welding_joint):
     """Вспомогательная функция, чтобы вернуть словарь
        по стыку
@@ -149,10 +140,10 @@ def welding_joint_fields(welding_joint):
         'id': welding_joint.id,
         'request_number': welding_joint.request_number,
         'diameter': welding_joint.joint.diameter,
-        'join_type_from': welding_joint.get_join_type_from_display(),
-        'join_type_to': welding_joint.get_join_type_to_display(),
-        'material': welding_joint.get_material_display(),
-        'welding_conn_view': welding_joint.get_welding_conn_view_display(),
+        'join_type_from': welding_joint.joint.get_join_type_from_display(),
+        'join_type_to': welding_joint.joint.get_join_type_to_display(),
+        'material': welding_joint.joint.get_material_display(),
+        'welding_conn_view': welding_joint.joint.get_welding_conn_view_display(),
         'created': welding_joint.created.strftime('%d-%m-%Y %H:%M:%S'),
         'state': welding_joint.state,
         'get_state_display': welding_joint.get_state_display(),
@@ -198,19 +189,21 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
         # ---------------------------------------------------
         welding_joint_str = request.GET.get('welding_joint')
         if welding_joint_str and not mh.row:
-            welding_joint = WeldingJoint.objects.filter(pk=welding_joint_str).first()
+            welding_joint = WeldingJoint.objects.select_related('joint').filter(pk=welding_joint_str).first()
             if not welding_joint:
                 return redirect('%s?error=not_found' % (mh.root_url, ))
 
-            welding_joint.join_type_from = welding_joint.get_join_type_from_display()
-            welding_joint.join_type_to = welding_joint.get_join_type_to_display()
-            welding_joint.material = welding_joint.get_material_display()
-            welding_joint.welding_conn_view = welding_joint.get_welding_conn_view_display()
+            welding_joint.join_type_from = welding_joint.joint.get_join_type_from_display()
+            welding_joint.join_type_to = welding_joint.joint.get_join_type_to_display()
+            welding_joint.material = welding_joint.joint.get_material_display()
+            welding_joint.welding_conn_view = welding_joint.joint.get_welding_conn_view_display()
             context['welding_joint'] = welding_joint_fields(welding_joint)
-            context['welders'] = welders_fields(welding_joint)
+            context['welders'] = {}
+            if welding_joint.joint:
+                context['welders'] = welding_joint.joint.get_welders()
             context['welding_type'] = '?'
             for item in WELDING_TYPE_DESCRIPTIONS:
-                if welding_joint.welding_type == item[0]:
+                if welding_joint.joint.welding_type == item[0]:
                     context['welding_type'] = item[1]
                     break
 
@@ -226,7 +219,7 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                 WELDING_TYPE_DESCRIPTIONS[1][1],
             )
             for item in WELDING_TYPE_DESCRIPTIONS:
-                if row.welding_joint.welding_type == item[0]:
+                if row.welding_joint.joint.welding_type == item[0]:
                     context['welding_type'] = item[1]
                     break
             context['rk_frames'] = row.rkframes_set.all().order_by('position')
@@ -247,7 +240,9 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                 context['welding_joint'] = welding_joint_fields(row.welding_joint)
                 context['all_conclusions'] = JointConclusion.objects.filter(welding_joint=row.welding_joint).values_list('id', flat=True).order_by('repair')
             context['files'] = row.get_files()
-            context['welders'] = welders_fields(row.welding_joint)
+            context['welders'] = {}
+            if row.welding_joint.joint:
+                context['welders'] = row.welding_joint.joint.get_welders()
 
         elif action == 'drop' and row:
             if mh.permissions['drop']:
@@ -264,11 +259,10 @@ def edit_conclusion(request, action: str, row_id: int = None, *args, **kwargs):
                 'pdf_type': pdf_type,
                 'joint': row.welding_joint.joint,
                 'today': datetime.datetime.today(),
-                'welders': {},
             })
-            welders = row.welding_joint.jointwelder_set.select_related('welder').all()
-            for welder in welders:
-                context['welders'][welder.position] = welder.welder
+            context['welders'] = {}
+            if row.welding_joint and row.welding_joint.joint:
+                context['welders'] = row.welding_joint.joint.get_welders()
             template = 'pdf/conclusion_%s_form.html' % pdf_type
             return render_pdf(
                 request,

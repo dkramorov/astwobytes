@@ -1,0 +1,70 @@
+<!-- START panel-->
+<div class="panel panel-default">
+  <div class="panel-heading">Загрузка файлом
+    <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
+      <em class="fa fa-times"></em>
+    </a>
+    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть/развернуть" class="pull-right">
+      <em class="fa fa-minus"></em>
+    </a>
+  </div>
+  <div class="panel-wrapper collapsed in">
+    <form class="form-horizontal" method="post" action="{{ import_xlsx_url }}" id="import_excel_file_form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="import_xlsx" />
+      <div class="panel-body">
+
+        <p>Загружаемый файл должен иметь указанные ниже поля (англ.), они могут идти в любом порядке, на любой строке, с той строки, где они будут найдены данные будут проанализированы</p>
+        <div><strong>Строка с английскими названиями столбцом обязательна, она указывает как будут загружены данные</strong></div>
+        <table class="table table-striped table-bordered table-hover">
+          <thead>
+            <tr>
+              {% for field_name, field_value in required_fields.items %}
+                <th>{{ field_value }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {% for field_name, field_value in required_fields.items %}
+                <td>{{ field_name }}</td>
+              {% endfor %}
+            </tr>
+          </tbody>
+        </table>
+        <div class="clearfix"></div><br>
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Титул</label>
+          <div class="col-lg-10">
+            <select id="titul_select2" name="titul" autocomplete="off"  data-parsley-required>
+              <option value="">Не выбрано</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Выберите xlsx файл</label>
+            <div class="col-sm-10">
+              <input type="file" name='file' data-classbutton="btn btn-default" class="filestyle" data-buttonText="Выбрать xlsx" data-iconName="fa fa-file" data-placeholder="Выберите xlsx файл">
+          </div>
+        </div>
+        <div id="xlsx_errors"></div>
+        <div class="clearfix"></div><br>
+        <div id="excel-table" class="hidden"></div>
+      </div>
+      <div class="panel-footer">
+        <div class="col-lg-6 col-sm-6 padding-tb5">
+          <button type="submit" class="btn btn-labeled btn-info">
+            <span class="btn-label"><i class="fa fa-upload"></i></span>Загрузить файл
+          </button>
+        </div>
+        <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+          <a class="btn btn-labeled btn-success hidden" href="javascript:void(0);" id="save_excel_table" data-save-action="{{ import_xlsx_url }}">
+            <span class="btn-label"><i class="fa fa-save"></i></span>Сохранить
+          </a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="clearfix"></div>

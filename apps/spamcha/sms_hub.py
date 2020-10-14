@@ -34,7 +34,8 @@ TELEGRAM_CHAT_ID = env('TELEGRAM_CHAT_ID')
 WITH_REDIS = env('WITH_REDIS', default=False)
 if WITH_REDIS:
     import redis
-    rediska = redis.StrictRedis()
+    rediska = redis.Redis()
+    logger.info('REDISKA %s' % rediska)
 
 TOKEN = env('TOKEN', default='')
 API_URL = env('API_URL', default='')
@@ -89,10 +90,28 @@ class DB:
 
 db = DB()
 PHONES = set()
+PHONES_CACHE_KEY = '%s_PHONES' % TOKEN
 
 def json_pretty_print(json_obj):
     """Вывести json в человеческом виде"""
     return json.dumps(json_obj, sort_keys=True, indent=2, separators=(',', ': '), ensure_ascii=False)
+
+async def phones_to_cache():
+    """Телефоны залупить в кэшью"""
+    if not WITH_REDIS:
+        return
+    phones_in_cache = rediska.get(PHONES_CACHE_KEY)
+    if not phones_in_cache:
+        phones_in_cache = []
+    else:
+        phones_in_cache = json.loads(phones_in_cache)
+    phones_now = []
+    for ws in PHONES:
+        if hasattr(ws, 'icc_ids'):
+            phones_now += ws.icc_ids
+    if not phones_in_cache == phones_now:
+        logger.info('phones in cache changed %s' % phones_now)
+        rediska.set(PHONES_CACHE_KEY, json.dumps(phones_now))
 
 async def consumer_handler(websocket, path):
     #logger.info('consumer %s' % websocket)
@@ -132,6 +151,7 @@ async def consumer_handler(websocket, path):
                 logger.info('new phone %s' % icc_id)
             websocket.icc_ids = icc_ids
             await websocket.send(json.dumps({'register': 'success'}))
+            await phones_to_cache()
         # получение списка телефонов
         elif 'get_phones' in json_obj:
             phones = {'get_phones': [ws.icc_ids for ws in PHONES if hasattr(ws, 'icc_ids')]}
@@ -157,13 +177,27 @@ async def consumer_handler(websocket, path):
                     if icc_id == json_obj['send_sms']:
                         await ws.send(json.dumps({'send_sms': icc_id, 'text': json_obj['text'], 'receiver': phone}))
 
+async def check_outgoing_queue(websocket, path):
+    """Проверяем для нашего устройства задания,
+       которые надо выполнить,
+       проверка через кэш
+    """
+    if not hasattr(websocket, 'icc_ids') or not WITH_REDIS:
+        return
+    for icc_id in websocket.icc_ids:
+        cache_key = '%s_%s' % (TOKEN, icc_id)
+        queue = rediska.get(cache_key)
+        if not queue:
+            continue
+        rediska.delete(cache_key)
+        if queue:
+            queue = json.loads(queue)
+            for item in queue:
+                await websocket.send(json.dumps({'send_sms': icc_id, 'text': item['text'], 'receiver': item['phone']}))
+
 async def producer_handler(websocket, path):
     rand = random.random()
-    #logger.info('producer %s' % websocket)
-    #if rand > 0.9:
-    #    now = '%s' % time.time()
-    #    print('send', now)
-    #    await websocket.send(now)
+    await check_outgoing_queue(websocket, path)
 
 async def main_loop(websocket, path):
     """Основной цикл websocket соединений
@@ -187,6 +221,7 @@ async def handler(websocket, path):
             if websocket.closed:
                 logger.error('closed websocket')
                 PHONES.remove(websocket)
+                await phones_to_cache()
                 break
             await main_loop(websocket, path)
         except Exception as e:
@@ -200,14 +235,13 @@ ssl_context = None
 if CERT_PATH:
     logger.info('CERT_PATH %s' % (CERT_PATH, ))
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    #localhost_pem = pathlib.Path(__file__).with_name('%sfullchain.pem' % (CERT_PATH, ))
-    #ca_cert = pathlib.Path(__file__).with_name('%sprivkey.pem' % (CERT_PATH, ))
     localhost_pem = pathlib.Path(CERT_PATH).with_name('fullchain.pem')
     logger.info('fullchain=> %s' % (localhost_pem, ))
     ca_cert = pathlib.Path(CERT_PATH).with_name('privkey.pem')
     logger.info('privkey=>%s' % (ca_cert, ))
     ssl_context.load_cert_chain(localhost_pem, keyfile=ca_cert)
 
+rediska.delete(PHONES_CACHE_KEY)
 start_server = websockets.serve(handler, HOST, PORT, ssl=ssl_context)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

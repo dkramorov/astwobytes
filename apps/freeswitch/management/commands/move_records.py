@@ -49,7 +49,7 @@ class Command(BaseCommand):
            mount -t nfs 192.168.1.100:/home/jocker/sites /home/jocker/tmp
 
            DEMO USAGE:
-           # python manage.py move_records --source=2020-01-27 --dest=2020-01-27 --calc
+           # python manage.py move_records --source=2020-01-27 --dest=2020-01-27 --calc посмотреть, что можно перекинуть
         """
         is_running = search_process(q = ('move_records', 'manage.py'))
         if is_running:

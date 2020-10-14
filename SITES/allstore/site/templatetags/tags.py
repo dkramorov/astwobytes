@@ -2,8 +2,10 @@
 from django import template
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models import Count
 
-from apps.flatcontent.flatcat import get_catalogue
+from apps.flatcontent.models import Containers
+from apps.flatcontent.flatcat import get_catalogue, search_alt_catalogue
 from apps.products.models import Products, ProductsCats
 from apps.shop.cart import calc_cart, get_shopper
 
@@ -13,7 +15,7 @@ register = template.Library()
 def test_tag():
     return "test_tag"
 
-@register.inclusion_tag('web/ajax_cart.html')
+@register.inclusion_tag('web/order/ajax_cart.html')
 def ajax_cart(request):
     """Аякс-корзинка"""
     result = {}
@@ -27,7 +29,7 @@ def catalogue(request):
     """Каталог в виде меню - левый блок"""
     result = get_catalogue(
         request,
-        tag = 'catalogue',
+        tag = settings.DEFAULT_CATALOGUE_TAG,
         cache_time = 60,
         force_new = False)
     result['request'] = request
@@ -45,8 +47,15 @@ def best_cats(request):
     return result
 
 @register.inclusion_tag('web/tags/sidebar_cats.html')
-def sidebar_cats(request, tag: str = 'catalogue'):
+def sidebar_cats(request, tag: str = None):
     """Каталог в сайдбаре"""
+    if not tag:
+        tag = settings.DEFAULT_CATALOGUE_TAG
+        # Ищем альтернативные каталоги
+        link = request.META.get('PATH_INFO')
+        catalogue_tag, is_root_level = search_alt_catalogue(link)
+        if catalogue_tag:
+            tag = catalogue_tag
     result = get_catalogue(
         request,
         tag = tag,

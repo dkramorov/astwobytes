@@ -2,7 +2,7 @@
 from django.urls import path
 from django.conf.urls import url
 
-from . import views, welder_views, company_views, conclusion_views
+from . import views, welder_views, company_views, conclusion_views, scripts_views
 
 app_name = 'welding'
 urlpatterns = [
@@ -155,4 +155,8 @@ urlpatterns = [
     path('admin/logs/welding_joint_state/', views.show_welding_joint_state, name='show_welding_joint_state'),
     url('^admin/logs/welding_joint_state/(?P<action>create)/$', views.edit_welding_joint_state, name='create_welding_joint_state'),
     url('^admin/logs/welding_joint_state/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_welding_joint_state, name='edit_welding_joint_state'),
+
+    # Скрипты
+    path('admin/scripts/titul/', scripts_views.script_titul, name='script_titul'),
+    path('admin/scripts/titul/import/', scripts_views.script_titul_import, name='script_titul_import'),
 ]

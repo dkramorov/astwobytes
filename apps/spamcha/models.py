@@ -110,6 +110,7 @@ class SMSPhone(Standard):
         #default_permissions = []
 
     def save(self, *args, **kwargs):
+        """Сохранение"""
         if self.phone:
             self.phone = kill_quotes(self.phone, 'int')
         super(SMSPhone, self).save(*args, **kwargs)

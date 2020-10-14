@@ -321,4 +321,7 @@ $(window).load(function () {
 		});
 	}
 
+  if($.mask){
+    $("input.phone").mask("8(999)9 999-999");
+  }
 });

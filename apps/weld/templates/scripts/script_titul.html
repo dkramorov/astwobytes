@@ -1,0 +1,119 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+<h3>{{ plural_obj }}<br /><small>{{ singular_obj }} анализа титула из документов</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }} анализа титула из документов</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          {% include "core/forms/hidden_fields.html" %}
+          <fieldset>
+            <div class="form-group">
+              <div class="col-sm-5 control-label">
+                <pre>
+  Поддерживаются только zip-архивы и .docx-файлы,
+  вы загружаете zip-архив, он распаковывается,
+  находятся все .docx файлы,
+  анализируются и преобразовываются
+  в один .xlsx файл,
+  который вам будет предложено сохранить
+  Выберите архив и ждите результата
+  Если загружать .docx файл и он будет менее 250
+  стыков, тогда будет доступен предпросмотр
+  проанализированного файла в виде таблицы
+                </pre>
+              </div>
+              <div class="col-sm-7">
+                <div id="upload-drop-files" class="box-placeholder text-center mt-sm">
+                  <p>
+                    <em class="fa fa-cloud-upload fa-2x"></em>
+                  </p>Перетащите файл сюда или
+                  <div class="btn-link form-file">выберите файл для загрузки
+                    <input id="upload-select-files" type="file" name="path">
+                  </div>
+                </div>
+                <div id="progressbar-files" class="progress hidden">
+                  <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
+                </div>
+                <h4 class="hidden" id="result_xlsx"></h4>
+              </div>
+            </div>
+          </fieldset>
+
+          <div id="xlsx_errors"></div>
+          <div class="clearfix"></div><br>
+          <div id="excel-table" class="hidden"></div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% include "scripts/preview_titul_table.html" %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    var progressbar = $('#progressbar-files'),
+    bar         = progressbar.find('.progress-bar-files'),
+    settings    = {
+      action: '{% url "welding:script_titul" %}', // upload url
+      allow : '*.*',
+      param: 'path',
+      params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+      loadstart: function() {
+        excel_table.clearData();
+        $('#excel-table').addClass('hidden');
+        bar.css('width', '0%').text('0%');
+        progressbar.removeClass('hidden');
+        $('#result_xlsx').removeClass('hidden').html('Пожалуйста, ждите...');
+      },
+      progress: function(percent) {
+        percent = Math.ceil(percent);
+        bar.css('width', percent+'%').text(percent+'%');
+      },
+      allcomplete: function(response) {
+        bar.css('width', '100%').text('100%');
+        setTimeout(function(){
+          progressbar.addClass('hidden');
+        }, 750);
+        var r = JSON.parse(response);
+
+        //excel_table.clearData();
+        $("#xlsx_errors").html("");
+
+        if(r['errors'].length > 0){
+          for(var i=0; i<r['errors'].length; i++){
+            $("#xlsx_errors").append($("<div class='error'>" + r['errors'][i] + "</div>"));
+          }
+        }else{
+          if(r.resp){
+            excel_table.addData(r.resp.data);
+            $('#excel-table').removeClass('hidden');
+          }
+        }
+
+        $('#result_xlsx').removeClass('hidden').html('<a href="' + r['result'] + '">Результат анализа</a>');
+      },
+      error: function(err) {
+        $('#excel-table').addClass('hidden');
+        $('#result_xlsx').removeClass('hidden').html('Произошла ошибка, сообщите администратору, ' + err);
+      }
+    };
+    var select = new $.upload.select($('#upload-select-files'), settings),
+    drop   = new $.upload.drop($('#upload-drop-files'), settings);
+  });
+</script>
+{% endblock %}

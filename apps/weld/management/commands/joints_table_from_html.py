@@ -32,11 +32,15 @@ def accumulate_result(table, name):
         material = tds[3].xpath('.//p')
         size = tds[4].xpath('.//p')
         date = tds[5].xpath('.//p')
+        welding_type = tds[6].xpath('.//p')
         if number_p:
             joint['n'] = number_p[0].text
         if number_joint:
-            number_joint = number_joint[0].text.split(' ')[0]
+            parts = number_joint[0].text.split(' ')
+            number_joint = parts[0]
             joint['number'] = number_joint
+            conn_view = parts[1]
+            joint['conn_view'] = conn_view
         if stigma:
             stigma = stigma[0].text
             stigma = stigma.split(' ')[-1]
@@ -45,16 +49,23 @@ def accumulate_result(table, name):
             joint['material'] = material[0].text
         if size:
             cur_size = None
+            elements = []
             for item in size:
                 text = item.text.replace('-', ' ').replace('х', 'x')
                 sarr = text.split(' ')
                 for part in sarr:
                     if 'x' in part:
                         cur_size = part
+                    else:
+                        if len(part) >= 5:
+                            elements.append(part)
+            joint['elements'] = elements
             if cur_size:
                 joint['size'] = cur_size
         if date:
             joint['date'] = date[0].text
+        if welding_type:
+            joint['welding_type'] = welding_type[0].text
         result.append(joint)
     return result
 
@@ -91,6 +102,9 @@ class Command(BaseCommand):
         sheet.write(row_number, 5, 'Диаметр,мм')
         sheet.write(row_number, 6, 'Толщина,мм')
         sheet.write(row_number, 7, 'Дата')
+        sheet.write(row_number, 8, 'Тип сварки')
+        sheet.write(row_number, 9, 'Вид соединения')
+        sheet.write(row_number, 10, 'Соединение')
         for item in result:
             row_number += 1
             size = item.get('size', 'x').split('/')[0]
@@ -105,5 +119,8 @@ class Command(BaseCommand):
             sheet.write(row_number, 5, diameter)
             sheet.write(row_number, 6, side_thickness)
             sheet.write(row_number, 7, item.get('date'))
+            sheet.write(row_number, 8, item.get('welding_type'))
+            sheet.write(row_number, 9, item.get('conn_view'))
+            sheet.write(row_number, 10, ' - '.join(item.get('elements', [])))
 
         book.close()

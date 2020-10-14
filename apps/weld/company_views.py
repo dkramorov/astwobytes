@@ -18,8 +18,13 @@ from apps.main_functions.views_helper import (show_view,
                                               search_view,
                                               special_model_vars, )
 
-from apps.weld.enums import WELDING_JOINT_STATES
-from apps.weld.models import WeldingJoint
+from apps.weld.enums import (WELDING_TYPES,
+                             MATERIALS,
+                             JOIN_TYPES,
+                             DIAMETERS,
+                             WELDING_JOINT_STATES, )
+from apps.weld.models import WeldingJoint, JointWelder
+from apps.weld.welder_model import Welder
 from apps.weld.company_model import (Company,
                                      Subject,
                                      Titul,
@@ -28,6 +33,30 @@ from apps.weld.company_model import (Company,
                                      Joint,
                                      LineFile, )
 from apps.weld.views import CUR_APP
+
+def update_welding_join_welders(request, mh):
+    """Заполненение сварщиками заявки на сварку
+       Вспомогательная функция для сохранения
+       :param request: HttpRequest
+       :param mh: ModelHelper для Joint
+    """
+    if not (mh.permissions['create'] and mh.row and mh.row.id):
+        return
+    # Заполнение сварщиков
+    mh.row.jointwelder_set.all().delete()
+    for i in range(1, 5):
+        wid = request.POST.get('welder%s' % i)
+        if not wid:
+            continue
+        wid = int(wid)
+        welder = Welder.objects.filter(pk=wid).first()
+        if not welder:
+            continue
+        actually = True if i >= 3 else False
+        JointWelder.objects.create(welder=welder,
+                                   joint=mh.row,
+                                   actually=actually,
+                                   position=i, )
 
 companies_vars = {
     'singular_obj': 'Компания',
@@ -262,8 +291,6 @@ lines_vars = {
     #'custom_model_permissions': WeldingJoint,
     'select_related_list': (
         'titul',
-        'titul__subject',
-        'titul__subject__company',
     ),
     'search_result_format': ('{} титул {}', 'name titul__name'),
 }
@@ -275,18 +302,17 @@ def show_lines(request, *args, **kwargs):
         'id',
         'name',
         'img',
+        'project_joint_count',
+        'project_dinc',
         'new_joints',
         'in_progress_joints',
         'repair_joints',
         'complete_joints',
+        'complete_dinc',
         'titul__name',
-        'titul__subject__name',
-        'titul__subject__company__name',
     )
     fk_keys = {
         'titul': ('name', ),
-        'subject': ('name', ),
-        'company': ('name', ),
     }
     # Права на файлы к линии
     extra_vars = {
@@ -334,7 +360,8 @@ def edit_line(request, action: str, row_id: int = None, *args, **kwargs):
         pass_fields = ('new_joints',
                        'in_progress_joints',
                        'repair_joints',
-                       'complete_joints', )
+                       'complete_joints',
+                       'complete_dinc', )
         mh.post_vars(pass_fields=pass_fields)
         if action == 'create' or (action == 'edit' and row):
             if action == 'create':
@@ -524,8 +551,8 @@ joints_vars = {
     'select_related_list': (
         'line',
         'line__titul',
-        'line__titul__subject',
-        'line__titul__subject__company',
+        #'line__titul__subject',
+        #'line__titul__subject__company',
         'welding_joint',
     ),
     'search_result_format': ('{}, {}, {}, {}, {}', 'name line__name line__titul__name line__titul__subject__name line__titul__subject__company__name'),
@@ -538,7 +565,12 @@ def show_joints(request, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
     context['state_choices'] = WELDING_JOINT_STATES
+    context['welding_type_choices'] = WELDING_TYPES
+    context['material_choices'] = MATERIALS
+    context['join_types'] = JOIN_TYPES
+    context['welding_conn_view_choices'] = Joint.welding_conn_view_choices
     special_model_vars(mh, mh_vars, context)
+
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -549,13 +581,18 @@ def show_joints(request, *args, **kwargs):
             'img',
             'diameter',
             'side_thickness',
+            'welding_type',
+            'material',
+            'join_type_from',
+            'join_type_to',
+            'welding_conn_view',
             'dinc',
             'welding_date',
             'welding_joint__state',
             'line__name',
             'line__titul__name',
-            'line__titul__subject__name',
-            'line__titul__subject__company__name',
+            #'line__titul__subject__name',
+            #'line__titul__subject__company__name',
         )
         rows = mh.standard_show(only_fields=only_fields,
                                 related_fields=('welding_joint', ), )
@@ -563,15 +600,22 @@ def show_joints(request, *args, **kwargs):
         fk_keys = {
             'line': ('name', ),
             'titul': ('name', ),
-            'subject': ('name', ),
-            'company': ('name', ),
+            #'subject': ('name', ),
+            #'company': ('name', ),
             'welding_joint': ('state', ),
         }
+        ids_stigmas = {row.id: [] for row in rows}
+        stigmas = JointWelder.objects.select_related('welder').filter(joint__in=ids_stigmas.keys()).values('joint', 'welder__stigma')
+        for stigma in stigmas:
+            ids_stigmas[stigma['joint']].append(stigma['welder__stigma'])
         for row in rows:
             item = object_fields(row,
                                  only_fields=only_fields,
                                  fk_only_keys=fk_keys,
                                  related_fields=('welding_joint', ), )
+            item['stigma'] = []
+            if row.id in ids_stigmas:
+                item['stigma'] = ids_stigmas[row.id]
             item['actions'] = row.id
             item['folder'] = row.get_folder()
             item['thumb'] = row.thumb()
@@ -598,6 +642,12 @@ def edit_joint(request, action: str, row_id: int = None, *args, **kwargs):
     mh_vars = joints_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     context = mh.context
+    context['state_choices'] = WELDING_JOINT_STATES
+    context['welding_type_choices'] = WELDING_TYPES
+    context['material_choices'] = MATERIALS
+    context['diameters'] = DIAMETERS
+    context['join_types'] = JOIN_TYPES
+    context['welding_conn_view_choices'] = Joint.welding_conn_view_choices
     special_model_vars(mh, mh_vars, context)
     row = mh.get_row(row_id)
     if mh.error:
@@ -614,6 +664,7 @@ def edit_joint(request, action: str, row_id: int = None, *args, **kwargs):
                 'link': mh.url_edit,
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
+            context['welders'] = row.get_welders()
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -639,6 +690,7 @@ def edit_joint(request, action: str, row_id: int = None, *args, **kwargs):
                     if mh.error:
                         context['error'] = mh.error
                     else:
+                        update_welding_join_welders(request, mh)
                         context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
@@ -648,6 +700,7 @@ def edit_joint(request, action: str, row_id: int = None, *args, **kwargs):
                     if mh.error:
                         context['error'] = mh.error
                     else:
+                        update_welding_join_welders(request, mh)
                         context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'

@@ -179,8 +179,8 @@ table.two_col .welder tr td {
         </td>
         <td>
           <p>
-            {% if row.join_type_from and row.join_type_to %}
-              {{ row.get_join_type_from_display }} / {{ row.get_join_type_to_display }}
+            {% if row.joint.join_type_from and row.joint.join_type_to %}
+              {{ row.joint.get_join_type_from_display }} / {{ row.joint.get_join_type_to_display }}
             {% else %}-{% endif %}
           </p>
         </td>
@@ -203,8 +203,8 @@ table.two_col .welder tr td {
         </td>
         <td>
           <p>
-            {% if row.material %}
-              {{ row.get_material_display }}
+            {% if row.joint.material %}
+              {{ row.joint.get_material_display }}
             {% else %}-{% endif %}
           </p>
         </td>
@@ -277,8 +277,8 @@ table.two_col .welder tr td {
         </td>
         <td>
           <p>
-            {% if row.welding_conn_view %}
-              {{ row.get_welding_conn_view_display }}
+            {% if row.joint.welding_conn_view %}
+              {{ row.joint.get_welding_conn_view_display }}
             {% else %}-{% endif %}
           </p>
         </td>
@@ -289,8 +289,8 @@ table.two_col .welder tr td {
         </td>
         <td>
           <p>
-            {% if row.welding_type %}
-              {{ row.get_welding_type_display }}
+            {% if row.joint.welding_type %}
+              {{ row.joint.get_welding_type_display }}
             {% else %}-{% endif %}
           </p>
         </td>

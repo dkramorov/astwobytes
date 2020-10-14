@@ -1,0 +1,73 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<style type="text/css">
+  div.error {
+    color: brown;
+  }
+  .panel table.table{
+    border: 1px solid #eee;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h3>{{ plural_obj }}<br /><small>Загрузка стыков в титул</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "scripts/xlsx_titul_import.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
+{% include "scripts/preview_titul_table.html" %}
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#titul_select2').select2({
+    placeholder: 'Выберите титул',
+    allowClear: true,
+    width: '100%',
+    tags: false,
+    ajax: {
+      url: "{% url 'welding:search_tituls' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  }).change(function(){
+    $("#save_excel_table").attr("data-save-action", "{{ import_xlsx_url }}?titul_id=" + $(this).val());
+  });
+  // Настройка отправки формы (файла) через аякс
+  set_ajax_form("#import_excel_file_form", function(r){
+    // success callback
+    // Строим таблицу с данными
+    $("#excel-table").removeClass("hidden");
+    $("#save_excel_table").removeClass("hidden");
+    excel_table.clearData();
+    $("#xlsx_errors").html("");
+
+    if(r['errors'].length > 0){
+      for(var i=0; i<r['errors'].length; i++){
+        $("#xlsx_errors").append($("<div class='error'>" + r['errors'][i] + "</div>"));
+      }
+    }else{
+      excel_table.addData(r.resp.data);
+    }
+  }, function(r){
+    // error callback
+    console.log(r);
+  }, true);
+  set_ajax_form_save_xlsx("#save_excel_table", excel_table, function(r){
+    // success callback
+  }, function(r){
+    // error callback
+  }, 'save');
+});
+</script>
+{% endblock %}

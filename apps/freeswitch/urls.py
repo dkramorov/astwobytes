@@ -37,4 +37,8 @@ urlpatterns = [
     path('personal_users/search/', views.search_personal_users, name='search_personal_users'),
     # api для проверки возможности звонка по динамическому диалплану
     path('is_phone_in_white_list/', views.is_phone_in_white_list, name='is_phone_in_white_list'),
+    # api для отправки смски
+    path('sms_service/send_sms/', views.send_sms, name='send_sms'),
+    # api для звонка и диктовки кода голосом со свича
+    path('sms_service/say_code/', views.say_code, name='say_code'),
 ]

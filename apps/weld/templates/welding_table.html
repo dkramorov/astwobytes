@@ -162,24 +162,33 @@ $(document).ready(function(){
     return control_type_choices[pk];
   };
   var connViewFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return conn_view_choices[pk];
+    var data = cell.getRow().getData();
+    var conn_view = data['joint'] ? data['joint']['welding_conn_view']  : '';
+    return conn_view_choices[conn_view];
   };
   var weldingTypeFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return welding_type_choices[pk];
+    var data = cell.getRow().getData();
+    var welding_type = data['joint'] ? data['joint']['welding_type']  : '';
+    return welding_type_choices[welding_type];
   };
   var materialFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return material_choices[pk];
+    var data = cell.getRow().getData();
+    var material = data['joint'] ? data['joint']['material']  : '';
+    return material_choices[material];
   };
   var stateFormatter = function(cell, formatterParams, onRendered){
     var pk = cell.getValue();
     return state_choices[pk];
   };
-  var joinTypeFormatter = function(cell, formatterParams, onRendered){
-    var pk = cell.getValue();
-    return join_types[pk];
+  var joinTypeFromFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    var join_type_from = data['joint'] ? data['joint']['join_type_from']  : '';
+    return join_types[join_type_from];
+  };
+  var joinTypeToFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    var join_type_to = data['joint'] ? data['joint']['join_type_to']  : '';
+    return join_types[join_type_to];
   };
   var jointConclusionDateFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
@@ -238,16 +247,23 @@ $(document).ready(function(){
     return data['joint_conclusion'] ? conclusion_states[data['joint_conclusion']['state']] : '';
   }
   var accessor_welding_type = function(value, data, type, params, column){
-    return welding_type_choices[value];
+    var welding_type = data['joint'] ? data['joint']['welding_type']  : '';
+    return welding_type_choices[welding_type];
   }
   var accessor_conn_view = function(value, data, type, params, column){
-    return conn_view_choices[value];
+    var conn_view = data['joint'] ? data['joint']['welding_conn_view']  : '';
+    return conn_view_choices[conn_view];
   }
   var accessor_control_type = function(value, data, type, params, column){
     return control_type_choices[value];
   }
-  var accessor_join_type = function(value, data, type, params, column){
-    return join_types[value];
+  var accessor_join_type_from = function(value, data, type, params, column){
+    var join_type_from = data['joint'] ? data['joint']['join_type_from']  : '';
+    return join_types[join_type_from];
+  }
+  var accessor_join_type_to = function(value, data, type, params, column){
+    var join_type_to = data['joint'] ? data['joint']['join_type_to']  : '';
+    return join_types[join_type_to];
   }
   var accessor_material = function(value, data, type, params, column){
     return material_choices[value];
@@ -361,6 +377,7 @@ $(document).ready(function(){
         minWidth: 90,
         accessorDownload: accessor_titul,
       },
+/*
       {
         title: "Объект",
         field: "joint__line__titul__subject__name",
@@ -381,6 +398,7 @@ $(document).ready(function(){
         minWidth: 90,
         accessorDownload: accessor_company,
       },
+*/
       {
         title: "Диаметр",
         field: "joint__diameter",
@@ -403,7 +421,7 @@ $(document).ready(function(){
       },
       {
         title: "Материал",
-        field: "material",
+        field: "joint__material",
         headerFilterPlaceholder: "Материал",
         headerFilter: true,
         headerFilterFunc: "=",
@@ -418,7 +436,7 @@ $(document).ready(function(){
       },
       {
         title: "Свар. эл. 1",
-        field: "join_type_from",
+        field: "joint__join_type_from",
         headerFilterPlaceholder: "Свар. эл. 1",
         headerFilter: true,
         headerFilterFunc: "=",
@@ -427,13 +445,13 @@ $(document).ready(function(){
         },
         editable: false,
         editor: "select",
-        formatter: joinTypeFormatter,
+        formatter: joinTypeFromFormatter,
         width: 90,
-        accessorDownload: accessor_join_type,
+        accessorDownload: accessor_join_type_from,
       },
       {
         title: "Свар. эл. 2",
-        field: "join_type_to",
+        field: "joint__join_type_to",
         headerFilterPlaceholder: "Свар. эл. 2",
         headerFilter: true,
         headerFilterFunc: "=",
@@ -442,9 +460,39 @@ $(document).ready(function(){
         },
         editable: false,
         editor: "select",
-        formatter: joinTypeFormatter,
+        formatter: joinTypeToFormatter,
         width: 90,
-        accessorDownload: accessor_join_type,
+        accessorDownload: accessor_join_type_to,
+      },
+      {
+        title: "Вид сварного соединения",
+        field: "joint__welding_conn_view",
+        headerFilterPlaceholder: "Вид сварного соединения",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: conn_view_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: connViewFormatter,
+        width: 90,
+        accessorDownload: accessor_conn_view,
+      },
+      {
+        title: "Тип сварки",
+        field: "joint__welding_type",
+        headerFilterPlaceholder: "Тип сварки",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: welding_type_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: weldingTypeFormatter,
+        width: 90,
+        accessorDownload: accessor_welding_type,
       },
       {
         title: "Дата сварки",
@@ -470,36 +518,6 @@ $(document).ready(function(){
         formatter: controlTypeFormatter,
         width: 90,
         accessorDownload: accessor_control_type,
-      },
-      {
-        title: "Вид сварного соединения",
-        field: "welding_conn_view",
-        headerFilterPlaceholder: "Вид сварного соединения",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: conn_view_choices,
-        },
-        editable: false,
-        editor: "select",
-        formatter: connViewFormatter,
-        width: 90,
-        accessorDownload: accessor_conn_view,
-      },
-      {
-        title: "Тип сварки",
-        field: "welding_type",
-        headerFilterPlaceholder: "Тип сварки",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: welding_type_choices,
-        },
-        editable: false,
-        editor: "select",
-        formatter: weldingTypeFormatter,
-        width: 90,
-        accessorDownload: accessor_welding_type,
       },
       {
         title: "Результат контроля",

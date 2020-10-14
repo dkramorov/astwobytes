@@ -68,7 +68,8 @@ class ExtraFields(Standard):
     """
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     field = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    show_in_table = models.BooleanField(blank=True, null=True, db_index=True, default=False, verbose_name='Показывать в таблице принудительно')
+    show_in_table = models.BooleanField(db_index=True, default=False,
+        verbose_name='Показывать в таблице принудительно')
     group = models.ForeignKey(Group, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:

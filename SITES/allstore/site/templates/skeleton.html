@@ -125,14 +125,16 @@
     {% endif %}
     {% block content %}{% endblock %}
 
-    <div class="newsletter">
-      <h3>Подпишитесь на новости</h3>
-      <p>Введите ваш Email и получайте новости об акциях и скидках</p>
-      <form action="#">
-        <input placeholder="Ваш e-mail" type="text">
-        <input value="Отправить" type="submit">
-      </form>
-    </div>
+    {% block subscribe %}
+      <div class="newsletter">
+        <h3>Подпишитесь на новости</h3>
+        <p>Введите ваш Email и получайте новости об акциях и скидках</p>
+        <form action="#">
+          <input placeholder="Ваш e-mail" type="text">
+          <input value="Отправить" type="submit">
+        </form>
+      </div>
+    {% endblock %}
     {% comment %}<!--АЯКСОМ ПОЛУЧАТЬ {% include "web/product_quickview.html" %}-->{% endcomment %}
 </section>
 </main>

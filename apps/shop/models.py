@@ -112,8 +112,7 @@ class Transactions(Standard):
         blank=True, null=True)
     ptype = models.IntegerField(choices=payment_choices,
         blank=True, null=True, db_index=True)
-    success = models.BooleanField(blank=True, null=True,
-        default=False, db_index=True)
+    success = models.BooleanField(default=False, db_index=True)
     body = models.TextField(blank=True, null=True)
 
     class Meta:

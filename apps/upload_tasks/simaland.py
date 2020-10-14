@@ -37,6 +37,11 @@ class SimaLand:
            :param passwd: пароль
            :param phone: телефон
            Документация https://www.sima-land.ru/api/v5/help#/page_regulations
+
+           После заливки овердохуя пустых рубрик, а также надо
+           фиксануть ссылки и привязку к контейнеру командами:
+           python manage.py search_empty_cats --drop_empty
+           python manage.py update_catalogue_links
         """
         self.api_url = ' https://www.sima-land.ru/api/v5'
         self.s = requests.Session()
@@ -263,6 +268,8 @@ class SimaLand:
                     #logging.info('%s not in pvalues' % item)
                     continue
                 product = Products.objects.filter(code='simaland_%s' % product_id).only('id').first()
+                if not product:
+                    continue
                 if prop_id in lazy_props:
                     prop = lazy_props[prop_id]
                 else:

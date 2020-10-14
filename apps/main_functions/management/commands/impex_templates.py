@@ -51,7 +51,10 @@ def export_templates():
                                     'apps/site/templates/web/containers/',
                                     template_fname)
         template_dest = os.path.join(settings.MEDIA_ROOT, path, template_fname)
-        shutil.copy2(template_src, template_dest)
+        if os.path.exists(template_src):
+            shutil.copy2(template_src, template_dest)
+        else:
+            logger.info('template not found %s' % template_src)
 
 def recursive_fill_blocks(container,
                           blocks: list,
@@ -131,7 +134,8 @@ def import_templates():
                                      'apps/site/templates/web/containers/',
                                      template_fname)
         if not os.path.exists(template_dest):
-            shutil.copy2(template_src, template_dest)
+            if os.path.exists(template_src):
+                shutil.copy2(template_src, template_dest)
 
 
 

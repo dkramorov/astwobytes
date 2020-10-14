@@ -39,7 +39,7 @@ def catalogue(request):
     """Каталог в виде меню - левый блок"""
     result = get_catalogue(
         request,
-        tag = 'catalogue',
+        tag = settings.DEFAULT_CATALOGUE_TAG,
         cache_time = 60,
         force_new = False)
     result['request'] = request
@@ -57,8 +57,15 @@ def best_cats(request):
     return result
 
 @register.inclusion_tag('web/tags/sidebar_cats.html')
-def sidebar_cats(request, tag: str = 'catalogue'):
+def sidebar_cats(request, tag: str = None):
     """Каталог в сайдбаре"""
+    if not tag:
+        tag = settings.DEFAULT_CATALOGUE_TAG
+        # Ищем альтернативные каталоги
+        link = request.META.get('PATH_INFO')
+        catalogue_tag, is_root_level = search_alt_catalogue(link)
+        if catalogue_tag:
+            tag = catalogue_tag
     result = get_catalogue(
         request,
         tag = tag,

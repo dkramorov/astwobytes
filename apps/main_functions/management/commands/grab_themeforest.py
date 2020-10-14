@@ -3,6 +3,7 @@ import re
 import os
 import requests
 import logging
+import urllib.parse
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -223,12 +224,17 @@ class Parser:
           # -----------
           item = item[1:]
           url = self.base_path + item
+          # Фикс на слитный адрес, надо чтобы
+          # base_path кончался на слеш
+          if not self.base_path.endswith('/') and not item.startswith('/'):
+              self.base_path += '/'
+
           check_file = self.grab_file(url, False)
           if check_file:
               return self.base_path + item
           # Разбиваем url - оставляем только домен (+/)
           else:
-              url_array = urlparse.urlparse(self.base_path)
+              url_array = urllib.parse.urlparse(self.base_path)
               url = url_array.scheme + '://' + url_array.netloc + '/' + item
               check_file = self.grab_file(url, False)
               if check_file:

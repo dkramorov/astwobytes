@@ -25,4 +25,4 @@ sentry-sdk==0.14.1
 django-boto==0.3.12
 sphinx==3.0.4
 xhtml2pdf==0.2.4
-#mammoth==1.4.12 # docx2html
+mammoth==1.4.12 # docx2html

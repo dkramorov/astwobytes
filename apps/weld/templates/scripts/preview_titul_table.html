@@ -1,0 +1,169 @@
+<script type="text/javascript">
+var excel_table = null;
+$(document).ready(function(){
+  var welding_types = {
+    "": "Без фильтра",
+    {% for welding_type in welding_types %}
+      {{ welding_type.0 }}: "{{ welding_type.1 }}",
+    {% endfor %}
+  };
+  var material_choices = {
+    "": "Без фильтра",
+    {% for material in material_choices %}
+      {{ material.0 }}: "{{ material.1 }}",
+    {% endfor %}
+  };
+  var conn_view_choices = {
+    "": "Без фильтра",
+    {% for conn_view_choice in conn_view_choices %}
+      {{ conn_view_choice.0 }}: "{{ conn_view_choice.1 }}",
+    {% endfor %}
+  };
+  var join_types = {
+    "": "Без фильтра",
+    {% for join_type in join_types %}
+      {{ join_type.0 }}: "{{ join_type.1 }}",
+    {% endfor %}
+  };
+  var weldingTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return welding_types[pk];
+  };
+  var materialFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return material_choices[pk];
+  };
+  var connViewFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return conn_view_choices[pk];
+  };
+  var joinTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return join_types[pk];
+  };
+  excel_table = new Tabulator("#excel-table", {
+    layout: "fitColumns",
+    height: "400",
+    columns:[
+      {
+        title: "Линия",
+        field: "line",
+        headerFilterPlaceholder: "Линия",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 120,
+      },
+      {
+        title: "Номер стыка",
+        field: "joint",
+        headerFilterPlaceholder: "Номер стыка",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 120,
+      },
+      {
+        title: "Материал",
+        field: "material",
+        headerFilterPlaceholder: "Материал",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: material_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: materialFormatter,
+        width: 90,
+      },
+      {
+        title: "Диаметр, мм",
+        field: "diameter",
+        headerFilterPlaceholder: "Диаметр, мм",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 70,
+      },
+      {
+        title: "Толщина, мм",
+        field: "side_thickness",
+        headerFilterPlaceholder: "Толщина, мм",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 70,
+      },
+      {
+        title: "Дата сварки",
+        field: "welding_date",
+        headerFilterPlaceholder: "Дата сварки",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 90,
+      },
+      {
+        title: "Тип сварки",
+        field: "welding_type",
+        headerFilterPlaceholder: "Тип сварки",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: welding_types,
+        },
+        editable: false,
+        editor: "select",
+        formatter: weldingTypeFormatter,
+        width: 90,
+      },
+      {
+        title: "Вид сварного соединения",
+        field: "welding_conn_view",
+        headerFilterPlaceholder: "Вид сварного соединения",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: conn_view_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: connViewFormatter,
+        width: 90,
+      },
+      {
+        title: "Свар. эл. 1",
+        field: "join_type_from",
+        headerFilterPlaceholder: "Свар. эл. 1",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: join_types,
+        },
+        editable: false,
+        editor: "select",
+        formatter: joinTypeFormatter,
+        width: 90,
+      },
+      {
+        title: "Свар. эл. 2",
+        field: "join_type_to",
+        headerFilterPlaceholder: "Свар. эл. 2",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: join_types,
+        },
+        editable: false,
+        editor: "select",
+        formatter: joinTypeFormatter,
+        width: 90,
+      },
+      {
+        title: "Клеймо сварщика",
+        field: "stigma",
+        headerFilterPlaceholder: "Клеймо сварщика",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 90,
+      },
+    ],
+  });
+});
+</script>

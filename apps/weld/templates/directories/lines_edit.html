@@ -36,6 +36,18 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-lg-2 control-label">Стыков по проекту</label>
+            <div class="col-lg-10">
+              <input type="number" step="1" placeholder="Стыков по проекту" class="form-control" name="project_joint_count" value="{% if row.project_joint_count %}{{ row.project_joint_count }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">D-inc по проекту</label>
+            <div class="col-lg-10">
+              <input type="number" step="0.01" placeholder="D-inc по проекту" class="form-control" name="project_dinc" value="{% if row.project_dinc %}{{ row.project_dinc }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-2 control-label">Титул</label>
             <div class="col-lg-10">
               <select id="titul_select2" name="titul" autocomplete="off"  data-parsley-required>

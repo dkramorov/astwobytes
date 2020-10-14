@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
+from django.conf import settings
 
 from apps.flatcontent.models import Blocks
 from apps.flatcontent.views import SearchLink
@@ -12,8 +13,10 @@ from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
 from apps.main_functions.views import DefaultFeedback
 from apps.products.models import Products
 from apps.personal.oauth import VK, Yandex
-from apps.personal.utils import remove_user_from_request
-from apps.shop.cart import calc_cart, get_shopper
+from apps.personal.utils import save_user_to_request, remove_user_from_request
+from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site
+from apps.shop.cart import calc_cart, get_shopper, create_new_order
+from apps.shop.models import Orders
 
 CUR_APP = 'main'
 main_vars = {
@@ -79,7 +82,7 @@ def cat_on_site(request, link: str = None):
         },
     }
     context = get_cat_for_site(request, link, **kwargs)
-    if not context.get('catalogue'):
+    if not context.get(settings.DEFAULT_CATALOGUE_TAG):
         raise Http404
     containers = {}
 
@@ -153,6 +156,93 @@ def registration(request):
     q_string = {}
     containers = {}
 
+    shopper = get_shopper(request)
+    if shopper:
+        return redirect(reverse('%s:%s' % (CUR_APP, 'show_profile')))
+    # -----------
+    # регистрация
+    # -----------
+    if request.method == 'POST':
+        result = register_from_site(request)
+        if isinstance(result, list):
+             context['errors'] = result;
+        else:
+             save_user_to_request(request, result)
+             context['shopper'] = result.to_dict()
+             context['redirect'] = reverse('%s:%s' % (CUR_APP, 'show_profile'))
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/login/registration.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=reg_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Регистрация',
+        'link': reverse('%s:%s' % (CUR_APP, 'registration')),
+    }]
+    context['page'] = page
+    context['containers'] = containers
+    context['vk_link'] = VK().get_auth_user_link()
+    context['yandex_link'] = Yandex().get_auth_user_link()
+
+    return render(request, template, context)
+
+profile_vars = {
+    'singular_obj': 'Ваш аккаунт',
+    'template_prefix': 'main_',
+    'show_urla': 'profile',
+}
+
+def show_profile(request):
+    """Личный кабинет пользователя"""
+    mh_vars = profile_vars.copy()
+    context = {}
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+    if not shopper:
+        return redirect(reverse('%s:%s' % (CUR_APP, 'registration')))
+
+    if request.method == 'POST':
+        result = update_profile_from_site(request)
+        if isinstance(result, list):
+             context['errors'] = result;
+        else:
+             save_user_to_request(request, result)
+             context['shopper'] = result.to_dict()
+             context['redirect'] = reverse('%s:%s' % (CUR_APP, 'show_profile'))
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/login/profile.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=mh_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Ваш аккаунт',
+        'link': reverse('%s:%s' % (CUR_APP, 'show_profile')),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+    context['shopper'] = shopper
+    context['orders'] = Orders.objects.filter(shopper=shopper).order_by('-created')[:50]
+    return render(request, template, context)
+
+def login(request):
+    """Авторизация пользователя"""
+    context = {}
+    result = login_from_site(request)
+    if isinstance(result, list):
+        context['errors'] = result
+    else:
+        save_user_to_request(request, result)
+        context['shopper'] = result.to_dict()
+        context['redirect'] = reverse('%s:%s' % (CUR_APP, 'show_profile'))
+
     if request.is_ajax():
         return JsonResponse(context, safe=False)
     template = 'web/login/registration.html'
@@ -183,7 +273,7 @@ cart_vars = {
 }
 
 def show_cart(request):
-    """Главная страничка сайта"""
+    """Оформление заказа - Корзинка"""
     mh_vars = cart_vars.copy()
     context = {}
     q_string = {}
@@ -192,11 +282,11 @@ def show_cart(request):
 
     if request.is_ajax():
         return JsonResponse(context, safe=False)
-    template = 'web/cart.html'
+    template = 'web/order/cart.html'
 
     page = SearchLink(q_string, request, containers)
     if not page:
-        page = Blocks(name=cart_vars['singular_obj'])
+        page = Blocks(name=mh_vars['singular_obj'])
     context['breadcrumbs'] = [{
         'name': 'Корзина',
         'link': reverse('%s:%s' % (CUR_APP, 'show_cart')),
@@ -205,5 +295,43 @@ def show_cart(request):
     context['page'] = page
     context['containers'] = containers
     context['cart'] = calc_cart(shopper, min_info=False)
+
+    return render(request, template, context)
+
+order_vars = {
+    'singular_obj': 'Подтверждение заказа',
+    'template_prefix': 'order_',
+    'show_urla': 'cart',
+}
+
+def checkout(request):
+    """Оформление заказа - Подтверждение заказа"""
+    mh_vars = order_vars.copy()
+    context = {}
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/order/checkout.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=order_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Подтверждение заказа',
+        'link': reverse('%s:%s' % (CUR_APP, 'checkout')),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+    cart = calc_cart(shopper, min_info=False)
+    context['cart'] = cart
+
+    # Оформление заказа
+    context.update(**create_new_order(request, shopper, cart))
+    if 'order' in context and context['order']:
+        template = 'web/order/confirmed.html'
 
     return render(request, template, context)

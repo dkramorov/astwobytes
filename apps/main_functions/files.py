@@ -22,32 +22,66 @@ def image_size(img_name, path):
         return None
     return img.size
 
-
-def unzip(fname, folder, pref='', z=0):
-    """Функция распаковки изображений из zip
-     z - счетчик (имя файла), pref - префикс (временное имя файла)"""
+def unzip(fname: str, folder: str, pref: str = '', z: int = 0):
+    """Функция распаковки из zip
+    z - счетчик (имя файла), pref - префикс (временное имя файла)"""
     import zipfile
+    rega_eng = re.compile('[^0-9a-z\.-]+', re.I+re.U+re.DOTALL)
     fname = os.path.join(DEFAULT_FOLDER, fname) # zip
     folder = os.path.join(DEFAULT_FOLDER, folder)  # folder
     if not folder.startswith(DEFAULT_FOLDER):
-        return None
-    if  zipfile.is_zipfile(fname):
-        archive = zipfile.ZipFile(fname, 'r')
-        names = archive.namelist()
-        images = []
-        for name in names:
-            if name.endswith("/"): # Директория
-              continue
-            ext = extension(name)
-            if ext:
-                cur_name = str(z)+pref+ext # Новое имя файла
-                outfile = open(os.path.join(folder, cur_name), 'wb')
+        return []
+    make_folder(folder)
+    items = []
+    if zipfile.is_zipfile(fname):
+        with zipfile.ZipFile(fname, 'r') as archive:
+            names = archive.namelist()
+            for name in names:
+                if name.endswith('/'): # Директория
+                    continue
+                ext = name.split('.')[-1]
+
+                cur_name = name.split('/')[-1]
+                cur_name = '%s___%s' % (z, rega_eng.sub('-', cur_name))
+                #cur_name = '%s%s.%s' % (z, pref, ext) # Новое имя файла
+                #cur_name = '%s-%s.%s' % (name, z, ext) # Новое имя файла
+                dest = os.path.join(folder, cur_name)
+                outfile = open(dest, 'wb+')
                 outfile.write(archive.read(name))
                 outfile.close()
-                images.append(cur_name)
-                z = z + 1
-        return images
-    return None
+                items.append(cur_name)
+                z += 1
+    return items
+
+def docx2html(path: str):
+    """Конвертация docx в html
+       :param path: путь к docx файлам
+    """
+    import mammoth
+    if check_path(path):
+        return
+    path = os.path.join(DEFAULT_FOLDER, path)
+    if not path.startswith(DEFAULT_FOLDER):
+        return
+    files = ListDir(path)
+    for item in files:
+        cur_item = os.path.join(path, item)
+        if not item.endswith('.docx'):
+            drop_file(cur_item)
+            continue
+        with open(full_path(cur_item), 'rb') as docx_file:
+            try:
+                result = mammoth.convert_to_html(docx_file)
+            except Exception as e:
+                drop_file(cur_item)
+                logger.info('[ERROR]: %s' % e)
+                continue
+            html = result.value
+            #messages = result.messages
+            dest = os.path.join(path, item.replace('.docx', '.html'))
+            with open_file(dest, 'w+') as f:
+                f.write(html)
+            drop_file(cur_item)
 
 def copy_file(fname, dest):
     """Функция копирования файла"""

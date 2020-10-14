@@ -7,7 +7,13 @@
 {% endblock %}
 
 {% block content %}
-<form action="#">
+{% if not cart %}
+  <article class="stylization">
+    <div class="woocommerce">
+      <h2 class="text-center pt-100 pb-100">Ваша корзина пуста, сначала выберите, что хотите купить</h2>
+    </div>
+  </article>
+{% else %}
   <div class="cart-items-wrap">
     <table class="cart-items">
       <thead>
@@ -65,14 +71,17 @@
       <input placeholder="Купон" type="text">
       <a class="cart-coupon-btn" href="javascript:void(0);"><img src="/media/misc/ok.png" alt="купон"></a>
     </div>
-    <a href="#" class="cart-submit-btn">Оформить заказ</a>
-    <a href="#" class="cart-clear">Очистить корзину</a>
+    <a href="/shop/checkout/" class="cart-submit-btn">Оформить заказ</a>
+    <!--<a href="#" class="cart-clear">Очистить корзину</a>-->
   </div>
-</form>
+{% endif %}
+
 {% for container in page.containers %}
   {% flatcontent request page container.container.tag %}
 {% endfor %}
 {% endblock %}
+
+{% block subscribe %}{% endblock %}
 
 {% block extrascripts %}
 <script type="text/javascript">

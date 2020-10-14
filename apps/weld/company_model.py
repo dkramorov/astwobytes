@@ -3,6 +3,11 @@ from django.db import models
 
 from apps.main_functions.models import Standard
 from apps.files.models import Files
+from apps.weld.enums import (WELDING_TYPES,
+                             MATERIALS,
+                             JOIN_TYPES, )
+
+
 """
 Верхний объект иерархии - это компания, затем объект,
 объект делится на титулы - области с установками,
@@ -113,6 +118,12 @@ class Line(Standard):
     scheme_number = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Номер изометрической схемы, например, 229-ВО-304SS-6" 2,5" C')
+    project_joint_count = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Кол-во стыков по проекту')
+    project_dinc = models.DecimalField(blank=True, null=True, db_index=True,
+        max_digits=9, decimal_places=2,
+        verbose_name='D-inc по проекту')
+
     # Изменение статуса заявки на стык
     # должно вызывать изменение этих значений
     # Нужно иметь возможность полностью пересчитать их
@@ -126,6 +137,9 @@ class Line(Standard):
     complete_joints = models.IntegerField(blank=True, null=True,
         db_index=True,
         verbose_name='Количество выполненных заявок на стык')
+    complete_dinc = models.DecimalField(blank=True, null=True, db_index=True,
+        max_digits=9, decimal_places=2,
+        verbose_name='Выполнено D-inc')
 
     class Meta:
         verbose_name = 'Структура - Линия'
@@ -185,6 +199,14 @@ class LineFile(models.Model):
 
 class Joint(Standard):
     """Стык, например, 26А"""
+    # Вид сварного соединения
+    welding_conn_view_choices = (
+        (1, 'С17'),
+        (2, 'У19'),
+        (3, 'У20'),
+        (4, 'С17/У20'),
+        (5, 'У18'),
+    )
     name = models.CharField(max_length=255,
         blank=True, null=True, db_index=True)
     line = models.ForeignKey(Line,
@@ -196,6 +218,21 @@ class Joint(Standard):
     side_thickness = models.DecimalField(blank=True, null=True, db_index=True,
         max_digits=9, decimal_places=2,
         verbose_name='Толщина стенки, например, 4,78')
+    welding_type = models.IntegerField(choices=WELDING_TYPES,
+        blank=True, null=True, db_index=True,
+        verbose_name='Тип сварки, например, РД')
+    material = models.IntegerField(choices=MATERIALS,
+        blank=True, null=True, db_index=True,
+        verbose_name='Материал - сталь, например, 09Г2С')
+    join_type_from = models.IntegerField(choices=JOIN_TYPES,
+        blank=True, null=True, db_index=True,
+        verbose_name='Свариваемые элементы, например, тройник/переходник')
+    join_type_to = models.IntegerField(choices=JOIN_TYPES,
+        blank=True, null=True, db_index=True,
+        verbose_name='Свариваемые элементы, например, тройник/труба')
+    welding_conn_view = models.IntegerField(choices=welding_conn_view_choices,
+        blank=True, null=True, db_index=True,
+        verbose_name='Вид сварного соединения, например, C17')
     dinc = models.DecimalField(blank=True, null=True, db_index=True,
         max_digits=9, decimal_places=2,
         verbose_name='D-inc, например, 6.30, нужен для отчетов, рассчитывается динамически, например, диаметр(160)/константа(25.4)=6.30')
@@ -220,4 +257,14 @@ class Joint(Standard):
         # Обновляем номер заявки, если она есть
         if exist and hasattr(self, 'welding_joint'):
             self.welding_joint.update_request_number()
+
+    def get_welders(self):
+        """Получить сварщиков по стыку"""
+        if not self.id:
+            return {}
+        result = {}
+        welders = self.jointwelder_set.select_related('welder').all()
+        for welder in welders:
+            result[welder.position] = welder.welder
+        return result
 

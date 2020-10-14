@@ -1171,6 +1171,10 @@
                         }
                     }
                     settings.complete(response, xhr);
+                } else {
+                    if (xhr.status == 500 || xhr.status == 502) {
+                        settings.error(xhr.responseText);
+                    }
                 }
             };
             xhr.send(formData);

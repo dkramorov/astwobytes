@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
+from django.conf import settings
 
 from apps.flatcontent.models import Blocks
 from apps.flatcontent.views import SearchLink
@@ -81,7 +82,7 @@ def cat_on_site(request, link: str = None):
         },
     }
     context = get_cat_for_site(request, link, **kwargs)
-    if not context.get('catalogue'):
+    if not context.get(settings.DEFAULT_CATALOGUE_TAG):
         raise Http404
     containers = {}
 
@@ -187,6 +188,11 @@ def registration(request):
     context['yandex_link'] = Yandex().get_auth_user_link()
 
     return render(request, template, context)
+
+def logout(request):
+    """Деавторизация пользователя"""
+    remove_user_from_request(request)
+    return redirect(reverse('%s:%s' % (CUR_APP, 'registration')))
 
 profile_vars = {
     'singular_obj': 'Ваш аккаунт',

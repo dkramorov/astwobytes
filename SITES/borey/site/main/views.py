@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
+from django.conf import settings
 
 from apps.flatcontent.views import SearchLink
 from apps.main_functions.views import DefaultFeedback
@@ -68,7 +69,7 @@ def cat_on_site(request, link: str = None):
     """
     mh_vars = cat_vars.copy()
     context = get_cat_for_site(request, link)
-    if not context.get('catalogue'):
+    if not context.get(settings.DEFAULT_CATALOGUE_TAG):
         raise Http404
     q_string = {}
     containers = {}

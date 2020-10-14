@@ -4,10 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from apps.main_functions.models import Standard
-from apps.weld.enums import (WELDING_TYPES,
-                             MATERIALS,
-                             JOIN_TYPES,
-                             WELDING_JOINT_STATES,
+from apps.weld.enums import (WELDING_JOINT_STATES,
                              WELDING_TYPE_DESCRIPTIONS,
                              CONCLUSION_STATES, )
 from apps.weld.welder_model import Welder
@@ -36,14 +33,6 @@ class WeldingJoint(Standard):
         (11, 'ВК'), # Входной контроль
         (12, 'СР'), # Скрытые работы
     )
-    # Вид сварного соединения
-    welding_conn_view_choices = (
-        (1, 'С17'),
-        (2, 'У19'),
-        (3, 'У20'),
-        (4, 'С17/У20'),
-        (5, 'У18'),
-    )
     # Категория
     category_choices = (
         (1, 'I'),
@@ -63,15 +52,6 @@ class WeldingJoint(Standard):
     repair = models.IntegerField(choices=repair_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Ремонт, например, 2 (второй ремонт)')
-    material = models.IntegerField(choices=MATERIALS,
-        blank=True, null=True, db_index=True,
-        verbose_name='Материал - сталь, например, 09Г2С')
-    join_type_from = models.IntegerField(choices=JOIN_TYPES,
-        blank=True, null=True, db_index=True,
-        verbose_name='Свариваемые элементы, например, тройник/переходник')
-    join_type_to = models.IntegerField(choices=JOIN_TYPES,
-        blank=True, null=True, db_index=True,
-        verbose_name='Свариваемые элементы, например, тройник/труба')
     workshift = models.IntegerField(choices=workshift_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Номер, смены, например, 1')
@@ -83,12 +63,6 @@ class WeldingJoint(Standard):
     control_type = models.IntegerField(choices=control_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Вид контроля, например, РК')
-    welding_conn_view = models.IntegerField(choices=welding_conn_view_choices,
-        blank=True, null=True, db_index=True,
-        verbose_name='Вид сварного соединения, например, C17')
-    welding_type = models.IntegerField(choices=WELDING_TYPES,
-        blank=True, null=True, db_index=True,
-        verbose_name='Тип сварки, например, РД')
     category = models.IntegerField(choices=category_choices,
         blank=True, null=True, db_index=True,
         verbose_name='Категория, например I')
@@ -178,9 +152,9 @@ class JointWelder(models.Model):
     welder = models.ForeignKey(Welder,
         blank=True, null=True, on_delete=models.CASCADE,
         verbose_name='Сварщик')
-    welding_joint = models.ForeignKey(WeldingJoint,
+    joint = models.ForeignKey(Joint,
         blank=True, null=True, on_delete=models.CASCADE,
-        verbose_name='Заявка на стык')
+        verbose_name='Стык')
     actually = models.BooleanField(default=False,
         blank=True, null=True, db_index=True,
         verbose_name='Фактический сварщик (тот, кто проводит работы), другие сващики могут быть указаны в заявках, потому что у фактических нет допуска')
@@ -255,8 +229,12 @@ def recalc_joints(line: Line):
         'repair_joints': {'state': 4, 'count': 0},
         'complete_joints': {'state': 3, 'count': 0},
     }
+    complete_dinc = 0
     query = WeldingJoint.objects.filter(joint__line=line)
     for key, value in result.items():
         result[key]['count'] = query.filter(state=value['state']).aggregate(models.Count('id'))['id__count']
+        if key == 'complete_joints':
+            complete_dinc = query.filter(state=value['state']).aggregate(models.Sum('joint__dinc'))['joint__dinc__sum']
     params = {key: value['count'] for key, value in result.items()}
+    params['complete_dinc'] = complete_dinc
     Line.objects.filter(pk=line.id).update(**params)

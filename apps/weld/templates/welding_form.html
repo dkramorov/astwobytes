@@ -129,20 +129,26 @@
               <p class="text-right">Свариваемые элементы</p>
             </div>
             <div class="col-lg-3">
-              <select id="join_type_from_select2" name="join_type_from" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="Свар. элемент 1" class="form-control" name="join_type_from" value="{% for join_type in join_types %}{% ifequal join_type.0 row.joint.join_type_from %}{{ join_type.1 }}{% endifequal %}{% endfor %}" autocomplete="off" disabled>
+<!--
+              <select id="join_type_from_select2" name="join_type_from" autocomplete="off">
                 <option value="">Не выбрано</option>
                 {% for join_type in join_types %}
                   <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_from %} selected{% endifequal %}>{{ join_type.1 }}</option>
                 {% endfor %}
               </select>
+-->
             </div>
             <div class="col-lg-3">
-              <select id="join_type_to_select2" name="join_type_to" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="Свар. элемент 2" class="form-control" name="join_type_to" value="{% for join_type in join_types %}{% ifequal join_type.0 row.joint.join_type_to %}{{ join_type.1 }}{% endifequal %}{% endfor %}" autocomplete="off" disabled>
+<!--
+              <select id="join_type_to_select2" name="join_type_to" autocomplete="off">
                 <option value="">Не выбрано</option>
                 {% for join_type in join_types %}
                   <option value="{{ join_type.0 }}"{% ifequal join_type.0 row.join_type_to %} selected{% endifequal %}>{{ join_type.1 }}</option>
                 {% endfor %}
               </select>
+-->
             </div>
           </div>
 
@@ -151,12 +157,15 @@
               <p class="text-right">Материал (сталь)</p>
             </div>
             <div class="col-lg-6">
+              <input type="text" placeholder="Материал (сталь)" class="form-control" name="material" value="{% for material in material_choices %}{% ifequal material.0 row.joint.material %}{{ material.1 }}{% endifequal %}{% endfor %}" autocomplete="off" disabled>
+<!--
               <select id="material_select2" name="material" autocomplete="off" data-parsley-required>
                 <option value="">Не выбрано</option>
                 {% for material in material_choices %}
                   <option value="{{ material.0 }}"{% ifequal material.0 row.material %} selected{% endifequal %}>{{ material.1 }}</option>
                 {% endfor %}
               </select>
+-->
             </div>
           </div>
 
@@ -183,12 +192,7 @@
               <p class="text-right">Сварщик 1</p>
             </div>
             <div class="col-lg-6">
-              <select id="welder1_select2" name="welder1" autocomplete="off" data-parsley-required>
-                <option value="">Не выбрано</option>
-                {% if welders.1 %}
-                  <option value="{{ welders.1.id }}" selected>{{ welders.1.name }} - {{ welders.1.stigma }}</option>
-                {% endif %}
-              </select>
+              <input type="text" placeholder="Сварщик 1" class="form-control" name="welder1" value="{% if welders.1 %}{{ welders.1.name }} - {{ welders.1.stigma }}{% endif %}" autocomplete="off" disabled>
             </div>
           </div>
 
@@ -197,12 +201,7 @@
               <p class="text-right">Сварщик 2</p>
             </div>
             <div class="col-lg-6">
-              <select id="welder2_select2" name="welder2" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% if welders.2 %}
-                  <option value="{{ welders.2.id }}" selected>{{ welders.2.name }} - {{ welders.2.stigma }}</option>
-                {% endif %}
-              </select>
+              <input type="text" placeholder="Сварщик 2" class="form-control" name="welder2" value="{% if welders.2 %}{{ welders.2.name }} - {{ welders.2.stigma }}{% endif %}" autocomplete="off" disabled>
             </div>
           </div>
 
@@ -211,12 +210,7 @@
               <p class="text-right">Сварщик 1 по факту</p>
             </div>
             <div class="col-lg-6">
-              <select id="welder3_select2" name="welder3" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% if welders.3 %}
-                  <option value="{{ welders.3.id }}" selected>{{ welders.3.name }}</option>
-                {% endif %}
-              </select>
+              <input type="text" placeholder="Сварщик 3" class="form-control" name="welder3" value="{% if welders.3 %}{{ welders.3.name }} - {{ welders.3.stigma }}{% endif %}" autocomplete="off" disabled>
             </div>
           </div>
 
@@ -225,12 +219,7 @@
               <p class="text-right">Сварщик 2 по факту</p>
             </div>
             <div class="col-lg-6">
-              <select id="welder4_select2" name="welder4" autocomplete="off">
-                <option value="">Не выбрано</option>
-                {% if welders.4 %}
-                  <option value="{{ welders.4.id }}" selected>{{ welders.4.name }}</option>
-                {% endif %}
-              </select>
+              <input type="text" placeholder="Сварщик 4" class="form-control" name="welder4" value="{% if welders.4 %}{{ welders.4.name }} - {{ welders.4.stigma }}{% endif %}" autocomplete="off" disabled>
             </div>
           </div>
 
@@ -239,12 +228,15 @@
               <p class="text-right">Вид сварного соединения</p>
             </div>
             <div class="col-lg-6">
-              <select id="welding_conn_view_select2" name="welding_conn_view" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="Вид сварного соединения" class="form-control" name="welding_conn_view" value="{% for welding_conn_view in welding_conn_view_choices %}{% ifequal welding_conn_view.0 row.joint.welding_conn_view %}{{ welding_conn_view.1 }}{% endifequal %}{% endfor %}" autocomplete="off" disabled>
+<!--
+              <select id="welding_conn_view_select2" name="welding_conn_view" autocomplete="off">
                 <option value="">Не выбрано</option>
                 {% for welding_conn_view in welding_conn_view_choices %}
                   <option value="{{ welding_conn_view.0 }}"{% ifequal welding_conn_view.0 row.welding_conn_view %} selected{% endifequal %}>{{ welding_conn_view.1 }}</option>
                 {% endfor %}
               </select>
+-->
             </div>
           </div>
 
@@ -253,12 +245,15 @@
               <p class="text-right">Тип сварки</p>
             </div>
             <div class="col-lg-6">
-              <select id="welding_type_select2" name="welding_type" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="Тип сварки" class="form-control" name="welding_type" value="{% for welding_type in welding_type_choices %}{% ifequal welding_type.0 row.joint.welding_type %}{{ welding_type.1 }}{% endifequal %}{% endfor %}" autocomplete="off" disabled>
+<!--
+              <select id="welding_type_select2" name="welding_type" autocomplete="off">
                 <option value="">Не выбрано</option>
                 {% for welding_type in welding_type_choices %}
-                  <option value="{{ welding_type.0 }}"{% ifequal welding_type.0 row.welding_type %} selected{% endifequal %}>{{ welding_type.1 }}</option>
+                  <option value="{{ welding_type.0 }}"{% ifequal welding_type.0 row.joint.welding_type %} selected{% endifequal %}>{{ welding_type.1 }}</option>
                 {% endfor %}
               </select>
+-->
             </div>
           </div>
 
@@ -572,25 +567,6 @@
         dataType: 'json',
       },
     });
-    for(var i=1; i<=4; i++){
-      $('#welder' + i + '_select2').select2({
-        placeholder: 'Выберите сварщика',
-        allowClear: false,
-        width: '100%',
-        ajax: {
-          url: "{% url 'welding:search_welders' %}",
-          data: function (params) {
-            var query = {
-              q: params.term,
-              page: params.page || 1,
-            }
-            return query;
-          },
-          cache: false,
-          dataType: 'json',
-        }
-      });
-    }
 
     $('#requester_select2').select2({
       placeholder: 'Выберите пользователя',
@@ -632,16 +608,6 @@
       allowClear: true,
       width: '100%',
     });
-    $('#welding_conn_view_select2').select2({
-      placeholder: 'Выберите вид сварного соединения',
-      allowClear: true,
-      width: '100%',
-    });
-    $('#welding_type_select2').select2({
-      placeholder: 'Выберите тип сварки',
-      allowClear: true,
-      width: '100%',
-    });
     $('#category_select2').select2({
       placeholder: 'Выберите категорию',
       allowClear: true,
@@ -649,21 +615,6 @@
     });
     $('#control_result_select2').select2({
       placeholder: 'Выберите результат контроля',
-      allowClear: true,
-      width: '100%',
-    });
-    $('#material_select2').select2({
-      placeholder: 'Выберите материал',
-      allowClear: true,
-      width: '100%',
-    });
-    $('#join_type_from_select2').select2({
-      placeholder: 'Свариваемый элемент',
-      allowClear: true,
-      width: '100%',
-    });
-    $('#join_type_to_select2').select2({
-      placeholder: 'Свариваемый элемент',
       allowClear: true,
       width: '100%',
     });

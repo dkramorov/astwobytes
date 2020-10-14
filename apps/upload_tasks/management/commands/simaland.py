@@ -43,15 +43,15 @@ class Command(BaseCommand):
         simaland.get_jwt()
         #simaland.get_categories()
 
-        started = time.time()
-        simaland.get_products()
-        elapsed = time.time() - started
-        print('[ELAPSED]', '%.2f' % elapsed)
+        #started = time.time()
+        #simaland.get_products()
+        #elapsed = time.time() - started
+        #print('[ELAPSED]', '%.2f' % elapsed)
 
         #simaland.get_product(8282)
         #simaland.get_units()
         #print(simaland.units)
 
         #Property.objects.all().delete()
-        simaland.get_props()
+        #simaland.get_props()
         simaland.get_attrs()

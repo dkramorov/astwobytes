@@ -7,10 +7,11 @@ logger = logging.getLogger('main')
 rega_rus2eng = re.compile('^[a-z0-9\s/-]+$', re.I+re.U+re.DOTALL)
 rega_eng2rus = re.compile('^[а-я0-9\s/-]+$', re.I+re.U+re.DOTALL)
 
-def replace_rus2eng(text):
+def replace_rus2eng(text:str, force_return: bool = False):
     """Заменяем русские символы на английские,
        если остаются русские символы - выдаем ошибку
        :param text: текст, где производим замены
+       :param force_return: возвратить то, что удалось преобразовать
     """
     if not text:
         return
@@ -36,14 +37,16 @@ def replace_rus2eng(text):
     text = text.replace('Е', 'E')
     search_rus = rega_rus2eng.match(text)
     if not search_rus:
-        logger.info('%s still has rus text' % text)
-        assert False
+        if not force_return:
+            logger.info('%s still has rus text' % text)
+            assert False
     return text
 
-def replace_eng2rus(text):
+def replace_eng2rus(text: str, force_return: bool = False):
     """Заменяем английские символы на русские,
        если остаются английские символы - выдаем ошибку
        :param text: текст, где производим замены
+       :param force_return: возвратить то, что удалось преобразовать
     """
     if not text:
         return
@@ -70,7 +73,8 @@ def replace_eng2rus(text):
     search_eng = rega_eng2rus.match(text)
     if not search_eng:
         logger.info('%s still has eng text' % text)
-        assert False
+        if not force_return:
+            assert False
     return text
 
 # Тип сварки
@@ -102,6 +106,11 @@ JOIN_TYPES = (
     (6, 'фланец'),
     (7, 'штуцер'),
     (8, 'бобышка'),
+    (9, 'пробка'),
+    (10, 'клапан'),
+    (11, 'задвижка'),
+    (12, 'кран'),
+    (13, 'затвор'),
 )
 WELDING_JOINT_STATES = (
     (1, 'Новый'),
@@ -134,3 +143,10 @@ def get_welding_joint_state(state: str = None):
     if not state in state_choices:
         return None
     return state_choices[state]
+
+DIAMETERS = (
+  10, 11, 13, 14, 15, 20, 21, 22, 25, 27, 28, 32,
+  33, 35, 45, 50, 57, 60, 80, 89, 100, 108, 109,
+  110, 114, 159, 168, 219, 273, 284, 325, 377,
+  426, 477, 530, 820, 1200,
+)

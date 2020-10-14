@@ -29,6 +29,30 @@ var state_choices = {
   {% endfor %}
 };
 $(document).ready(function(){
+  var welding_type_choices = {
+    "": "Без фильтра",
+    {% for welding_type_choice in welding_type_choices %}
+      {{ welding_type_choice.0 }}: "{{ welding_type_choice.1 }}",
+    {% endfor %}
+  };
+  var material_choices = {
+    "": "Без фильтра",
+    {% for material in material_choices %}
+      {{ material.0 }}: "{{ material.1 }}",
+    {% endfor %}
+  };
+  var join_types = {
+    "": "Без фильтра",
+    {% for join_type in join_types %}
+      {{ join_type.0 }}: "{{ join_type.1 }}",
+    {% endfor %}
+  };
+  var conn_view_choices = {
+    "": "Без фильтра",
+    {% for conn_view_choice in welding_conn_view_choices %}
+      {{ conn_view_choice.0 }}: "{{ conn_view_choice.1 }}",
+    {% endfor %}
+  };
   var actionsJointFormatter = function(cell, formatterParams, onRendered){
     var row = cell.getRow();
     var rowIndex = row.getIndex();
@@ -43,6 +67,22 @@ $(document).ready(function(){
     {% endif %}
     actions += "</div>";
     return actions;
+  };
+  var weldingTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return welding_type_choices[pk];
+  };
+  var materialFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return material_choices[pk];
+  };
+  var connViewFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return conn_view_choices[pk];
+  };
+  var joinTypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return join_types[pk];
   };
   var lineFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
@@ -83,7 +123,27 @@ $(document).ready(function(){
     }
     return "<p class='text-center'>" + result + "</p>";
   };
+  var stigmaFormatter = function(cell, formatterParams, onRendered){
+    var result = "";
+    var data = cell.getRow().getData();
+    for(var i=0; i<data['stigma'].length; i++){
+      result += data['stigma'][i] + "<br>";
+    }
+    return result;
+  };
 
+  var accessor_welding_type = function(value, data, type, params, column){
+    return welding_type_choices[value];
+  }
+  var accessor_material = function(value, data, type, params, column){
+    return material_choices[value];
+  }
+  var accessor_join_type = function(value, data, type, params, column){
+    return join_types[value];
+  }
+  var accessor_conn_view = function(value, data, type, params, column){
+    return conn_view_choices[value];
+  }
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
     columns:[
@@ -93,7 +153,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Номер узла",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 90,
+        width: 90,
       },
       {
         title: "Дата сварки",
@@ -101,7 +161,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Дата сварки",
         headerFilter: "input",
         headerFilterFunc: "=",
-        minWidth: 90,
+        width: 90,
       },
       {
         title: "Толщина стенки",
@@ -109,7 +169,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Толщина стенки",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 90,
+        width: 70,
       },
       {
         title: "Диаметр",
@@ -117,7 +177,82 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Диаметр",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 90,
+        width: 70,
+      },
+      {
+        title: "Материал",
+        field: "material",
+        headerFilterPlaceholder: "Материал",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: material_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: materialFormatter,
+        width: 90,
+        accessorDownload: accessor_material,
+      },
+      {
+        title: "Свар. эл. 1",
+        field: "join_type_from",
+        headerFilterPlaceholder: "Свар. эл. 1",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: join_types,
+        },
+        editable: false,
+        editor: "select",
+        formatter: joinTypeFormatter,
+        width: 90,
+        accessorDownload: accessor_join_type,
+      },
+      {
+        title: "Свар. эл. 2",
+        field: "join_type_to",
+        headerFilterPlaceholder: "Свар. эл. 2",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: join_types,
+        },
+        editable: false,
+        editor: "select",
+        formatter: joinTypeFormatter,
+        width: 90,
+        accessorDownload: accessor_join_type,
+      },
+      {
+        title: "Вид сварного соединения",
+        field: "welding_conn_view",
+        headerFilterPlaceholder: "Вид сварного соединения",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: conn_view_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: connViewFormatter,
+        width: 90,
+        accessorDownload: accessor_conn_view,
+      },
+      {
+        title: "Тип сварки",
+        field: "welding_type",
+        headerFilterPlaceholder: "Тип сварки",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: welding_type_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: weldingTypeFormatter,
+        width: 90,
+        accessorDownload: accessor_welding_type,
       },
       {
         title: "D'Inch",
@@ -125,7 +260,16 @@ $(document).ready(function(){
         headerFilterPlaceholder: "D'Inch",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 90,
+        width: 90,
+      },
+      {
+        title: "Клеймо",
+        field: "jointwelder__welder__stigma",
+        headerFilterPlaceholder: "Клеймо",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: stigmaFormatter,
+        width: 90,
       },
       {
         title: "Статус",
@@ -149,7 +293,7 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: lineFormatter,
-        minWidth: 90,
+        width: 90,
       },
       {
         title: "Титул",
@@ -158,8 +302,9 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: titulFormatter,
-        minWidth: 90,
+        width: 90,
       },
+/*
       {
         title: "Объект",
         field: "line__titul__subject__name",
@@ -167,7 +312,7 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: subjectFormatter,
-        minWidth: 90,
+        width: 90,
       },
       {
         title: "Компания",
@@ -176,8 +321,9 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: companyFormatter,
-        minWidth: 90,
+        width: 90,
       },
+*/
       {
         title: "Действия",
         field: "actions",

@@ -77,7 +77,6 @@ CUSTOM_APPS = [
 # Сайт
 if env('SITE_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.site')
-
 if env('AFISHA_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.afisha')
 if env('SPAMCHA_APP', cast=bool, default=False):
@@ -169,7 +168,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'conf.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 #DATABASES = {
@@ -197,7 +195,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -207,7 +204,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -305,6 +301,8 @@ LOGGING = {
     },
 }
 
+DEFAULT_CATALOGUE_TAG = env('DEFAULT_CATALOGUE_TAG', default='catalogue')
+
 # -----------------------
 # Настройки телеграм-бота
 # -----------------------
@@ -319,6 +317,11 @@ TELEGRAM_ENABLED = env('TELEGRAM_ENABLED', cast=bool, default=False)
 WS_CHAT = env('WS_CHAT', cast=bool, default=True)
 WS_SERVER = env('WS_SERVER', default='ws://127.0.0.1:8888/')
 WS_SECRET = env('WS_SECRET', default='bugogashenki')
+
+# -------
+# SMS_HUB
+# -------
+SMS_HUB_TOKEN = env('SMS_HUB_TOKEN', default='')
 
 # -------------------
 # Freeswitch settings

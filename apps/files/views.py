@@ -130,6 +130,16 @@ def ReturnFile(request, link):
     """Возвращаем файл"""
     if not link.startswith('/'):
         link = '/%s' % link
+    # Заебал этот фавикон, думаю,
+    # одна проверка на него не напряжет
+    if link == '/favicon.ico':
+        path = '%s/img/favicon.ico' % settings.STATIC_ROOT.rstrip('/')
+        with open(path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='image/x-icon')
+        response['Content-Length'] = file_size(path)
+        response['Content-Disposition'] = 'inline; filename=%s' % (path, )
+        return response
+
     search_file = Files.objects.filter(link=link, is_active=True).first()
     if search_file:
         path = '%s%s' % (search_file.get_folder(), search_file.path)
@@ -141,12 +151,5 @@ def ReturnFile(request, link):
             return response
         else: # файл не найден - лучше 404 отдать
             raise Http404
-    elif link == '/favicon.ico':
-        path = '%s/img/favicon.ico' % settings.STATIC_ROOT.rstrip('/')
-        with open(path, 'rb') as f:
-            response = HttpResponse(f.read(), content_type='image/x-icon')
-        response['Content-Length'] = file_size(path)
-        response['Content-Disposition'] = 'inline; filename=%s' % (path, )
-        return response
     return redirect("/")
 

@@ -6,9 +6,10 @@ from django.core.cache import cache
 from apps.main_functions.functions import recursive_fill, sort_voca
 from apps.main_functions.paginator import myPaginator, navigator
 from apps.main_functions.string_parser import q_string_fill
-from .models import Containers, Blocks, get_ftype
+from .models import Containers, Blocks, get_ftype, FAT_HIER
 
 is_products = False
+
 if 'apps.products' in settings.INSTALLED_APPS:
     is_products = True
     from apps.products.models import (Products,
@@ -134,13 +135,13 @@ def get_catalogue_products_count(tag: str,
 
     # получаем список из (ид категории, кол-во товаров)
     # <QuerySet [(53, 42), (54, 7), (55, 7)]>
-    pcats = ProductsCats.objects.filter(container__tag=tag).values_list('cat').annotate(products_count=Count('product', distinct=True))
+    pcats = ProductsCats.objects.filter(container__tag=tag, product__is_active=True, cat__is_active=True).values_list('cat').annotate(products_count=Count('product', distinct=True))
     pcats = list(pcats)
     cache.set(cache_var, pcats, cache_time)
     return pcats
 
 def get_catalogue(request,
-                  tag: str = 'catalogue',
+                  tag: str = None,
                   with_count: bool = False,
                   cache_time: int = 300,
                   force_new: bool = False):
@@ -151,6 +152,10 @@ def get_catalogue(request,
        :param cache_time: кэш
        :param force_new: получить каталог без кэша
     """
+    if not tag:
+        tag = settings.DEFAULT_CATALOGUE_TAG
+
+    pass_cache = False
     cache_var = '%s_%s_catalogue' % (
         settings.DATABASES['default']['NAME'],
         tag,
@@ -160,14 +165,22 @@ def get_catalogue(request,
         if with_count:
             inCache['products_count'] = get_catalogue_products_count(tag)
         return inCache
+    # Надо предусмотреть вытаскивание только нужных рубрик,
+    # потому что каталог может быть мега-пухлый
     container = Containers.objects.filter(
         tag = tag,
         state = 7,
-        is_active = True
+        is_active = True,
     ).first()
     menus = []
     if container:
+        # Если рубрик дохера, то будет больно
         cats = container.blocks_set.filter(is_active=True)
+        count = cats.aggregate(Count('id'))['id__count']
+        if count > FAT_HIER:
+            pass_cache = True
+            cats = cats.filter(parents='')
+
         menu_queryset = []
         recursive_fill(cats, menu_queryset, '')
         menus = sort_voca(menu_queryset)
@@ -175,7 +188,9 @@ def get_catalogue(request,
         'container': container,
         'menus': menus,
     }
-    cache.set(cache_var, result, cache_time)
+
+    if not pass_cache:
+        cache.set(cache_var, result, cache_time)
     if with_count:
         result['products_count'] = get_catalogue_products_count(tag)
     return result
@@ -205,7 +220,7 @@ def search_products(q: str):
 
 def create_new_cat():
     """Создать контейнер каталога"""
-    tag = 'catalogue'
+    tag = settings.DEFAULT_CATALOGUE_TAG
     container = Containers.objects.create(
         name = 'Каталог товаров',
         tag = tag,
@@ -214,7 +229,27 @@ def create_new_cat():
     )
     return container
 
-def get_cat_for_site(request, link: str = None,
+def search_alt_catalogue(link: str):
+    """Ищем альтернативные каталоги
+       :param link: ссылка на рубрику
+       :return: список тег каталога и флаг, что это корень
+    """
+    if not link or not link.startswith('/cat/'):
+        return None, None
+    link_parts = link.split('/')
+    # ссылка на корень каталога
+    is_root_level = len(link_parts) == 4
+    catalogue_tag = link_parts[2]
+    catalogue = Containers.objects.filter(
+        tag = catalogue_tag,
+        is_active = True,
+        state = 7).aggregate(Count('id'))['id__count']
+    if catalogue:
+        return catalogue_tag, is_root_level
+    return None, None
+
+def get_cat_for_site(request,
+                     link: str = None,
                      with_props: bool = True,
                      with_filters: bool = True, **kwargs):
     """Для ображения каталога на сайте по link
@@ -241,12 +276,21 @@ def get_cat_for_site(request, link: str = None,
 
     q_string_fill(request, q_string)
 
-    if link == '/cat/':
+    # Поиск альтернативных каталогов
+    tag = settings.DEFAULT_CATALOGUE_TAG
+    catalogue_tag, is_root_level = search_alt_catalogue(link)
+    if catalogue_tag:
+        tag = catalogue_tag
+
+    if link == '/cat/' or is_root_level:
+        is_root_level = True
         # Поиск всегда идет на /cat/
         q = q_string['q'].get('q')
-        catalogue = Containers.objects.filter(tag='catalogue', state=cat_type).first()
+        catalogue = Containers.objects.filter(tag=tag, state=cat_type).first()
         if not catalogue:
             catalogue = create_new_cat()
+        page.name = catalogue.name
+        page.link = link
         if q:
             page.name = 'Вы искали %s' % q
             ids_products, search_terms = search_products(q)
@@ -260,32 +304,37 @@ def get_cat_for_site(request, link: str = None,
             catalogue = page.container
         query = ProductsCats.objects.filter(cat__container=catalogue, product__is_active=True)
 
-    if catalogue:
-        breadcrumbs.append({'name': catalogue.name, 'link': '/cat/'})
-        if page.link:
-            if page.parents:
-                cond = Q()
-                cond.add(Q(cat=page), Q.OR)
-                cond.add(Q(cat__parents='%s_%s' % (page.parents, page.id)), Q.OR)
-                cond.add(Q(cat__parents__startswith='%s_%s_' % (page.parents, page.id)), Q.OR)
-                query = query.filter(cond)
+    if not catalogue:
+        return {
+            'page': page,
+            'q_string': q_string,
+            'breadcrumbs': breadcrumbs,
+            'error': 404,
+        }
 
-                ids_parents = [int(parent) for parent in page.parents.split('_') if parent]
-                parents = {}
-                search_parents = Blocks.objects.filter(pk__in=ids_parents)
-                for parent in search_parents:
-                    parents[parent.id] = parent
-                for item in ids_parents:
-                    parent = parents[item]
-                    breadcrumbs.append({'name': parent.name, 'link': parent.link})
-            else:
-                cond = Q()
-                cond.add(Q(cat=page), Q.OR)
-                cond.add(Q(cat__parents='_%s' % page.id), Q.OR)
-                cond.add(Q(cat__parents__startswith='%s_%s_' % (page.parents, page.id)), Q.OR)
-                query = query.filter(cond)
+    if not is_root_level:
+        breadcrumbs.append({'name': catalogue.name, 'link': catalogue.cat_link()})
+        page_parents = page.parents if page.parents else ''
+        cond = Q()
+        cond.add(Q(cat=page), Q.OR)
+        cond.add(Q(cat__parents='%s_%s' % (page_parents, page.id)), Q.OR)
+        cond.add(Q(cat__parents__startswith='%s_%s_' % (page_parents, page.id)), Q.OR)
+        # Выбираем только активные
+        pk_arr = ProductsCats.objects.filter(cond, cat__is_active=True).values_list('id', flat=True)
+        pk_arr = list(pk_arr) # чтобы в subquery не уходило
+        query = query.filter(pk__in=pk_arr, product__is_active=True)
 
-            breadcrumbs.append({'name': page.name, 'link': page.link})
+    if page.parents:
+        ids_parents = [int(parent) for parent in page.parents.split('_') if parent]
+        parents = {}
+        search_parents = Blocks.objects.filter(pk__in=ids_parents)
+        for parent in search_parents:
+            parents[parent.id] = parent
+        for item in ids_parents:
+            parent = parents[item]
+            breadcrumbs.append({'name': parent.name, 'link': parent.link})
+
+    breadcrumbs.append({'name': page.name, 'link': page.link})
 
     total_records = query.aggregate(Count('id'))['id__count']
 
@@ -309,9 +358,10 @@ def get_cat_for_site(request, link: str = None,
     paginator = navigator(my_paginator, q_string, paginator_template)
 
     # Фильтры по свойствам
-    # Фильтр по цене
+    # Фильтр по цене, но только если не сильно много товаров
+    # в противном случае это аяксом надо делать
     cost_filter = None
-    if with_filters:
+    if with_filters and total_records < FAT_HIER:
         costs = query.aggregate(Max('%sprice' % prefix), Min('%sprice' % prefix))
         cost_filter = {
             'min': costs['%sprice__min' % prefix],

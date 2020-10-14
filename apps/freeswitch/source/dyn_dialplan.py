@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
-# Обязательно нужно __init__.py иначе ошибка иморта будет
-# Скрипт должен лежать в папке scripts папки свича
-# Делает звонок с подменой номера
 import freeswitch
 import requests
 
+"""
+Обязательно нужно __init__.py иначе ошибка иморта будет
+Скрипт должен лежать в папке scripts папки свича
+Делает звонок с подменой номера
+"""
+
 host = 'https://callcenter.1sprav.ru'
 
-def log(msg, t="info"):
+def log(msg, t='info'):
     freeswitch.consoleLog(t, msg)
 
 def handler(session, args):
@@ -81,7 +84,7 @@ def fsapi(session, stream, env, args):
     stream.write(env.serialize())
 
 def runtime(args):
-    print args + "\n"
+    print args + '\n'
 
 def xml_fetch(params):
     xml = """<?xml version="1.0" encoding="UTF-8" standalone="no"?> <document type="freeswitch/xml"> <section name="dialplan" description="RE Dial Plan For FreeSWITCH"> <context name="rtmp"> <extension name="generated"> <condition> <action application="answer"/> <action application="playback" data="${hold_music}"/> </condition> </extension> </context> </section> </document>"""

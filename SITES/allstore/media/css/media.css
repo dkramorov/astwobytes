@@ -1523,13 +1523,13 @@
     .auth-wrap .auth-col .auth-lost_password {
         padding: 0;
     }
-    /* Auth */
-
+    .prod-items.gridview .prod-i-img img {
+        position: relative;
+    }
 }
 
 
 @media only screen and (max-width : 380px) {
-
     /* Modal Form */
     .modalform {
         width: 275px;

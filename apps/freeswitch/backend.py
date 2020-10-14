@@ -17,13 +17,30 @@ import xmlrpc.client
 
 class FreeswitchBackend(object):
     """Работа со свичом через xmlrpc
+       https://freeswitch.org/confluence/display/FREESWITCH/FreeSWITCH+XML-RPC
+       https://freeswitch.org/confluence/display/FREESWITCH/mod_python
+
+       Скрипт питона можно вызвать прямо с консоли
+       freeswitch> python foo.bar
+       либо через диалплан
+       <action application="python" data="foo.bar"/>
+
        USAGE:
        uri = "http://monitor:cnfylfhnysq@10.1.250.6:8080"
-       fs = FreeswitchBackend(uri)"""
+       fs = FreeswitchBackend(uri)
+    """
 
     def __init__(self, uri):
         self.uri = uri
         self.server = xmlrpc.client.ServerProxy(uri)
+
+    def call_script(self, script: str, args: list):
+        """Вызов скрипта с аргументами
+           :param script: вызываемый python script
+           :param args: аргументы для скрипта
+        """
+        cmd = '%s %s' % (script, ' '.join(args))
+        self.server.freeswitch.api('python', cmd)
 
     def agent_set_status(self, agent: str, status: int):
         """Задать статус агенту в коллцентре"""

@@ -22,7 +22,8 @@ from .models import (Containers,
                      LinkContainer,
                      get_ftype,
                      update_containers_vars,
-                     update_blocks_vars, )
+                     update_blocks_vars,
+                     FAT_HIER, )
 
 is_products = False
 if 'apps.products' in settings.INSTALLED_APPS:
@@ -260,6 +261,7 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
         elif action == 'tree' and row:
             context['is_tree'] = True
             context['container'] = row
+            context['lazy'] = row.blocks_set.all().aggregate(Count('id'))['id__count'] > FAT_HIER
             mh.breadcrumbs_add({
                 'link': mh.url_edit,
                 'name': '%s %s' % ('Иерархия', mh.rp_singular_obj),
@@ -336,9 +338,8 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
                 children = row.productscats_set.all().aggregate(Count('id'))['id__count']
             if (action == 'create' or not children) and row.tag and row.state in (3, 7):
                 fill_from_template(row)
-            else:
-                # Записываем привязки товаров к рубрике
-                update_productscats(request, row, None)
+            # Записываем привязки товаров к рубрике
+            update_productscats(request, row, None)
 
         # --------------------
         # Загрузка изображения
@@ -566,11 +567,13 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
         cond.add(Q(parents__in=ids_parents), Q.OR)
         for parent in ids_parents:
             cond.add(Q(parents__startswith='%s_' % (parent, )), Q.OR)
-        # Если слишком много сложенных рубрик (больше 500) то не выводим
-        total_subrows = Blocks.objects.filter(container=mh_containers.row).filter(cond).aggregate(Count('id'))['id__count']
+        pk_arr = Blocks.objects.filter(container=mh_containers.row).filter(cond).values_list('id', flat=True)
+        pk_arr = list(pk_arr) # чтобы в subquery не уходило
+
+        # Если слишком много вложенных рубрик, то не выводим
         subrows = []
-        if total_subrows < 500:
-            subrows = Blocks.objects.filter(container=mh_containers.row).filter(cond)
+        if len(pk_arr) < FAT_HIER:
+            subrows = Blocks.objects.filter(container=mh_containers.row).filter(pk__in=pk_arr)
 
         result = []
         for row in rows:
@@ -831,15 +834,19 @@ def blocks_positions(request, ftype: str, container_id: int, *args, **kwargs):
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
-def prepare_jstree(data, menus):
+def prepare_jstree(data, menus, lazy: bool = False):
     """Вспомогательная функция для построения
-       меню из queryset в формат jstree"""
+       меню из queryset в формат jstree
+       :param data: результат
+       :param menus: иерархия менюшек
+       :param lazy: если хотим получать только текущий уровень
+    """
     for menu in menus:
         data.append({
             'id': menu.id,
             'text': menu.name,
             'state': {'opened': False, 'selected': False},
-            'children': [],
+            'children': [] if not lazy else True,
         })
         if hasattr(menu, 'sub'):
             if menu.sub:
@@ -923,6 +930,26 @@ def tree_co(request):
                 'state': {'opened': True, 'selected': False, 'disabled': True},
                 'children': data,
             }]
+        # Получить каталог с lazy загрузкой
+        elif operation == 'get_children_lazy' and mh.permissions['view']:
+            node_id = request.GET.get('node_id')
+            if not node_id:
+                result = [{
+                    'id': 'container_%s' % (container.id, ),
+                    'text': container.name,
+                    'state': {'opened': True, 'selected': False, 'disabled': True},
+                    #'children': data,
+                    'children': True,
+                }]
+            else:
+                if node_id.isdigit():
+                    menus = Blocks.objects.filter(container=container, parents__endswith='_%s' % node_id).order_by('position')
+                else:
+                    menus = Blocks.objects.filter(container=container, parents='').order_by('position')
+                data = []
+                prepare_jstree(data, menus, lazy=True)
+                result = data
+
         # Создание / редактирование рубрики
         elif operation == 'rename_node' and mh.permissions['edit']:
             node_id = request.GET.get('node_id')

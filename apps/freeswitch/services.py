@@ -146,3 +146,17 @@ def analyze_logs():
         if date < old_date:
             logger.info('Dropping %s' % (cur_path, ))
             drop_file(cur_path)
+
+def voice_code(dest, digit, script: str = 'hello.say_digit'):
+    """Апи-метод, чтобы позвонить на телефон и продиктовать код
+       :param dest: номер назначение
+       :param digit: число, которое сообщаем в назначение
+       Вызывается скрипт hello/say_digit.py
+    """
+    if not dest or not digit:
+        return 'error: phone or digit is absent'
+    if len(dest) != 11:
+        return 'error: phone is not 11 digits'
+    fs = FreeswitchBackend(settings.FREESWITCH_URI)
+    return fs.call_script(script, [dest, digit])
+

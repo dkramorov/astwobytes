@@ -49,16 +49,42 @@
 <script type="text/javascript">
 var main_table = null;
 // Websocket соединение для телефонов
-var ws = new WebSocket("{% if cert_path %}wss{% else %}ws{% endif %}://{{ host }}:{{ port }}");
+var ws = null;
+
+function check_ws_active(){
+  // Проверка состояния сокета
+  if(ws == null){
+    return false;
+  }
+  switch(ws.readyState){
+    case ws.OPEN:
+      return true;
+    case ws.CONNECTING:
+    case ws.CLOSING:
+    case ws.CLOSED:
+    default:
+      return false;
+  }
+}
 
 function send_sms(code){
+  if(!check_ws_active()){
+    alert('Websocket закрыт, подождите немного, если проблема не исчезнет, сообщите администратору');
+    return;
+  }
   var phone = $("#send_sms_phone").val();
   var text = $("#send_sms_text").val();
+  if(phone.length !== 11 || text.length < 2){
+    alert('Надо ввести телефон и текст сообщения');
+  }
   var body = {'send_sms': code, 'token': '{{ token }}', 'text': text, "receiver": phone};
   console.log('send', body);
   ws.send(JSON.stringify(body));
 }
-$(document).ready(function(){
+function websocket_client(){
+  // Функция инициализации вебсокета
+  // https://developer.mozilla.org/ru/docs/Web/API/WebSocket
+  ws = new WebSocket("{% if cert_path %}wss{% else %}ws{% endif %}://{{ host }}:{{ port }}");
   ws.onopen = function(e) {
     ws.send(JSON.stringify({'get_phones': true, 'token': '{{ token }}'}));
   };
@@ -97,18 +123,34 @@ $(document).ready(function(){
     }
   };
   ws.onclose = function(event) {
-    if (event.wasClean) {
-      //alert(`[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
-    } else {
-      // например, сервер убил процесс или сеть недоступна
-      // обычно в этом случае event.code 1006
-      //alert('[close] Соединение прервано');
-    }
+    var timeout = 3000;
+    console.log('Socket is closed. Reconnect will be attempted in ' + timeout + ' second', event.reason);
+    setTimeout(function() {
+      websocket_client();
+    }, timeout);
   };
   ws.onerror = function(error) {
     //alert(`[error] ${error.message}`);
   };
+}
+$(document).ready(function(){
+  websocket_client();
+
+  setInterval(function(){
+    if(check_ws_active()){
+      ws.send(JSON.stringify({'get_phones': true, 'token': '{{ token }}'}));
+    }else{
+      $(".icc_id").each(function(){
+        $(this).html('<i class="fa fa-minus"></i>');
+      });
+    }
+  }, 5000);
+
   $("#update_phones_states").click(function(){
+    if(!check_ws_active()){
+      alert('Websocket закрыт, подождите немного, если проблема не исчезнет, сообщите администратору');
+      return;
+    }
     ws.send(JSON.stringify({'get_phones': true, 'token': '{{ token }}'}));
   });
   var phoneStatusFormatter = function(cell, formatterParams, onRendered){
@@ -136,7 +178,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Телефон",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 150,
+        width: 120,
       },
       {
         title: "Код",
@@ -144,7 +186,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Код",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 150,
+        width: 150,
       },
       {
         title: "Отправлено",

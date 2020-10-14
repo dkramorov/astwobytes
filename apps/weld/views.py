@@ -31,7 +31,6 @@ from apps.weld.welder_model import (Welder,
                                     LetterOfGuarantee, )
 from apps.weld.conclusion_model import JointConclusion, RKFrames
 from .models import (WeldingJoint,
-                     JointWelder,
                      WeldingJointFile,
                      WeldingJointState,
                      recalc_joints, )
@@ -92,8 +91,8 @@ def show_welding(request, *args, **kwargs):
     mh.select_related_add('joint')
     mh.select_related_add('joint__line')
     mh.select_related_add('joint__line__titul')
-    mh.select_related_add('joint__line__titul__subject')
-    mh.select_related_add('joint__line__titul__subject__company')
+    #mh.select_related_add('joint__line__titul__subject')
+    #mh.select_related_add('joint__line__titul__subject__company')
     #mh.select_related_add('joint_conclusion')
     context = mh.context
     context['welding_joint_state_permissions'] = get_user_permissions(request.user, WeldingJointState)
@@ -101,12 +100,12 @@ def show_welding(request, *args, **kwargs):
     context['repair_choices'] = WeldingJoint.repair_choices
     context['workshift_choices'] = WeldingJoint.workshift_choices
     context['control_choices'] = WeldingJoint.control_choices
-    context['welding_conn_view_choices'] = WeldingJoint.welding_conn_view_choices
     context['welding_type_choices'] = WELDING_TYPES
     context['category_choices'] = WeldingJoint.category_choices
     context['conclusion_states'] = CONCLUSION_STATES
     context['material_choices'] = MATERIALS
     context['join_types'] = JOIN_TYPES
+    context['welding_conn_view_choices'] = Joint.welding_conn_view_choices
     context['state_choices'] = WELDING_JOINT_STATES
 
     if state and not 'state' in context['fas']['filters']:
@@ -131,19 +130,19 @@ def show_welding(request, *args, **kwargs):
             'joint__name',
             'joint__line__name',
             'joint__line__titul__name',
-            'joint__line__titul__subject__name',
-            'joint__line__titul__subject__company__name',
+            #'joint__line__titul__subject__name',
+            #'joint__line__titul__subject__company__name',
             'joint__diameter',
             'joint__side_thickness',
+            'joint__welding_type',
             'joint__welding_date',
+            'joint__material',
+            'joint__join_type_from',
+            'joint__join_type_to',
+            'joint__welding_conn_view',
             'repair',
-            'material',
-            'join_type_from',
-            'join_type_to',
             'workshift',
             'control_type',
-            'welding_conn_view',
-            'welding_type',
             'category',
             'control_result',
             'notice',
@@ -152,11 +151,19 @@ def show_welding(request, *args, **kwargs):
         rows = mh.standard_show(only_fields=only_fields)
         result = []
         fk_keys = {
-            'joint': ('name', 'diameter', 'side_thickness', 'welding_date'),
+            'joint': ('name',
+                      'diameter',
+                      'side_thickness',
+                      'welding_date',
+                      'material',
+                      'join_type_from',
+                      'join_type_to',
+                      'welding_conn_view',
+                      'welding_type'),
             'line': ('name', ),
             'titul': ('name', ),
-            'subject': ('name', ),
-            'company': ('name', ),
+            #'subject': ('name', ),
+            #'company': ('name', ),
         }
         # У нас может быть много заключений на одну заявку,
         # поэтому надо вытащить последнее заключение по ремонту
@@ -216,28 +223,6 @@ def show_welding(request, *args, **kwargs):
     context['url_form'] = reverse('%s:%s' % (CUR_APP, mh_vars['create_urla']),
                                   kwargs={'action': 'form'})
     return render(request, template, context)
-
-def update_welding_join_welders(request, mh):
-    """Заполненение сварщиками заявки на сварку
-       Вспомогательная функция для сохранения
-    """
-    if not (mh.permissions['create'] and mh.row and mh.row.id):
-        return
-    # Заполнение сварщиков
-    mh.row.jointwelder_set.all().delete()
-    for i in range(1, 5):
-        wid = request.POST.get('welder%s' % i)
-        if not wid:
-            continue
-        wid = int(wid)
-        welder = Welder.objects.filter(pk=wid).first()
-        if not welder:
-            continue
-        actually = True if i >= 3 else False
-        JointWelder.objects.create(welder=welder,
-                                   welding_joint=mh.row,
-                                   actually=actually,
-                                   position=i, )
 
 def update_welding_joint_state(request, mh):
     """Обновление статуса заявки
@@ -319,12 +304,12 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
     context['repair_choices'] = WeldingJoint.repair_choices
     context['workshift_choices'] = WeldingJoint.workshift_choices
     context['control_choices'] = WeldingJoint.control_choices
-    context['welding_conn_view_choices'] = WeldingJoint.welding_conn_view_choices
     context['welding_type_choices'] = WELDING_TYPES
     context['category_choices'] = WeldingJoint.category_choices
     context['conclusion_states'] = CONCLUSION_STATES
     context['material_choices'] = MATERIALS
     context['join_types'] = JOIN_TYPES
+    context['welding_conn_view_choices'] = Joint.welding_conn_view_choices
     context['state_choices'] = WELDING_JOINT_STATES
     context['today'] = datetime.datetime.today().strftime('%d.%m.%Y')
 
@@ -340,12 +325,13 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 'line',
                 'line__titul',
                 'line__base',
-                'line__titul__subject',
-                'line__titul__subject__company',
+                #'line__titul__subject',
+                #'line__titul__subject__company',
             ).filter(pk=joint_str).first()
             context['row'] = {
-                'joint': joint,
+                'joint': object_fields(joint),
             }
+            context['welders'] = joint.get_welders()
             if not joint:
                 return redirect('%s?error=not_found' % (mh.root_url, ))
             # -------------------------------------
@@ -361,9 +347,8 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
         if action in ('edit', 'form', 'pdf') and row:
             if row.id:
                 context['welders'] = {}
-                welders = row.jointwelder_set.select_related('welder').all()
-                for welder in welders:
-                    context['welders'][welder.position] = welder.welder
+                if row.joint:
+                    context['welders'] = row.joint.get_welders()
                 if row.requester:
                     context['requester'] = {
                         'name': '%s' % row.requester.customuser,
@@ -401,6 +386,8 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 row.delete()
                 mh.row = None
                 context['success'] = '%s удален' % (mh.singular_obj, )
+                # Пересчитать готовность линии
+                recalc_joints(row.joint.line)
             else:
                 context['error'] = 'Недостаточно прав'
         elif action == 'pdf' and row:
@@ -446,7 +433,6 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                 if mh.permissions['create']:
                     mh.row = mh.model()
                     mh.save_row()
-                    update_welding_join_welders(request, mh)
                     update_welding_joint_state(request, mh)
                     context['success'] = 'Данные успешно записаны'
                 else:
@@ -460,7 +446,6 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
 
                 if mh.permissions['edit']:
                     mh.save_row()
-                    update_welding_join_welders(request, mh)
                     update_welding_joint_state(request, mh)
                     context['success'] = 'Данные успешно записаны'
                 else:
@@ -482,7 +467,6 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                         # 1 стык = 1 заявка
                         # -------------------------------
                         mh.save_row(set_fields={'joint': mh.row.joint})
-                        update_welding_join_welders(request, mh)
                         update_welding_joint_state(request, mh)
                         context['success'] = 'Данные успешно записаны'
                 elif mh.permissions['create'] and not mh.row: # NOT!
@@ -508,7 +492,6 @@ def edit_welding(request, action: str, row_id: int = None, *args, **kwargs):
                             return JsonResponse(context)
                     mh.row = mh.model()
                     mh.save_row()
-                    update_welding_join_welders(request, mh)
                     update_welding_joint_state(request, mh)
                     context['success'] = 'Данные успешно записаны'
                 else:
