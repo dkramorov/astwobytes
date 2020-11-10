@@ -1,0 +1,113 @@
+{% extends "core/base.html" %}
+{% load mtags %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+  <h3>{{ singular_obj }} №{{ row.get_number }} от {{ row.created }}</h3>
+  <div class="panel">
+    <div class="panel-body">
+<!--
+      <button type="button" class="pull-right btn btn-default btn-sm">Копировать</button>
+-->
+      <h3 class="mt0">{{ singular_obj }} №{{ row.get_number }}</h3>
+      <hr>
+      <div class="row mb-lg">
+        <div class="col-lg-4 col-xs-6 br pv">
+          <div class="row">
+            <div class="col-md-2 text-center visible-md visible-lg">
+              <em class="fa fa-user fa-4x text-muted"></em>
+            </div>
+            <div class="col-md-10">
+              <h4>{{ row.shopper_name }}</h4>
+              <i class="fa fa-map-marker"></i> {% if row.shopper_address %}{{ row.shopper_address }}{% endif %}<br>
+              <i class="fa fa-phone"></i> {% if row.shopper_phone %}{{ row.shopper_phone }}{% endif %}<br>
+              <i class="fa fa-envelope"></i> {% if row.shopper_email %}{{ row.shopper_email }}{% endif %}<br>
+              <i class="fa fa-globe"></i> {% if row.shopper_ip %}{{ row.shopper_ip }}{% endif %}<br>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-xs-6 br pv">
+          <div class="row">
+            <div class="col-md-2 text-center visible-md visible-lg">
+              <em class="fa fa-truck fa-4x text-muted"></em>
+            </div>
+            <div class="col-md-10">
+              <h4>Доставка</h4>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix hidden-md hidden-lg">
+          <hr>
+        </div>
+        <div class="col-lg-4 col-xs-12 pv">
+          <div class="clearfix">
+            <p class="pull-left">Заказ №</p>
+            <p class="pull-right mr">{{ row.get_number }}</p>
+          </div>
+          <div class="clearfix">
+            <p class="pull-left">Дата</p>
+            <p class="pull-right mr">{{ row.created }}</p>
+          </div>
+          {% if row.promocode %}
+            <div class="clearfix">
+              <p class="pull-left">Промокод</p>
+              <p class="pull-right mr">{{ row.promocode.name }} {{ row.promocode.value }}%</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="table-responsive table-bordered mb-lg">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Наименование</th>
+              <th>Цена</th>
+              <th>Кол-во</th>
+              <th class="text-right">Итого</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for purchase in row.purchases %}
+              <tr>
+                <td>{{ purchase.name }} (код {{ purchase.code }})</td>
+                <td>{{ purchase.cost|money_format }} ₽</td>
+                <td>{{ purchase.count }}</td>
+                <td class="text-right">{{ purchase.total|money_format }} ₽</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="row">
+        <div class="col-sm-offset-8 col-sm-4 pv">
+          <div class="clearfix">
+            <p class="pull-left">Итого без скидки</p>
+            <p class="pull-right mr">{{ row.total_without_discount|money_format }} ₽</p>
+          </div>
+          <div class="clearfix">
+            <p class="pull-left">Скидка</p>
+            <p class="pull-right mr">{% if row.discount %}{{ row.discount|money_format }}{% endif %} ₽</p>
+          </div>
+          <div class="clearfix">
+            <p class="pull-left h3">Итого</p>
+            <p class="pull-right mr h3">{{ row.total|money_format }} ₽</p>
+          </div>
+        </div>
+      </div>
+      <hr class="hidden-print">
+      <div class="clearfix">
+        <button type="button" onclick="window.print();" class="btn btn-default pull-left">Печать</button>
+<!--
+        <button type="button" class="btn btn-info pull-left mr">Редактировать</button>
+        <button type="button" class="btn btn-success pull-right">Отправить</button>
+-->
+      </div>
+    </div>
+  </div>
+{% endblock %}

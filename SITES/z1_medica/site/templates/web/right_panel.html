@@ -1,0 +1,150 @@
+<div id="rightmovepanel">
+  <div id="rightmovepanelclose"></div>
+  <div id="lefmobiletpanelcover" style="display:none;"></div>
+  <div id="rightmovepanelmenu">
+    <div id="rightmovepanelcontentmenu">
+      <div id="rightmovepanelcontent">
+        <div style="display:block; height:95vh; ovrflow-y:auto">
+          <form class="authpane-form usersender" id="authrisation">
+            <input type=hidden name=authrisation  value=1>
+            <h3>Войти на сайт</h3>
+            <div class="none form-row iblok PT">
+              <div class="form-value">
+                <select id="selectenter" name="type">
+                  <option value=entermail >Испольовать емайл</option>
+                  <option value=enterphone >Номер телефона</option>
+                </select>
+              </div>
+            </div>
+            <div class=" form-row iblok enter" id=enterphone style=display:none  >
+              <div class="form-label">
+                <label for="name">Телефон</label>
+                <span>указный при регистрации</span>
+              </div>
+              <div class="form-value">
+                <input class="afphone checkme"  maxlength="150" type="text" name="usphone" tabindex="1" value="" />
+              </div>
+            </div>
+            <div class="form-row iblok enter " id=entermail>
+              <div class="form-label">
+                <label for="name">E-mail</label>
+                <span >указный при регистрации</span>
+              </div>
+              <div class="form-value ">
+                <input  class="afemail checkme" maxlength="150" type="email" name="username" tabindex="1" value="" placeholder="email@email.ru" />
+              </div>
+            </div>
+            <div class="form-row  sochide">
+              <div class="form-label">
+                <label for="name">Пароль</label>
+                <span></span>
+              </div>
+              <div class="form-value ">
+                <input  class="afpass checkme" maxlength="150" type="password" name="uspwd" tabindex="2" value="" required="true" placeholder='******' />
+              </div>
+            </div>
+            <div class="form-row iblok sochide">
+              <div class="loader none"></div>
+              <input type=submit class="pn-button ussender"  name=authrisation value="Войти на сайт" >
+            </div>
+            <fieldset style="margin: 8px 0; padding:4px;">
+              <legend>Войти через соцсети</legend>
+              <div class="form-row iblok" id="entersoc">
+                <a href="/" class="icon_soc"></a>
+                <a href="/" class="icon_soc vk"></a>
+                <a href="/" class="icon_soc ok"></a>
+              </div>
+            </fieldset>
+          </form>
+          <form class="authpane-form usersender" id="register">
+            <input type="hidden" name="register" value="1">
+            <h3>Зарегистрироваться</h3>
+            <div class="form-row iblok">
+              <div class="form-label">
+                <label for="name">Пользователь</label>
+                <span>Имя, фамилия</span>
+              </div>
+              <div class="form-value">
+                <input class="afname checkme" maxlength="150" type="text" name="username" tabindex="1" value="" required="true" placeholder="Иван Петров" />
+              </div>
+            </div>
+            <div class="form-row iblok">
+              <div class="form-label">
+                <label for="name">Телефон</label>
+                <span></span>
+              </div>
+              <div class="form-value">
+                <input class="afphone checkme" maxlength="150" type="text" name="userphone" tabindex="2" value="" required="true" placeholder="+7 xxx xxx xxxx" />
+              </div>
+            </div>
+            <div class="form-row iblok">
+              <div class="form-label">
+                <label for="name">E-mail</label>
+                <span></span>
+              </div>
+              <div class="form-value">
+                <input class="afemail checkme" maxlength="150" type="email" name="usermail" tabindex="3" value="" required="true" placeholder="email@email.ru" />
+              </div>
+            </div>
+            <div class="form-row iblok">
+              <div class="loader none"></div>
+              <input type="submit" class="pn-button ussender" name="register" value="Зарегистрироваться" />
+            </div>
+          </form>
+          <form class="authpane-form usersender" id="passremember">
+            <input type="hidden" name="passremember" value="1">
+            <h3>Напомнить пароль</h3>
+            <div class="none form-row iblok PT">
+              <div class="form-value">
+                <select id="selecrem" name="type">
+                  <option value="0" >Прислать на емайл</option>
+                  <option value="1" >СМС на телефон</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row iblok remem" id="rem0">
+              <div class="form-label">
+                <label for="name">E-mail</label>
+                <span >указный при регистрации</span>
+              </div>
+              <div class="form-value">
+                <input class="afemail checkme" maxlength="150" type="email" name="usermail" tabindex="1" value="" placeholder="email@email.ru" />
+              </div>
+            </div>
+            <div class="form-row iblok remem" style="display:none" id="rem1">
+              <div class="form-label">
+                <label for="name">Телефон</label>
+                <span >указный при регистрации</span>
+              </div>
+              <div class="form-value">
+                <input class="afphone checkme" maxlength="150" type="text" name="userphone" tabindex="2" value="" placeholder="" />
+              </div>
+            </div>
+            <div class="form-row iblok">
+              <div class="loader none"></div>
+              <input type="submit" class="pn-button ussender" name="passremember" value="Напомнить пароль">
+            </div>
+          </form>
+          <div id="postok" class="ibloc" style="padding:8px;display:none">
+            <span class="mini iblokl PT" style="padding:10px;">
+              <br>Робот сервера выслал вам пароль для авторизованного доступа. 
+Отвечать на  письмо или СМС не нужно. <br>Пожалуйста, запомните пароль и храните его в&nbsp;секрете, чтобы никто не воспользовался вашим именем в своих целях
+            </span>
+          </div>
+          <div class="usersend" style="margin-top:40px">
+            <div class="box23 none" id="usersendereror"></div>
+            <div class="PT none" id="authrisation2" rel="authrisation">Войти на сайт</div>
+            <div class="PT" id="register2" rel="register">Регистрация</div>
+            <div class="PT" id="passremember2" rel="passremember">Напомнить пароль</div>
+            <br><br>
+            <div class="PT allpanelclose blokl">Закрыть панель</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a id="knof" href="/shop/cart/">
+  <div class="kolvoround2" style="display:none" id="knofkolvoround"></div>
+</a>

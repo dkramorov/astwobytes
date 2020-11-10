@@ -121,7 +121,8 @@ $(document).ready(function(){
       dataType: 'json',
     }
   });
-  {% if is_products %}
+
+  {% if is_products and not ftype == "flatmain" and not ftype == "flatmenu" %}
     $('#products_select2').select2({
       placeholder: 'Какие товары привязать',
       width: '100%',

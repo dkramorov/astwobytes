@@ -1,0 +1,56 @@
+.addfiltr {display:inlineblock; text-align:left; border:none; margin:5px}
+.addfiltr.activ {display:block;   border:1px solid #ccc; border-radius:4px;  width:100%}
+.addfiltr.activ .span2{padding:8px; display:block; position:relative;
+padding-top:40px;
+}
+.filtrtitle span {cursor:pointer; display:block;  /*font-family:Oswald; font-size:18px; vertical-align:top;*/
+ background:url(/media/img/arrdown.png) right 4px no-repeat;
+padding-right:16px; }
+.activ.filtrtitle span{background:url(/media/img/cl.png) right 6px no-repeat; }
+.filtrtitle sup {font-size:14px; color:#900}
+.styled {margin-left:8px;}
+.fltrcheck {/*min-width:110px; max-width:200px;*/  vertical-align:top; margin:6px; margin-right:10px;  background-position:5px left ; line-height:1.1em; padding-top:0.2em}
+.none{display:none}
+.titwait {background:url(/media/img/loader.gif) center right no-repeat !important;  background-size:80%; color:#900 }
+.fltrcheck.titwait {background-position: 0 0 !important; z-index:4}
+.search.titwait {background-position: 5px 5px !important}
+.sup[rel^="0"] {display:none !important}
+.iblzi1 {position:relative; z-index:1}
+.iblzi2 {position:relative; z-index:2}
+#filtrform  {}
+.filtrtitle {z-index:10; min-width:10px; padding:8px; border:1px solid #ccc; border-radius:4px;  line-height:1.3em; position:relative; margin:0 5px; top:-5px;}
+.filtrtitle.activ {border:none; z-index:20; }
+.addfiltr {display:block;  position:absolute; background:#fff ; top:-10px; left:-10px; z-index:15;
+/*box-shadow: 5px 5px 10px rgba(0,0,0,.3); */ 
+}
+#blok0  {max-width:350px !important; }
+/*.nonech2 .filtrtitle {color:red}*/
+div.ajaxsearchbox .nopub {display:block !important; width:100%; max-width:100%}
+#submenu .submenu2 {text-decoration:none; display:inline-block; padding:0 10px;  }
+#submenu {margin-bottom:15px;}
+
+
+#filtrblok {
+	display:block ;
+	/*padding:10px 0; */text-align:left; border:1px solid #ccc;
+	position:relative;
+	border-radius:4px;
+}
+
+#filtrblok .fltrblock  {display:inline-block; width:30%; outline:0; vertical-align:top; 	position:relative;  /*border:1px solid red;*/  text-align: left;}
+
+@media (max-width: 700px) {
+	#filtrblok .fltrblock {width:50%; text-align: left;}
+}
+@media (min-width: 1300px) {
+	#filtrblok .fltrblock {width:25%}
+}
+
+
+#filtrblok  .span {display:block; padding:8px; 	position:relative; }
+#filtrblok .mobiledtyle .fltrblock  {width:50%; text-align: left;}
+/*.none {display:none !important }*/
+#filtrblok .cusel, #filtrblok select  {display:block; width:calc(100% - 12px)}
+.canselfltr {display:inline-block; padding:4px; padding-left:25px; background:url(/media/img/cancel-icon.png) center left no-repeat; color:#900; cursor:pointer}
+.blokbox {display:inline-block; position:relative; border:1px solid #ccc; border-radius:4px; padding:12px; margin:4px; background:#ffc}
+.delblokbox {display:block; position:absolute; top:-8px; right:-8px; width:25px; height:25px; background:url(/media/img/cancel-icon.png) center  no-repeat; }

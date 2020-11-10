@@ -946,7 +946,8 @@ var RLANG = {
     // -------------
     setCode: function(html){
       html = this.stripTags(html);
-      this.$editor.html(html).focus();
+      // не надо тут фокус - прыгает же страничка
+      this.$editor.html(html);//.focus();
       this.syncCode();
     },
     getCode: function(){

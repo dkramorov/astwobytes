@@ -6,6 +6,8 @@ from . import views
 
 app_name = 'flatcontent'
 urlpatterns = [
+    # получение по апи всех данных (т/к не секретно)
+    url('^(?P<action>containers|blocks)/(?P<ftype>flatmenu|flatmain|flatpages|flattemplates|flatcat)/api/$', views.api, name='api'),
     # ----------
     # containers
     # ----------

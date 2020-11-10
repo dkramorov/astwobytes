@@ -144,7 +144,7 @@ def feedback(request):
     return DefaultFeedback(request, **kwargs)
 
 reg_vars = {
-    'singular_obj': 'Регистрация',
+    'singular_obj': 'Вход/Регистрация',
     'template_prefix': 'main_',
     'show_urla': 'registration',
 }
@@ -179,7 +179,7 @@ def registration(request):
     if not page:
         page = Blocks(name=reg_vars['singular_obj'])
     context['breadcrumbs'] = [{
-        'name': 'Регистрация',
+        'name': mh_vars['singular_obj'],
         'link': reverse('%s:%s' % (CUR_APP, 'registration')),
     }]
     context['page'] = page
@@ -240,6 +240,8 @@ def show_profile(request):
 def login(request):
     """Авторизация пользователя"""
     context = {}
+    q_string = {}
+    containers = {}
     result = login_from_site(request)
     if isinstance(result, list):
         context['errors'] = result

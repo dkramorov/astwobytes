@@ -1,8 +1,15 @@
+{% load mtags %}
+
+{% with ''|installed_apps as apps %}
+
 <a class="dropdown-toggle" data-play="fadeIn" data-toggle="dropdown" href="#">
-  <em class="fa fa-user"></em>
+  <em class="fa fa-cog"></em>
 </a>
-<!-- START Dropdown menu-->
+
 <ul class="dropdown-menu">
+  {% if 'flatcontent' in apps %}
+    <li><a href="{% url 'main_functions:settings' 'flatcontent' %}">Настройки "Контент"</a></li>
+  {% endif %}
 {% comment %}<!--
   <li>
     <div class="p">
@@ -22,4 +29,5 @@
 -->{% endcomment %}
   <li><a href="/admin/logout/">Выйти</a></li>
 </ul>
-<!-- END Dropdown menu-->
+
+{% endwith %}

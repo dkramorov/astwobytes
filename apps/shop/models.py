@@ -100,6 +100,54 @@ class Orders(Standard):
     def save(self, *args, **kwargs):
         super(Orders, self).save(*args, **kwargs)
 
+    def total_without_discount(self):
+        """Итого без скидки"""
+        result = self.total or 0
+        if self.discount:
+            result += self.discount
+        if result < 0:
+            result = 0
+        return result
+
+    def get_number(self):
+        """Номер заказа"""
+        return self.number or self.id
+
+    def get_shopper(self):
+        """Покупатель заказа"""
+        return self.shopper.to_dict() if self.shopper else {}
+
+    def get_promocode(self):
+        """Промокод на заказ"""
+        if self.promocode:
+            value = ''
+            if self.promocode.percent:
+                value += '%'
+            if not value and self.promocode.value:
+                value += '₽'
+            return {
+                'name': self.promocode,
+                'value': value,
+            }
+        return {}
+
+    def get_purchases(self):
+        """Получить покупки по заказу"""
+        result = []
+        for purchase in self.purchases_set.all():
+            result.append({
+                'id': purchase.product_id,
+                'name': purchase.product_name,
+                'manufacturer': purchase.product_manufacturer,
+                'measure': purchase.product_measure,
+                'price': purchase.product_price,
+                'code': purchase.product_code,
+                'count': purchase.count,
+                'cost': purchase.cost,
+                'total': (purchase.cost * purchase.count) if purchase.cost and purchase.count else 0,
+            })
+        return result
+
 class Transactions(Standard):
     """Транзакция по онлайн оплате"""
     payment_choices = (

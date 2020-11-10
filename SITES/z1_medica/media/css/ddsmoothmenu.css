@@ -1,0 +1,216 @@
+#navigation {
+  /*float:right;*/
+  margin-top:43px;
+  margin-bottom:-3px;
+  width: 1000px;
+  display:inline-block;
+  
+  
+  position:relative;
+  z-index:1001;
+  
+}
+
+#headeraa{background:url(../img/main_bg.gif);
+  padding:0;
+ display:block;
+ text-align:center;
+ z-index:990;
+ width:100%;
+   position:absolute;
+ top:0;
+  }
+#headeraa.positionfix {position:fixed;
+  border-bottom:1px solid #e0e0e0;
+ }
+
+.activh, .activh li   {
+  color:#722b8e;
+}
+.ddsmoothmenu{
+    font: bold 12px Verdana; /*background of menu bar (default state)*/
+    width: 100%;
+  display:block;
+  position:relative;
+  z-index:1001;
+
+}
+
+.ddsmoothmenu ul{
+    
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    border-top-style: none;
+    border-right-style: none;
+    border-bottom-style: none;
+    border-left-style: none;
+  outline:0;
+
+  }
+
+/*Top level list items*/
+.ddsmoothmenu ul li{
+  display: inline;
+  /*float: left;
+*/display:inline-block;
+
+  font-size: 14px;
+  z-index:1001;
+position:relative;
+  }
+
+/*Top level menu link items style*/
+.ddsmoothmenu ul li a{
+  display: block;
+  /*  background: #414141; background of menu items (default state)*/
+    color: #000;
+  text-decoration: none;
+  padding-top: 8px;
+  padding-right: 22px;
+  padding-bottom: 9px;
+  padding-left: 22px;
+  font-family:'Oswald';
+ font-weight:400;
+ font-size:22px;
+
+  text-shadow: 1px 1px rgba(255,255,255,.3);
+}
+
+* html .ddsmoothmenu ul li a{ /*IE6 hack to get sub menu links to behave correctly*/
+display: inline-block;
+}
+.ddsmoothmenu ul li a:link, .ddsmoothmenu ul li a:visited {
+  color: #333;
+  
+}
+.ddsmoothmenu ul li ul li a:link , .ddsmoothmenu ul li ul li a:visited{
+  color: #000;
+ font-weight:bolder;
+
+  border-radius:none;
+}
+.ddsmoothmenu ul li ul li{
+  border-top:1px solid rgba(255,255,255,.5);
+  border-bottom:1px solid rgba(0,0,0,.1);
+  border-radius:none;
+}
+
+.ddsmoothmenu ul li ul li:hover{
+  border-top:1px solid rgba(0,0,0,.05);
+  border-bottom:1px solid rgba(0,0,0,.2);
+  border-radius:none;
+}
+
+.ddsmoothmenu ul li ul li:first-child{
+  border-top:none;
+  border-top-right-radius:6px;
+/*  overflow:hidden;*/
+}
+
+.ddsmoothmenu ul li ul li:last-child{
+  border-bottom:none;
+border-bottom-right-radius:6px;    
+border-bottom-left-radius:6px;    
+/*overflow:hidden;*/
+}
+
+
+
+.ddsmoothmenu ul li a:hover, .ddsmoothmenu ul li a.selected 
+{
+  color: rgb(0, 153, 102);
+/*#722b8e;
+*/
+  background:url(../img/bodybg.png);
+  box-shadow:2px 2px 4px rgba(0,0,0,.3);  
+  border-radius:5px;
+  /*border-top-right-radius:5px;*/
+  
+  
+  
+}
+
+
+.ddsmoothmenu ul li ul li a:hover, .ddsmoothmenu ul li ul li a.selected 
+{
+  color: rgb(0, 153, 102) ;
+/*#722b8e;
+*/
+  text-shadow:1px 1px rgba(255,255,255,.3);
+  background:rgba(0,0,0,.05);
+  /*border-radius:5px;*/
+  box-shadow:none;
+  border-radius:0;
+  /*border-top-right-radius:0;*/
+  
+  
+}
+    
+/*1st sub level menu*/
+.ddsmoothmenu ul li ul{
+  position: absolute;
+  left: 0;
+  display: none; /*collapse all sub menus to begin with*/
+  visibility: hidden;
+  background:#eee url(../img/bodybg.png);
+  border-radius:6px;
+  border-top-left-radius:0;
+  margin-top:-3px;
+box-shadow:2px 2px 4px rgba(0,0,0,.3)  
+}
+
+.ddsmoothmenu ul li ul li ul{margin-top:0};
+
+/*Sub level menu list items (undo style from Top level List Items)*/
+.ddsmoothmenu ul li ul li{
+display: list-item;
+float: none;
+}
+
+/*All subsequent sub menu levels vertical offset after 1st level sub menu */
+.ddsmoothmenu ul li ul li ul{
+top: 0;
+}
+
+/* Sub level menu links style */
+.ddsmoothmenu ul li ul li a{
+  border-radius:0;
+  width: 210px;
+  margin: 0;
+  padding:8px 15px;
+  padding-left:22px;
+   
+  
+  
+  font-family: Verdana;
+  font-size: 14px;
+  font-style: normal;
+  
+  font-variant: normal;
+  color: #000;
+  text-shadow: 1px 1px #fff;
+  text-align: left;
+  /*background-image: url(../img/body.jpg);*/
+  
+}
+
+/* Holly Hack for IE \*/
+* html .ddsmoothmenu{height: 1%;} /*Holly Hack for IE7 and below*/
+
+
+/* ######### CSS classes applied to down and right arrow images  ######### */
+
+.downarrowclass{
+    position: absolute;
+    margin:0;
+    top: 20px;
+    right: 7px;
+}
+
+.rightarrowclass{
+    position: absolute;
+    top: 15px;
+    right: 5px;
+    margin:0;
+}

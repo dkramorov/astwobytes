@@ -19,21 +19,29 @@
 var main_table = null;
 $(document).ready(function(){
 
-  var pathFormatter = function(cell, formatterParams, onRendered){
-    //console.log(cell.getRow().getData());
-    var data = cell.getRow().getData();
-    var value = cell.getValue();
-    var result = "<div class='padding-rl5 text-center'>";
-    if(value){
-      result += " <a style='white-space:normal;' class='btn' target='_blank' href='/media/" + data['folder'] + value + "'>" + value + "</a> ";
-    }
-    result += "</div>";
-    return result;
-  };
-
   var promocodeFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['promocode'] ? data['promocode']['code']  : '';
+  };
+
+  var actionsOrderFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var rowIndex = row.getIndex();
+    var pk = cell.getValue();
+    var data = row.getData();
+    var actions = "<div class='padding-rl5'>";
+
+    actions += " <a class='btn-xs btn btn-primary pull-left ml' href='{{ root_url }}view/" + pk + "/' target='_blank' title='Просмотр заказа'><i class='fa fa-file-text-o'></i></a> ";
+
+    {% if permissions.edit %}
+      actions += " <a class='btn-xs btn btn-primary pull-left ml' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% endif %}
+
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right ml' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
+    actions += "</div>";
+    return actions;
   };
 
   main_table = new Tabulator("#main-table", {
@@ -47,7 +55,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Дата",
         headerFilter: "input",
         headerFilterFunc: "=",
-        minWidth: 150,
+        width: 150,
       },
       {
         title: "Сумма",
@@ -55,7 +63,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Сумма",
         headerFilter: "input",
         headerFilterFunc: "=",
-        minWidth: 90,
+        width: 90,
       },
       {
         title: "Скидка",
@@ -63,7 +71,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Скидка",
         headerFilter: "input",
         headerFilterFunc: "=",
-        minWidth: 90,
+        width: 90,
       },
       {
         title: "Телефон покупателя",
@@ -71,7 +79,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Телефон покупателя",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 150,
+        width: 150,
       },
       {
         title: "Промокод",
@@ -80,11 +88,18 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         formatter: promocodeFormatter,
-        minWidth: 90,
+        width: 90,
       },
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}
-      {% include "core/tabulator_cell/actions.html" %}
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsOrderFormatter,
+        width: 160,
+        download: false,
+      },
     ],
   });
 

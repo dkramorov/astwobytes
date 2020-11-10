@@ -10,14 +10,16 @@ from apps.main_functions.files import open_file, full_path
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.date_time import str_to_date
 
-def ApiHelper(request, model_vars: dict, CUR_APP: str):
+def ApiHelper(request, model_vars: dict, CUR_APP: str, reverse_params: dict = None):
     """Апи-метод для получения всех данных
        :param request: HttpRequest
        :param model_vars: по какой модели отдаем данные
        :param CUR_APP: текущее приложение
     """
+    if not reverse_params:
+        reverse_params = {}
     mh_vars = model_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh = create_model_helper(mh_vars, request, CUR_APP, reverse_params=reverse_params)
     # Принудительные права на просмотр
     mh.permissions['view'] = True
 

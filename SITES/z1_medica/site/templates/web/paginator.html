@@ -1,0 +1,18 @@
+<p style="clear:both; margin-top:20px">
+  <span>{{ paginator.total_records }} {{ ends }}</span>
+  {% if not paginator.onepage %}
+    {% for page in pages %}
+      {% if page.ellipsis %}
+        <span class="pgngactiv">...</span>
+      {% else %}
+        {% if page.active %}
+          <span class="pgngactiv">{{ page.content }}</span>
+        {% else %}
+          <a href="{{ page.link }}" class="pgng">{{ page.content }}</a>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  <br style="clear:both">
+</p>
+

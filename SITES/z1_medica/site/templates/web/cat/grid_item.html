@@ -1,0 +1,42 @@
+{% load tags mtags %}
+<div class="formlotok adativecardtv pcstyle pconly mobileonly">
+  <div class="cardtv">
+    <div class="product_container">
+      <div class="addfav"></div>
+      <div class="sliding_product">
+        <!--<div class="skidka" title="Скидка 15%">-15%</div>-->
+        <div class="imgc">
+          <a href="{{ product.link }}">
+            <img src="{{ product.thumb }}" alt="{{ product.name|textize }}" loading="lazy">
+          </a>
+        </div>
+        <div class="notes">
+          <a href="{{ product.link }}">{{ product.name }}</a>
+          <div></div>
+        </div>
+        <a href="" class="white_grad_bottom_css22"></a>
+      </div>
+    </div>
+    <span class="cena">
+      {% if product.old_price %}<span class=oldprice2>{{ product.old_price|money_format }} ₽</span>{% endif %}
+      <div>{{ product.price|money_format }} ₽</div>
+    </span>
+    <div class="bascbut">
+      <a href="javascript:void(0);" class="bascbutton add_to_cart_btn" data-product_id="{{ product.id }}">В корзину</a>
+      <div class="kolvoround2" style="display:none; z-index:3">
+{% comment %}<!--
+        {% for item in product.props %}
+          {% if forloop.counter < 5 %}
+            <d{% cycle 't' 'd' %}>{{ item.prop.name }}
+            {% for pvalue in item.values %}
+              {{ pvalue.str_value }}
+              {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
+            {% endfor %}
+            </d{% cycle 't' 'd' %}>
+          {% endif %}
+        {% endfor %}
+-->{% endcomment %}
+      </div>
+    </div>
+  </div>
+</div>

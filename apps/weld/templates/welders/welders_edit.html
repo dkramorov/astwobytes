@@ -36,7 +36,7 @@
           <div class="form-group">
             <label class="col-lg-2 control-label">Отчество</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Отчество" class="form-control" name="middle_name" value="{% if row.middle_name %}{{ row.middle_name }}{% endif %}" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="Отчество" class="form-control" name="middle_name" value="{% if row.middle_name %}{{ row.middle_name }}{% endif %}" autocomplete="off">
             </div>
           </div>
           <div class="form-group">
@@ -65,7 +65,7 @@
           <div class="form-group">
             <label class="col-lg-2 control-label">Примечание</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Примечание" class="form-control" name="notice" value="{% if row.notice %}{{ row.notice }}{% endif %}" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="Примечание" class="form-control" name="notice" value="{% if row.notice %}{{ row.notice }}{% endif %}" autocomplete="off">
             </div>
           </div>
           {% include "core/forms/row_image.html" %}
@@ -142,15 +142,6 @@
     $("#current_edit_form").parsley();
     $("#current_edit_form").submit(function(e) {
       var $form = $(this);
-      // ---------------------------------
-      // Добавляем удостоверения,
-      // группы технических устройств
-      // опасных производственных объектов
-      // в форму для сохранения
-      // ---------------------------------
-      fill_certification_form();
-      fill_cert_sections_form();
-
       var data = $form.serialize();
       var msg = 'Произошла ошибка, обновите страничку';
       var status = 'danger'; // success, warning, info, danger

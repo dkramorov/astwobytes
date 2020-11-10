@@ -28,7 +28,7 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Логин",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 150,
+        width: 150,
       },
       {
         title: "Ид пользователя",
@@ -36,7 +36,31 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Ид пользователя",
         headerFilter: "input",
         headerFilterFunc: "=",
-        minWidth: 60,
+        width: 60,
+      },
+      {
+        title: "Телефон",
+        field: "phone",
+        headerFilterPlaceholder: "Телефон",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Телефон подтвержден",
+        field: "phone_confirmed",
+        headerFilterPlaceholder: "Телефон подтвержден",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        editable: false,
+        editor: "select",
+        formatter: booleanFormatter,
+        width: 90,
+        downloadTitle: "phone_confirmed",
+        accessorDownload: accessor_is_active,
       },
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}

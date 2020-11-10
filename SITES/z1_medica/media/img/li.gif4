@@ -1,0 +1,1633 @@
+<!DOCTYPE html >
+<html>
+<head>
+<title>Ошибка 404   — Интернет-магазин медтехники с доставкой  МедикаМаркет.рф </title>
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1251">
+<META NAME='author' CONTENT='+Web'>
+<META NAME='Generator' CONTENT='+Web CMS v.7.7' />
+<meta name="viewport" content="width=600,  user-scalable=no">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://medicamarket.ru/img/logo.png">
+<meta property="og:image:width" content="202">
+<meta property="og:image:height" content="63">
+<META NAME='description' CONTENT="МЕДИКАМАРКЕТ.рф – интернет-магазин товаров для здоровья и красоты, включающий в себя ассортимент для мам и малышей, постоянно работает над расширением ассортимента,  гарантирует самую низкую цену,  создает удобные  условия для  оформления и доставки заказа">
+<style>@viewport {min-width:600px; max-width:800px; }@media (max-width: 999px) {.pconly  {display:none}}@media (min-width: 1000px) {.mobileonly  {display:none}}.jsonly{visibility:hidden}
+</style>    
+<link rel="stylesheet" href="/css.css?new16"  media="screen">
+<link rel="stylesheet" href="/outline.css?new15" media="screen">
+<link rel="SHORTCUT ICON" href="/favicon.ico" >
+<link rel="stylesheet" type="text/css" href="/ddsmoothmenu.css?new15" />
+<link href="/css/cusel.css?new15" rel="stylesheet" type="text/css" />
+<link href="/adaptive.css?new15" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="/prettyPhoto.css" type="text/css" media="screen"  charset="windows-1251" />
+<link href="/liMenuVertpw.css?new15" rel="stylesheet" type="text/css" /> 
+<link rel="stylesheet" href="/css/ns/default.css?new15" type="text/css" media="screen" />
+<link rel="stylesheet" href="/nivo-slider.css?new15" type="text/css" media="screen" />
+<link rel="stylesheet" type="text/css" href="/css/scrollpane.css?new15s" />
+
+<script type="text/javascript" src="/scripts/jquery.js?new15"></script -->
+<script type="text/javascript" src="/scripts_new.js?new15 "></script>
+<script type="text/javascript" src="/scripts/cusel.js?new15"></script>
+<script type="text/javascript" src="/scripts/jquery.jscrollpane.min.js?new15"></script>
+<script type="text/javascript" src="/scripts/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="/scripts/jquery.cookie.js"></script>
+<script type="text/javascript" src="/scripts/jquery.prettyPhoto.js"></script>
+<script type="text/javascript" src="/scripts/jquery.liMenuVertpw.js?new15"></script >
+<script type="text/javascript" src="/scripts/jquery-func.js"></script>
+<script type="text/javascript" src="/scripts/jquery.nivo.slider.js?new15"></script>
+<script type="text/javascript" src="/scripts/jquery.jcarousel.js?new15"></script>
+<script type="text/javascript" src="/scripts/jquery.maskedinput.min.js?new15"></script>
+<script type="text/javascript" src="/ddsmoothmenu.js?new15"></script>
+<script>ddsmoothmenu.init({mainmenuid: "smoothmenu1", orientation: 'h',classname: 'ddsmoothmenu', contentsource: "markup"}); </script>
+<script type="text/javascript" >
+function closesearch() {
+		$("#search").hide();
+		$("#search").val("");
+		$("#searchform").stop().animate({width:"1px" },500, function(){$("#searchform").addClass("nobg")})
+		$("#searchrun").removeClass("searchrunopen");
+		$("#searchrun").attr("rel",1);
+		
+		clearsearchbox();
+	}
+function show_search_panel_pw (){
+		if($("#searchrun").attr("rel")==1){ 
+			$("#searchform").removeClass("nobg").animate({width:"300px" },500, function(){$("#search").show(); $("#searchrun").addClass("searchrunopen");}); 
+			$("#searchrun").attr("rel",0);
+		}
+		else closesearch();	
+	}
+function leftpanelclose(){
+		$("#overcover2").fadeOut();
+		$("#lefmobiletpanelmenu").stop().animate({left:"-450px" },300);
+		$("#lefmobiletpanel").stop().animate({left:"-450px" },500);
+	}
+	
+function cover (){
+	$(".portf").hover(function(){
+	$("#"+$(this).attr("id")+"lable").animate({top: (132 - $("#"+$(this).attr("id")+"lable").height()) + "px" },500);}, function(){$("#"+$(this).attr("id")+"lable").animate({top: "152px"},500);});
+	}
+	
+function lotok(d){
+	$.ajax({
+            url: '/ajax/lotok_ajax.php',
+            type: 'POST',
+            cache: false,
+			data:d,
+                success: function(data){
+			
+			$("#mytmp").html(data);
+			
+				var bj = jQuery.parseJSON(data);
+				if(bj.itog) {
+					$("#itogsummlotok").html(number_format(bj.itog)); 
+					$("#itogsummlotokh").val(bj.itog); 
+					$("#lotok").fadeIn();
+				} else $("#lotok").hide();
+				if(bj.itog > 0) {
+					$("#itogkolvolotok").html(bj.itogv); $("#lotok").fadeIn();
+					$("#knofkolvoround").html(bj.itogv); $("#knofkolvoround").fadeIn();
+				$(".ifprice").show();
+				} 
+				else {$("#lotok").hide();
+				$("#knofkolvoround").hide();
+				$(".ifprice").hide();
+				}
+				
+				
+						
+				if(bj.tovar_kolvo && bj.tovar_id ) {
+						$(".sclass"+bj.tovar_id).html(bj.tovar_kolvo).show();
+						$(".sclass"+bj.tovar_id).html(bj.tovar_kolvo).show();
+						$("#"+bj.tovar_id)/*.val("В КОРЗИНЕ")*/.addClass("olrady");
+					
+					}
+				return false;
+				},
+				 error: function (xhr, ajaxOptions, thrownError) {
+        alert(xhr.status +'\r\n' + thrownError);
+		return false;
+      }
+	});
+return false ;
+}
+
+function number_format(number, decimals, dec_point, separator ) {
+  number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+  var n = !isFinite(+number) ? 0 : +number,
+    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+    sep = (typeof separator === 'undefined') ? '&nbsp;' : separator ,
+    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+    s = ' ',
+    toFixedFix = function(n, prec) {
+      var k = Math.pow(10, prec);
+      return '' + (Math.round(n * k) / k)
+        .toFixed(prec);
+    };
+  // Фиксим баг в IE parseFloat(0.55).toFixed(0) = 0;
+  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+    .split('.');
+  if (s[0].length > 3) {
+    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+  }
+  if ((s[1] || '')
+    .length < prec) {
+    s[1] = s[1] || '';
+    s[1] += new Array(prec - s[1].length + 1)
+      .join('0');
+  }
+  return s.join(dec);
+}
+
+
+$(function(){	
+
+$(".afphone").mask("+7-999-999-9999");	
+$(".pzk").live("click", function(){
+			$.prettyPhoto.open($(this).attr("link"),'','<span class=news >Сотрудники интернет-магазина &laquo;МедикаМаркет&raquo; свяжутся с вами по указанным контактным данным в самое ближайшее время и проконсультируют по всем интересующим вопросам о товаре</span>');
+			return false;		
+})
+window.onbeforeunload = function (){$("#overload").stop().fadeIn();}	
+lotok(false);	
+	
+$('.bascbutton').live("click", function(){	//$(this).fadeOut(100);
+	var id=$(this).attr('id')
+	
+	var max= $(this).attr('max');
+	if (max && typeof (max) != 'undefined') {
+		max=number_format(max);
+	var exist=number_format($("#kolvoround"+id).html());
+	max=max*1;
+	exist=exist*1;
+	if (max <= exist) {
+			console.log(max+"/"+exist); 
+			$("#over"+id).show(); 
+			return false; 
+			}
+	}
+	addToBasket(id); 
+	var dt=$("#form"+id).serialize();
+	$("#form"+id).trigger("reset");
+	lotok(dt);
+});
+	
+$("#overload").fadeOut();	
+$("#moderator_error").fadeIn().delay(8000).fadeOut();	
+
+$(".closepng").click(function() {$("#moderator_error").stop().hide();
+$("#moderator_error2").stop().hide();
+$("#moderator_error3").stop().hide();
+
+});	
+$(".jscrol").jScrollPane();
+$("#Usregclose").click(function(){$("#Usdetails").hide();$("#overcover").fadeOut(); return false})
+$("#lefmobiletpanelcontent .lev00").live("click", function(){
+	var menuitem=$(this),	id=menuitem.attr("rel"), 	submenu=$("#subc"+id);
+	$("#lefmobiletpanelcontentmenu").html("<span id=lsmback >Назад</span><h3>"+menuitem.html()+"</h3>" +submenu.html());
+	$("#lefmobiletpanelmenu").stop().animate({left:"0" },500);
+	
+})
+$("#lsmback").live("click", function(){$("#lefmobiletpanelmenu").stop().animate({left:"-450px" },300);})
+
+$(".menucatalog").click(function(){
+		$("#overcover2").fadeIn();
+		$("#lefmobiletpanelcontent").html($("#catalogmenupc").html());
+		$("#lefmobiletpanel").animate({left:"0" },500);
+	})	
+	
+$(".menuinfo").click(function(){
+		$("#overcover2").fadeIn();
+		$("#lefmobiletpanelcontent").html("<div class='news iblokl PT'><h3>Информация</h3>"+$("#supermenu").html()+"</div>");
+		$("#lefmobiletpanel").animate({left:"0" },500);
+	})		
+
+$(".auserinfo").click(function(){
+		$("#overcover3").fadeIn();
+		$("#rightmovepanel").animate({right:"0" },500);
+	})		
+
+$("#lefmobiletpanelclose,  #rightmovepanelclose, .allpanelclose, #overcover2, #overcover, #overcover3").click(function(){
+		leftpanelclose();
+		$("#rightmovepanel").stop().animate({right:"-450px" },500);
+		$("#overcover3").fadeOut();
+	})		
+	
+$("#searchrun").click(function(){show_search_panel_pw();}); 
+
+$(".jsonly").css("visibility","visible");	
+cuSel({	changedEl: ".cuSelclass",	scrollArrows: true});	
+$(".styleds").change(function(){$("#filtrform").submit(); })
+cover ();
+
+$("a[rel^='prettyPhoto']").prettyPhoto({theme:'light_rounded'});			
+$("#slogans").delay(500).fadeIn(1000);
+/*$("#catalogmenupc").liMenuVert();*/
+$('#slider').nivoSlider({ animSpeed: 500, pauseTime: 20000,controlNav:true});
+$("#sliderbank ul").jcarousel({auto:6,scroll:3,wrap: "last",visible:3,visible:3,size:6});
+$('.basc').click(function(){	//$(this).fadeOut(100);
+	addToBasket($(this).attr('id')); 
+	$(this).attr('src','/img/bascetfull.png'); 
+	$(this).attr('title','Добавить количество (товар уже есть в корзине)'); 
+	$(this).fadeIn('slow');
+});
+$('.bascbut').live("click", function(){	//$(this).fadeOut(100);
+	addToBasket($(this).attr('id')); 
+	$(this).attr('src','/img/bascetfull2.png'); 
+	$(this).attr('title','Добавить количество (товар уже есть в корзине)'); 
+	$(this).fadeIn('slow');
+});
+
+$('#knof ').click(function(){	
+location.href="/zakaz";
+	/*$.ajax({url: "/ajax/youajax.php",type:'POST', success: function(html){$("#contenclub1").delay(1000).html(html);}});
+	$('#ajaxbascet').animate({top:'0px'}, '500', function(){$(this).animate({top:'-3px'},'fast',function(){$(this).animate({top:'-1px'},'fast')})}).fadeIn();	
+	$("#ajaxclose").delay(500).fadeIn();*/
+});
+$("#ajaxclose").click(function(){
+$('#ajaxbascet').animate({top:'-500px'}, 'slow')
+$("#ajaxclose").fadeOut();});
+$(".notoper").click(function(){
+	$('#ajaxbascet').animate({top:'-500px'}, 'slow')
+	$("#ajaxclose").fadeOut();
+});$("#slidepanel span").click(function(){	
+	$('#slidepanel span').css('background-color','#ebebeb');
+	$(this).css('background-color','#fff');
+	$(".slpan").css('display','none');
+	$("#_"+$(this).attr('id')).fadeIn();
+	if ($(this).attr('id')=='actions') {$('#slider').data('nivoslider').start();}
+});
+
+});
+$(document).ready(function(){$(".cuSelclass").fadeIn();
+
+})
+</script>
+</head><body>
+<!-- img src=/img/pw.png style='position:fixed; top:50px; right:0; z-index:100000' -->
+<div id=moderator_error3 style='max-width:500px; padding-bottom:40px; display:none' class=news  ><span></span><img src=/img/closepng2.png class=closepng title='закрыть' alt='закрыть' id='errсlose' /></div>
+
+<div id=overload></div>
+
+<span class=mobileonly>
+	<div id=lefmobiletpanel>
+		<div id=lefmobiletpanelclose ></div>
+		<div id=lefmobiletpanelmenu><div id=lefmobiletpanelcontentmenu  ></div ></div>
+		<div id=lefmobiletpanelcontent ></div >
+	</div>
+</span>
+<div id=rightmovepanel >
+	<div id=rightmovepanelclose ></div>
+	<div id=lefmobiletpanelcover style=display:none></div>
+	<div id=rightmovepanelmenu >
+		<div id=rightmovepanelcontentmenu   >
+			<div id=rightmovepanelcontent ><style>
+.authpane-form.usersender, .usersend, ausersend  {display:block; width:270px; text-align:left; padding:0 10px ;  border:1px solid #ccc;  border-radius:8px;	margin:15px}
+.authpane-form.usersender.form-label {font-szie:13px}
+.authpane-form.usersender .checkme {max-width:270px}
+.usersender .form-row {margin:5px 0}
+.authpane-form.usersender h3 {margin:0;margin-left:0; padding:0}
+.usersend, .ausersend {border:0; margin-left:20px;}
+.usersend .PT, .PT.allpanelclose {cursor:pointer; display:block;}
+/*.PT.allpanelclose {padding-left:25px}*/
+#passremember, #register {display:none}
+#usersendereror {width:220px}
+.loader {dispaly:inline-block; width:40px; height:40px; background:url(/img/loader.gif) center no-repeat;}
+.whatdo, .weclose{cursor:pointer}
+</style>
+
+<script>
+function openloader( mid )
+{
+	$(".usersender").slideUp(); 
+	$("#overcover2").show();
+	$("#"+ mid).slideDown();
+	$("#rightmovepanel").stop().animate({right:"0" },500);
+	//$("#rightmovepanel").css({right:"0" });
+}
+
+
+
+$(function(){
+	//$(document).click(function(){$("#detail").html(cont).slideDown();})
+	
+	
+	$(".whatdo").live("click",function(){
+			
+			var cont= $("#"+$(this).attr("rel")).html();
+			//alert("cont");
+		 	$("#detail").html(cont).slideDown();
+		return false; 
+		})
+	
+	$(".weclose").click(function(){
+		alert("!!!");
+		//$("#detail").slideUp(); 
+	})	
+	
+	$(".usersend .PT").click(function(){
+		$(".usersender").slideUp(); 
+		$("#detail").slideUp(); 
+		$(".usersend .PT").show();
+		$(this).hide();
+		$("#"+$(this).attr("rel")).slideDown(); 
+		
+	
+	})
+
+	$(".usersend2").click(function(){
+		//$(".usersender").slideUp(); 
+		//$("#"+$(this).attr("rel")).slideDown(); 
+		openloader($(this).attr("rel"));
+		return false; 
+		
+	})
+	
+	$("form.usersender, form.usersender2").live("submit", function(){
+		
+		$("#lefmobiletpanelcover").show()
+		$(".ussender").hide();
+		$(".loader").show();
+		var dataString = $(this).serialize();
+		$.ajax({	url: "/ajax/authorisation.php",
+					type:'POST', 
+					cache: false,	
+					data: dataString,
+					success: function(html){
+						if (html == "1" ) {window.location.href="/user.php"; return false;}  
+						else if (+html == 2 ) {window.location.href=window.location.href; return false;} 
+						else if (+html == 3 ) {	$("#passremember").html($("#postok").html()); } 
+						else {$("#usersendereror").html(html);
+						$("#usersendereror").fadeIn().delay(10000).fadeOut();}
+						
+						
+						$("#lefmobiletpanelcover").hide()
+						$(".ussender").show();
+						$(".loader").hide();
+						
+						return false;	
+						},
+					error: function (xhr, ajaxOptions, thrownError) {
+			
+						$("#usersendereror").html("Ошибка: " + xhr.status +" "+ thrownError );
+					//	alert(html("Ошибка: " + xhr.status +" "+ thrownError );
+						$("#lefmobiletpanelcover").hide()
+						$(".ussender").show();
+						$(".loader").hide();
+						$("#usersendereror").fadeIn().delay(2000).fadeOut();
+						return false;	
+					}
+				})
+		
+		
+		return false;	
+	})	
+	$(".checkme").on("focus click", function(){
+	$("#usersendereror").hide();
+	})
+$("#selectenter").change(function(){
+	if ($(this).val()=='entersoc')
+		$(".sochide").hide(); else $(".sochide").show();
+	
+	var change=$("#"+$(this).val());
+	$(".enter").hide();
+	change.show();
+	
+})
+
+$("#selecrem").change(function(){
+	
+	
+	var change=$("#rem"+$(this).val());
+	$(".remem").hide();
+	change.show();
+	
+})
+	
+})
+</script>
+<div style="display:block; height:95vh; ovrflow-y:auto">
+<form  class='authpane-form usersender' id=authrisation   >
+<input type=hidden name=authrisation  value=1> 
+<h3 >Войти на сайт </h3>
+<div class="none form-row iblok  PT"   >
+    <div class="form-value ">
+	<select id=selectenter name=type  > 
+		<option value=entermail >Испольовать емайл</option>
+		<option value=enterphone >Номер телефона</option>
+		<!-- option value=entersoc >Через соц. сети</option -->
+	</select>
+	</div>
+</div>
+<div class=" form-row iblok enter" id=enterphone style=display:none  >
+                <div class="form-label">
+                    <label for="name">Телефон</label><span >указный при регистрации</span>
+				</div>
+                <div class="form-value ">
+					<input  class='afphone  checkme'  maxlength="150" type="text" name="usphone" tabindex="1" value=""    />
+				</div>
+		</div>
+		 <div class="form-row iblok enter " id=entermail>
+                <div class="form-label">
+                    <label for="name">E-mail</label><span >указный при регистрации</span>
+				</div>
+                <div class="form-value ">
+					<input  class='afemail  checkme' 
+					 maxlength="150" type="email" name="username" tabindex="1" value=""   placeholder='email@email.ru ' />
+				</div>
+		</div>
+		<div class="form-row  sochide  ">
+				<div class="form-label">
+                    <label for="name">Пароль</label><span ></span>
+				</div>
+                <div class="form-value ">
+					<input  class='afpass checkme' 	 maxlength="150" type="password" name="uspwd" tabindex="2" value=""  required="true" placeholder='******' />
+				</div>
+		</div>
+		<div class="form-row iblok sochide" >
+               <div class='loader none' ></div> <input type=submit class="pn-button ussender"  name=authrisation value="Войти на сайт" >
+		</div>
+
+<fieldset style='margin: 8px 0; padding:4px;' ><legend>Войти через соцсети</legend>
+	<div class="form-row iblok  " id=entersoc   >		
+		
+		<a href='https://www.facebook.com/dialog/oauth?client_id=1502910576416471&redirect_uri=https://medicamarket.ru/fb/&response_type=code'  class='icon_soc ' ></a>
+		<a href='https://api.vk.com/oauth/authorize?client_id=5813540&scope=email&redirect_uri=http://medicamarket.ru/vk/'  class='icon_soc vk' ></a>
+		<a href='https://connect.ok.ru/oauth/authorize?scope=GET_EMAIL&redirect_uri=http://medicamarket.ru/ok/&layout=popup&response_type=code&client_id=1249396992' class='icon_soc ok' ></a>
+	</div>	
+</form>
+</fieldset>
+
+<form  class='authpane-form usersender ' id=register  >		
+<input type=hidden name=register  value=1> 
+<h3>Зарегистрироваться</h3>		
+		<div class="form-row iblok">
+
+                    <div class="form-label">
+                    <label for="name">Пользователь</label><span >Имя, фамилия</span></div>
+                    <div class="form-value ">
+					<input  class='afname  checkme' 
+					 maxlength="150" type="text" name="username" tabindex="1" value=""  required="true" placeholder='Иван Петров ' /></div>
+		</div>
+		<div class="form-row iblok">
+
+                    <div class="form-label">
+                    <label for="name">Телефон</label><span ></span></div>
+                    <div class="form-value ">
+					<input  class='afphone checkme' 
+					 maxlength="150" type="text" name="userphone" tabindex="2" value=""  required="true" placeholder='+7 xxx xxx xxxx' /></div>
+		</div>
+		<div class="form-row iblok">
+                    <div class="form-label">
+                    <label for="name">E-mail</label><span ></span></div>
+                    <div class="form-value ">
+					<input  class='afemail  checkme' 
+					 maxlength="150" type="email" name="usermail" tabindex="3" value=""  required="true" placeholder='email@email.ru ' /></div>
+		</div>
+		<div class="form-row iblok">
+                 <div class='loader none' ></div> <input type=submit class="pn-button ussender"  name=register value="Зарегистрироваться" >
+		</div>
+		</form>
+<form  class='  authpane-form usersender' id=passremember   >
+<input type=hidden name=passremember  value=1> 
+<h3>Напомнить пароль</h3>
+		
+		<div class="none form-row iblok  PT"   >
+                
+                <div class="form-value ">
+					<select id=selecrem name=type  > 
+					<option value=0 >Прислать на емайл</option>
+					<option value=1 >СМС на телефон</option>
+					
+					</select>
+				</div>
+		</div>
+		
+		
+		
+		<div class="form-row iblok remem " id=rem0 >
+                    <div class="form-label">
+                    <label for="name">E-mail</label><span >указный при регистрации</span></div>
+                    <div class="form-value ">
+					<input  class='afemail  checkme' 
+					maxlength="150" type="email" name="usermail" tabindex="1" value=""  placeholder='email@email.ru ' /></div>
+		</div>
+		<div class="form-row iblok  remem" style=display:none  id=rem1 >
+
+                    <div class="form-label">
+                    <label for="name">Телефон</label><span >указный при регистрации</span></div>
+                    <div class="form-value ">
+					<input  class='afphone checkme' 
+					 maxlength="150" type="text" name="userphone" tabindex="2" value=""  placeholder='' /></div>
+		</div>
+		
+
+		<div class="form-row iblok">
+                    <div class="form-label">
+						<label for="name">код c картинки</label>
+						<span ><a href="javascript:void(0);" onclick="document.getElementById('capcha-image').src='/geniim.php?rid=' + Math.random(); " >
+						Обновить цифры</a></span>
+					</div>
+                    <div class="form-value ">
+					<input name="number" AUTOCOMPLETE=OFF type="text" id="spamcode"  required 
+					style="width: 80px; font-size:16px; FONT-FAMILY: Comic Sans MS, cursive;display:inline;padding:0px; margin:0px  ">
+					<img src="/geniim.php" border=0 width="150" height="25" id='capcha-image'  class=iblok style=padding:4px; >
+					</div>
+		</div>
+
+
+
+		<div class="form-row iblok">
+                <div class='loader none' ></div> <input type=submit class="pn-button ussender"  name=passremember value="Напомнить пароль" >
+		</div>
+
+</form>
+<div id=postok class=ibloc style=padding:8px;display:none >
+<span class='mini iblokl PT' style='padding:10px;' >
+<br>
+Робот сервера выслал вам пароль для авторизованного доступа. 
+Отвечать на  письмо или СМС не нужно. <br>Пожалуйста, запомните пароль и храните его в&nbsp;секрете, чтобы никто не воспользовался вашим именем в своих целях
+</span></div>
+
+<div class=usersend style=margin-top:40px  >
+	<div class='box23 none'  id=usersendereror ></div>
+	<div class='PT none'  id=authrisation2 rel=authrisation >Войти на сайт</div>
+	<div class='PT'  id=register2 rel=register >Регистрация</div>
+	<div class='PT'  id=passremember2 rel=passremember >Напомнить пароль</div>
+	<br><br>
+	<div class='PT allpanelclose blokl'  >Закрыть панель</div>
+	
+</div>
+
+
+</div></div>
+		</div>
+	
+	</div>
+		
+</div>
+
+
+
+<a href='/favorites.php' id=favorites class='hidden pcstyle ' ></a>
+<div id="knof" 	>
+<div class=kolvoround2 style=display:none  id=knofkolvoround   ></div>
+</div>
+<div id=ajaxbascet >
+			<div id=ajaxclose class=scrollTop2 style='display:none; margin-left:330px; top:3px;  '></div>
+			<div id=contenclub1 style='text-align:left'><img src="/img/loader.gif" alt='загрузка...' style='padding-top:10px;margin-left:130px' /></div>
+</div>
+<div id=overcover style='display:none'></div>
+<div id=overcover2 style='display:none'></div>
+<div id=overcover3 style='display:none'></div>
+<a href=/ style='background:url(/img/fav32.png) center no-repeat; 
+width:45px; height:45px; position:fixed; display:block; margin-top:-55px; top:0; left:50%; margin-left:-500px; z-index:1000;' id=favicon ></a>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="bgtable"  >
+  <tr>
+    <td  align="center" valign="top" >
+	<div id=toppanel  >
+	<span class=mobileonly  >
+		<div id=menucatalog  class="menucatalog"  ></div>
+		<div id=menuinfo  class="menuinfo"  ></div>
+		
+	</span>
+	<a href=#/user.php id=userrg  class="auserinfo  add " ></a>	
+	<!-- div id=canvtr ></div -->
+	  <div class='iblokc pcstyle' style='width:100%; max-width:1300px; position:relative; z-index:99'  >
+				<span class='blok pconly' style='visibility:hidden' >
+				<div id="smoothmenu1" class="ddsmoothmenu"><ul><li class="open"  ><a href='https://medicamarket.ru//?id_razd=49'  >О компании</a><ul><li  ><a href=/news.php  >Новости и события</a></li><li  ><a href='https://medicamarket.ru//?id_razd=54'  >Как оформить заказ</a></li><li  ><a href='https://medicamarket.ru//?id_razd=56'  >Возврат / обмен товаров</a></li><li  ><a href='https://medicamarket.ru//?id_razd=55'  >Режим работы</a></li><li  ><a href='https://medicamarket.ru//?id_razd=48'  >Контакты</a></li></ul></li><li class="open"  ><a href=/allbaners.php  >Покупателям</a><ul><li  ><a href='https://medicamarket.ru//?id_razd=212'  >Карта рассрочки «Халва»</a></li><li  ><a href=/alldisconts.php  >Подарки и скидки</a></li><li  ><a href='https://medicamarket.ru//?id_razd=211'  >Политика конфидециальности</a></li><li  ><a href='https://medicamarket.ru//?id_razd=214'  >Компенсация по ИПР</a></li><li  ><a href='https://medicamarket.ru//?id_razd=218'  >Условия проведения акции  «Нашли дешевле» </a></li><li  ><a href='https://medicamarket.ru//?id_razd=183'  >Подарочный сертификат</a></li><li  ><a href='https://medicamarket.ru//?id_razd=102'  >Сервисный центр </a></li><li  ><a href='https://medicamarket.ru//?id_razd=128'  >Индивидуальные ортопедические стельки на заказ</a></li><li  ><a href='https://medicamarket.ru//?id_razd=103'  >Прокат медтехники</a></li></ul></li><li class="open"  ><a href='https://medicamarket.ru//?id_razd=120'  >Магазины</a><ul><li  ><a href='https://medicamarket.ru//?id_razd=121'  >Барнаул, Строителей, 6</a></li><li  ><a href='https://medicamarket.ru//?id_razd=205'  >Барнаул, Попова, 76</a></li><li  ><a href='https://medicamarket.ru//?id_razd=210'  >Иркутск, Мопра, 6/Франк -Каменецкого ТЦ Фортуна Гранд</a></li><li  ><a href='https://medicamarket.ru//?id_razd=122'  >Новокузнецк, Металлургов, 54</a></li><li  ><a href='https://medicamarket.ru//?id_razd=139'  >Кемерово, Ленина, 45</a></li><li  ><a href='https://medicamarket.ru//?id_razd=164'  >Томск, Фрунзе, 105</a></li><li  ><a href='https://medicamarket.ru//?id_razd=209'  >Новосибирск, Гоголя, 25</a></li></ul></li><li class="open"  ><a href='https://medicamarket.ru//?id_razd=45'  >Доставка/оплата</a></li><li class="open"  ><a href=https://promo.iskramed.ru  >Оптовикам</a></li><li class="open"  ><a href=/actions.php  >Акции</a></li></ul></div></span>
+		</div>
+		</div>
+<div style='width:100%; text-align;center' class=notoper >	
+    
+		<div class=blok style='margin-top:47px; width:100%; max-width:1350px; display:inline-block' id=toptop >
+	
+      
+        <table border=0 width=100% ><tr>
+		<td align=left valign=top >
+			<div class=iblok style='/*width:260px;*/' >
+				<a href="/"><img src="/img/zero.gif"  border=0 title='Медикамаркет' alt='' id=logo /></a> 
+			</div>
+		</td>	
+        
+		<td align=left >
+			<div class=iblok   style='padding-top:25px'  id=regph22 >
+				<div class='cont' style='background-image:url(/img/kont/phone.png)'><div class=PT> 8 800 550 2015</div><span>Бесплатный звонок по России</span></div>
+<style>
+
+a.prettyPhotoframe {text-decoration:none; border-bottom:1px dashed #096 }
+</style>
+<script>
+
+function set_geolocation (lat, lng){$.ajax({type: 'POST',url: '/ajax/geo_ajax.php',	data: {'longitude': lng, 'latitude':lat }, 
+	success:function(data){
+		if (data=="" || data=="0") return false;
+				$("#sessajaxphone").html(data).show();
+		}
+})
+}
+$(function () {           
+		if(navigator.geolocation){
+				navigator.geolocation.getCurrentPosition(function(position) {set_geolocation (position.coords.latitude, position.coords.longitude);}, function() {set_geolocation (0,0);});
+		} else 	{set_geolocation (0,0);  }
+		
+		$(".prettyPhotoframe").live('click', function(){
+			$.prettyPhoto.open($(this).attr('href'),$(this).attr('title'),$(this).attr('title'));
+			return false 
+		})
+		
+});
+		
+
+</script>
+<div class=blok style=min-height:40px; >
+<div id=sessajaxphone ></div>	
+</div>	
+
+
+			</div>
+		</td>	
+        <td align=left class=pconly >
+		<div class="iblok pconly jsonly"    style='padding-top:25px;  line-height:22px; width:210px; display:inline-block'>
+			<div class=cont style='background:url(/img/kont/key.png)0 5px no-repeat; min-height:70px'>
+			<DIV class=usmenu>
+<a href="#" CLASS=auth style='' ><div class="add auserinfo usersend2" rel=authrisation id="userrg2"  >Войти на сайт </div></a><span>
+ <a href=# CLASS='auth auserinfo usersend2'  rel=register  style='background-position: 0 -20px ' >Зарегистрироваться</a> <a href=# CLASS='auth auserinfo usersend2' rel=passremember  style='background-position: 0 -40px '>Забыли пароль?</a></span> 
+ 
+ 
+ 
+</div>
+
+
+
+  </span>
+			</div>
+		</div >
+		<td>
+		<td align=left class=pconly >
+			
+			<span class=pcstyle ><div class='iblok'  id=lotok style='display:none;   padding-top:20px;  '   >
+
+	
+	
+
+	<div  class=iblok  style='position:absolute; width:30px; margin-top:10px; '>
+		<a href=/zakaz/ target=_parent class=bl title='Выбрано товаров' >
+			<div class=kolvoround  id=itogkolvolotok   style='background:#083' ><span class=ifprice >0</span></div></a>
+			
+			<a href=/zakaz/ target=_parent title='ОФормить заказ' class='lotokimg ifprice'  >
+			<img src="/zero.gif" alt=''>
+			</a>
+		
+	</div>
+	<div class=iblok style='padding-left:45px; margin-top:5px;'  >
+		
+			<b class=PT ><span id=itogsummlotok  >0</span>&nbsp;&nbsp;<font style=font-size:.8em >&#8381;</font> 			<input type=hidden id=itogsummlotokh value='0' /><br>
+		 <a href=/zakaz/ target=_parent class=PT  >Оформить заказ</a>	</div>
+</div></span>
+			
+		<td></tr></table>
+		</div>
+</div>	
+	
+<script>
+function clearsearchbox(){
+			$("#serachico").attr("src","/img/search2.gif");
+			$("#ajaxsearchbox").hide();
+}
+function serchajax (){ 
+		if ($("#search").val().length > 1){
+				$("#searchform").addClass("bgwait");
+				$.ajax({url: "/ajax/search_ajax.php",type:'POST',cache: false,data:{searchword:$("#search").val()},
+					success: function(html){if (html !="0"){$("#ajaxsearchbox").html(html).fadeIn();
+					$("#searchform").removeClass("bgwait");	}else clearsearchbox();},
+					error: function(){clearsearchbox();	}
+				});
+			}
+			else {clearsearchbox();}
+			
+}
+function plusweb_adaptive()
+{
+	if ($(window).width() < 1000){
+		$("#mainblock").addClass('mbfull');
+		$(".pcstyle").addClass('mobilestyle').removeClass('pcstyle');
+		
+		$(".pconly").hide();
+		$(".mobileonly").show();
+		if($("#anonsmobile").html() =="" )
+		{$("#anonsmobile").html($("#anonspc").html());
+		$("#anonspc").html("");}
+	}
+	else {
+		$("#mainblock").removeClass('mbfull');
+		$(".mobilestyle").addClass('pcstyle').removeClass('mobilestyle');
+		$(".mobileonly").hide();
+		$(".pconly").css("visibility","visible").show();
+		if($("#anonspc").html() =="" ){
+		$("#anonspc").html($("#anonsmobile").html());
+		$("#mobile").html("");}
+	
+	}	
+	$(".mobilestyle #smoothmenu1").hide();
+	$(".pcstyle #smoothmenu1 ").show();
+	//closesearch();
+	//leftpanelclose();
+	
+	
+	
+}
+	
+$(function(){
+plusweb_adaptive();
+$(window).resize(function(){plusweb_adaptive();leftpanelclose()});
+$("#searchpanel").hover(function(){serchajax();},function(){ clearsearchbox();})				
+$("#search").keyup(function(event){if (event.keyCode != 40) if (event.keyCode != 38)  serchajax();});
+	$(".kdwn").live("keydown", function(event){
+		if (event.keyCode == 40) 
+		{
+			var ind= parseFloat($(this).attr("tabindex"));
+			ind++;
+			$('.kdwn').removeClass("hover");
+			$('.kdwn').removeClass("hover");
+			$('.kdwn[tabindex='+ind+']').addClass("hover").focus();
+			return false ;
+		}
+		if (event.keyCode == 38) 
+		{
+			var ind= parseFloat($(this).attr("tabindex"));
+			ind--;
+			$('.kdwn').removeClass("hover");
+			if (ind>1)$('.kdwn[tabindex='+ind+']').addClass("hover").focus();
+			$('.kdwn[tabindex='+ind+']').focus();
+			return false ;
+		}
+	})	
+	$(".addfav").live("click", function(){
+		var clk=$(this);
+		if(clk.hasClass("added")) {
+			
+		
+		clk.addClass("weit");
+			$.ajax({url: "/ajax/addfav_ajax.php",type:'POST',cache: false,data:{"delfavor":clk.attr("rel")},
+					success: function(html){/*alert(html); */clk.removeClass("weit"); 	clk.removeClass("added"); clk.attr('title','Добавить в избранное');
+					
+					}, 
+					error: function(){clk.removeClass("weit"); }
+			})
+		}
+		else {
+			clk.addClass("weit");
+			$.ajax({url: "/ajax/addfav_ajax.php",type:'POST',cache: false,data:{"addfavor":clk.attr("rel")},
+					success: function(html){/*alert(html);*/clk.removeClass("weit");clk.addClass("added"); clk.attr('title','Убрать из избранного');
+					$("#favorites").removeClass("hidden");}, 
+					error: function(){clk.removeClass("weit"); }
+			})
+			
+		}
+	})
+})
+</script>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0"   >
+    <tr>
+    <td align="center">	
+	<table  border="0" cellspacing="0"  style="position:relative; max-width:1400px; " width=100% >
+        <tr>
+         <td width="260" align="left" valign="top" class="leftcol pconly">
+ <div class="boxgroup" style='width:250px; background:#fff; margin-top:15px; ' id=catalogmenupc >
+        
+ <h3 ">Каталог</h3>
+ <div class="conteiner">
+	<ul class="menu_vert"><div class=outer rel=subc2 >
+	<li class=lev00 rel=2  ><a   >Медтехника для дома</a></li>
+	<p class='level0 pcstyle' id=subc2  style='display:none'  >
+	<span><a href="/catalog.php?idg=21"   >Тонометры</a>
+	<span><a href="/catalog.php?idg=211"   >Автоматические тонометры</a></span>
+	
+	<span><a href="/catalog.php?idg=212"   >Автоматические тонометры на запястье</a></span>
+	
+	<span><a href="/catalog.php?idg=213"   >Полуавтоматические тонометры</a></span>
+	
+	<span><a href="/catalog.php?idg=214"   >Механические тонометры</a></span>
+	
+	<span><a href="/catalog.php?idg=215"   >Стетоскопы</a></span>
+	
+	<span><a href="/catalog.php?idg=216"   >Запасные части к тонометрам</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=23"   >Ингаляторы и небулайзеры</a>
+	<span><a href="/catalog.php?idg=231"   >Компрессорные ингаляторы и небулайзеры</a></span>
+	
+	<span><a href="/catalog.php?idg=232"   >Ультразвуковые ингаляторы и небулайзеры</a></span>
+	
+	<span><a href="/catalog.php?idg=233"   >Паровые ингаляторы</a></span>
+	
+	<span><a href="/catalog.php?idg=234"   >Запасные части к ингаляторам и небулайзерам</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=24"   >Глюкометры, тест-полоски</a>
+	<span><a href="/catalog.php?idg=241"   >Глюкометры</a></span>
+	
+	<span><a href="/catalog.php?idg=242"   >Тест-полоски</a></span>
+	
+	<span><a href="/catalog.php?idg=243"   >Ланцеты, ручки-прокалыватели</a></span>
+	
+	<span><a href="/catalog.php?idg=244"   >Принадлежности для ввода инсулина</a></span>
+	
+	<span><a href="/catalog.php?idg=245"   >Экспересс-тесты</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=25"   >Физиотерапия и магнитотерапия</a>
+	<span><a href="/catalog.php?idg=251"   >Приборы Елатомского завода</a></span>
+	
+	<span><a href="/catalog.php?idg=252"   >Приборы Витафон</a></span>
+	
+	<span><a href="/catalog.php?idg=254"   >Аппараты лазерной, физио/магнито терапии</a></span>
+	
+	<span><a href="/catalog.php?idg=255"   >БИОМАГ магнитотерапия</a></span>
+	
+	<span><a href="/catalog.php?idg=258"   >Приборы фототерапии</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=26"   >Кварцевание/Облучатели бактерицидные</a>
+	<span><a href="/catalog.php?idg=261"   >Облучатели бактерицидные закрытого типа/рециркуляторы</a></span>
+	
+	<span><a href="/catalog.php?idg=262"   >Облучатели бактерицидные открытого типа</a></span>
+	
+	<span><a href="/catalog.php?idg=263"   >Облучатели ультрафиолетовые, инфракрасные</a></span>
+	
+	<span><a href="/catalog.php?idg=264"   >Запасные части</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=27"   >Грелки электрические и солевые</a>
+	<span><a href="/catalog.php?idg=272"   >Электропростыни</a></span>
+	
+	<span><a href="/catalog.php?idg=273"   >Электрогрелки</a></span>
+	
+	<span><a href="/catalog.php?idg=274"   >Электроодеяло</a></span>
+	
+	<span><a href="/catalog.php?idg=275"   >Солевые аппликаторы</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=28"   >Термометры</a>
+	<span><a href="/catalog.php?idg=281"   >Электронные термометры</a></span>
+	
+	<span><a href="/catalog.php?idg=282"   >Инфракрасные термометры</a></span>
+	
+	<span><a href="/catalog.php?idg=283"   >Ртутные/безртутные термометры, Гигрометры</a></span>
+	
+	<span><a href="/catalog.php?idg=284"   >Гигрометры - термометры</a></span>
+	</span>
+		
+	</p>
+	</div><div class=outer rel=subc4 >
+	<li class=lev00 rel=4  ><a   >Ортопедия</a></li>
+	<p class='level0 pcstyle' id=subc4  style='display:none'  >
+	<span><a href="/catalog.php?idg=41"   >Подушки ортопедические</a>
+	<span><a href="/catalog.php?idg=411"   >Подушки под голову</a></span>
+	
+	<span><a href="/catalog.php?idg=412"   >Подушки под спину и на сиденье</a></span>
+	
+	<span><a href="/catalog.php?idg=413"   >Подушки для детей и беременных</a></span>
+	
+	<span><a href="/catalog.php?idg=414"   >Подушки для путешествий</a></span>
+	
+	<span><a href="/catalog.php?idg=415"   >Наволочки для ортопедических подушек</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=42"   >Бандажи до и после родовые</a></span>
+	
+	<span><a href="/catalog.php?idg=43"   >Бандажи/Корсеты/Пояса</a>
+	<span><a href="/catalog.php?idg=431"   >Бандажи для шеи (Шина Шанца)</a></span>
+	
+	<span><a href="/catalog.php?idg=432"   >Бандажи послеоперационные</a></span>
+	
+	<span><a href="/catalog.php?idg=433"   >Бандажи грыжевые/ при опущение малого таза</a></span>
+	
+	<span><a href="/catalog.php?idg=434"   >Корсеты ортопедические</a></span>
+	
+	<span><a href="/catalog.php?idg=435"   >Корректоры осанки</a></span>
+	
+	<span><a href="/catalog.php?idg=436"   >Пояса согревающие</a></span>
+	
+	<span><a href="/catalog.php?idg=437"   >Детские бандажи</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=44"   >Бандажи/ Фиксаторы суставов</a>
+	<span><a href="/catalog.php?idg=441"   >Бандажи на коленный сустав</a></span>
+	
+	<span><a href="/catalog.php?idg=442"   >Бандажи на голеностопный сустав</a></span>
+	
+	<span><a href="/catalog.php?idg=443"   >Бандажи на плечевой и локтевой сустав</a></span>
+	
+	<span><a href="/catalog.php?idg=444"   >Бандажи на лучезапястный сустав</a></span>
+	
+	<span><a href="/catalog.php?idg=445"   >Фиксаторы тазобедренного сустава</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=46"   >Стельки ортопедические</a>
+	<span><a href="/catalog.php?idg=4601"   >Стельки ортопедические</a></span>
+	
+	<span><a href="/catalog.php?idg=4602"   >Стельки ортопедические детские</a></span>
+	
+	<span><a href="/catalog.php?idg=4603"   >Полустельки</a></span>
+	
+	<span><a href="/catalog.php?idg=4604"   >Стельки SCHOLL</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=47"   >Приспособления для стоп</a>
+	<span><a href="/catalog.php?idg=471"   >Подпяточники</a></span>
+	
+	<span><a href="/catalog.php?idg=472"   >Корректоры стопы</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=48"   >Бинты эластичные и самофиксирующиеся</a></span>
+	
+	<span><a href="/catalog.php?idg=49"   >Бинты полимерный (полиуретановые)</a></span>
+	
+	<span><a href="/catalog.php?idg=4811"   >Детская ортопедическая обувь</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc5 >
+	<li class=lev00 rel=5  ><a   >Компрессионный трикотаж</a></li>
+	<p class='level0 pcstyle' id=subc5  style='display:none'  >
+	<span><a href="/catalog.php?idg=51"   >Компрессионные гольфы</a>
+	<span><a href="/catalog.php?idg=511"   >Гольфы профилактические 15-18 мм рт</a></span>
+	
+	<span><a href="/catalog.php?idg=512"   >Гольфы 1 класс компрессии 18-22 мм рт</a></span>
+	
+	<span><a href="/catalog.php?idg=513"   >Гольфы 2 класс компресии 23-32 мм рт</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=52"   >Компрессионные чулки</a>
+	<span><a href="/catalog.php?idg=522"   >Чулки профилактические 15-18 мм рт</a></span>
+	
+	<span><a href="/catalog.php?idg=523"   >Чулки 1 класс компрессии 18-22 мм рт</a></span>
+	
+	<span><a href="/catalog.php?idg=524"   >Чулки 2 класс компрессии 23-32 мм рт</a></span>
+	
+	<span><a href="/catalog.php?idg=525"   >Чулки 3 класс компресии 30-35 мм рт</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=53"   >Компрессионные колготки</a>
+	<span><a href="/catalog.php?idg=532"   >Колготки профилактические 15-18 мм рт</a></span>
+	
+	<span><a href="/catalog.php?idg=533"   >Колготки 1 класс компресии 18-22 мм рт</a></span>
+	
+	<span><a href="/catalog.php?idg=534"   >Колготки 2 класс компрессии 23-32 мм рт</a></span>
+	
+	<span><a href="/catalog.php?idg=536"   >Колготки для беременных компрессионные</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=54"   >Госпитальный трикотаж</a></span>
+	
+	<span><a href="/catalog.php?idg=56"   >Компрессионные рукава</a></span>
+	
+	<span><a href="/catalog.php?idg=59"   >Устройства для надевания компрессионного трикотажа</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc6 >
+	<li class=lev00 rel=6  ><a   >Реабилитационная техника</a></li>
+	<p class='level0 pcstyle' id=subc6  style='display:none'  >
+	<span><a href="/catalog.php?idg=61"   >Кровати медицинские</a>
+	<span><a href="/catalog.php?idg=611"   >Кровати механические функциональные</a></span>
+	
+	<span><a href="/catalog.php?idg=612"   >Кровати электрические функциональные</a></span>
+	
+	<span><a href="/catalog.php?idg=613"   >Матрасы для кроватей</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=62"   >Матрасы противопролежневые и подушки</a></span>
+	
+	<span><a href="/catalog.php?idg=63"   >Кресла-коляски инвалидные</a>
+	<span><a href="/catalog.php?idg=631"   >Кресла-коляски для активных пользователей</a></span>
+	
+	<span><a href="/catalog.php?idg=632"   >Кресла-коляски для пассивных пользователей</a></span>
+	
+	<span><a href="/catalog.php?idg=634"   >Кресла-коляски со складной спинкой</a></span>
+	
+	<span><a href="/catalog.php?idg=635"   >Кресла-коляски повышенной грузоподъемности</a></span>
+	
+	<span><a href="/catalog.php?idg=636"   >Кресла-коляски с санитарным оснащением</a></span>
+	
+	<span><a href="/catalog.php?idg=637"   >Кресла-коляски с рычажным управлением</a></span>
+	
+	<span><a href="/catalog.php?idg=638"   >Детские кресла коляски</a></span>
+	
+	<span><a href="/catalog.php?idg=639"   >Кресла-коляски электрические</a></span>
+	
+	<span><a href="/catalog.php?idg=63902"   >Кресла-коляски для больных ДЦП</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=64"   >Ходунки, опоры</a>
+	<span><a href="/catalog.php?idg=641"   >Ходунки, опоры</a></span>
+	
+	<span><a href="/catalog.php?idg=642"   >Ходунки- ролляторы (на колесах)</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=65"   >Костыли</a>
+	<span><a href="/catalog.php?idg=651"   >Костыли подмышечные</a></span>
+	
+	<span><a href="/catalog.php?idg=652"   >Костыли с опорой под локоть</a></span>
+	
+	<span><a href="/catalog.php?idg=653"   >Аксессуары для костылей</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=66"   >Трости</a>
+	<span><a href="/catalog.php?idg=661"   >Телескопические, нерегулируемые</a></span>
+	
+	<span><a href="/catalog.php?idg=662"   >Трости-опоры</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=67"   >Велотренажеры</a></span>
+	
+	<span><a href="/catalog.php?idg=69"   >Подъемники и пандусы</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc8 >
+	<li class=lev00 rel=8  ><a   >Санитарные приспособления</a></li>
+	<p class='level0 pcstyle' id=subc8  style='display:none'  >
+	<span><a href="/catalog.php?idg=81"   >Кресла-туалеты</a></span>
+	
+	<span><a href="/catalog.php?idg=83"   >Стулья и сиденья для ванной</a></span>
+	
+	<span><a href="/catalog.php?idg=84"   >Ванны надувные и ступени для ванной</a></span>
+	
+	<span><a href="/catalog.php?idg=86"   >Приспособление для туалета</a></span>
+	
+	<span><a href="/catalog.php?idg=88"   >Поручни для ванной и туалета</a></span>
+	
+	<span><a href="/catalog.php?idg=89"   >Судно подкладное</a></span>
+	
+	<span><a href="/catalog.php?idg=8901"   >Приспособления для мытья и гигиены</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc10 >
+	<li class=lev00 rel=10  ><a   >Гигиена и уход за больными</a></li>
+	<p class='level0 pcstyle' id=subc10  style='display:none'  >
+	<span><a href="/catalog.php?idg=101"   >Подгузники и трусики для взрослых</a></span>
+	
+	<span><a href="/catalog.php?idg=102"   >Пеленки и клеенки гигиенические</a></span>
+	
+	<span><a href="/catalog.php?idg=103"   >Прокладки урологические</a></span>
+	
+	<span><a href="/catalog.php?idg=104"   >Повязки и пластыри противовоспалительные</a></span>
+	
+	<span><a href="/catalog.php?idg=105"   >Катетеры</a></span>
+	
+	<span><a href="/catalog.php?idg=106"   >Мочеприемники</a></span>
+	
+	<span><a href="/catalog.php?idg=107"   >Калоприемники и уход за стомой</a></span>
+	
+	<span><a href="/catalog.php?idg=108"   >Шампуни, гели , крема для лежачих больных</a></span>
+	
+	<span><a href="/catalog.php?idg=109"   >Антисептики</a></span>
+	
+	<span><a href="/catalog.php?idg=1091"   >Ватная и марлевая продукция</a></span>
+	
+	<span><a href="/catalog.php?idg=1092"   >Грелки резиновые, спринцовки, клизмы, жгуты</a></span>
+	
+	<span><a href="/catalog.php?idg=1093"   >Контейнеры для биопроб</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc120 >
+	<li class=lev00 rel=120  ><a   >Предметы облегчающие быт</a></li>
+	<p class='level0 pcstyle' id=subc120  style='display:none'  >
+	<span><a href="/catalog.php?idg=1202"   >Столики прикроватные</a></span>
+	
+	<span><a href="/catalog.php?idg=1204"   >Подголовники и поручни прикроватные</a></span>
+	
+	<span><a href="/catalog.php?idg=1205"   >Кухонные принадлежности</a></span>
+	
+	<span><a href="/catalog.php?idg=1206"   >Захваты, ледоходы</a></span>
+	
+	<span><a href="/catalog.php?idg=1207"   >Лупы увеличительные</a></span>
+	
+	<span><a href="/catalog.php?idg=1208"   >Беруши и свечи ушные</a></span>
+	
+	<span><a href="/catalog.php?idg=1209"   >Таблетницы</a></span>
+	
+	<span><a href="/catalog.php?idg=12094"   >Противогрибковая обработка обуви</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc140 >
+	<li class=lev00 rel=140  ><a   >Массажное оборудование</a></li>
+	<p class='level0 pcstyle' id=subc140  style='display:none'  >
+	<span><a href="/catalog.php?idg=1401"   >Массажеры для тела</a></span>
+	
+	<span><a href="/catalog.php?idg=1402"   >Массажеры для шеи и плеч</a></span>
+	
+	<span><a href="/catalog.php?idg=1403"   >Массажеры для глаз и головы</a></span>
+	
+	<span><a href="/catalog.php?idg=1404"   >Массажеры  для ног</a></span>
+	
+	<span><a href="/catalog.php?idg=1405"   >Пояса и миостимуляторы</a></span>
+	
+	<span><a href="/catalog.php?idg=1406"   >Массажные накидки и подушки</a></span>
+	
+	<span><a href="/catalog.php?idg=1407"   >Вакуумный массаж</a></span>
+	
+	<span><a href="/catalog.php?idg=1408"   >Аппликаторы ЛЯПКО и КУЗНЕЦОВА</a></span>
+	
+	<span><a href="/catalog.php?idg=1409"   >Аккупунктурные коврики</a></span>
+	
+	<span><a href="/catalog.php?idg=14093"   >Массажеры механические</a></span>
+	
+	<span><a href="/catalog.php?idg=14095"   >Массажные столы</a></span>
+	
+	<span><a href="/catalog.php?idg=14097"   >Массажные кресла</a></span>
+	
+	<span><a href="/catalog.php?idg=14099"   >Ванны гидромассажные</a></span>
+	
+	<span><a href="/catalog.php?idg=1409999"   >Тренажеры вагинальные</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc160 >
+	<li class=lev00 rel=160  ><a   >Красота и здоровье</a></li>
+	<p class='level0 pcstyle' id=subc160  style='display:none'  >
+	<span><a href="/catalog.php?idg=1601"   >Косметология</a>
+	<span><a href="/catalog.php?idg=16011"   >Приборы Дарсонваль</a></span>
+	
+	<span><a href="/catalog.php?idg=16012"   >Приборы по уходу за лицом и телом</a></span>
+	
+	<span><a href="/catalog.php?idg=16013"   >Приборы для маникюра и педикюра</a></span>
+	
+	<span><a href="/catalog.php?idg=16014"   >Маникюрные принадлежности и зеркала</a></span>
+	
+	<span><a href="/catalog.php?idg=16015"   >Оборудование для салонов красоты</a></span>
+	
+	<span><a href="/catalog.php?idg=16016"   >Дезинфекция и стерилизация</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=1602"   >Уход за полостью рта</a>
+	<span><a href="/catalog.php?idg=16021"   >Ирригаторы полости рта</a></span>
+	
+	<span><a href="/catalog.php?idg=16022"   >Электрические зубные щетки</a></span>
+	
+	<span><a href="/catalog.php?idg=16023"   >Сменные насадки</a></span>
+	
+	<span><a href="/catalog.php?idg=16025"   >Зубные ершики и нити</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=1603"   >Бельё корректирующее</a></span>
+	
+	<span><a href="/catalog.php?idg=1604"   >Су Джок товары (иглы аккупунктурные)</a></span>
+	
+	<span><a href="/catalog.php?idg=1605"   >Очки релаксационные, реабилитационные</a></span>
+	
+	<span><a href="/catalog.php?idg=1606"   >Трикотаж с увлажняющим гелем</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc170 >
+	<li class=lev00 rel=170  ><a   >Алтайская продукция</a></li>
+	<p class='level0 pcstyle' id=subc170  style='display:none'  >
+	<span><a href="/catalog.php?idg=1704"   >Алтайски травы и фиточаи</a></span>
+	
+	<span><a href="/catalog.php?idg=1707"   >Косметические и Эфирные масла</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc180 >
+	<li class=lev00 rel=180  ><a   >Спорт и фитнес</a></li>
+	<p class='level0 pcstyle' id=subc180  style='display:none'  >
+	<span><a href="/catalog.php?idg=1802"   >Весы</a>
+	<span><a href="/catalog.php?idg=18021"   >Весы электронные напольные</a></span>
+	
+	<span><a href="/catalog.php?idg=18022"   >Весы диагностические с анализатором жира и воды</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=1803"   >Тренажеры</a></span>
+	
+	<span><a href="/catalog.php?idg=1804"   >Кинезио тейпы</a></span>
+	
+	<span><a href="/catalog.php?idg=1805"   >Эспандеры</a></span>
+	
+	<span><a href="/catalog.php?idg=1806"   >Палки для скандинавской ходьбы</a></span>
+	
+	<span><a href="/catalog.php?idg=1807"   >Мячи гимнастичесие</a></span>
+	
+	<span><a href="/catalog.php?idg=1808"   >Балансировочные подушки, диски</a></span>
+	
+	<span><a href="/catalog.php?idg=1809"   >Часы песочные</a></span>
+	
+	<span><a href="/catalog.php?idg=18099"   >Шагомеры и пульсометры</a></span>
+	
+	<span><a href="/catalog.php?idg=180999"   >Охлаждающие принадлежности</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc200 >
+	<li class=lev00 rel=200  ><a   >Кислородное оборудование</a></li>
+	<p class='level0 pcstyle' id=subc200  style='display:none'  >
+	<span><a href="/catalog.php?idg=2001"   >Кислородные концентраторы</a></span>
+	
+	<span><a href="/catalog.php?idg=2002"   >Кислородные коктейлеры и смеси</a></span>
+	
+	<span><a href="/catalog.php?idg=2003"   >Кислородные балончики, подушки</a></span>
+	
+	<span><a href="/catalog.php?idg=2004"   >Дыхательные тренажеры</a></span>
+	
+	<span><a href="/catalog.php?idg=2005"   >Пульсоксиметры</a></span>
+	
+	<span><a href="/catalog.php?idg=2006"   >Запасные части</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc202 >
+	<li class=lev00 rel=202  ><a   >Экология в доме</a></li>
+	<p class='level0 pcstyle' id=subc202  style='display:none'  >
+	<span><a href="/catalog.php?idg=2021"   >Воздухоочистители-ионизаторы</a></span>
+	
+	<span><a href="/catalog.php?idg=2022"   >Увлажнители воздуха</a></span>
+	
+	<span><a href="/catalog.php?idg=2023"   >Солевые лампы</a>
+	<span><a href="/catalog.php?idg=20231111"   >Солевые лампы СКАЛА</a></span>
+	
+	<span><a href="/catalog.php?idg=20311112"   >Солевые лампы ФИГУРНЫЕ</a></span>
+	
+	<span><a href="/catalog.php?idg=20311113"   >Изделия из соли</a></span>
+	
+	<span><a href="/catalog.php?idg=20311114"   >Дополнительные принадлежности</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2024"   >Осеребрители и Активаторы воды</a></span>
+	
+	<span><a href="/catalog.php?idg=2025"   >Нитрат-тестеры, дозиметры</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc203 >
+	<li class=lev00 rel=203  ><a   >Товары для беременных и кормящих мам</a></li>
+	<p class='level0 pcstyle' id=subc203  style='display:none'  >
+	<span><a href="/catalog.php?idg=2031"   >Бельё для беременных и кормящих мам</a></span>
+	
+	<span><a href="/catalog.php?idg=2033"   >Гигиена для будущих мам</a></span>
+	
+	<span><a href="/catalog.php?idg=2034"   >Молокоотсосы, стерилизаторы, блендеры, подогреватели</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc204 >
+	<li class=lev00 rel=204  ><a   >Товары для детей</a></li>
+	<p class='level0 pcstyle' id=subc204  style='display:none'  >
+	<span><a href="/catalog.php?idg=2042"   >Подгузники</a>
+	<span><a href="/catalog.php?idg=20421"   >Подгузники</a></span>
+	
+	<span><a href="/catalog.php?idg=20423"   >Пеленки и клеенки</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2043"   >Детское питание</a>
+	<span><a href="/catalog.php?idg=20431"   >Смеси и каши</a></span>
+	
+	<span><a href="/catalog.php?idg=20434"   >Вода</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2044"   >Кормление и уход</a>
+	<span><a href="/catalog.php?idg=20441"   >Бутылки и соски</a></span>
+	
+	<span><a href="/catalog.php?idg=20442"   >Поильники</a></span>
+	
+	<span><a href="/catalog.php?idg=20443"   >Пустышки</a></span>
+	
+	<span><a href="/catalog.php?idg=20444"   >Прорезыватели</a></span>
+	
+	<span><a href="/catalog.php?idg=20445"   >Детская посуда, контейнеры</a></span>
+	
+	<span><a href="/catalog.php?idg=20446"   >Предметы ухода</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2045"   >Детская гигиена</a>
+	<span><a href="/catalog.php?idg=20451"   >Влажные салфетки и ватные изделия</a></span>
+	
+	<span><a href="/catalog.php?idg=20452"   >Мыло детское</a></span>
+	
+	<span><a href="/catalog.php?idg=20453"   >Крема, масла, гели , присыпки</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2046"   >Здоровье и безопасность</a>
+	<span><a href="/catalog.php?idg=20462"   >Ингаляторы и небулайзеры</a></span>
+	
+	<span><a href="/catalog.php?idg=20463"   >Весы детские</a></span>
+	
+	<span><a href="/catalog.php?idg=20464"   >Термометры</a></span>
+	
+	<span><a href="/catalog.php?idg=20468"   >Круги на шею</a></span>
+	
+	<span><a href="/catalog.php?idg=20469"   >Назальные аспираторы</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2047"   >Игрушки</a>
+	<span><a href="/catalog.php?idg=20471"   >Игрушки-погремушки</a></span>
+	
+	<span><a href="/catalog.php?idg=20472"   >Развивающие игрушки и коврики</a></span>
+	
+	<span><a href="/catalog.php?idg=20473"   >Музыкальные игрушки и подвески</a></span>
+	
+	<span><a href="/catalog.php?idg=20475"   >Игрушки для ванной</a></span>
+	</span>
+		
+	</p>
+	</div><div class=outer rel=subc205 >
+	<li class=lev00 rel=205  ><a   >Средства гигиены</a></li>
+	<p class='level0 pcstyle' id=subc205  style='display:none'  >
+	<span><a href="/catalog.php?idg=2051"   >Предметы женской гигиены</a>
+	<span><a href="/catalog.php?idg=20511"   >Прокладки и тампоны</a></span>
+	
+	<span><a href="/catalog.php?idg=20516"   >Косметика для тела</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2053"   >Бумажно-ватные изделия</a>
+	<span><a href="/catalog.php?idg=20531"   >Туалетная бумага</a></span>
+	
+	<span><a href="/catalog.php?idg=20532"   >Ватные палоски и диски</a></span>
+	
+	<span><a href="/catalog.php?idg=20533"   >Влажные салфетки</a></span>
+	
+	<span><a href="/catalog.php?idg=20534"   >Платки носовые</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2054"   >Презервативы, гель-смазки</a></span>
+	
+	<span><a href="/catalog.php?idg=2056"   >Тесты на беременность, овуляцию</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc206 >
+	<li class=lev00 rel=206  ><a   >Медицинская одежда</a></li>
+	<p class='level0 pcstyle' id=subc206  style='display:none'  >
+	<span><a href="/catalog.php?idg=2061"   >Медицинские халаты, блузы, брюки</a></span>
+	
+	<span><a href="/catalog.php?idg=2063"   >Маски, экраны и комбинизоны защитные</a></span>
+	
+	<span><a href="/catalog.php?idg=2064"   >Бахилы</a></span>
+	
+	<span><a href="/catalog.php?idg=2065"   >Головные уборы</a></span>
+	
+	<span><a href="/catalog.php?idg=2066"   >Простыни гигиенические</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc208 >
+	<li class=lev00 rel=208  ><a   >Товары для медицинских учреждений</a></li>
+	<p class='level0 pcstyle' id=subc208  style='display:none'  >
+	<span><a href="/catalog.php?idg=2081"   >Медицинская мебель</a>
+	<span><a href="/catalog.php?idg=20811"   >Шкафы медицинские</a></span>
+	
+	<span><a href="/catalog.php?idg=20812"   >Кушетки и банкетки медицинские</a></span>
+	
+	<span><a href="/catalog.php?idg=20813"   >Столики и банкетки медицинские</a></span>
+	
+	<span><a href="/catalog.php?idg=20814"   >Шкафы медицинские для раздевалок</a></span>
+	
+	<span><a href="/catalog.php?idg=20816"   >Ростомеры</a></span>
+	
+	<span><a href="/catalog.php?idg=20817"   >Ширмы и Штативы медицинские</a></span>
+	
+	<span><a href="/catalog.php?idg=20818"   >Носилки и Шины</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2082"   >Медицинский инструмент</a>
+	<span><a href="/catalog.php?idg=20821"   >Акушерство и гинекология</a></span>
+	
+	<span><a href="/catalog.php?idg=20822"   >Ножницы и зажимы</a></span>
+	
+	<span><a href="/catalog.php?idg=20823"   >Пинцеты и скальпели</a></span>
+	
+	<span><a href="/catalog.php?idg=20824"   >Шпатели</a></span>
+	
+	<span><a href="/catalog.php?idg=20825"   >Молотки неврологические</a></span>
+	
+	<span><a href="/catalog.php?idg=20826"   >Инструменты разные</a></span>
+	
+	<span><a href="/catalog.php?idg=20827"   >Логопедические инструменты</a></span>
+	
+	<span><a href="/catalog.php?idg=20828"   >Дерматоскопы</a></span>
+	
+	<span><a href="/catalog.php?idg=20829"   >Отоскопы</a></span>
+	
+	<span><a href="/catalog.php?idg=2082901"   >Офтальмоскопы</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2083"   >Гели для УЗИ</a></span>
+	
+	<span><a href="/catalog.php?idg=2084"   >Дезинфекция и стерилизация</a>
+	<span><a href="/catalog.php?idg=20841"   >Дезинфицирующие средства, Дозаторы</a></span>
+	
+	<span><a href="/catalog.php?idg=20842"   >Камеры стерилизационные</a></span>
+	
+	<span><a href="/catalog.php?idg=20843"   >Контейнеры для хранения, стерилизации и отходов</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2085"   >Отсасыватели хирургические</a></span>
+	
+	<span><a href="/catalog.php?idg=2087"   >Микроскопы</a></span>
+	
+	<span><a href="/catalog.php?idg=2088"   >Светильники диагностические и негатоскопы</a></span>
+	
+	<span><a href="/catalog.php?idg=2089"   >Перчатки медицинские</a></span>
+	
+	<span><a href="/catalog.php?idg=2091"   >Товары для лабораторий</a>
+	<span><a href="/catalog.php?idg=20912"   >Пробирки, стаканы и штативы</a></span>
+	
+	<span><a href="/catalog.php?idg=20913"   >Весы лабораторные</a></span>
+	
+	<span><a href="/catalog.php?idg=20914"   >Холодильники и центрифуги</a></span>
+	</span>
+	
+	<span><a href="/catalog.php?idg=2092"   >Офтальмологическое оборудование</a></span>
+	
+	<span><a href="/catalog.php?idg=2093"   >Эндопротезы</a></span>
+	
+	<span><a href="/catalog.php?idg=2094"   >Аптечки специализированные</a></span>
+	
+	<span><a href="/catalog.php?idg=2095"   >Товары искусственнной вентиляции легких</a></span>
+	
+	<span><a href="/catalog.php?idg=2096"   >Диагностическое оборудование</a></span>
+	
+	<span><a href="/catalog.php?idg=2097"   >Термоконтейнеры медицинские</a></span>
+	
+	<span><a href="/catalog.php?idg=2098"   >Шприцы одноразовые, многоразовые</a></span>
+	
+	<span><a href="/catalog.php?idg=2099"   >Весы медицинские</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc300 >
+	<li class=lev00 rel=300  ><a   >Товары для слабовидящих и слабослышащих</a></li>
+	<p class='level0 pcstyle' id=subc300  style='display:none'  >
+	<span><a href="/catalog.php?idg=3001"   >Слуховые аппараты</a></span>
+	
+	<span><a href="/catalog.php?idg=3002"   >Усилители звука</a></span>
+	
+	<span><a href="/catalog.php?idg=3004"   >Аксессуары к слуховым аппаратам</a></span>
+		
+	</p>
+	</div><div class=outer rel=subc302 >
+	<li class=lev00 rel=302  ><a   >Товары для водителей</a></li>
+	<p class='level0 pcstyle' id=subc302  style='display:none'  >
+	<span><a href="/catalog.php?idg=3021"   >Алкотестеры</a></span>
+	
+	<span><a href="/catalog.php?idg=3022"   >Очки водительские</a></span>
+	
+	<span><a href="/catalog.php?idg=3025"   >Аптечки автомобильные</a></span>
+		
+	</p>
+	</div><li class=lev00 ><a href='/?id_razd=206' class=a_linew >Комплектация медицинского кабинета</a></li><li class=lev00 ><a href="/brand.php"  >Торговые марки</a></li></ul></div></div>
+
+
+
+
+
+<div class="boxgroup" style='width:250px; background:#fff; margin-top:30px; '>
+<div id=anonspc class='annons pconly'  style='margin-top:-20px; display:block' >
+<span class='anonsblok pcstyle' > <h3 style='text-decoration: none; '>Мы в соцсетях</h3></a><br><a href=https://vk.com/medicamarket target=_blank><img src=/get/254 width=79 border=0></a> <a href=https://ok.ru/medicamarket target=_blank><img src=/get/253 width=79 border=0></a> <a href=https://www.instagram.com/medicamarket/ target=_blank><img src=/get/252 width=79 border=0></a></span></div>
+</div>
+        </td>
+        <td  align="left" valign="top" class='maincol pcctyle' id=mainblock style="padding-bottom:30px; text-align:center " >
+
+		
+	<div id=searchpanel  class='pcstyle jsonly' ><div id=searchrun rel=0 class='mobileonly searchrunopen' ></div>
+	<form action=/n.php method=GET name=searchform id=searchform  onsubmit="return SendForm();  " class='pcstyle'  >            
+		<input type=text name=searchword placeholder="Поиск товаров на МедикаМаркет"  id=search class='pcstyle kdwn'  autocomplete="off" tabindex=1  /> 
+	</form>
+	<div id="ajaxsearchbox" style="display:none" class=pcstyle   >&nbsp;</div>
+	<div class=pconly  style='margin-right:35px; display:inline-block; width:192px; vertical-align:middle; margin-left:5px; marin-bottom:-4px;margin-top:2px' ><div class=cont style='background-image:url(/img/kont/mail.png); margin-left:10px'><a href=mailto:info@miyamarket.ru style='text-decoration:none; color:#333'>info@medicamarket.ru</a><span>круглосуточно</div> </div> 
+</div>
+		
+<div class=news style='display:block; position:relative; z-index:1'>
+
+<h1 class=pcstyle >Ошибка 404 </h1><!-- div id=mytmp></div --><h2><br>Очень жаль, но такая страница не&nbsp;найдена<span>Ничего страшного, иногда страницам меняют адреса или они удаляются</span><br><br></h2>
+<div class='iblokl news pconly' style='width:370px; display:inline-block; background:url(/images/404.png) top right no-repeat; padding-right:300px '>
+<b style='font-size:16px'>Возможные причины ошибки </b><ul>
+    <li>ошибка при наборе адреса страницы (URL)
+    <li>переход по неработающей или  неправильной  ссылке,
+    <li>отсутствие запрашиваемой страницы на сайте <br>(возможно страница удалена или перемещена на&nbsp;другой адрес)</ul><br>
+<br><b style='font-size:16px'>Попробуйте</b> <ul>
+	<li>Проверить правильность написания адреса страницы (URL в адресной строке браузера)
+	<li><a href=/remote.php?idgb=newmsg > Связаться с web-администратором</a>, <br> если уверены,что набираете верный адрес и&nbsp;имеете права&nbsp;доступа 
+	<li><a href=/map.php>Воспользоваться картой сайта</a> или поиском </ul></div><script src="//code.jivosite.com/widget.js" data-jv-id="Oq4mo8x9vj" async1 ></script>
+
+
+<div id=supermenu style=display:none>
+<div id=supermenuinside ><li class="open"  ><a href='https://medicamarket.ru//?id_razd=49'  >О компании</a><ul><li  ><a href=/news.php  >Новости и события</a></li><li  ><a href='https://medicamarket.ru//?id_razd=54'  >Как оформить заказ</a></li><li  ><a href='https://medicamarket.ru//?id_razd=56'  >Возврат / обмен товаров</a></li><li  ><a href='https://medicamarket.ru//?id_razd=55'  >Режим работы</a></li><li  ><a href='https://medicamarket.ru//?id_razd=48'  >Контакты</a></li></ul></li><li class="open"  ><a href=/allbaners.php  >Покупателям</a><ul><li  ><a href='https://medicamarket.ru//?id_razd=212'  >Карта рассрочки «Халва»</a></li><li  ><a href=/alldisconts.php  >Подарки и скидки</a></li><li  ><a href='https://medicamarket.ru//?id_razd=211'  >Политика конфидециальности</a></li><li  ><a href='https://medicamarket.ru//?id_razd=214'  >Компенсация по ИПР</a></li><li  ><a href='https://medicamarket.ru//?id_razd=218'  >Условия проведения акции  «Нашли дешевле» </a></li><li  ><a href='https://medicamarket.ru//?id_razd=183'  >Подарочный сертификат</a></li><li  ><a href='https://medicamarket.ru//?id_razd=102'  >Сервисный центр </a></li><li  ><a href='https://medicamarket.ru//?id_razd=128'  >Индивидуальные ортопедические стельки на заказ</a></li><li  ><a href='https://medicamarket.ru//?id_razd=103'  >Прокат медтехники</a></li></ul></li><li class="open"  ><a href='https://medicamarket.ru//?id_razd=120'  >Магазины</a><ul><li  ><a href='https://medicamarket.ru//?id_razd=121'  >Барнаул, Строителей, 6</a></li><li  ><a href='https://medicamarket.ru//?id_razd=205'  >Барнаул, Попова, 76</a></li><li  ><a href='https://medicamarket.ru//?id_razd=210'  >Иркутск, Мопра, 6/Франк -Каменецкого ТЦ Фортуна Гранд</a></li><li  ><a href='https://medicamarket.ru//?id_razd=122'  >Новокузнецк, Металлургов, 54</a></li><li  ><a href='https://medicamarket.ru//?id_razd=139'  >Кемерово, Ленина, 45</a></li><li  ><a href='https://medicamarket.ru//?id_razd=164'  >Томск, Фрунзе, 105</a></li><li  ><a href='https://medicamarket.ru//?id_razd=209'  >Новосибирск, Гоголя, 25</a></li></ul></li><li class="open"  ><a href='https://medicamarket.ru//?id_razd=45'  >Доставка/оплата</a></li><li class="open"  ><a href=https://promo.iskramed.ru  >Оптовикам</a></li><li class="open"  ><a href=/actions.php  >Акции</a></li></div></div>
+<div style="clear:both"></div><br><br>
+<div style="clear:both"></div>
+
+
+		</td>
+      </tr>
+    </table>
+</div>	
+</div></div></div>
+<div id=annons class='annons mobileonly'  style='margin-top:-20px; display:block' >
+</div>
+<div class='mobileonly blok news '  style='clear:both; background:#fff; padding:10px; border-top:1px solid #ccc '><table class=iblok><tr><td valign=top id=anonsmobile></table></div>
+
+
+<div id="footer" class=blokc style="width:100%; min-width:550px; display:block; text-align:center ">
+ <div class="shell iblok"  >
+        <!-- Footer Main -->
+<div class=iblokl ><table cellpadding=10 border=0>
+<td valign=top >
+<h4>Магазин</h4>
+   <span class='news' style="color:white">
+   <ul>
+     <li><a href=/?id_razd=47 >О проекте</a></li>
+     <li><a href=/?id_razd=55 >Режим работы</a></li>
+     <li><a href=/?id_razd=48 >Контакты</a></li>
+     <li><a href=/ >Медикамаркет.ру</a></li>
+     <li><a href=/map.php >Карта сайта</a></li>
+</ul></span>
+</div></td>
+
+<td valign=top   >
+<h4>Помощь</h4>
+    <span class='news' style="color:white">
+    <ul>
+     <li><a href=/?id_razd=54 >Как сделать заказ</a></li>
+     <li><a href=/?id_razd=54 >Доставка</a></li>
+     <li><a href=/?id_razd=54 >Оплата</a></li>
+     <li><a href=/?id_razd=56 >Возврат/обмен товара</a></li>
+     <li><a href=/?id_razd=48 >Пункт самовывоза</a></li>
+    </ul></span>
+</td>
+
+<td valign=top   >
+<h4>Контакты </h4>
+    <span class='news' style="color:white">
+    <ul>
+     <li>(3852) 57-00-77 </li>
+     <li>(3852) 501-521</li>
+     <li>ICQ 644-451-706</li> 
+     <li><a href=/?id_razd=48#178 >Схема проезда</a></li>
+     <li><a href=/remote.php?iframe=true rel=prettyPhoto >Задать вопрос</a></li>
+    </ul></span>
+</td >
+
+<td valign=top   >
+<h4>Мы в соцсетях </h4>
+    <span class='news' style="color:white">
+    <ul>
+     <li><a href=https://ok.ru/medicamarket target=_blank>Одноклассники</a></li>
+     <li><a href=https://vk.com/medicamarket target=_blank>ВКонтакте</a></li>
+     <li><a href=https://www.instagram.com/medicamarket/ target=_blank>Instagram</a></li> 
+     </ul></span>
+</td >
+</table></div>
+
+<div class="iblok pcstyle white" >
+<a href=http://medicamarket.ru><img src="/banners/logogray.png" alt="iskramed.ru" border=0/></a>
+
+<p><br>ООО «ИСКРА-Мед»<br>656064 г. Барнаул, ул. Автотранспортная, д. 55Д<br>ИНН 2221049255, КПП 222101001</p></div>
+
+<script type="text/javascript" src="/share42/share42.js"></script> 
+
+<div class="iblok white" >&copy; Все права защищены. 
+              <strong>Любое </strong>использование материалов 
+             <br>без письменного согласия  компании 
+              <strong>категорически запрещено</strong>.  
+</div>			  
+<!-- div class="share42init iblok  " id=share42init ></div -->
+
+<span style="display:none"><!-- Yandex.Metrika informer -->
+<a href="https://metrika.yandex.ru/stat/?id=13179472&from=informer"
+target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/13179472/3_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="13179472" data-lang="ru" /></a>
+<!-- /Yandex.Metrika informer -->
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(13179472, "init", {
+        id:13179472,
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/13179472" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</span></span> 
+
+
+  
+<div class="cl">&nbsp;</div>
+</div>
+        <!-- /Footer Main -->
+        
+        <!-- Copyrights -->
+ 
+ 
+ <p class="copy" style='text-align:center; margin-bottom:-20px; position:relative'>
+ 
+ 
+ 
+2011 &mdash; 2020 | miyamarket.ru. Разработка и продвижение сайта <a href="http://plusweb.pro/"><strong>+Web</strong></a>
+<div style='display:none'><br>использованы элементы офромления сайта от <a href=http://hennamehndi.ru/ target=_blank class=mini style=''>hennamehndi.ru</a></div></p>
+        <!-- /Copyrights -->
+    
+<!-- /Footer -->
+<a class='scrollTop' href='#header' style='display:none;'></a>  
+
+
+
+
+</body>
+</html>

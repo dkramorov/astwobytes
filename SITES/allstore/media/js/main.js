@@ -107,6 +107,7 @@ $(document).ready(function () {
         return false;
     });
 
+
     // Sidebar Categories
     $('#section-sb-toggle').on('click', function () {
         $('#section-sb-list').slideToggle();
@@ -116,6 +117,7 @@ $(document).ready(function () {
             $(this).addClass('opened');
         return false;
     });
+
     $("#section-sb-list li.has_child").on("click", ".section-sb-toggle", function () {
         $(this).parent().next("ul").slideToggle();
         if ($(this).hasClass('opened'))
@@ -379,54 +381,6 @@ $(document).ready(function () {
             return false;
         });
     }
-
-    // Forms Validation
-    var filterEmail  = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,6})+$/;
-    $('.form-validate').submit(function () {
-        var errors = 0;
-        $(this).find('[data-required="text"]').each(function () {
-            if ($(this).attr('data-required-email') == 'email'){
-                if (!filterEmail.test($(this).val())) {
-                    $(this).addClass("redborder");
-                    errors++;
-                }
-                else {
-                    $(this).removeClass("redborder");
-                }
-                return;
-            }
-            if ($(this).val() == '') {
-                $(this).addClass('redborder');
-                errors++;
-            } else {
-                $(this).removeClass('redborder');
-            }
-        });
-        if (errors === 0) {
-            var form1 = $(this);
-            $.ajax({
-                type: "POST",
-                url: 'php/email.php',
-                data: $(this).serialize(),
-                success: function(data) {
-                    form1.append('<p class="form-result">Thank you!</p>');
-                    $("form").trigger('reset');
-                }
-            });
-        }
-        return false;
-    });
-    $('.form-validate').find('[data-required="text"]').blur(function () {
-        if ($(this).attr('data-required-email') == 'email' && ($(this).hasClass("redborder"))) {
-            if (filterEmail.test($(this).val()))
-                $(this).removeClass("redborder");
-            return;
-        }
-        if ($(this).val() != "" && ($(this).hasClass("redborder")))
-            $(this).removeClass("redborder");
-    });
-
-
 });
 
 
@@ -462,7 +416,7 @@ $(window).load(function () {
                 maxSlides: 5,
                 pager: false,
             });
-        });         
+        });
     }
 
     // Filter
@@ -477,7 +431,7 @@ $(window).load(function () {
             return false;
         });
     }
-    
+
     // Product Countdown
     if ($('.countdown').length > 0) {
         $('.countdown').each(function () {
@@ -793,5 +747,128 @@ $(window).load(function () {
 
     $(document).ready(function() {
         $('.wccm-compare-table').setDraggable();
+        get_fat_catalogue();
+        $("#tableview").click(function(){
+          localStorage.setItem('cat_view', 'table');
+        });
+        $("#listview").click(function(){
+          localStorage.setItem('cat_view', 'list');
+        });
+        $("#gridview").click(function(){
+          localStorage.setItem('cat_view', 'grid');
+        });
+
+        var cat_view = localStorage.getItem('cat_view');
+        setTimeout(function(){
+          if(cat_view == 'grid'){
+            $("#gridview").trigger('click');
+          }else if(cat_view == 'list'){
+            $("#listview").trigger('click');
+          }else if(cat_view == 'table'){
+            $("#tableview").trigger('click');
+          }
+        }, 100);
     });
+
 })(jQuery);
+
+// для аякс форм: {csrfmiddlewaretoken: getCookie('csrftoken')}
+function getCookie(c_name) {
+  if(document.cookie.length > 0) {
+    var c_start = document.cookie.indexOf(c_name + "=");
+    if(c_start != -1) {
+      c_start = c_start + c_name.length + 1;
+      var c_end = document.cookie.indexOf(";", c_start);
+      if(c_end == -1) c_end = document.cookie.length;
+      return unescape(document.cookie.substring(c_start, c_end));
+    }
+  }
+  return "";
+}
+function load_fat_catalogue_children(li){
+  var ul = li.find('ul');
+
+  if(li.hasClass('loaded')){
+
+    ul.slideToggle();
+    if (li.find('.section-sb-toggle').hasClass('opened'))
+      li.find('.section-sb-toggle').removeClass("opened");
+    else
+      li.find('.section-sb-toggle').addClass('opened');
+
+/*
+    $(this).next('.section-filter-cont').slideToggle();
+    if ($(this).hasClass('opened')) {
+      $(this).removeClass("opened").find('span').text($(this).data("open"));
+    }else {
+      $(this).addClass('opened').find('span').text($(this).data("close"));
+    }
+*/
+    return;
+  }
+
+  li.addClass('loaded');
+  var params = {
+    'csrfmiddlewaretoken': getCookie('csrftoken'),
+    'filter__parents': li.attr('data-block_parents'),
+  };
+  var subli = '';
+  $.ajax({
+    type: 'POST',
+    url: '/flatcontent/blocks/flatcat/api/',
+    data: params,
+    success: function(data) {
+      var rows = data['data'];
+      for(var i=0; i<rows.length; i++){
+        subli = $('<li class="categ-2"><a href="' + rows[i]['link'] + '"><span class="categ-2-label">' + rows[i]['name'] + '</span></a></li>');
+        ul.append(subli);
+        subli.click(function(){
+          window.location.href = $(this).find('a').attr('href');
+          return false;
+        });
+      }
+      ul.slideToggle();
+      if (li.find('.section-sb-toggle').hasClass('opened'))
+        li.find('.section-sb-toggle').removeClass("opened");
+      else
+        li.find('.section-sb-toggle').addClass('opened');
+    }
+  });
+}
+
+function get_fat_catalogue(){
+  // Получить жирный каталог,
+  // если каталог нашелся, заполняем все уровни
+  var sidebar_catalogue = $("#section-sb-list");
+  if(sidebar_catalogue.length > 0){
+    // По каждой рубрике нужно запросить вложенные
+    // Если они есть - отобразить плюсик
+    var z = 1;
+    $("#section-sb-list li.categ-1").each(function(){
+      var cur_li = $(this);
+      var params = {
+        'csrfmiddlewaretoken': getCookie('csrftoken'),
+        'filter__parents': $(this).attr('data-block_parents'),
+        'only_fields': 'id',
+      };
+      $.ajax({
+        type: 'POST',
+        url: '/flatcontent/blocks/flatcat/api/',
+        data: params,
+        success: function(data) {
+          if(parseInt(data['total_records']) > 0){
+            cur_li.addClass('has_child');
+            cur_li.find('.categ-1-label').after('<span class="section-sb-toggle" id="section-sb-toggle-' + z + '"><span class="section-sb-ico"></span></span>');
+            cur_li.find('a').after('<ul></ul>');
+            z += 1;
+
+            cur_li.click(function(e){
+              load_fat_catalogue_children($(this));
+              return false;
+            });
+          }
+        }
+      });
+    });
+  }
+}

@@ -1,0 +1,10 @@
+{% load mtags %}
+<div class="slider-wrapper theme-default">
+  <div id="slider" class="nivoSlider" style="background:#fff url('/media/misc/loader.gif') center no-repeat;">
+    {% for block in blocks %}
+      <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+        {% imagine block.img '1600x900' block.get_folder %}
+      </a>
+    {% endfor %}
+  </div>
+</div>

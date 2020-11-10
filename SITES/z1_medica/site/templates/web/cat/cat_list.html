@@ -1,0 +1,137 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="/media/css/filters.css" media="screen" />
+<link rel="stylesheet" href="/media/css/nouislider.css" media="screen" />
+{% endblock %}
+
+{% block content %}
+<h1 class="pcstyle">{{ page.name }}</h1>
+
+<div id="filtrblok" class="pcstyle">
+  <form id="filtrform" class="blokc" style="padding-left:20px; position:relative; z-index:1000;">
+    <div class="fltrblock">
+      <div class="span submitfiltr blokl" style="display:none;">
+        <input type="submit" value="Применить фильтры" class="pn-button none" id="submitfiltr">
+      </div>
+    </div>
+    <br class="blokc" />
+    <div class="fltrblock">
+      <div style="padding:0px 6px; display:block; position:relative">
+        <div style="display:block; width:100%; position:absolute; top:0px; z-index:150;">
+          <div id="minCost" style="float:left;margin-left:5px;">
+            от <span>{{ cost_filter.min|money_format }} ₽</span>
+          </div>
+          <div id="maxCost" style="float:right;margin-right:5px">
+            до <span>{{ cost_filter.max|money_format }} ₽</span>&nbsp;
+          </div>
+        </div>
+        <input type="text" id="rangeslider" value="" name="rangeslider" />
+        <input type="hidden" name="price_min" id="maxCost2" value="{{ cost_filter.max }}" />
+        <input type="hidden" name="price_max" id="minCost2" value="{{ cost_filter.min }}">
+      </div>
+    </div>
+
+    <div class="fltrblock">
+      <span class="span">
+        <select class="cuSelclass fltshow iblzi1 set_sort_by" name="sort" id="set_sort_by">
+          <option value="" selected>Без сортировки</option>
+          <option value="price">Сначала дешевле</option>
+          <option value="-price">Сначала дорогие</option>
+        </select>
+      </span>
+    </div>
+    <div class="fltrblock">
+      <span class="span">
+        <select class="cuSelclass fltshow iblzi1 set_count_by" id="set_count_by" name="by">
+          <option value="36" selected>36 на странице</option>
+          <option value="60">60 на странице</option>
+          <option value="90">90 на странице</option>
+        </select>
+      </span>
+    </div>
+    <div class="submitfiltr blokc" style="display:none; margin-top:10px;">
+      <input type="submit" value="Применить фильтр" name="fltr" class="pn-button none" id="submitfiltr" style="margin:5px;">
+    </div>
+  </form>
+</div>
+<br class="blok" />
+<div class="blok" style="text-align:center; width:100%">
+  {% for product in products %}
+    {% include "web/cat/grid_item.html" %}
+  {% endfor %}
+  {% if paginator %}{{ paginator|safe }}{% endif %}
+</div>
+<div class="clearfix"></div>
+
+
+
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/js/cat.js"></script>
+<script type="text/javascript" src="/media/js/nouislider.js"></script>
+{% if search_terms %}
+<script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".product-title a").mark('{% for search_term in search_terms %}{% if not forloop.first %} {% endif %}{{ search_term }}{% endfor %}', {
+      'accuracy': 'complementary',
+    });
+  });
+</script>
+{% endif %}
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    $("#rangeslider").ionRangeSlider({
+      hide_min_max: true,
+      keyboard: true,
+      min: {{ cost_filter.min }},
+      max: {{ cost_filter.max }},
+      from: {{ cost_filter.min }},
+      to:  {{ cost_filter.max }},
+      hideMinMax: true,
+      type: 'double',
+      // step: 10,
+      postfix: " ₽",
+      grid: false,
+      onChange: function (obj) {
+        $("#minCost2").val(obj.from);
+        $("#maxCost2").val(obj.to);
+        $("#minCost span").html(obj.from);
+        $("#maxCost span").html(obj.to);
+        $("#sub0").html("!");
+        $("#submitfiltr").show();
+        $(".submitfiltr").show();
+      }
+    });
+
+    $(".set_sort_by").change(function(){
+      var type = $(this).val();
+      var new_url = rebuild_url("sort", type);
+      if(decodeURIComponent(location.search.substr(1)) !== new_url){
+        window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
+      }
+    });
+
+    $(".set_count_by").change(function(){
+      var count = $(this).val();
+      var new_url = rebuild_url("by", count);
+      if(decodeURIComponent(location.search.substr(1)) !== new_url){
+        window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
+      }
+
+      // Обязательно после событий на селекты, а то хрен че сработает
+      cuSel({
+        changedEl: ".cuSelclass",
+        scrollArrows: true,
+      });
+
+    });
+  });
+
+</script>
+{% endblock %}

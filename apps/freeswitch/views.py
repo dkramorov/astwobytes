@@ -510,6 +510,9 @@ def is_phone_in_white_list(request):
        для динамического диалплана"""
     result = {}
     phone = request.GET.get('phone', '')
+    if not phone:
+        return JsonResponse({'error': 'phone absent'})
+
     if phone.startswith('83952') or phone.startswith('8800'):
         result['success'] = True
 
@@ -520,10 +523,14 @@ def is_phone_in_white_list(request):
         except ValueError:
             user_id = None
         if user_id:
-            analog = PersonalUsers.objects.select_related('personal_fs_user').filter(userid=user_id, personal_fs_user__isnull=False, personal_fs_user__is_active=True).first()
+            analog = PersonalUsers.objects.select_related('personal_fs_user').filter(userid=user_id).first()
             if analog:
-                result['success'] = True
-                cid = analog.personal_fs_user.cid
+                cid = None
+                if hasattr(analog, 'personal_fs_user') and analog.personal_fs_user.is_active:
+                    result['success'] = True
+                    cid = analog.personal_fs_user.cid
+                elif analog.phone_confirmed and analog.phone:
+                    cid = analog.phone
                 if cid:
                     if len(cid) == 11 and cid.startswith('8'):
                         result['cid'] = '7%s' % (cid[1:], )

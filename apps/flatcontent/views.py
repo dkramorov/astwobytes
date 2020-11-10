@@ -11,12 +11,16 @@ from django.db.models import Q, Count
 from django.conf import settings
 from django.core.cache import cache
 
-from apps.main_functions.files import check_path, full_path, file_size, make_folder, copy_file
+from apps.main_functions.api_helper import ApiHelper
 from apps.main_functions.functions import object_fields, recursive_fill, sort_voca
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
 from apps.main_functions.atomic_operations import atomic_update, bulk_replace
 from apps.main_functions.crypto import serp_hash
-
+from apps.main_functions.files import (check_path,
+                                       full_path,
+                                       file_size,
+                                       make_folder,
+                                       copy_file, )
 from .models import (Containers,
                      Blocks,
                      LinkContainer,
@@ -29,6 +33,24 @@ is_products = False
 if 'apps.products' in settings.INSTALLED_APPS:
     is_products = True
     from apps.products.models import Products, ProductsCats
+
+def api(request,
+        action: str = 'containers',
+        ftype: str = 'flatcat'):
+    """Апи-метод для получения всех данных
+       /flatcontent/blocks/flatcat/api/?filter__container=1&filter__parents=_1
+    """
+
+    mh_vars = containers_vars.copy()
+    update_containers_vars(ftype, mh_vars)
+    reverse_params = {'ftype': ftype}
+    if action == 'blocks':
+        container_id = request.GET.get('container_id') or request.POST.get('container_id') or 0
+        mh_blocks_vars = blocks_vars.copy()
+        update_blocks_vars(ftype, mh_blocks_vars)
+        reverse_params['container_id'] = container_id
+        return ApiHelper(request, mh_blocks_vars, CUR_APP, reverse_params=reverse_params)
+    return ApiHelper(request, mh_vars, CUR_APP, reverse_params=reverse_params)
 
 CUR_APP = 'flatcontent'
 containers_vars = {
@@ -157,11 +179,31 @@ def fill_from_template(row, state: int = 99):
     for block in result:
         clone_block(block, row)
 
+def redirect_if_flatmain(ftype: str):
+    """Если это контент для всех страничек,
+       то переадресация сразу на блоки,
+       например,
+       c  /flatcontent/admin/flatmain/
+       на /flatcontent/admin/flatmain/1/
+       :param ftype: тип контейнера
+    """
+    if not ftype == 'flatmain':
+        return
+    flatmain = Containers.objects.filter(state=2, tag='main').values_list('id', flat=True).first()
+    if flatmain:
+        link = reverse('%s:%s' % (CUR_APP, blocks_vars['show_urla']),
+                       kwargs={'ftype': ftype, 'container_id': flatmain})
+        return link
+
 @login_required
 def show_containers(request, ftype: str, *args, **kwargs):
     """Вывод контейнеров"""
     mh_vars = containers_vars.copy()
     update_containers_vars(ftype, mh_vars)
+
+    flatmain_link = redirect_if_flatmain(ftype)
+    if flatmain_link:
+        return redirect(flatmain_link)
 
     mh = create_model_helper(mh_vars, request, CUR_APP, reverse_params={'ftype': ftype})
     context = mh.context
@@ -233,7 +275,8 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
         context['redirect'] = mh.get_url_edit()
         context['url_tree'] = mh.url_tree
         mh.breadcrumbs_add({
-            'link': mh.url_edit,
+            'link': reverse('%s:%s' % (CUR_APP, blocks_vars['show_urla']),
+                            kwargs={'ftype': ftype, 'container_id': mh.row.id}),
             'name': mh.row.name,
         })
 
@@ -416,65 +459,6 @@ def search_containers(request, *args, **kwargs):
 
     return JsonResponse(result, safe=False)
 
-
-def search_blocks(request, *args, **kwargs):
-    """Поиск блоков
-       Параметры GET для поиска:
-           :param without_templates: Без шаблонов state__in=(99,100)
-           :param without_menus: Без менюшек state=1
-           :param without_main: Без контента для всех страничек state=2
-           :param with_images: Только с изображениями
-           :param only_templates: Только шаблоны state__in=(99,100)
-           :param only_cats: Только рубрики state=7
-    """
-    result = {'results': []}
-
-    mh = ModelHelper(Blocks, request)
-
-    # Исключение из поиска определенных типов контейнеров
-    without_templates = request.GET.get('without_templates')
-    if without_templates:
-        mh.exclude_add(Q(container__state__in=(99, 100)))
-    without_menus = request.GET.get('without_menus')
-    if without_menus:
-        mh.exclude_add(Q(container__state=1))
-    without_main = request.GET.get('without_main')
-    if without_main:
-        mh.exclude_add(Q(container__state=2))
-    only_templates = request.GET.get('only_templates')
-    if only_templates:
-        mh.filter_add(Q(container__state__in=(99, 100)))
-    only_cats = request.GET.get('only_cats')
-    if only_cats:
-        mh.filter_add(Q(container__state=7))
-    with_images = request.GET.get('with_images')
-    if with_images:
-        mh.filter_add(Q(img__isnull=False))
-
-    mh_vars = blocks_vars.copy()
-    for k, v in mh_vars.items():
-        setattr(mh, k, v)
-
-    mh.search_fields = ('id', 'name', 'tag', 'container__name', 'container__tag')
-    mh.select_related_add('container')
-    rows = mh.standard_show()
-
-    for row in rows:
-        name = '%s > %s #%s' % (row.container.name, row.name, row.id)
-        if row.tag:
-            name += ' (%s)' % (row.tag, )
-        # При поиске по шаблону отдаем тег, а не id в поле id
-        if only_templates:
-            result['results'].append({'text': name, 'id': row.tag})
-        else:
-            result['results'].append({'text': name, 'id': row.id})
-    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
-        result['pagination'] = {'more': False}
-    else:
-        result['pagination'] = {'more': True}
-
-    return JsonResponse(result, safe=False)
-
 @login_required
 def containers_positions(request, ftype: str, *args, **kwargs):
     """Изменение позиций контейнеров"""
@@ -502,6 +486,30 @@ blocks_vars = {
     'model': Blocks,
 }
 
+def fill_blocks_breadcrumbs(mh_containers, mh, ftype: str):
+    """Заполнить хлебные крошки для контейнеров блока,
+       для flatmain мы переадресовываем сразу на блоки,
+       поэтому ссыль на контейнер там не нужна
+       :param mh_containers: помощник модели по контейнеру
+       :param mh: помощник модели по блокам
+       :param ftype: раздел
+    """
+    # ---------------------------
+    # Родительские хлебные крошки
+    # ---------------------------
+    for i, crumb in enumerate(mh_containers.breadcrumbs):
+        mh.breadcrumbs.insert(i, crumb)
+    # ----------------------------
+    # Редактирование родительского
+    # контейнера в хлебных крошках
+    # ----------------------------
+    if ftype == 'flatmain':
+        return
+    mh.breadcrumbs.insert(i + 1, {
+        'link': mh_containers.url_edit,
+        'name': mh_containers.row.name or '%s %s' % (mh_containers.action_edit, mh_containers.rp_singular_obj),
+    })
+
 @login_required
 def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
     """Вывод блоков"""
@@ -527,19 +535,7 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
 
     mh = create_model_helper(mh_vars, request, CUR_APP, reverse_params={'ftype': ftype, 'container_id': container_id})
 
-    # ---------------------------
-    # Родительские хлебные крошки
-    # ---------------------------
-    for i, crumb in enumerate(mh_containers.breadcrumbs):
-        mh.breadcrumbs.insert(i, crumb)
-    # ----------------------------
-    # Редактирование родительского
-    # контейнера в хлебных крошках
-    # ----------------------------
-    mh.breadcrumbs.insert(i + 1, {
-        'link': mh_containers.url_edit,
-        'name': mh_containers.row.name or '%s %s' % (mh_containers.action_edit, mh_containers.rp_singular_obj),
-    })
+    fill_blocks_breadcrumbs(mh_containers, mh, ftype)
 
     context = mh.context
     context['is_products'] = is_products
@@ -716,19 +712,8 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
     mh = create_model_helper(mh_vars, request, CUR_APP, action, reverse_params={'ftype': ftype, 'container_id': container_id})
     mh.select_related_add('container')
 
-    # ---------------------------
-    # Родительские хлебные крошки
-    # ---------------------------
-    for i, crumb in enumerate(mh_containers.breadcrumbs):
-        mh.breadcrumbs.insert(i, crumb)
-    # ----------------------------
-    # Редактирование родительского
-    # контейнера в хлебных крошках
-    # ----------------------------
-    mh.breadcrumbs.insert(i + 1, {
-        'link': mh_containers.url_edit,
-        'name': mh_containers.row.name or '%s %s' % (mh_containers.action_edit, mh_containers.rp_singular_obj),
-    })
+    fill_blocks_breadcrumbs(mh_containers, mh, ftype)
+
     mh.filter_add({'container__id': mh_containers.row.id})
     row = mh.get_row(row_id)
     context = mh.context
@@ -834,6 +819,64 @@ def blocks_positions(request, ftype: str, container_id: int, *args, **kwargs):
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
+def search_blocks(request, *args, **kwargs):
+    """Поиск блоков
+       Параметры GET для поиска:
+           :param without_templates: Без шаблонов state__in=(99,100)
+           :param without_menus: Без менюшек state=1
+           :param without_main: Без контента для всех страничек state=2
+           :param with_images: Только с изображениями
+           :param only_templates: Только шаблоны state__in=(99,100)
+           :param only_cats: Только рубрики state=7
+    """
+    result = {'results': []}
+
+    mh = ModelHelper(Blocks, request)
+
+    # Исключение из поиска определенных типов контейнеров
+    without_templates = request.GET.get('without_templates')
+    if without_templates:
+        mh.exclude_add(Q(container__state__in=(99, 100)))
+    without_menus = request.GET.get('without_menus')
+    if without_menus:
+        mh.exclude_add(Q(container__state=1))
+    without_main = request.GET.get('without_main')
+    if without_main:
+        mh.exclude_add(Q(container__state=2))
+    only_templates = request.GET.get('only_templates')
+    if only_templates:
+        mh.filter_add(Q(container__state__in=(99, 100)))
+    only_cats = request.GET.get('only_cats')
+    if only_cats:
+        mh.filter_add(Q(container__state=7))
+    with_images = request.GET.get('with_images')
+    if with_images:
+        mh.filter_add(Q(img__isnull=False))
+
+    mh_vars = blocks_vars.copy()
+    for k, v in mh_vars.items():
+        setattr(mh, k, v)
+
+    mh.search_fields = ('id', 'name', 'tag', 'container__name', 'container__tag')
+    mh.select_related_add('container')
+    rows = mh.standard_show()
+
+    for row in rows:
+        name = '%s > %s #%s' % (row.container.name, row.name, row.id)
+        if row.tag:
+            name += ' (%s)' % (row.tag, )
+        # При поиске по шаблону отдаем тег, а не id в поле id
+        if only_templates:
+            result['results'].append({'text': name, 'id': row.tag})
+        else:
+            result['results'].append({'text': name, 'id': row.id})
+    if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
+        result['pagination'] = {'more': False}
+    else:
+        result['pagination'] = {'more': True}
+
+    return JsonResponse(result, safe=False)
+
 def prepare_jstree(data, menus, lazy: bool = False):
     """Вспомогательная функция для построения
        меню из queryset в формат jstree
@@ -847,6 +890,9 @@ def prepare_jstree(data, menus, lazy: bool = False):
             'text': menu.name,
             'state': {'opened': False, 'selected': False},
             'children': [] if not lazy else True,
+            'a_attr': {
+                'href': '#%s' % menu.id,
+            },
         })
         if hasattr(menu, 'sub'):
             if menu.sub:
@@ -929,6 +975,9 @@ def tree_co(request):
                 'text': container.name,
                 'state': {'opened': True, 'selected': False, 'disabled': True},
                 'children': data,
+                'a_attr': {
+                    'href': 'javascript:void(0);',
+                },
             }]
         # Получить каталог с lazy загрузкой
         elif operation == 'get_children_lazy' and mh.permissions['view']:
@@ -940,6 +989,9 @@ def tree_co(request):
                     'state': {'opened': True, 'selected': False, 'disabled': True},
                     #'children': data,
                     'children': True,
+                    'a_attr': {
+                        'href': 'javascript:void(0);',
+                    },
                 }]
             else:
                 if node_id.isdigit():

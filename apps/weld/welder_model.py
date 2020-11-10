@@ -21,7 +21,6 @@ class Welder(Standard):
     stigma2 = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Клеймо по приказу, например, 9SZN')
-
     notice = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Примечание, например, нет закл. ВИК, РК, ДЛ')

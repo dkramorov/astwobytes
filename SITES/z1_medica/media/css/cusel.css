@@ -1,0 +1,200 @@
+/*.cusel,*/
+.cuselFrameRight,
+.jScrollPaneDrag,
+.jScrollArrowUp,
+.jScrollArrowDown {
+  background: url(../img/selects-22.png) no-repeat;
+  text-shadow:none; 
+}
+.cusel { /* Ð¾Ð±ÑÐ¸Ð¹ Ð²Ð¸Ð´ ÑÐµÐ»ÐµÐºÑÐ° Ð²ÐºÐ»ÑÑÐ°Ñ ÑÑÑÐµÐ»ÐºÑ ÑÐ¿ÑÐ°Ð²Ð° */
+  height: 34px;
+  background-position: left top;
+  display: inline-block;
+  position: relative;
+  top:-5px;
+  left:5px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 101;
+   border:1px solid #ccc;
+ border-radius:4px;
+
+  /*border:1px solid transparent;*/
+}
+.cuselFrameRight { /* Ð»ÐµÐ²Ð°Ñ ÑÑÑÑ ÑÐµÐ»ÐµÐºÑ. Ð¾Ð±ÑÐ½Ð¾ ÑÐºÑÑÐ³Ð»ÐµÐ½Ð¸Ðµ Ð¸ Ð»ÐµÐ²Ð°Ñ Ð³ÑÐ°Ð½Ð¸ÑÐ° */
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 40px;
+  background-position: right -1px;
+}
+
+.cuselText { /* ÐºÐ¾Ð½ÑÐµÐ¹Ð½ÐµÑ Ð´Ð»Ñ Ð¾ÑÐ¾Ð±ÑÐ°Ð¶ÐµÐ½Ð½Ð¾Ð³Ð¾ ÑÐµÐºÑÑÐ° ÑÐµÐ»ÐµÐºÑ */
+  height: 20px;
+  padding: 10px 0 0 7px; /* Ð¿Ð¾Ð´Ð±Ð¸ÑÐ°ÐµÐ¼ Ð¾ÑÑÑÑÐ¿Ñ Ð¸ Ð²ÑÑÐ¾ÑÑ Ð´Ð»Ñ Ð²Ð¸Ð´Ð¸Ð¼Ð¾Ð³Ð¾ ÑÐµÐºÑÑÐ° Ð² ÑÐµÐ»ÐµÐºÑÐµ */
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  font-size:13px;
+ color:#333;
+
+  /*font: 13px  Arial, "Helvetica CY", "Nimbus Sans L", sans-serif; /* ÑÑÐ¸ÑÑÑ */
+  position: absolute;
+  font-weight:normal;
+  top: 0;
+  left: 0;
+}
+* html .cuselText { /* Ð²ÑÑÐ¾ÑÐ° Ð±Ð»Ð¾ÐºÐ° Ð´Ð»Ñ ÑÐµÐºÑÑÐ° Ð´Ð»Ñ Ð¸Ðµ6 */
+  height: 22px;
+}
+.cusel span { /* Ð¾ÑÐ¾ÑÐ¼Ð»ÐµÐ½Ð¸Ðµ Ð¾Ð¿ÑÐ¸Ð¾Ð½Ð° */
+  display: block;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight:400;
+  font-size:13px;
+ text-align:left;
+
+  padding: 10px ; /* Ð¿Ð°Ð´Ð´Ð¸Ð½Ð³ ÑÐ¿ÑÐ°Ð²Ð° - ÑÑÐ¾ Ð¾ÑÑÑÑÐ¿ ÑÐµÐºÑÑÐ° Ð¾Ñ Ð¿Ð¾Ð»Ð·ÑÐ½ÐºÐ° */
+  zoom: 1;
+  /*font-weight:bolder;
+ color:#000;
+*/
+}
+.cusel span:hover,
+.cusel .cuselOptHover { /* ÑÐµÐ°ÐºÑÐ¸Ñ Ð¾Ð¿ÑÐ¸Ð¾Ð½Ð° Ð½Ð° Ð½Ð°Ð²ÐµÐ´ÐµÐ½Ð¸Ðµ */
+  background: #6bc491; 
+  color: #fff;
+}
+.cusel .cuselActive { /* Ð¾ÑÐ¾ÑÐ¼Ð»ÐµÐ½Ð¸Ðµ Ð°ÐºÑÐ¸Ð²Ð½Ð¾Ð³Ð¾ Ð¾Ð¿ÑÐ¸Ð¾Ð½Ð° Ð² ÑÐ¿Ð¸ÑÐºÐµ */
+  background: #eee;
+  color: #333;
+  cursor: default;
+}
+
+
+/*
+  styles for focus and hover
+*/
+.cusel:hover,
+.cusel:hover .cuselFrameRight,
+.cusel:focus,
+.cusel:focus .cuselFrameRight,
+.cuselFocus,
+.cuselFocus .cuselFrameRight {
+  /*background-image: url(../img/selects-focus.png);*/
+}
+
+.cuselOpen {
+  z-index: 999;
+}
+
+/*
+  styles for disabled select
+*/
+.classDisCusel,
+.classDisCusel .cuselFrameRight {
+  background-image: url(../img/selects-2-dis.png) !important;
+  cursor: default;
+  color: #ccc;
+  z-index:200;
+}
+.classDisCusel .cuselText {
+  cursor: default;
+}
+
+
+/*
+  styles for scrollbar
+*/
+.cusel .cusel-scroll-wrap { /* ÐºÐ¾Ð½ÑÐµÐ¹Ð½ÐµÑ Ð´Ð»Ñ Ð±Ð»Ð¾ÐºÐ° Ñ Ð¿ÑÐ¾ÐºÑÑÑÐºÐ¾Ð¹ */
+  display: block;
+  /*margin-top:-1px;
+ padding-top:1px;
+*/
+  visibility: hidden;
+  position: absolute;
+  left: -1px;
+  top: 100%;
+  border-radius:4px; 
+  background: rgba(255,255,255,.95); /* ÑÐ¾Ð½ Ð²ÑÐ¿Ð°Ð´Ð°ÑÑÐµÐ³Ð¾ ÑÐ¿Ð¸ÑÐºÐ° */
+  min-width: 100%;
+  width: auto;
+  /*z-index:1;*/
+  border:1px solid #ddd;
+  border-top:none;
+  border-radius:4px; 
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+  /*box-shadow:5px 5px 5px rgba(0,0,0,.15);*/
+}
+
+.cusel .jScrollPaneContainer {
+  position: relative;
+  overflow: hidden;
+  z-index: 99;
+  top:-3px;
+ padding-top:2px;
+
+  border-radius:4px; 
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+  border: 1px solid rgba(0,0,0,.3); /* Ð³ÑÐ°Ð½Ð¸ÑÑ Ð²ÑÐ¿Ð°Ð´Ð°ÑÑÐµÐ³Ð¾ ÑÐ¿Ð¸cÐºÐ° */
+  border-top:none;
+}
+
+.cusel .jScrollPaneTrack { /* ÑÑÐµÐº Ð´Ð»Ñ Ð¿Ð¾Ð»Ð·ÑÐ½ÐºÐ° Ð¿ÑÐ¾ÐºÑÑÑÐºÐ¸ */
+  height: 100%;
+  width: 7px !important;
+  background: #ccc;
+  position: absolute;
+  top: 0;
+  right: 4px;
+}
+.cusel .jScrollPaneDrag { /* Ð¿Ð¾Ð»Ð·ÑÐ½Ð¾Ðº */
+  position: absolute;
+  background-position: -40px -30px;
+  cursor: pointer;
+  width: 15px !important;
+  height: 27px !important;
+  right: -4px;
+  
+}
+
+.cusel .jScrollPaneDragTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+.cusel .jScrollPaneDragBottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+}
+.cusel .jScrollArrowUp { /* ÑÑÑÐµÐ»ÐºÐ° Ð²Ð²ÐµÑÑ */
+  position: absolute;
+  top: 0;
+  right: 2px;
+  width: 26px;
+  height: 12px;
+  cursor: pointer;
+  background-position: -2px -30px;
+  overflow: hidden;
+  background:url(../img/arrdown.png) right 8px no-repeat; 
+}
+.cusel .jScrollArrowDown { /* ÑÑÑÐµÐ»ÐºÐ° Ð²Ð½Ð¸Ð· */
+  width: 25px;
+  height: 12px;
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  right: 3px;
+  cursor: pointer;
+  background:url(../img/arrdown.png) right 8px no-repeat; 
+  overflow: hidden;
+}

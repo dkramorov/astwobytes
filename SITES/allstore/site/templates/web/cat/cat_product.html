@@ -12,13 +12,13 @@
       <ul class="prod-slider-car">
         <li>
           <a data-fancybox-group="product" class="fancy-img" href="{{ product.imagine }}">
-            <img src="{% imagine product.img '600x400' product.get_folder True %}">
+            <img src="{% imagine product.img '600x400' product.get_folder True %}" loading="lazy">
           </a>
         </li>
         {% for photo in photos %}
           <li>
             <a data-fancybox-group="product" class="fancy-img" href="{{ photo.imagine }}">
-              <img src="{{ photo.thumb }}">
+              <img src="{{ photo.thumb }}" loading="lazy">
             </a>
           </li>
         {% endfor %}
@@ -28,13 +28,13 @@
       <ul class="prod-thumbs-car">
         <li>
           <a data-slide-index="0" href="#">
-            <img src="{{ product.imagine }}">
+            <img src="{{ product.imagine }}" loading="lazy">
           </a>
         </li>
         {% for photo in photos %}
           <li>
             <a data-slide-index="{{ forloop.counter }}" href="#">
-              <img src="{{ photo.thumb }}">
+              <img src="{{ photo.thumb }}" loading="lazy">
             </a>
           </li>
         {% endfor %}

@@ -1,0 +1,33 @@
+{% load mtags %}
+<div class="boxgroup" style="width:250px; background:#fff; margin-top:15px;" id="catalogmenupc">
+  <h3>Каталог</h3>
+  <div class="conteiner">
+    <ul class="menu_vert">
+      {% for menu in menus %}
+        <div class="outer" rel="subc{{ menu.id }}">
+          <li class="lev00" rel="{{ menu.id }}">
+            <a{% if not menu.sub %} href="{{ menu.link }}"{% endif %}>{{ menu.name }}</a>
+          </li>
+          {% if menu.sub %}
+            <p class="level0 pcstyle" id="subc{{ menu.id }}" style="display:none">
+              {% for submenu in menu.sub %}
+                <span>
+                  <a href="{{ submenu.link }}">{{ submenu.name }}</a>
+                  {% if submenu.sub %}
+                    {% for item in submenu.sub %}
+                      <span>
+                        <a href="{{ item.link }}">{{ item.name }}</a>
+                      </span>
+                    {% endfor %}
+                  {% endif %}
+                </span>
+              {% endfor %}
+            </p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+

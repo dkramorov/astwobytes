@@ -106,6 +106,7 @@ def edit_order(request, action: str, row_id: int = None, *args, **kwargs):
     mh.select_related_add('promocode')
     row = mh.get_row(row_id)
     context = mh.context
+    template = '%sedit.html' % (mh.template_prefix, )
 
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
@@ -120,6 +121,14 @@ def edit_order(request, action: str, row_id: int = None, *args, **kwargs):
                 'link': mh.url_edit,
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
+        elif action == 'view' and row:
+            context['action_edit'] = 'Просмотр'
+            mh.action_edit = 'Просмотр'
+            mh.breadcrumbs_add({
+                'link': mh.url_edit,
+                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+            })
+            template = '%sview.html' % (mh.template_prefix, )
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -152,9 +161,14 @@ def edit_order(request, action: str, row_id: int = None, *args, **kwargs):
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
         context['redirect'] = mh.get_url_edit()
+        context['row']['get_number'] = mh.row.get_number()
+        context['row']['total_without_discount'] = mh.row.total_without_discount()
+        if mh.row.promocode:
+            context['row']['promocode'] = mh.row.get_promocode()
+        context['row']['purchases'] = mh.row.get_purchases()
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
-    template = '%sedit.html' % (mh.template_prefix, )
+
     return render(request, template, context)
 
 @login_required

@@ -195,15 +195,44 @@ def search_elements(data):
     if elements.get(0) and elements.get(1):
         pnp = ('тройник', 'переход')
         all_data = ' '.join(data)
+
+        # Определяем что во что переходит
+        #ind_el1 = all_data.index(elements[0])
+        #ind_el2 = all_data.index(elements[1])
+        #if ind_el2 < ind_el1:
+        #    el1 = elements[0]
+        #    el2 = elements[1]
+        #    elements.update({
+        #        0: el2,
+        #        1: el1,
+        #    })
+
         all_data = all_data.replace('х', 'x')
-        if elements[0].lower() in pnp and elements[1].lower() in pnp:
+
+        if elements[0].lower() in pnp or elements[1].lower() in pnp:
             tsize = rega_thickness.findall(all_data)
             dsize = rega_diameter.findall(all_data)
+
             if tsize and dsize:
-                # Повторы по диаметру - реальный диаметр
+                # Повторы по диаметру => реальный диаметр
                 darr = calc_elements(dsize)
                 diameter = darr[-1]
-                thickness = min([int(t.replace('x', '')) for t in tsize])
+                # Коррекция толщины
+                # Толщина по диаметру
+                thickness_arr = []
+
+                for i, item in enumerate(dsize):
+                    if diameter[0] == item:
+                        try:
+                            thickness_arr.append(tsize[i])
+                        except Exception as e:
+                            logger.info('[ERROR]: %s' % e)
+
+                if thickness_arr:
+                    thickness = min([int(t.replace('x', '')) for t in thickness_arr])
+                else:
+                    thickness = min([int(t.replace('x', '')) for t in tsize])
+
                 if diameter and thickness:
                     elements['size'] = '%s%s' % (diameter[0], thickness)
         elif rega_choke.search(all_data):

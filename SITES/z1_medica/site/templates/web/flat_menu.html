@@ -1,0 +1,68 @@
+{% ifequal tag "topmenu" %}
+<div class="iblokc pcstyle" style="width:100%; max-width:1300px; position:relative; z-index:99">
+  <span class="blok pconly" style="visibility:hidden">
+    <div id="smoothmenu1" class="ddsmoothmenu">
+      <ul>
+        {% for menu in menus %}
+          <li class="open">
+            <a href="{{ menu.link }}" {% ifequal request.META.PATH_INFO menu.link %} class="active"{% endifequal %}>{{ menu.name }}</a>
+            {% if menu.sub %}
+              <ul>
+                {% for item in menu.sub %}
+                  <li>
+                    <a href="{{ item.link }}">{{ item.name }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </span>
+</div>
+{% endifequal %}
+{% ifequal tag "mainmenu" %}
+<button type="button" class="mainmenu-btn">Меню</button>
+<ul class="mainmenu">
+  {% for menu in menus %}
+    <li class="{% if menu.sub %}menu-item-has-children{% endif %}">
+      <a href="{{ menu.link }}" class="{% ifequal request.META.PATH_INFO menu.link %} active{% endifequal %}">
+        {{ menu.name }}
+        {% if menu.sub %} <i class="fa fa-angle-down"></i>{% endif %}
+      </a>
+      {% if menu.sub %}
+        <ul class="sub-menu">
+          {% for item in menu.sub %}
+            <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+  <li class="mainmenu-more">
+    <span>...</span>
+    <ul class="mainmenu-sub"></ul>
+  </li>
+</ul>
+{% endifequal %}
+{% ifequal tag "bottommenu" %}
+<div class="iblokl">
+  <table cellpadding="10" border="0">
+    <tr>
+      {% for menu in menus %}
+        <td valign="top">
+          <h4>{{ menu.name }}</h4>
+          <span class="news" style="color:white">
+            <ul>
+              {% for item in menu.sub %}
+                <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+              {% endfor %}
+            </ul>
+          </span>
+        </td>
+      {% endfor %}
+    </tr>
+  </table>
+</div>
+{% endifequal %}

@@ -1,0 +1,66 @@
+{% load mtags %}
+<div style="width:100%; text-align;center" class="notoper">
+  <div class="blok" style="margin-top:47px; width:100%; max-width:1350px; display:inline-block" id="toptop">
+    <table border="0" width="100%">
+      <tr>
+        <td align="left" valign="top">
+          <div class="iblok">
+            <a href="/" id="logo">
+              {% imagine containers.main.tags.logo.img '300x300' containers.main.tags.logo.get_folder %}
+            </a>
+          </div>
+        </td>
+        <td align="left">
+          <div class="iblok" style="padding-top:25px" id="regph22">
+            <div class="cont" style="background-image:url('/media/misc/phone.png')">
+              <div class="PT">{{ containers.main.tags.phone.html|safe }}</div>
+              <span>{{ containers.main.tags.phone.description }}</span>
+            </div>
+            <div class="cont" style="background-image:url('/media/misc/phone.png')">
+              <div class="PT">{{ containers.main.tags.phone2.html|safe }}</div>
+              <span>{{ containers.main.tags.phone2.description }}</span>
+            </div>
+          </div>
+        </td>
+        <td align="left" class="pconly">
+          <div class="iblok pconly jsonly" style="padding-top:25px;  line-height:22px; width:210px; display:inline-block">
+            <div class="cont" style="background:url('/media/misc/key.png')0 5px no-repeat; min-height:70px">
+              <div class="usmenu">
+                <a href="#" CLASS="auth">
+                  <div class="add auserinfo usersend2" rel="authrisation" id="userrg2">Войти на сайт </div>
+                </a>
+                <span>
+                  <a href="#" CLASS="auth auserinfo usersend2" rel="register" style="background-position: 0 -20px">Зарегистрироваться</a>
+                  <a href="#" CLASS="auth auserinfo usersend2" rel="passremember" style="background-position: 0 -40px">Забыли пароль?</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td align="left" class="pconly">
+          <span class="pcstyle">
+            <div class="iblok" id="lotok" style="display:none; padding-top:20px;">
+              <div class="iblok" style="position:absolute; width:30px; margin-top:10px;">
+                <a href="/zakaz/" target="_parent" class="bl" title="Выбрано товаров">
+                  <div class="kolvoround" id="itogkolvolotok" style="background:#083">
+                    <span class=ifprice >0</span>
+                  </div>
+                </a>
+                <a href="/zakaz/" target="_parent" title="ОФормить заказ" class="lotokimg ifprice">
+                  <img src="/media/misc/zero.gif">
+                </a>
+              </div>
+              <div class="iblok" style="padding-left:45px; margin-top:5px;">
+                <b class="PT">
+                  <span id="itogsummlotok">0</span>&nbsp;&nbsp;
+                  <br>
+                  <a href="/zakaz/" target="_parent" class="PT">Оформить заказ</a>
+                </b>
+              </div>
+            </div>
+          </span>
+        <td>
+      </tr>
+    </table>
+  </div>
+</div>

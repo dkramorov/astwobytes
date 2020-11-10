@@ -27,10 +27,20 @@ class PersonalUsers(Standard):
     """
     username = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     userid = models.IntegerField(blank=True, null=True, db_index=True)
+    phone_confirmed = models.IntegerField(blank=True, null=True, db_index=True, verbose_name='Телефон подтвержден')
+    phone = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
     class Meta:
         verbose_name = 'Freeswitch - Пользователи сайта'
         verbose_name_plural = 'Freeswtich - Пользователи сайта'
+
+    def save(self, *args, **kwargs):
+        if self.phone:
+            phone = kill_quotes(self.phone, 'int')
+            if phone.startswith('7'):
+                phone = '8%s' % (phone[1:], )
+            self.phone = phone
+        super(PersonalUsers, self).save(*args, **kwargs)
 
 class PhonesWhiteList(Standard):
     """Белый список телефонов для АТС,
@@ -42,11 +52,13 @@ class PhonesWhiteList(Standard):
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     phone = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     tag = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Важный идентификатор, например, id компании')
+
     def save(self, *args, **kwargs):
-        phone = kill_quotes(self.phone, 'int')
-        if phone.startswith('7'):
-            phone = '8%s' % (phone[1:], )
-        self.phone = phone
+        if self.phone:
+            phone = kill_quotes(self.phone, 'int')
+            if phone.startswith('7'):
+                phone = '8%s' % (phone[1:], )
+            self.phone = phone
         super(PhonesWhiteList, self).save(*args, **kwargs)
 
     class Meta:

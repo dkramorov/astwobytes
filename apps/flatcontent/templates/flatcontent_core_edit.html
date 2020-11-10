@@ -117,7 +117,8 @@
 
     /* Заменится только обработчик события отправки формы для is_tree */
     {% if is_tree %}
-      $("#current_edit_form").attr('action', '').parent().addClass('hidden');
+      //$("#current_edit_form").attr('action', '').parent().addClass('hidden');
+      $("#current_edit_form").attr('action', ''); // Прятать не надо - скачет
     {% else %}
       $("#current_edit_form").submit(function(e) {
         var $form = $(this);

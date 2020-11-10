@@ -11,7 +11,9 @@ from django.core.mail import EmailMessage
 
 from apps.flatcontent.views import SearchLink
 from apps.main_functions.catcher import feedback_form, json_pretty_print
-from apps.main_functions.models import Tasks
+from apps.main_functions.models import Tasks, Config
+from apps.main_functions.model_helper import get_user_permissions
+
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.views_helper import (show_view,
@@ -234,3 +236,60 @@ def DefaultFeedback(request, **kwargs):
 
     return JsonResponse(result, safe=False)
 
+
+@login_required
+def settings(request, app: str = 'flatcontent'):
+    """Настройки"""
+    result = {}
+    app_label = '%s_' % app
+    permissions = get_user_permissions(request.user, Config)
+    settings_store = {
+        'flatcontent': {
+            'name': 'Настройки раздела "Контент" и стат. страничек',
+        }
+    }
+    name = settings_store[app]['name']
+    root_url = reverse('main_functions:settings', args=[app])
+    context = {
+         'app': app,
+         'title': name,
+         'breadcrumbs': [{
+             'name': name,
+             'link': root_url,
+         }],
+    }
+    template = '%s_settings.html' % (app, )
+    if request.method == 'POST':
+        settings = []
+        settings_count = request.POST.get('settings', 0)
+        try:
+            settings_count = int(settings_count)
+        except ValueError:
+            settings_count = 0
+        for i in range(settings_count):
+            settings.append({
+                'name': request.POST.get('name_%s' % i),
+                'attr': request.POST.get('attr_%s' % i),
+                'value': request.POST.get('value_%s' % i),
+            })
+        if permissions['edit']:
+            Config.objects.filter(attr__startswith=app_label).delete()
+            for setting in settings:
+                if not setting['attr']:
+                    continue
+                if not setting['attr'].startswith(app_label):
+                    setting['attr'] = '%s%s' % (app_label, setting['attr'])
+                analog = Config(attr=setting['attr'])
+                analog.name = setting['name']
+                analog.value = setting['value']
+                analog.save()
+            result['success'] = 'Данные успешно сохранены'
+        else:
+            result['error'] = 'Недостаточно прав'
+        return JsonResponse(result, safe=False)
+
+    context['rows'] = Config.objects.filter(attr__startswith='%s_' % app)
+    for row in context['rows']:
+        if row.attr and row.attr.startswith(app):
+            row.attr = row.attr.split(app_label, 1)[1]
+    return render(request, template, context)

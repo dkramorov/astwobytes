@@ -13,7 +13,7 @@ urlpatterns = [
     # Заказы
     path('admin/orders/', views.show_orders, name='show_orders'),
     url('^admin/orders/(?P<action>create)/$', views.edit_order, name='create_order'),
-    url('^admin/orders/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_order, name='edit_order'),
+    url('^admin/orders/(?P<action>edit|drop|img|view)/(?P<row_id>[0-9]{1,11})/$', views.edit_order, name='edit_order'),
     path('admin/orders/positions/', views.orders_positions, name='orders_positions'),
     # аякс-поиск
     path('shop/search/orders/', views.search_orders, name='search_orders'),

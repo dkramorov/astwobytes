@@ -18,6 +18,8 @@ function get_parent(data){
 $(document).ready(function(){
   $("#html_redactor").redactor({
     //air: true,
+    focus: false,
+    animation: false,
   });
   var root_url = '{% url "flatcontent:tree_co" %}';
   var flat_tree = $("#flat_tree");
@@ -77,6 +79,7 @@ $(document).ready(function(){
     // state будет помнить состояние
     "plugins": ["search", "wholerow", "dnd", "contextmenu"],
     "core" : {
+      "animation": 0,
       "check_callback" : true,
       "data" : {
         "cache": false,
@@ -155,6 +158,9 @@ $(document).ready(function(){
     {% if not lazy %}
       flat_tree.jstree('open_all');
     {% endif %}
+  })
+  .bind("select_node.jstree", function (event, data) {
+    console.log("select", event, data);
   })
   .on("rename_node.jstree", function (e, data) {
     if(data.old === data.text && data.text !== noname){

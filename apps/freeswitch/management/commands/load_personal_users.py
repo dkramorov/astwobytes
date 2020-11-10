@@ -45,16 +45,20 @@ def bulk_save(rows):
     active_users = [row[0] for row in rows]
     PersonalUsers.objects.all().exclude(userid__in=active_users).delete()
 
-    if rows:
-        for row in rows:
-            z += 1
-            analog = PersonalUsers.objects.filter(userid=row[0]).first()
-            if not analog:
-                analog = PersonalUsers(userid=row[0])
-            if not analog.username == row[1]:
-                analog.username = row[1]
-                analog.save()
+    if not rows:
+        return
+    for row in rows:
+        z += 1
+        analog = PersonalUsers.objects.filter(userid=row[0]).first()
+        if not analog:
+            analog = PersonalUsers(userid=row[0])
 
-            if z % 5000 == 0:
-                logger.info('processed %s of %s' % (z, len(rows)))
-                #break
+        if not analog.username == row[1] or not analog.phone == row[2] or not analog.phone_confirmed == row[3]:
+            analog.username = row[1]
+            analog.phone = row[2]
+            analog.phone_confirmed = row[3]
+            analog.save()
+
+        if z % 5000 == 0:
+            logger.info('processed %s of %s' % (z, len(rows)))
+            #break

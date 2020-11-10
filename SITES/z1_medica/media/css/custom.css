@@ -1,0 +1,12 @@
+.authpane-form.usersender, .usersend, ausersend  {display:block; width:270px; text-align:left; padding:0 10px ;  border:1px solid #ccc;  border-radius:8px;  margin:15px}
+.authpane-form.usersender.form-label {font-szie:13px}
+.authpane-form.usersender .checkme {max-width:270px}
+.usersender .form-row {margin:5px 0}
+.authpane-form.usersender h3 {margin:0;margin-left:0; padding:0}
+.usersend, .ausersend {border:0; margin-left:20px;}
+.usersend .PT, .PT.allpanelclose {cursor:pointer; display:block;}
+/*.PT.allpanelclose {padding-left:25px}*/
+#passremember, #register {display:none}
+#usersendereror {width:220px}
+.loader {dispaly:inline-block; width:40px; height:40px; background:url("/media/misc/loader.gif") center no-repeat;}
+.whatdo, .weclose{cursor:pointer}

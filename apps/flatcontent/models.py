@@ -256,7 +256,7 @@ class Blocks(Standard):
         prefix = ''
         if not self.parents:
             prefix = '/cat'
-            if not self.container.tag == settings.DEFAULT_CATALOGUE_TAG:
+            if self.tag and not self.container.tag == settings.DEFAULT_CATALOGUE_TAG:
                 prefix = '/cat/%s' % self.container.tag
         self.link = '%s%s' % (prefix, self.link)
 

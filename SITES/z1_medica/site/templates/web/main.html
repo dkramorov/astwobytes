@@ -1,0 +1,13 @@
+{% extends "skeleton.html" %}
+{% load flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block content %}
+  {% for container in page.containers %}
+    {% flatcontent request page container.container.tag %}
+  {% endfor %}
+{% endblock %}
