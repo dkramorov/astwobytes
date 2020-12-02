@@ -58,9 +58,10 @@ class PromoCodes(Standard):
 
 class Orders(Standard):
     """Заказы пользователя"""
-    status_choices = (
+    state_choices = (
         (1, 'Не подтвержден'),
-        (2, 'Офомрлен'),
+        (2, 'В обработке'),
+        (3, 'Оформлен'),
     )
     number = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,

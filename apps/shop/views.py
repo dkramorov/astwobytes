@@ -69,7 +69,7 @@ def show_orders(request, *args, **kwargs):
     mh.select_related_add('shopper')
     mh.select_related_add('promocode')
     context = mh.context
-
+    context['state_choices'] = Orders.state_choices
     # -----------------------------
     # Вся выборка только через аякс
     # -----------------------------
@@ -106,6 +106,7 @@ def edit_order(request, action: str, row_id: int = None, *args, **kwargs):
     mh.select_related_add('promocode')
     row = mh.get_row(row_id)
     context = mh.context
+    context['state_choices'] = Orders.state_choices
     template = '%sedit.html' % (mh.template_prefix, )
 
     if mh.error:

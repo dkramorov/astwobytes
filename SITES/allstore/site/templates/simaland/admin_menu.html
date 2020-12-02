@@ -1,0 +1,19 @@
+<li{% ifequal menu 'simaland' %} class="active"{% endifequal %}>
+  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'main:simaland_cart' %}">
+    <em class="fa fa-shopping-cart"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">sima-land.ru</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'simaland' %} in{% endifequal %}">
+    <li{% ifequal submenu 'cart' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'main:simaland_cart' %}">
+        <span class="item-text">Корзина покупок</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'credentials' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'main:simaland_credentials' %}">
+        <span class="item-text">Настройки аккаунта</span>
+      </a>
+    </li>
+  </ul>
+</li>

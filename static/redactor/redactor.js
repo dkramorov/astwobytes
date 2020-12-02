@@ -1058,49 +1058,37 @@ var RLANG = {
         }
       }
     },
-    observeImages: function()
-    {
-      if (this.opts.observeImages === false)
-      {
+    observeImages: function(){
+      if (this.opts.observeImages === false){
         return false;
       }
 
-      this.$editor.find('img').each($.proxy(function(i,s)
-      {
-        if ($.browser.msie)
-        {
+      this.$editor.find('img').each($.proxy(function(i,s){
+        if ($.browser.msie){
           $(s).attr('unselectable', 'on');
         }
-
         this.resizeImage(s);
-
       }, this));
 
     },
-    observeTables: function()
-    {
+    observeTables: function(){
       this.$editor.find('table').click($.proxy(this.tableObserver, this));
     },
-    observeScroll: function()
-    {
+    observeScroll: function(){
       var scrolltop = $(this.document).scrollTop();
       var boxtop = this.$box.offset().top;
       var left = 0;
 
-      if (scrolltop > boxtop)
-      {
+      if (scrolltop > boxtop){
         var width = '100%';
-        if (this.opts.fixedBox)
-        {
+        if (this.opts.fixedBox){
           left = this.$box.offset().left;
           width = this.$box.innerWidth();
         }
 
         this.fixed = true;
         this.$toolbar.css({ position: 'fixed', width: width, zIndex: 1005, top: this.opts.fixedTop + 'px', left: left });
-      }
-      else
-      {
+      }else{
         this.fixed = false;
         this.$toolbar.css({ position: 'relative', width: 'auto', zIndex: 1, top: 0, left: left });
       }
@@ -2929,47 +2917,35 @@ var RLANG = {
       this.modalInit(RLANG.image, this.opts.modal_image, 610, callback);
 
     },
-    imageSetThumb: function(e)
-    {
+    imageSetThumb: function(e){
       this._imageSet('<img src="' + $(e.target).attr('rel') + '" alt="' + $(e.target).attr('title') + '" />', true);
     },
-    imageUploadCallbackLink: function()
-    {
-      if ($('#redactor_file_link').val() !== '')
-      {
+    imageUploadCallbackLink: function(){
+      if ($('#redactor_file_link').val() !== ''){
         var data = '<img src="' + $('#redactor_file_link').val() + '" />';
         this._imageSet(data, true);
-      }
-      else
-      {
+      }else{
         this.modalClose();
       }
     },
-    imageUploadCallback: function(data)
-    {
+    imageUploadCallback: function(data){
       this._imageSet(data);
     },
-    _imageSet: function(json, link)
-    {
+    _imageSet: function(json, link){
       this.restoreSelection();
 
-      if (json !== false)
-      {
+      if (json !== false){
         var html = '';
-        if (link !== true)
-        {
+        if (link !== true){
           html = '<img src="' + json.filelink + '" />';
-        }
-        else
-        {
+        }else{
           html = json;
         }
 
         this.execCommand('inserthtml', html);
 
         // upload image callback
-        if (link !== true && typeof this.opts.imageUploadCallback === 'function')
-        {
+        if (link !== true && typeof this.opts.imageUploadCallback === 'function'){
           this.opts.imageUploadCallback(this, json);
         }
       }

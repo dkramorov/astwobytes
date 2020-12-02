@@ -7,6 +7,8 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.db.models import Q
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
@@ -41,7 +43,16 @@ def api(request, action: str = 'redirects'):
     """Апи-метод для получения всех данных"""
     if action == 'phones_white_list':
         result = ApiHelper(request, phones_white_list_vars, CUR_APP)
-    result = ApiHelper(request, redirects_vars, CUR_APP)
+    elif action == 'cdr_csv':
+        restrictions = []
+        app_label = cdrcsv_vars['model']._meta.app_label
+        model_name = cdrcsv_vars['model']._meta.model_name
+        if not request.user.has_perm('%s.view_%s' % (app_label, model_name)):
+            personal_user_id = int(request.headers.get('token', 0))
+            restrictions.append(Q(personal_user_id=personal_user_id))
+        result = ApiHelper(request, cdrcsv_vars, CUR_APP, restrictions=restrictions)
+    else:
+        result = ApiHelper(request, redirects_vars, CUR_APP)
     return result
 
 @login_required
@@ -295,8 +306,8 @@ def edit_user(request, action:str, row_id:int = None, *args, **kwargs):
     elif request.method == 'POST':
         pass_fields = ()
         mh.post_vars(pass_fields=pass_fields)
-        mh.row_vars['user'] = User.objects.filter(pk=mh.row_vars['user']).first()
-        mh.row_vars['personal_user'] = PersonalUsers.objects.filter(pk=mh.row_vars['personal_user']).first()
+        #mh.row_vars['user'] = User.objects.filter(pk=mh.row_vars['user']).first()
+        #mh.row_vars['personal_user'] = PersonalUsers.objects.filter(pk=mh.row_vars['personal_user']).first()
 
         # Если есть аналоги - не сохраняем
         isError = False
@@ -325,13 +336,14 @@ def edit_user(request, action:str, row_id:int = None, *args, **kwargs):
     if mh.row:
         mh.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
                               kwargs={'action': 'edit', 'row_id': mh.row.id})
-        context['row'] = object_fields(mh.row, pass_fields=())
+        context['row'] = object_fields(mh.row, pass_fields=('user', 'personal_user'))
         context['redirect'] = mh.get_url_edit()
-        user = context['row']['user']
-        personal_user = context['row']['personal_user']
+        personal_user = mh.row.personal_user
         if personal_user:
-            context['row']['user'] = object_fields(user, pass_fields=('password', ))
             context['row']['personal_user'] = object_fields(personal_user, pass_fields=('password', ))
+        user = mh.row.user
+        if user:
+            context['row']['user'] = object_fields(user, pass_fields=('password', ))
 
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
@@ -563,4 +575,29 @@ def say_code(request):
     dest = request.GET.get('phone')
     digit = request.GET.get('digit')
     result['result'] = voice_code(dest=dest, digit=digit)
+    return JsonResponse(result, safe=False)
+
+@csrf_exempt
+def sync_personal_users(request):
+    """Апи-метод, чтобы синхронизировать пользователя
+       В настройках ставим токен, чтобы никто не абибал нас
+    """
+    result = {}
+    token = settings.FS_TOKEN
+    if not request.headers.get('token') == token:
+        return JsonResponse(result, safe=False)
+
+    if request.method == 'POST':
+        userid = request.POST.get('userid')
+        username = request.POST.get('username')
+        phone = request.POST.get('phone')
+        phone_confirmed = request.POST.get('phone_confirmed')
+        if userid:
+            analog = PersonalUsers.objects.filter(userid=userid).first()
+            if not analog:
+                analog = PersonalUsers(userid=userid)
+            analog.username = username
+            analog.phone = phone
+            analog.phone_confirmed = phone_confirmed
+            analog.save()
     return JsonResponse(result, safe=False)

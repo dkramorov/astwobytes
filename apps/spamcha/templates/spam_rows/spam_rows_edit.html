@@ -14,9 +14,11 @@
         <div class="panel-heading">Действия {{ rp_plural_obj }}</div>
         <div class="panel-body">
           <div class="col-lg-6 col-sm-6 padding-tb5">
-            <a class="btn btn-labeled btn-primary" href="{% url 'spamcha:edit_spam_row' action='send' spam_table_id=row.spam_table.id row_id=row.id %}"><span class="btn-label"><i class="fa fa-envelope"></i></span>Отправить</a>
+            <a class="btn btn-labeled btn-primary" href="{% url 'spamcha:edit_spam_row' action='send' spam_table_id=row.spam_table.id row_id=row.id %}"><span class="btn-label"><i class="fa fa-envelope"></i></span>Отправить из поля</a>
           </div>
-
+          <div class="col-lg-6 col-sm-6 padding-tb5 text-right">
+            <a class="btn btn-labeled btn-primary" href="{% url 'spamcha:edit_spam_row' action='send_html' spam_table_id=row.spam_table.id row_id=row.id %}"><span class="btn-label"><i class="fa fa-envelope"></i></span>Отправить из конструктора</a>
+          </div>
           <div class="clearfix"></div>
         </div>
       </div>

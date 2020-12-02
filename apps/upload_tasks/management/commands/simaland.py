@@ -5,6 +5,8 @@ import logging
 import datetime
 import requests
 
+from lxml import html
+
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
@@ -39,8 +41,14 @@ class Command(BaseCommand):
         """Выгрузка товаров sima-land.ru"""
         #Products.objects.all().delete()
 
-        simaland = SimaLand()
+        simaland = SimaLand(version=3)
         simaland.get_jwt()
+        cart = simaland.get_cart()
+        #print(json_pretty_print(cart))
+
+        print(simaland.add2cart(cart_id=cart['_cart']['cart_id'], items=[{'item_id': 8392, 'qty': 1}, ]))
+
+
         #simaland.get_categories()
 
         #started = time.time()
@@ -54,4 +62,4 @@ class Command(BaseCommand):
 
         #Property.objects.all().delete()
         #simaland.get_props()
-        simaland.get_attrs()
+        #simaland.get_attrs()

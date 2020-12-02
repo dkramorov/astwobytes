@@ -89,6 +89,16 @@
               <input type="text" placeholder="IP покупателя" class="form-control" name="shopper_ip" value="{% if row.shopper_ip %}{{ row.shopper_ip }}{% endif %}" autocomplete="off">
             </div>
           </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Статус</label>
+            <div class="col-lg-10">
+              <select id="state_select2" name="state" autocomplete="off" data-parsley-required>
+                {% for state in state_choices %}
+                  <option value="{{ state.0 }}"{% ifequal state.0 row.state %} selected{% endifequal %}>{{ state.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
         </div>
@@ -137,11 +147,16 @@
         //отмена действия по умолчанию для кнопки submit
         e.preventDefault();
       });
+      $('#state_select2').select2({
+        placeholder: 'Статус заказа',
+        allowClear: true,
+        width: '100%',
+      });
       $('#shopper_select2').select2({
         placeholder: 'Покупатель',
         allowClear: true,
         width: '100%',
-        tags: true,
+        tags: false,
         ajax: {
           url: "{% url 'personal:search_shoppers' %}",
           data: function (params) {

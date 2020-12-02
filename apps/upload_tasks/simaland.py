@@ -31,19 +31,23 @@ PHONE = env('SIMALAND_PHONE')
 
 class SimaLand:
     """https://www.sima-land.ru/info/shop/"""
-    def __init__(self, login=None, passwd=None, phone=None):
+    def __init__(self, login: str = None,
+                 passwd: str = None,
+                 phone: str = None,
+                 version: int = 5):
         """Инициализация
            :param login: логин
            :param passwd: пароль
            :param phone: телефон
-           Документация https://www.sima-land.ru/api/v5/help#/page_regulations
-
+           Документация https://www.sima-land.ru/api/v5/help/ (нов)
+                        https://www.sima-land.ru/api/v3/help/ (корзинка)
            После заливки овердохуя пустых рубрик, а также надо
            фиксануть ссылки и привязку к контейнеру командами:
            python manage.py search_empty_cats --drop_empty
            python manage.py update_catalogue_links
         """
-        self.api_url = ' https://www.sima-land.ru/api/v5'
+        self.version = version
+        self.api_url = 'https://www.sima-land.ru/api/v%s' % self.version
         self.s = requests.Session()
         self.login = login or LOGIN
         self.passwd = passwd or PASSWD
@@ -61,6 +65,16 @@ class SimaLand:
         r = self.s.post('%s/signin' % self.api_url, json=params)
         if r.status_code == 204:
             self.s.headers.update(r.headers)
+
+        # Авторизация через версию апи 3
+        if self.version == 3:
+            auth = requests.auth.HTTPBasicAuth(self.login, self.passwd)
+            r = self.s.post('%s/auth' % self.api_url, auth=auth)
+            resp = r.json()
+            self.s.headers.update({
+                'Authorization': 'Bearer %s' % resp['jwt'],
+            })
+            return resp['jwt']
 
     def get_categories(self):
         """Получить все категории
@@ -298,5 +312,70 @@ class SimaLand:
                         prop=analog,
                     )
 
+    def get_cart(self):
+        """Получение корзинки"""
+        endpoint = '/cart-item/'
+        r = self.s.get('%s%s' % (self.api_url, endpoint))
+        return r.json()
 
+    def clear_cart(self, product_id: int):
+        """Очистка корзинки по одному товару
+           :param product_id: id товара
+        """
+        endpoint = '/cart-item/%s/' % product_id
+        r = self.s.delete('%s%s' % (self.api_url, endpoint))
+        if r.status_code == 204:
+            return True
+        return False
+
+    def add2cart(self, cart_id: int, items: list):
+        """Добавление товаров в корзинку
+           :param cart_id: id корзинки
+           :param items: список товаров [{'item_id': 1, 'qty': 1}, ]
+        """
+        endpoint = '/cart/%s/' % cart_id
+        params = {
+            'items': items,
+        }
+        r = self.s.put('%s%s' % (self.api_url, endpoint), json=params)
+        return r.json()
+
+    def raw_auth(self):
+        """Авторизация запросами - НЕ ИСПОЛЬЗУЕТСЯ"""
+        s = requests.Session()
+        auth_url = 'https://www.sima-land.ru/auth/'
+        r = s.get(auth_url)
+        content = html.fromstring(r.text)
+
+        login_form = content.xpath('//form[@id="login-form"]')
+        if not login_form:
+            assert False
+        login_form = login_form[0]
+
+        csrf = login_form.xpath('.//input[@name="_csrf"]')
+        if not csrf:
+            assert False
+        csrf = csrf[0].attrib.get('value')
+
+        auth_url = 'https://www.sima-land.ru/api/v3/login-form/'
+        headers = {'X-CSRF-Token': csrf}
+        auth = {
+            'entity': self.login,
+            'password': self.passwd,
+            'type': 'email',
+        }
+        r = s.post(auth_url, json=auth, headers=headers)
+        print(r.text)
+
+
+        signup_url = 'https://www.sima-land.ru/signup/?sort=rating'
+        auth = {
+            '_csrf': [
+                csrf, csrf,
+            ],
+            'LoginForm[entity]': self.login,
+            'LoginForm[password]': self.passwd,
+        }
+        r = s.post(signup_url, data=auth)
+        print(r.text)
 

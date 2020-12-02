@@ -10,12 +10,21 @@ from apps.main_functions.files import open_file, full_path
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.date_time import str_to_date
 
-def ApiHelper(request, model_vars: dict, CUR_APP: str, reverse_params: dict = None):
+def ApiHelper(request,
+              model_vars: dict,
+              CUR_APP: str,
+              reverse_params: dict = None,
+              restrictions: list = None):
     """Апи-метод для получения всех данных
        :param request: HttpRequest
        :param model_vars: по какой модели отдаем данные
        :param CUR_APP: текущее приложение
+       :param restrictions: аналог filters (массив Q() условий),
+                            только уже из вьюхи, а по GET/POST
     """
+    # Если нету метода, то не надо мучать жопу
+    with_get_folder = hasattr(model_vars['model'], 'get_folder')
+
     if not reverse_params:
         reverse_params = {}
     mh_vars = model_vars.copy()
@@ -37,6 +46,9 @@ def ApiHelper(request, model_vars: dict, CUR_APP: str, reverse_params: dict = No
     filters = {k.replace('filter__', ''): v for k, v in params.items() if 'filter__' in k}
     if filters:
         mh.filter_add(Q(**filters))
+    if restrictions:
+        for restriction in restrictions:
+            mh.filter_add(restriction)
 
     context = mh.context
     rows = mh.standard_show(only_fields=only_fields)
@@ -45,7 +57,8 @@ def ApiHelper(request, model_vars: dict, CUR_APP: str, reverse_params: dict = No
     for row in rows:
         item = object_fields(row, only_fields=only_fields)
         if not only_fields or 'folder' in only_fields:
-            item['folder'] = row.get_folder()
+            if with_get_folder:
+                item['folder'] = row.get_folder()
         result.append(item)
     result = {'data': result,
               'last_page': mh.raw_paginator['total_pages'],

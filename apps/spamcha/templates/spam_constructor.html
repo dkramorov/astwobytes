@@ -15,7 +15,7 @@
 <script type="text/javascript" src="/static/redactor/redactor.js"></script>
 <link href="/static/redactor/redactor_air.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
-  var upload_path = "{% if upload_path %}{{ upload_path }}{% else %}0{% endif %}";
+  var fm_images_url = '{% url "spamcha:spam_tables_images" %}';
 </script>
 </head>
 <body spellcheck="false">
@@ -126,11 +126,13 @@
   </div>
 </div>
 <!--<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>-->
-<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script src="/static/jquery-ui/jquery-ui.min.js"></script>
 <script src="/static/constructor/js/spectrum.js"></script>
 <script src="/static/constructor/js/jquery.reveal.js"></script>
 <script src="/static/constructor/js/organictabs.jquery.js"></script>
 <script src="/static/constructor/js/helpers.js"></script>
+
+<script src="/static/js/get_cookie.js"></script>
 <script src="/static/constructor/js/main.js"></script>
 </body>
 </html>

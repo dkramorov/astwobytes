@@ -15,26 +15,22 @@ function create_editor(){
   if(inArray < 0){
     /* Без загрузки изображений */
     var buttons = ["html", "image", "link", "|", "fontcolor", "backcolor", "|", "horizontalrule", "|", "formatting", "|", "bold", "italic", "deleted", "underline"]
-    if(upload_path == 0){
-      $("#"+id).redactor({
-        buttons:buttons,
-        //iframe: true,
-        //air: true,
-        //airButtons: ["html", "formatting", "|", "bold", "italic", "deleted"]
-      });
     /* С папкой для загрузки изображений */
-    }else{
-      $("#"+id).redactor({
-        buttons:buttons,
-        //iframe: true,
-        //air: true,
-        //airButtons: ["html", "formatting", "image", "|", "bold", "italic", "deleted"],
-        imageUpload: "/main/editor/uploader/images/",
-        uploadFields: {"dest": upload_path},
-        imageGetJson: "/main/editor/images/"+upload_path+"/",
-        fileUpload: "/main/editor/uploader/files/",
-      });
-    }
+    $("#"+id).redactor({
+      buttons:buttons,
+      //iframe: true,
+      //air: true,
+      //airButtons: ["html", "formatting", "image", "|", "bold", "italic", "deleted"],
+      imageGetJson: fm_images_url,
+      imageUpload: fm_images_url,
+      imageUploadCallback: function(obj, json){
+      },
+      imageUploadErrorCallback: function(obj, json){
+      },
+      uploadFields: {
+        csrfmiddlewaretoken: getCookie('csrftoken'),
+      }
+    });
   }
   redactors.push(id);
 }

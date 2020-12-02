@@ -1,8 +1,12 @@
 # -*- coding:utf-8 -*-
-from django.urls import path
+from django.urls import path, include, re_path
 from django.conf.urls import url
 
 from . import views
+from apps.site.simaland.views import (
+    simaland_cart,
+    simaland_credentials,
+)
 
 app_name = 'main'
 urlpatterns = [
@@ -26,4 +30,10 @@ urlpatterns = [
     # Оформление заказа
     path('shop/cart/', views.show_cart, name='show_cart'),
     path('shop/checkout/', views.checkout, name='checkout'),
+]
+
+# sima-land.ru
+urlpatterns += [
+    path('simaland/cart/', simaland_cart, name='simaland_cart'),
+    path('simaland/credentials/', simaland_credentials, name='simaland_credentials'),
 ]

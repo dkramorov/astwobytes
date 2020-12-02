@@ -19,9 +19,21 @@
 var main_table = null;
 $(document).ready(function(){
 
+  var state_choices = {
+    "": "Без фильтра",
+    {% for state_choice in state_choices %}
+      {{ state_choice.0 }}: "{{ state_choice.1 }}",
+    {% endfor %}
+  };
+
   var promocodeFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
     return data['promocode'] ? data['promocode']['code']  : '';
+  };
+
+  var stateFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return state_choices[pk];
   };
 
   var actionsOrderFormatter = function(cell, formatterParams, onRendered){
@@ -90,8 +102,20 @@ $(document).ready(function(){
         formatter: promocodeFormatter,
         width: 90,
       },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
+      {
+        title: "Статус заказа",
+        field: "state",
+        headerFilterPlaceholder: "Статус заказа",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: state_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: stateFormatter,
+        width: 90,
+      },
       {
         title: "Действия",
         field: "actions",

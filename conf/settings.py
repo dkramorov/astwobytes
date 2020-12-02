@@ -323,6 +323,11 @@ WS_SECRET = env('WS_SECRET', default='bugogashenki')
 # -------
 SMS_HUB_TOKEN = env('SMS_HUB_TOKEN', default='')
 
+# ----------
+# FREESWITCH
+# ----------
+FS_TOKEN = env('FS_TOKEN', default='')
+
 # -------------------
 # Freeswitch settings
 # -------------------

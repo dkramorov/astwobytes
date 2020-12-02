@@ -208,7 +208,10 @@ def imageThumb(img, *args):
     return True
 
 def catch_file(f, path):
-    """Сохраняем файл f (FILES['file']) в полное имя"""
+    """Сохраняем файл f в путь path
+       :param f: FILES['file']
+       :param path: относительный путь к файлу
+    """
     destination = open_file(path ,'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
@@ -286,21 +289,21 @@ def extension(fname, mime='image'):
     part = fname.rsplit('.', 1)[-1]
     if 'image' in mime:
         if part in ('jpg', 'jpeg', 'gif', 'png', 'bmp'):
-            result = '.%s' % (part, )
+            result = '.%s' % part
     elif "flash" in mime:
         if part in ('swf', 'flv'):
-            result = '.%s' % (part, )
+            result = '.%s' % part
     elif "movie" in mime:
         if part in ('mp4', ):
-            result = '.%s' % (part, )
+            result = '.%s' % part
     elif "excel" in mime:
         if part in ('xls', 'csv', 'xlsx'):
-            result = '.%s' % (part, )
+            result = '.%s' % part
     elif "xml" in mime:
         if part in ('xml', 'yml', 'yaml'):
-            result = '.%s' % (part, )
+            result = '.%s' % part
     elif mime == "any":
-        result = '.%s' % (part, )
+        result = '.%s' % part
     return result
 
 def ListDir(path, ignore_default_folder=False):

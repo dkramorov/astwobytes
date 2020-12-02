@@ -7,7 +7,7 @@ from . import views
 app_name = 'freeswitch'
 urlpatterns = [
     # получение по апи всех данных (т/к не секретно)
-    url('^(?P<action>redirects|phones_white_list)/api/$', views.api, name='api'),
+    url('^(?P<action>redirects|phones_white_list|cdr_csv)/api/$', views.api, name='api'),
     # переадресации
     path('admin/redirects/', views.show_redirects, name='show_redirects'),
     url('^admin/redirects/(?P<action>create)/$', views.edit_redirect, name='create_redirect'),
@@ -41,4 +41,6 @@ urlpatterns = [
     path('sms_service/send_sms/', views.send_sms, name='send_sms'),
     # api для звонка и диктовки кода голосом со свича
     path('sms_service/say_code/', views.say_code, name='say_code'),
+    # api для синхронизации
+    path('personal_users/sync/', views.sync_personal_users, name='sync_personal_users'),
 ]

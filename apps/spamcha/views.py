@@ -12,9 +12,9 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext, Template
 from django.conf import settings
 
-from apps.main_functions.files import check_path, full_path, file_size
+from apps.main_functions.files import check_path, full_path, file_size, make_folder, catch_file, ListDir, isForD, extension
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import create_model_helper, get_user_permissions
 from apps.main_functions.api_helper import ApiHelper
 
 from apps.main_functions.views_helper import (show_view,
@@ -186,6 +186,40 @@ def spam_tables_positions(request, *args, **kwargs):
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
+@login_required
+def spam_tables_images(request, *args, **kwargs):
+    """Работа с изображениями через redactor"""
+    result = {}
+    folder = 'sp-images' # Чтобы не фигурировало spam
+    make_folder(folder)
+    mh_vars = spam_tables_vars.copy()
+    # Список изображений:
+    #[{ "thumb": "/img/1m.jpg", "image": "/img/1.jpg", "title": "Image 1", "folder": "Folder 1" }, ... ]
+    # Ответ по загрузке:
+    # { "filelink": "/images/img.jpg" }
+    perms = get_user_permissions(request.user, mh_vars['model'])
+    if request.FILES and perms['edit']:
+        result['filelink'] = '/static/img/ups.png'
+        f = request.FILES.get('file')
+        if f:
+            dest = os.path.join(folder, f.name)
+            if catch_file(f, dest):
+                result['filelink'] = '/media/%s' % dest
+    elif request.method == 'GET':
+        result = []
+        items = ListDir(folder)
+        for item in items:
+            path = os.path.join(folder, item)
+            img = '/media/%s' % path
+            if isForD(path) == 'file' and extension(item):
+                result.append({
+                    'thumb': img,
+                    'image': img,
+                    'title': '',
+                    'folder': folder,
+                })
+    return JsonResponse(result, safe=False)
+
 
 spam_rows_vars = {
     'singular_obj': 'Получатель',
@@ -330,17 +364,21 @@ def edit_spam_row(request, action: str, spam_table_id: int, row_id: int = None, 
         # --------------------------
         # Отправка письма получателю
         # --------------------------
-        elif action == 'send' and row:
+        elif action in ('send', 'send_html') and row:
             accounts = list(EmailAccount.objects.filter(is_active=True))
-            random.shuffle(accounts)
-            account = accounts[0]
-            if account and row.dest:
-                msg = mh_spam_tables.row.get_text_msg(msg_type='html')
-                account.send_email(msg, row.dest)
+            if accounts and row.dest:
+                random.shuffle(accounts)
+                account = accounts[0]
+                if action == 'send':
+                    msg = mh_spam_tables.row.get_text_msg(msg_type='html')
+                    account.send_email(msg, row.dest)
+            kwargs = {
+                'action': 'edit',
+                'spam_table_id': mh_spam_tables.row.id,
+                'row_id': row.id,
+            }
             return redirect(reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                                    kwargs={'action': 'edit',
-                                            'spam_table_id': mh_spam_tables.row.id,
-                                            'row_id': row.id}))
+                                    kwargs=kwargs))
 
     elif request.method == 'POST':
         pass_fields = ()

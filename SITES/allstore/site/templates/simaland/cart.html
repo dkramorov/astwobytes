@@ -1,0 +1,147 @@
+{% extends "core/base.html" %}
+{% load mtags %}
+
+{% block extrahead %}
+  <style type="text/css">
+    p.error {
+      color: brown;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+<h3>{{ singular_obj }}<br /><small>{{ plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel">
+      <div class="panel-body">
+        <h3 class="mt0">Корзина №{{ cart.cart.cart_id }}</h3>
+        <hr>
+        <div class="row mb-lg">
+          <div class="col-lg-4 col-xs-6 br pv">
+            <div class="row">
+              <div class="col-md-2 text-center visible-md visible-lg">
+                <em class="fa fa-shopping-cart fa-4x text-muted"></em>
+              </div>
+              <div class="col-md-10">
+                <h4>Общая информация</h4>
+                <!--Признак наличия товаров с лицензионным соглашением FIFA
+                <p>fifa товары: {% if cart.cart.has_fifa_goods %}Да{% else %}Нет{% endif %}</p>-->
+                <p>ограниченные товары: {% if cart.cart.has_restricted_items %}Да{% else %}Нет{% endif %}</p>
+                <p>недостаточное кол-во: {% if cart.cart.not_enough %}Да{% else %}Нет{% endif %}</p>
+
+                <p>Заказ готов к оформлению: {% if cart.checkout_ready %}Да{% else %}Нет{% endif %}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-xs-6 br pv">
+            <div class="row">
+              <div class="col-md-2 text-center visible-md visible-lg">
+                <em class="fa fa-truck fa-4x text-muted"></em>
+              </div>
+              <div class="col-md-10">
+                <h4>Доставка</h4>
+                <p>Сумма быстрой доставки {{ cart.cart.fast_delivery_sum }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="clearfix hidden-md hidden-lg">
+            <hr>
+          </div>
+          <div class="col-lg-4 col-xs-12 pv">
+            <div class="row">
+              <div class="col-md-2 text-center visible-md visible-lg">
+                <em class="fa fa-list-alt fa-4x text-muted"></em>
+              </div>
+              <div class="col-md-10">
+                <h4>Доп. информация</h4>
+                <p>объем: {{ cart.cart.volume }}</p>
+                <p>вес: {{ cart.cart.weight }}</p>
+                {% if row.gifts %}
+                  <div class="clearfix">
+                    <p class="pull-left">Подарки</p>
+                    <p class="pull-right mr">{{ row.gifts }}</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive table-bordered mb-lg">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Наименование</th>
+                <th>Цена</th>
+                <th>Кол-во</th>
+                <th class="text-right">Итого</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for purchase in cart.items %}
+                <tr>
+                  <td>
+                    {% if purchase.product %}
+                      <p>{{ purchase.product.name }}</p>
+                    {% else %}
+                      <p class="error">Товар не найден</p>
+                    {% endif %}
+                    <p>Артикул: {{ purchase.item_id }}</p>
+                  </td>
+                  <td>
+                    {{ purchase.price }} ₽
+                    {% if purchase.total_discount %}
+                      <br />{{ purchase.total_discount }} ₽
+                    {% endif %}
+                  </td>
+                  <td>{{ purchase.qty }}</td>
+                  <td class="text-right">{{ purchase.qty_total_price }} ₽</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="row">
+          <div class="col-sm-offset-8 col-sm-4 pv">
+            <div class="clearfix">
+              <p class="pull-left">Итого без скидки</p>
+              <p class="pull-right mr">{{ cart.cart.sum }} ₽</p>
+            </div>
+
+            <div class="clearfix">
+              <p class="pull-left">Скидка на корзину</p>
+              <p class="pull-right mr">{% if cart.cart.cart_discount %}{{ cart.cart.cart_discount }}{% endif %} ₽</p>
+            </div>
+
+            <div class="clearfix">
+              <p class="pull-left h3">Итого</p>
+              <p class="pull-right mr h3">{{ cart.cart.sum_with_discount }} ₽</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <div class="col-lg-6 col-sm-6 padding-tb5">
+          <button class="btn btn-labeled btn-default" onclick="window.print();">
+            <span class="btn-label"><i class="fa fa-print"></i></span>Печать
+          </button>
+        </div>
+        <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+          <a class="btn btn-labeled btn-danger" href="{{ root_url }}?refill_cart=1">
+            <span class="btn-label"><i class="fa fa-shopping-cart"></i></span>Пересобрать по заказам
+          </a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}
