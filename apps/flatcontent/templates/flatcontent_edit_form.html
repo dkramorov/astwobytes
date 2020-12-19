@@ -5,33 +5,12 @@
     <div class="panel-body">
       {% csrf_token %}
       {% include "core/forms/row_name.html" %}
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Тег</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
-      {% if is_products %}
-      <!-- Привязанные товары -->
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Привязанные товары ({{ products|length }})</label>
-        <div class="col-lg-10">
-          {% include "blocks/linked_products_select2.html" %}
-        </div>
-      </div>
-      {% endif %}
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Описание</label>
-        <div class="col-lg-10">
-          <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Класс css</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Класс css" class="form-control" name="class_name" value="{% if row.class_name %}{{ row.class_name }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
+
+      {% include "flatcontent_forms/row_tag.html" %}
+      {% include "flatcontent_forms/row_products.html" %}
+      {% include "flatcontent_forms/row_description.html" %}
+      {% include "flatcontent_forms/row_class_name.html" %}
+
       {% include "core/forms/row_image.html" %}
       {% include "core/forms/row_position.html" %}
       {% include "core/forms/row_is_active.html" %}

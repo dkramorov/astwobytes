@@ -33,8 +33,7 @@ class SimaLand:
     """https://www.sima-land.ru/info/shop/"""
     def __init__(self, login: str = None,
                  passwd: str = None,
-                 phone: str = None,
-                 version: int = 5):
+                 phone: str = None, ):
         """Инициализация
            :param login: логин
            :param passwd: пароль
@@ -46,8 +45,9 @@ class SimaLand:
            python manage.py search_empty_cats --drop_empty
            python manage.py update_catalogue_links
         """
-        self.version = version
-        self.api_url = 'https://www.sima-land.ru/api/v%s' % self.version
+        self.api_url = 'https://www.sima-land.ru/api/v5'
+        self.api_url_v3 = 'https://www.sima-land.ru/api/v3'
+        self.jwt_v3 = None
         self.s = requests.Session()
         self.login = login or LOGIN
         self.passwd = passwd or PASSWD
@@ -66,15 +66,18 @@ class SimaLand:
         if r.status_code == 204:
             self.s.headers.update(r.headers)
 
-        # Авторизация через версию апи 3
-        if self.version == 3:
-            auth = requests.auth.HTTPBasicAuth(self.login, self.passwd)
-            r = self.s.post('%s/auth' % self.api_url, auth=auth)
-            resp = r.json()
-            self.s.headers.update({
-                'Authorization': 'Bearer %s' % resp['jwt'],
-            })
-            return resp['jwt']
+    # api v3
+    def get_jwt_v3(self):
+        """Авторизация через версию апи 3"""
+        if self.jwt_v3:
+            return
+        auth = requests.auth.HTTPBasicAuth(self.login, self.passwd)
+        r = self.s.post('%s/auth' % self.api_url_v3, auth=auth)
+        resp = r.json()
+        self.s.headers.update({
+            'Authorization': 'Bearer %s' % resp['jwt'],
+        })
+        self.jwt_v3 = resp['jwt']
 
     def get_categories(self):
         """Получить все категории
@@ -138,6 +141,16 @@ class SimaLand:
                         parents=parents,
                     )
 
+    def get_unit(self, unit_id):
+        """Получить единицу измерения
+           :param unit_id: ид единицы измерения
+        """
+        r = self.s.get('%s/unit/%s' % (self.api_url, unit_id))
+        if not r.status_code == 200:
+            return
+        resp = r.json()
+        self.units[resp['id']] = resp['name']
+
     def get_units(self):
         """Получить все единицы измерения"""
         params = {'p': 1}
@@ -153,11 +166,58 @@ class SimaLand:
             for unit in resp:
                 self.units[unit['id']] = unit['name']
 
+    def save_product(self, product):
+        """Сохранение товара
+           :param product: словарь с данными
+        """
+        # Без остатка (баланса) нам товары не нужны
+        # Без категории нам товары не нужны
+        # Без фоток нам товары не нужны
+        photos = product.get('agg_photos')
+        if product['balance'] == '0' or not product['category_id'] or not photos:
+            return None
+        analog = Products.objects.filter(code='simaland_%s' % product['id']).first()
+        if not analog:
+            analog = Products(code='simaland_%s' % product['id'])
+        analog.info = product['description']
+        analog.name = product['name']
+        analog.price = product['price']
+        analog.min_count = product['minimum_order_quantity']
+        analog.multiplicity = product['qty_multiplier']
+        if not product['unit_id'] in self.units:
+            self.get_unit(product['unit_id'])
+        analog.measure = self.units[product['unit_id']]
+        analog.altname = product['sid']
+        analog.img = '%s%s/700.jpg' % (product['base_photo_url'], photos[0])
+        analog.save()
+        # Фотки
+        photos_analogs = analog.productsphotos_set.all().aggregate(Count('id'))['id__count']
+        if not photos_analogs and len(photos) > 1:
+            for i in photos[1:]:
+                ProductsPhotos.objects.create(
+                    product=analog,
+                    img = '%s%s/700.jpg' % (product['base_photo_url'], i),
+                )
+        # Категория
+        category_analog = analog.productscats_set.all().first()
+        if not category_analog:
+            cat_id = product['category_id']
+            cat = Blocks.objects.filter(tag='simaland_%s' % cat_id, container__tag='simaland').only('id').first()
+            if cat:
+                ProductsCats.objects.create(
+                    product=analog,
+                    cat=cat,
+                )
+        return analog
+
     def get_product(self, product_id: int):
         """Получить товар по ид
         """
         r = self.s.get('%s/item/%s' % (self.api_url, product_id))
-        print(json_pretty_print(r.json()))
+        self.get_units()
+        resp = r.json()
+        self.save_product(resp)
+        return resp
 
     def get_products(self):
         """Получить все товары
@@ -178,41 +238,7 @@ class SimaLand:
             params['p'] += 1
             # Обрабытываем каждую пачку товаров
             for product in resp:
-                # Без остатка (баланса) нам товары не нужны
-                # Без категории нам товары не нужны
-                # Без фоток нам товары не нужны
-                photos = product.get('agg_photos')
-                if product['balance'] == '0' or not product['category_id'] or not photos:
-                    continue
-
-                analog = Products.objects.filter(code='simaland_%s' % product['id']).first()
-                if not analog:
-                    analog = Products(code='simaland_%s' % product['id'])
-                analog.info = product['description']
-                analog.name = product['name']
-                analog.price = product['price']
-                analog.measure = self.units[product['unit_id']]
-                analog.altname = product['sid']
-                analog.img = '%s%s/700.jpg' % (product['base_photo_url'], photos[0])
-                analog.save()
-                # Фотки
-                photos_analogs = analog.productsphotos_set.all().aggregate(Count('id'))['id__count']
-                if not photos_analogs and len(photos) > 1:
-                    for i in photos[1:]:
-                        ProductsPhotos.objects.create(
-                            product=analog,
-                            img = '%s%s/700.jpg' % (product['base_photo_url'], i),
-                        )
-                # Категория
-                category_analog = analog.productscats_set.all().first()
-                if not category_analog:
-                    cat_id = product['category_id']
-                    cat = Blocks.objects.filter(tag='simaland_%s' % cat_id, container__tag='simaland').only('id').first()
-                    if cat:
-                        ProductsCats.objects.create(
-                            product=analog,
-                            cat=cat,
-                        )
+                self.save_product(product)
 
     def get_props(self):
         """Получить свойства товаров"""
@@ -312,34 +338,41 @@ class SimaLand:
                         prop=analog,
                     )
 
+    # api v3
     def get_cart(self):
         """Получение корзинки"""
+        self.get_jwt_v3()
         endpoint = '/cart-item/'
-        r = self.s.get('%s%s' % (self.api_url, endpoint))
+        r = self.s.get('%s%s' % (self.api_url_v3, endpoint))
         return r.json()
 
+    # api v3
     def clear_cart(self, product_id: int):
         """Очистка корзинки по одному товару
            :param product_id: id товара
         """
+        self.get_jwt_v3()
         endpoint = '/cart-item/%s/' % product_id
-        r = self.s.delete('%s%s' % (self.api_url, endpoint))
+        r = self.s.delete('%s%s' % (self.api_url_v3, endpoint))
         if r.status_code == 204:
             return True
         return False
 
+    # api v3
     def add2cart(self, cart_id: int, items: list):
         """Добавление товаров в корзинку
            :param cart_id: id корзинки
            :param items: список товаров [{'item_id': 1, 'qty': 1}, ]
         """
+        self.get_jwt_v3()
         endpoint = '/cart/%s/' % cart_id
         params = {
             'items': items,
         }
-        r = self.s.put('%s%s' % (self.api_url, endpoint), json=params)
+        r = self.s.put('%s%s' % (self.api_url_v3, endpoint), json=params)
         return r.json()
 
+    # DEPRICATED
     def raw_auth(self):
         """Авторизация запросами - НЕ ИСПОЛЬЗУЕТСЯ"""
         s = requests.Session()

@@ -1399,10 +1399,6 @@
 
 
   $(function() {
-
-    // Init Fast click for mobiles
-    FastClick.attach(document.body);
-
     // inhibits null links
     $('a[href="#"]').each(function(){
       this.href = 'javascript:void(0);';
@@ -1552,7 +1548,7 @@ function set_ajax_form_save_xlsx(button_id, excel_table, callback_success, callb
   // :param excel_table: таблица с данными эксельки
   // :param callback_success: функция после успешного получения данных
   // :param callback_fail: функция после НЕуспешного получения данных
-  // :param action: действие (по умолчанию save)
+  // :param operation: действие (по умолчанию save)
   if(operation === undefined){
     operation = 'save';
   }

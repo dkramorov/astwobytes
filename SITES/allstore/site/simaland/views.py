@@ -58,7 +58,7 @@ def simaland_credentials(request):
             config = Config.objects.filter(name=SIMALAND_KEY).first()
             if not config:
                 config = Config(name=SIMALAND_KEY)
-            simaland = SimaLand(login=login, passwd=passwd, version=3)
+            simaland = SimaLand(login=login, passwd=passwd)
             try:
                 jwt = simaland.get_jwt()
             except Exception:
@@ -94,7 +94,7 @@ def simaland_cart(request):
     cart = None
     if row:
         context['row'] = row
-        simaland = SimaLand(login=row.attr, passwd=row.value, version=3)
+        simaland = SimaLand(login=row.attr, passwd=row.value)
         simaland.get_jwt()
         cart = simaland.get_cart()
         new_cart = {}
@@ -124,16 +124,38 @@ def simaland_cart(request):
         for item in cart['items']:
             simaland.clear_cart(item['id'])
         purchases = Purchases.objects.filter(order__state=2, product_code__startswith=CODE_PREFIX)
+        multiplicity_products = {}
         accumulate = {}
         for purchase in purchases:
             code = int(purchase.product_code.replace(CODE_PREFIX, ''))
             if not code in accumulate:
                 accumulate[code] = 0
+            if purchase.product_multiplicity:
+                multiplicity_products[code] = {
+                    'mul': purchase.product_multiplicity,
+                    'min': purchase.product_min_count,
+                }
             accumulate[code] += purchase.count
 
+        # Фикс на кратные товары
+        for key in accumulate.keys():
+            if key in multiplicity_products:
+                count = accumulate[key]
+                mul = multiplicity_products[key]['mul']
+                min_count = multiplicity_products[key]['min']
+                diff = count / mul
+                int_diff = int(diff)
+                # Может оказаться нехватка до минимального кол-ва,
+                # поэтому добиваем до минимального
+                if (int_diff * mul) < min_count:
+                    accumulate[key] = min_count
+                else:
+                    accumulate[key] = int_diff
+                    if diff - int_diff > 0:
+                        accumulate[key] = (int_diff + 1) * mul
+
         items = [{'item_id': k, 'qty': v} for k, v in accumulate.items()]
-        print(items)
-        print(simaland.add2cart(cart_id=cart_id, items=items))
+        simaland.add2cart(cart_id=cart_id, items=items)
 
         return redirect(root_url)
 

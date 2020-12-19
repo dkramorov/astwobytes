@@ -1,0 +1,97 @@
+На примере spam_email_accounts
+
+-------------------------------------------------
+в шаблон
+{% include "core/breadcrumbs.html" %}
+{% include "core/excel/xlsx_form_import.html" %}
+
+...
+{% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
+...
+
+var excel_table = null;
+$(document).ready(function(){
+  excel_table = new Tabulator("#excel-table", {
+    layout: "fitColumns",
+    columns:[
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Email",
+        field: "email",
+        headerFilterPlaceholder: "Email",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "smtp сервер",
+        field: "smtp_server",
+        headerFilterPlaceholder: "smtp сервер",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "smtp порт",
+        field: "smtp_port",
+        headerFilterPlaceholder: "smtp порт",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {
+        title: "Пароль",
+        field: "passwd",
+        headerFilterPlaceholder: "Пароль",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        minWidth: 150,
+      },
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+    ],
+  });
+  // Настройка отправки формы (файла) через аякс
+  set_ajax_form("#import_excel_file_form", function(r){
+    // success callback
+    // Строим таблицу с данными
+    $("#excel-table").removeClass("hidden");
+    $("#save_excel_table").removeClass("hidden");
+    excel_table.clearData();
+    excel_table.addData(r.resp.data);
+  }, function(r){
+    // error callback
+    console.log(r);
+  }, true);
+  set_ajax_form_save_xlsx("#save_excel_table", excel_table, function(r){
+    // success callback
+  }, function(r){
+    // error callback
+  }, 'save');
+
+Проверить, чтобы у основной таблицы были названия полей для эксельки
+        downloadTitle: "passwd",
+-------------------------------------------------
+во вьюху добавить
+
+def import_xlsx(request, action: str = 'email_accounts'):
+    """Апи-метод для сохранения данных из excel-файла
+                     удаления данных по excel-файлу
+       :param request: HttpRequest
+       :param action: какую модель использовать
+    """
+    #if action == 'user':
+    #    result = XlsxHelper(request, users_vars, CUR_APP)
+    result = XlsxHelper(request, email_accounts_vars, CUR_APP,
+                        cond_fields = ['email'])
+    return result
+
+В саму вьюху, где нужна загрузка
+    context['import_xlsx_url'] = reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
+                                         kwargs={'action': 'email_accounts'})
+
+-------------------------------------------------
+в урлы
+    url('^(?P<action>email_accounts)/import_xlsx/$', views.import_xlsx, name='import_xlsx'),
+

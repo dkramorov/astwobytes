@@ -4,6 +4,7 @@
 {% block extracontent %}{% endblock %}
 
 {% block content %}
+  <h2>{{ page.name }}</h2>
   {% for container in page.containers %}
     {% flatcontent request page container.container.tag %}
   {% endfor %}

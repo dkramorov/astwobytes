@@ -1,0 +1,46 @@
+{% load mtags %}
+<div class="container-fluid simple_contacts" id="simple_contacts">
+  <div class="row">
+    <div class="container pt100">
+
+      <div class="portfolio_title">
+        Contacts
+      </div>
+
+      <div class="row pb30">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="col-lg-5 col-md-7 col-sm-12 col-xs-12">
+            <div class="contact_row">
+              {{ containers.main.tags.address.name }}
+              {{ containers.main.tags.address.html|safe }}
+              {{ containers.main.tags.phone.html|safe }}
+              {{ containers.main.tags.email.html|safe }}
+            </div>
+            <div class="contact_row">
+              {{ containers.main.tags.address2.name }}
+              {{ containers.main.tags.address2.html|safe }}
+              {{ containers.main.tags.phone2.html|safe }}
+              {{ containers.main.tags.email2.html|safe }}
+            </div>
+          </div>
+          <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+            <div class="pt30">
+              <img loading="lazy" src="/media/misc/qr.png">
+            </div>
+            <div class="wechat">Scan to WeChat</div>
+          </div>
+        </div>
+
+        <div class="clearfix"></div>
+        <div class="footer_logo">
+          <div class="bottom_right">
+            <a href="/" class="full-block-link"></a>
+            <img loading="lazy" src="/media/misc/logo_footer.png">
+            <span class="copyright">{{ containers.main.tags.copyright.html|safe }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

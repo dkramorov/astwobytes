@@ -14,7 +14,7 @@ from apps.main_functions.views import DefaultFeedback
 from apps.products.models import Products
 from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import remove_user_from_request
-from apps.shop.cart import calc_cart, get_shopper, create_new_order
+from apps.shop.cart import calc_cart, get_shopper, create_new_order, notify_about_order
 
 CUR_APP = 'main'
 main_vars = {
@@ -92,6 +92,8 @@ def cat_on_site(request, link: str = None):
     if page:
         context['page'] = page
     context['containers'] = containers
+
+    return render(request, template, context)
 
 def product_by_link(request, link: str):
     """Вытаскиваем код товара по ссылке и возвращаем товар

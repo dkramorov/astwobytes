@@ -81,7 +81,7 @@ def q_string_fill(request, q_string):
     page = 1
     by = 20
     method = request.GET if request.method == 'GET' else request.POST
-    # !TODO by=20, view=grid брать из сессии/кук
+    # by=20, view=grid можно брать из сессии/кук
     q_vars = {'page':1, 'by':20, 'size': None}
     for var in q_vars:
         value = None
@@ -118,6 +118,15 @@ def q_string_fill(request, q_string):
         q_string['q'] = {}
         if method.get('q'):
             q_string['q']['q'] = method['q']
+    # Дополняем всей мусоркой,
+    # которую передают в параметрах
+    for key in method.keys():
+        if not key in ('q', 'page', 'by', 'size'):
+            value = method.getlist(key)
+            if len(value) == 1:
+                q_string['q'][key] = value[0]
+            else:
+                q_string['q'][key] = value
 
 def prepare_simple_text(text:str):
     """Убрать из текста хтмл-пробелы типа &nbsp;

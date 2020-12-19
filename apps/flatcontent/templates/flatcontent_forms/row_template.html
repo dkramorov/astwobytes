@@ -1,0 +1,10 @@
+<div class="form-group">
+  <label class="col-lg-2 control-label">Шаблон</label>
+  <div class="col-lg-10">
+    <select id="tag_select2" autocomplete="off" name="tag">
+      {% if row.tag %}
+        <option value="{{ row.tag }}" selected>{{ row.tag }}</option>
+      {% endif %}
+    </select>
+  </div>
+</div>

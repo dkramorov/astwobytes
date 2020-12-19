@@ -122,7 +122,7 @@ def get_catalogue_products_count(tag: str,
                                  force_new: bool = False):
     """Получение кол-ва товара по каждой из рубрик контейнера
        :param tag: тег контейнера с рубриками
-       :param cache_time: кэш
+       :param cache_time: время кэширования
        :param force_new: получить каталог без кэша
     """
     cache_var = '%s_%s_pcats' % (
@@ -255,7 +255,7 @@ def get_cat_for_site(request,
     """Для ображения каталога на сайте по link
        :param link: ссылка на рубрику (без /cat/ префикса)
        :param with_props: Вытащить свойства товаров
-       :param with_filters: Вытащить свойства для фильтров,
+       :param with_filters: Вытащить свойства для фильтров, например,
                             максимальная и минимальная цена
     """
     cat_type = get_ftype('flatcat', False)
@@ -449,4 +449,70 @@ def get_props_for_products(products: list, only_props: list = None):
                         if p['id'] in pvalues and p['prop'] == prop_id]
                 })
 
+def get_filters_for_cat(cat_id: int,
+                        cache_time: int = 300,
+                        force_new: bool = False):
+    """Получение фильтров по рубрике
+       Тут кэш обязателен
+       :param cat_id: ид выбранной категории
+       :param cache_time: время кэширования
+       :param force_new: игнорить кэш
+       :return result: словарь фильтров
+    """
+    result = {}
+    # 0) Проверяем в кэше
+    cache_var = '%s_%s_filters_for_cat' % (
+        settings.DATABASES['default']['NAME'],
+        cat_id,
+    )
+    inCache = cache.get(cache_var)
+    if inCache and not force_new:
+        inCache['from_cache'] = True
+        return inCache
+
+    # 1) Находим рубрику
+    cats = Blocks.objects.filter(pk=cat_id).only('id', 'parents')
+    if not cats:
+        return
+    cat = cats[0]
+    parents = '_%s' % cat.id
+    cat_parents = cat.parents
+    if cat_parents:
+        parents ='%s_%s' % (cat_parents, cat.id)
+    # 2) Находим вложенные рубрики
+    subcats = Blocks.objects.filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents)).values_list('id', flat=True)
+    # 3) Находим товары привязанные к рубрике и подрубрикам
+    cats = list(subcats)
+    cats.append(cat.id)
+    products = ProductsCats.objects.filter(cat__in=cats).values_list('product', flat=True)
+    # 4) Находим привязанные значения свойств для товаров
+    products = list(products)
+    ids_values = ProductsProperties.objects.filter(product__in=products).values_list('prop', flat=True) # это PropertiesValues
+    ids_values = set(ids_values)
+    # 5) Находим значения свойств
+    pvalues = PropertiesValues.objects.filter(pk__in=ids_values)
+    # 6) Находим свойства по значениям
+    ids_props = set([pvalue.prop_id for pvalue in pvalues])
+    # TODO завести признак фасета для свойства (выводится в фильтрах)
+    props = Property.objects.filter(pk__in=ids_props)
+    for prop in props:
+        result[prop.id] = {
+            'id': prop.id,
+            'name': prop.name,
+            'code': prop.code,
+            'ptype': prop.ptype,
+            'measure': prop.measure,
+            'values': [],
+        }
+    for pvalue in pvalues:
+        if pvalue.prop_id in result:
+            prop = result[pvalue.prop_id]
+            prop['values'].append({
+                'id': pvalue.id,
+                'value': pvalue.str_value,
+            })
+    for key in result.keys():
+        result[key]['values'].sort(key=lambda x: x['value'])
+    cache.set(cache_var, result, cache_time)
+    return result
 

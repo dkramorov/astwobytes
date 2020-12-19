@@ -188,6 +188,10 @@ class Purchases(Standard):
     product_code = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Код товара')
+    product_min_count = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Минимальное кол-во товара для заказа')
+    product_multiplicity = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Кратность товара (кол-во добавляемого товара в корзину)')
     cost_type = models.ForeignKey(CostsTypes,
         on_delete=models.SET_NULL,
         blank=True, null=True)

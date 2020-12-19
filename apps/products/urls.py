@@ -50,4 +50,7 @@ urlpatterns = [
     path('admin/costs/positions/', views.costs_positions, name='costs_positions'),
     # аякс-поиск свойств
     path('costs/search/', views.search_costs, name='search_costs'),
+
+    # получение фасетных фильтров по категории
+    url('^facet_filters/(?P<cat_id>[0-9]{1,11})/$', views.facet_filters, name='facet_filters'),
 ]

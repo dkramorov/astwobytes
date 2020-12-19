@@ -1,0 +1,17 @@
+<script type="text/javascript" src="/static/admin/js/jquery.autocomplete.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    // -------------------------
+    // Автозаполнение для поиска
+    // -------------------------
+    $("#qu").autocomplete({
+      serviceUrl: "{{ root_url }}",
+      width:460,
+      minChars:4,
+      onSelect: function (suggestion) {
+        //console.log("You selected: " + suggestion.value + ', ' + suggestion.data);
+        window.location.href = "{{ root_url }}edit/"+suggestion.data.replace("address_id=", "")+"/";
+      }
+    });
+  });
+</script>

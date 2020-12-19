@@ -5,56 +5,5 @@
 {% endblock %}
 
 {% block edit_form %}
-<div class="panel panel-default">
-  <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
-    <input type="hidden" name="state" value="{{ ftype_state }}" />
-    <div class="panel-heading">{{ singular_obj }}</div>
-    <div class="panel-body">
-      {% csrf_token %}
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Название</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Название" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Шаблон</label>
-        <div class="col-lg-10">
-          <select id="tag_select2" autocomplete="off" name="tag">
-            {% if row.tag %}
-              <option value="{{ row.tag }}" selected>{{ row.tag }}</option>
-            {% endif %}
-          </select>
-        </div>
-      </div>
-      {% if is_products %}
-      <!-- Привязанные товары -->
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Привязанные товары ({{ products|length }})</label>
-        <div class="col-lg-10">
-          {% include "blocks/linked_products_select2.html" %}
-        </div>
-      </div>
-      {% endif %}
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Описание</label>
-        <div class="col-lg-10">
-          <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Класс css</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Класс css" class="form-control" name="class_name" value="{% if row.class_name %}{{ row.class_name }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
-      {% include "core/forms/row_image.html" %}
-      {% include "core/forms/row_position.html" %}
-      {% include "core/forms/row_is_active.html" %}
-    </div>
-    {% include "core/forms/footer_buttons.html" %}
-  </form>
-</div>
+  {% include "flatcontent_standard_edit_form.html" %}
 {% endblock %}
-

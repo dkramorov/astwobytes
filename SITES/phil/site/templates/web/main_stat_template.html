@@ -1,0 +1,17 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+  body{padding-top: 0;}
+</style>
+{% endblock %}
+
+{% block body %}
+  <div id="page" class="page">
+    {% for container in page.containers %}
+      {% flatcontent request page container.container.tag %}
+    {% endfor %}
+  </div>
+{% endblock %}
+

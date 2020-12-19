@@ -1,0 +1,4 @@
+{% if containers.main.tags.get_in_touch %}
+  <h4 class="contacts-title">{{ containers.main.tags.get_in_touch.description }}</h4>
+  <div class="contacts-text">{{ containers.main.tags.get_in_touch.html|safe }}</div>
+{% endif %}

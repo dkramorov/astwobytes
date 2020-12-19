@@ -1,0 +1,63 @@
+{% load mtags %}
+{% ifequal tag "mainmenu" %}
+<nav id="primary-menu" class="primary-menu">
+  <a href='javascript:void(0)' id="menu-icon-trigger" class="menu-icon-trigger showhide">
+    <span class="mob-menu--title">Menu</span>
+    <span id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: hidden">
+      <svg width="1000px" height="1000px">
+        <path id="pathD" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+        <path id="pathE" d="M 300 500 L 700 500"></path>
+        <path id="pathF" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+      </svg>
+    </span>
+  </a>
+
+  <ul class="primary-menu-menu">
+    {% for menu in menus %}
+      <li{% ifequal menu.link request.META.PATH_INFO %} class="active"{% endifequal %}>
+        <a href="{{ menu.link }}"{% if menu.class_name %} class="{{ menu.class_name|textize }}"{% endif %}>{{ menu.name }}</a>
+        {% if menu.sub %}
+          <ul class="dropdown">
+            <li class="megamenu-item-info">
+              <h5 class="megamenu-item-info-title">{{ menu.description }}</h5>
+              <p class="megamenu-item-info-text">{{ menu.html|safe }}</p>
+            </li>
+            {% for submenu in menu.sub %}
+              <li class="hover-ver2">
+                <a href="{{ submenu.link }}">
+                  <i class="fa fa-{{ submenu.icon }}"></i>{{ submenu.name }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+
+{% endifequal %}
+{% ifequal tag "bottommenu" %}
+<div class="container f-menu-list">
+  <div class="row">
+    {% for menu in menus %}
+      <div class="f-menu">
+        <h3>{{ menu.name }}</h3>
+        <ul class="nav nav-pills nav-stacked">
+          {% for item in menu.sub %}
+            <li{% ifequal request.META.PATH_INFO item.link %} class="active"{% endifequal %}><a href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+    <div class="f-subscribe">
+      <h3>Подпишитесь на новости</h3>
+      <form class="f-subscribe-form" action="#">
+        <input placeholder="Ваш e-mail" type="text">
+        <button type="submit"><i class="fa fa-paper-plane"></i></button>
+      </form>
+      <p>Введите ваш Email и получайте новости об акциях и скидках</p>
+    </div>
+  </div>
+</div>
+{% endifequal %}

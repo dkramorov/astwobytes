@@ -10,6 +10,7 @@ from apps.main_functions.string_parser import kill_quotes, translit
 
 REGA_EMAIL = re.compile('^([a-z0-9\._-]{1,50})@([a-z0-9\._-]{1,50})\.([a-z]{2,4})$', re.I)
 REGA_IMG = re.compile('<img src=[\'"]([^\'"]+)', re.I)
+REGA_A = re.compile('<a href=[\'"]([^\'"]+)', re.I)
 
 def json_pretty_print(json_obj, pass_fields: list = None):
     """Вывести json в человеческом виде

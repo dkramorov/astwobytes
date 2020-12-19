@@ -14,16 +14,17 @@
     </div>
   </article>
 {% else %}
-  <div class="cart-items-wrap">
-    <table class="cart-items">
+  <div class="news">
+     <h2 class="text-center pt-100 pb-100">Ваша корзина</h2>
+    <table class="iblokl price cart-items">
       <thead>
         <tr>
-          <td class="cart-image">Фото</td>
-          <td class="cart-ttl">Наименование</td>
-          <td class="cart-price">Цена</td>
-          <td class="cart-quantity">Кол-во</td>
-          <td class="cart-summ">Сумма</td>
-          <td class="cart-del">&nbsp;</td>
+          <th class="cart-image">Фото</th>
+          <th class="cart-ttl">Наименование</th>
+          <th class="cart-price">Цена</th>
+          <th class="cart-quantity">Кол-во</th>
+          <th class="cart-summ">Сумма</th>
+          <th class="cart-del">&nbsp;</th>
         </tr>
       </thead>
       <tbody>
@@ -46,33 +47,31 @@
             </td>
             <td class="cart-quantity">
               <p class="cart-qnt" id="qbuttons_{{ purchase.id }}">
-                <input value="{{ purchase.count }}" type="text" id="quantity_{{ purchase.id }}" autocomplete="off">
-                <a href="javascript:void(0);" class="cart-plus"><i class="fa fa-angle-up"></i></a>
-                <a href="javascript:void(0);" class="cart-minus"><i class="fa fa-angle-down"></i></a>
+                <a href="javascript:void(0);" class="cart-minus minusik"><i class="fa fa-angle-down"></i></a>
+                <input value="{{ purchase.count }}" type="text" id="quantity_{{ purchase.id }}" autocomplete="off" class="kol-vo">
+                <a href="javascript:void(0);" class="cart-plus plusik"><i class="fa fa-angle-up"></i></a>
               </p>
             </td>
             <td class="cart-summ">
               <b>{{ purchase.total|money_format }} ₽</b>
-              <p class="cart-forone">{{ purchase.measure }} <b>{{ purchase.cost|money_format }}</b></p>
             </td>
             <td class="cart-del">
-              <a href="javascript:void(0);" class="cart-remove remove_from_cart_btn" id="purchase_drop_{{ purchase.id }}"></a>
+              <a href="javascript:void(0);" class="delitkolvoopen remove_from_cart_btn" id="purchase_drop_{{ purchase.id }}"></a>
             </td>
           </tr>
         {% endfor %}
       </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="6">
+            <div class="cart-summ PT">Итого: <b>{{ cart.total|money_format }} ₽</b></div>
+            <div class="cart-submit">
+              <a href="/shop/checkout/" class="cart-submit-btn PT zakaz pn-button">Оформить заказ</a>
+            </div>
+          </th>
+        </tr>
+      </tfoot>
     </table>
-  </div>
-  <ul class="cart-total">
-    <li class="cart-summ">Итого: <b>{{ cart.total|money_format }} ₽</b></li>
-  </ul>
-  <div class="cart-submit">
-    <div class="cart-coupon">
-      <input placeholder="Купон" type="text">
-      <a class="cart-coupon-btn" href="javascript:void(0);"><img src="/media/misc/ok.png" alt="купон"></a>
-    </div>
-    <a href="/shop/checkout/" class="cart-submit-btn">Оформить заказ</a>
-    <!--<a href="#" class="cart-clear">Очистить корзину</a>-->
   </div>
 {% endif %}
 

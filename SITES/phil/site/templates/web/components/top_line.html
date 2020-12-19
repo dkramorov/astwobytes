@@ -1,0 +1,35 @@
+<div class="top-bar top-bar-dark">
+  <div class="container">
+    <div class="top-bar-contact">
+      {% include "web/components/language.html" %}
+
+      <div class="contact-item">
+        {% if containers.main.tags.phone.html %}
+          {{ containers.main.tags.phone.html|safe }}
+        {% endif %}
+      </div>
+
+      <div class="contact-item">
+        <a href="{% if container.main.tags.email.link %}{{ containers.main.tags.email.link }}{% endif %}">
+          {% if containers.main.tags.email.html %}
+            {{ containers.main.tags.email.html|safe }}
+          {% endif %}
+        </a>
+      </div>
+
+      <div class="contact-item">
+        {% if containers.main.tags.worktime.html %}
+          {{ containers.main.tags.worktime.html|safe }}
+        {% endif %}
+      </div>
+    </div>
+
+    {% include "web/components/login.html" %}
+    {% include "web/components/socials.html" %}
+    <a href="#" class="top-bar-close" id="top-bar-close-js">
+      <span></span>
+      <span></span>
+    </a>
+
+  </div>
+</div>

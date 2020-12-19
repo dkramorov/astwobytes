@@ -11,42 +11,35 @@
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
+{% include "core/excel/xlsx_form_import.html" %}
+
 {% include "core/tabulator_table.html" %}
 {% endblock %}
 
 {% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
 <script type="text/javascript">
 var main_table = null;
+var excel_table = null;
 $(document).ready(function(){
-
-  main_table = new Tabulator("#main-table", {
-    {% include "core/tabulator_table_params.html" %}
+  excel_table = new Tabulator("#excel-table", {
+    layout: "fitColumns",
     columns:[
       {
-        rowHandle:true,
-        formatter:"handle",
-        headerSort:false,
-        frozen:true,
-        width:30,
-        minWidth:30
-      },
-      {
-        title: "ID",
-        field: "id",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "ID",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 80,
-      },
-      {
-        title: "Имя получателя",
-        field: "name",
+        title: "Ид получателя",
+        field: "client_id",
         headerFilterPlaceholder: "Имя получателя",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 150,
+        width: 150,
+      },
+      {
+        title: "Наименования получателя (компания)",
+        field: "client_name",
+        headerFilterPlaceholder: "Наименования получателя (компания)",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
       },
       {
         title: "Email получателя",
@@ -54,14 +47,76 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Email получателя",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 150,
+        width: 150,
       },
       {
-        title: "Изображение",
-        field: "img",
-        headerSort: false,
-        formatter: imgFormatter,
-        minWidth: 120,
+        title: "Имя получателя",
+        field: "name",
+        headerFilterPlaceholder: "Имя получателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+    ],
+  });
+  // Настройка отправки формы (файла) через аякс
+  set_ajax_form("#import_excel_file_form", function(r){
+    // success callback
+    // Строим таблицу с данными
+    $("#excel-table").removeClass("hidden");
+    $("#save_excel_table").removeClass("hidden");
+    excel_table.clearData();
+    excel_table.addData(r.resp.data);
+  }, function(r){
+    // error callback
+    console.log(r);
+  }, true);
+  set_ajax_form_save_xlsx("#save_excel_table", excel_table, function(r){
+    // success callback
+  }, function(r){
+    // error callback
+  }, 'save');
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Ид получателя",
+        field: "client_id",
+        headerFilterPlaceholder: "Имя получателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+        downloadTitle: "client_id",
+      },
+      {
+        title: "Наименования получателя (компания)",
+        field: "client_name",
+        headerFilterPlaceholder: "Наименования получателя (компания)",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+        downloadTitle: "client_name",
+      },
+      {
+        title: "Имя получателя",
+        field: "name",
+        headerFilterPlaceholder: "Имя получателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+        downloadTitle: "name",
+      },
+      {
+        title: "Email получателя",
+        field: "dest",
+        headerFilterPlaceholder: "Email получателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+        downloadTitle: "dest",
       },
       {
         title: "Отправитель",
@@ -69,38 +124,13 @@ $(document).ready(function(){
         headerFilterPlaceholder: "Отправитель",
         headerFilter: "input",
         headerFilterFunc: "like",
-        minWidth: 150,
+        width: 150,
       },
-      {
-        title: "Включен",
-        field: "is_active",
-        editor: "select",
-        headerFilterPlaceholder: "Включен",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: {"": "Без фильтра", true: "Да", false: "Нет"},
-        },
-        formatter: booleanFormatter,
-        width: 110,
-      },
-      {
-        title: "Позиция",
-        field: "position",
-        sorter: "number",
-        align: "center",
-        headerFilterPlaceholder: "Позиция",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 90,
-      },
-      {
-        title: "Действия",
-        field: "actions",
-        headerSort: false,
-        formatter: actionsFormatter,
-        width: 100,
-      },
+      /* Флаг на отправку - включен, значит надо отправить */
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+
+      {% include "core/tabulator_cell/actions.html" %}
     ],
   });
 });

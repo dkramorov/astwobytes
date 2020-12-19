@@ -1,0 +1,36 @@
+{% load mtags %}
+<div class="container-fluid" id="team">
+  <div class="row">
+    <div class="container simple_team pt100">
+
+      <div class="portfolio_title">
+        {{ container.description|safe }}
+      </div>
+
+      <div class="row pb30">
+        {% for block in blocks %}
+          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="features-item">
+              <div class="features-item__thumb">
+                <img loading="lazy" src="{% imagine block.img '300x300' block.get_folder True %}" alt="{{ block.name|textize }}">
+              </div>
+              <div class="features-content">
+                <a class="features-title">{{ block.name }}</a>
+                <div class="features-state">{{ block.description }}</div>
+                <div class="features-text">
+                  {{ block.html|safe }}
+                </div>
+              </div>
+              {% if block.link %}
+                <a class="read-more" href="{{ block.link }}">
+                  <span>More about us</span>
+                  <i class="seoicon-right-arrow"></i>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

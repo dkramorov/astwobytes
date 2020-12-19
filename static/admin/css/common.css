@@ -470,15 +470,6 @@ fieldset[disabled] .btn-pink.active {
 .btn-fw.btn-lg {
   min-width: 140px;
 }
-body {
-  min-height: 400px;
-}
-@media only screen and (min-width: 768px) {
-  html,
-  body {
-    height: 100%;
-  }
-}
 .page-wrapper {
   height: 100%;
   padding: 50px 0;

@@ -1,0 +1,8 @@
+{% if perms.addresses.view_address %}
+<li{% ifequal menu 'addresses' %} class="active"{% endifequal %}>
+  <a{% comment %} class="has-submenu" data-toggle="collapse-next"{% endcomment %} href="{% url 'addresses:show_addresses' %}">
+    <em class="fa fa-map-marker"></em>
+    <span class="item-text">Адреса</span>
+  </a>
+</li>
+{% endif %}

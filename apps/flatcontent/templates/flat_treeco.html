@@ -225,7 +225,7 @@ $(document).ready(function(){
     container.attr("prev_node_id", node_id);
     // Подменяем upload_url для загрузки фоток через аякс форму
     window.upload_url = '{% url "flatcontent:edit_block" ftype row.id "img" "0" %}'.replace('/0/', '/' + node_id + '/');
-    container.parent().addClass("hidden");
+    //container.parent().addClass("hidden");
     $.ajax({
       type: "GET",
       url: root_url,
@@ -256,6 +256,7 @@ $(document).ready(function(){
       container.find('input[name="tag"]').val(row['tag']);
       container.find('input[name="position"]').val(row['position']);
       container.find('input[name="link"]').val(row['link']);
+      container.find('input[name="class_name"]').val(row['class_name']);
       var is_active_checked = 'checked' ? row['is_active'] : '';
       container.find('input[name="is_active"]').prop('checked', is_active_checked);
       container.find('input[name="grab_img_by_url"]').val('');

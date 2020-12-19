@@ -1,0 +1,6 @@
+{% load mtags %}
+<div class="news">
+  {% for block in blocks %}
+    {% if block.html %}{{ block.html|safe }}{% endif %}
+  {% endfor %}
+</div>

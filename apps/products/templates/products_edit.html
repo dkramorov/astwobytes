@@ -80,6 +80,19 @@
           </div>
 
           <div class="form-group">
+            <label class="col-lg-2 control-label">Мин кол-во для заказа</label>
+            <div class="col-lg-10">
+              <input type="number" step="1" placeholder="Мин кол-во для заказа" class="form-control" name="min_count" value="{% if row.min_count %}{{ row.min_count }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Кратность (шаг по добавляемому кол-ву)</label>
+            <div class="col-lg-10">
+              <input type="number" step="1" placeholder="Кратность (шаг по добавляемому кол-ву)" class="form-control" name="multiplicity" value="{% if row.multiplicity %}{{ row.multiplicity }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
             <label class="col-lg-2 control-label">Краткое описание</label>
             <div class="col-lg-10">
               <textarea class="form-control" name="mini_info" id="html_mini_info">{% if row.mini_info %}{{ row.mini_info }}{% endif %}</textarea>

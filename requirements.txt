@@ -1,5 +1,6 @@
 # install django
 redis==3.3.10
+python-memcached==1.59
 django==2.2.3
 psutil==5.6.7
 XlsxWriter==1.1.8
@@ -24,5 +25,5 @@ matplotlib==3.2.1
 sentry-sdk==0.14.1
 django-boto==0.3.12
 sphinx==3.0.4
-xhtml2pdf==0.2.4
+# xhtml2pdf==0.2.4 не пашет
 mammoth==1.4.12 # docx2html

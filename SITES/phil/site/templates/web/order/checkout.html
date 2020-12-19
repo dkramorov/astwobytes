@@ -1,0 +1,170 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/media/css/checkout.css" />
+<style type="text/css">
+  label.error{
+    color: #d20000 !important;
+  }
+  .order-total strong{
+    font-size: 125%;
+  }
+  .stylization p{
+    margin: 0 0 10px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="stylization">
+  <div class="woocommerce">
+    {% if not cart %}
+      <h2 class="text-center pt-100 pb-100">Ваша корзина пуста, сначала выберите, что хотите купить</h2>
+    {% else %}
+      {% for error in errors %}
+        <label class="error mistake">{{ error }}</label><br />
+      {% endfor %}
+      <form action="/shop/checkout/" method="POST" id="confirm_order" class="checkout woocommerce-checkout">
+        {% csrf_token %}
+        <div class="col-md-6">
+          <p>
+            <label>Как к вам обращаться</label>
+            <input type="text" class="form-control required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}">
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p>
+            <label>Ваше имя</label>
+            <input type="text" class="form-control" name="first_name" value="{% if shopper_data.first_name %}{{ shopper_data.first_name }}{% endif %}">
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p>
+            <label>Ваша фамилия</label>
+            <input type="text" class="form-control" name="last_name" value="{% if shopper_data.last_name %}{{ shopper_data.last_name }}{% endif %}">
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p>
+            <label>Ваше отчество</label>
+            <input type="text" class="form-control" name="middle_name" value="{% if shopper_data.middle_name %}{{ shopper_data.middle_name }}{% endif %}">
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p>
+            <label>Ваш email</label>
+            <input type="text" class="form-control required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}">
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p>
+            <label>Ваш телефон</label>
+            <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}">
+          </p>
+        </div>
+        <div class="col-md-12">
+          <p>
+            <label>Ваш адрес</label>
+            <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}">
+          </p>
+        </div>
+        <div class="clearfix"></div><br>
+
+        <div class="col-md-12">
+          <h3 id="order_review_heading">Заказ на {{ cart.total|money_format }} ₽</h3>
+          <div id="order_review" class="woocommerce-checkout-review-order">
+            <table class="shop_table woocommerce-checkout-review-order-table">
+              <thead>
+                <tr>
+                  <th class="product-name">Наименование</th>
+                  <th class="product-total">Итого</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for purchase in cart.purchases %}
+                  <tr class="cart_item">
+                    <td class="product-name">
+                      {{ purchase.product_name }}
+                      <strong class="product-quantity">X {{ purchase.count }}</strong>
+                    </td>
+                    <td class="product-total">
+                      <span class="woocommerce-Price-amount amount">
+                        {{ purchase.total|money_format }} ₽
+                      </span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr class="cart-subtotal">
+                  <th>Без скидки</th>
+                  <td>
+                    <span class="woocommerce-Price-amount amount">
+                      {{ cart.total|money_format }} ₽
+                    </span>
+                  </td>
+                </tr>
+                <tr class="cart-subtotal">
+                  <th>Скидка</th>
+                  <td>
+                    <span class="woocommerce-Price-amount amount">
+                      {% if cart.promocode %} (промокод <strong>{{ cart.promocode }}</strong>){% endif %}
+                      {{ cart.discount|money_format }} ₽
+                    </span>
+                  </td>
+                </tr>
+                <tr class="order-total">
+                  <th>Итого</th>
+                  <td>
+                    <strong>
+                      <span class="woocommerce-Price-amount amount">
+                        {{ cart.total_with_discount|money_format }} ₽
+                      </span>
+                    </strong>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="wc-proceed-to-checkout col-md-12">
+          <button type="submit" class="checkout-button button pull-right">Оформить заказ</button>
+        </div>
+      </form>
+      <div class="clearfix"></div><br>
+    {% endif %}
+  </div>
+</article>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block subscribe %}{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+
+<script type="text/javascript">
+  jQuery(document).ready(function($){
+    //demo_fill_order();
+    $("input[type='text'].phone").mask("8(999)9 999-999");
+    $("#confirm_order input[type='submit']").attr("disabled", false);
+    $("#confirm_order").validate({
+      messages: {
+        name: "Введите ваше имя, чтобы мы могли знать как к вам обращаться",
+        phone: "Введите телефон, чтобы мы связались с вами по заказу",
+        email: "Введите email, чтобы вы могли восстановить доступ к аккаунту",
+      },
+      submitHandler: function(form) {
+        $("#confirm_order button[type='submit']").html("Ждите...").attr("disabled", "disabled");
+        form.submit();
+      }
+    });
+  });
+</script>
+{% endblock %}

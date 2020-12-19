@@ -1,0 +1,164 @@
+{% load mtags flatcontent_tags tags %}<!DOCTYPE html><html lang="en"><head lang="en">
+{% include "skeleton_header.html" %}
+
+{% comment %}<!--
+фиолетовый в подписе к логотипу #582371 (#2f2c2c)
+активное меню розовый #e53863 (#4cc2c0)
+кнопку под меню тоже на #e53863 (#f15b26)
+
+для меню градиент на подчеркивание активного пункта меню
+  background-image: -webkit-gradient(linear, left top, right top, from(#582371), to(#e53863));
+  background-image: -o-linear-gradient(left, #582371, #e53863);
+  background-image: linear-gradient(to right, #582371, #e53863);
+
+светло-фиолетовый для навигации слайдера #e7e1ee
+-->{% endcomment %}
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" type="text/css" href="/media/css/fonts.css">
+<link rel="stylesheet" type="text/css" href="/media/css/phil-fonts.css">
+<link rel="stylesheet" type="text/css" href="/media/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="/media/css/grid.css">
+<link rel="stylesheet" type="text/css" href="/media/css/base.css?v=3">
+<link rel="stylesheet" type="text/css" href="/media/css/blocks.css">
+<link rel="stylesheet" type="text/css" href="/media/css/modules.css?v=5">
+<link rel="stylesheet" type="text/css" href="/media/css/widgets-styles.css">
+{% comment %}<!-- Пока не нужен
+<link rel="stylesheet" type="text/css" href="/media/css/ion.rangeSlider.css">
+-->{% endcomment %}
+<!-- нужен для прокрутки в popup не влазящих на экран -->
+<link rel="stylesheet" type="text/css" href="/media/css/jquery.mCustomScrollbar.css">
+<link rel="stylesheet" type="text/css" href="/media/css/swiper.min.css">
+<link rel="stylesheet" type="text/css" href="/media/css/primary-menu.css">
+{% comment %}<!-- Пока погасил, возможно, понадобится
+<link rel="stylesheet" type="text/css" href="/media/css/magnific-popup.css">
+-->{% endcomment %}
+
+<!--<link rel="stylesheet" type="text/css" href="/media/css/rtl.css">-->
+{% block extrahead %}{% endblock %}
+</head>
+<body>
+{% block body %}
+
+{% comment %}<!--
+{% include "web/components/top_line.html" %}
+-->{% endcomment %}
+
+<header class="header" id="site-header">
+<!-- Стрелочка в мобилке для открытия top_line.primary-menu-responsive .primary-menu-menu.scrollable
+  <a href="#" id="top-bar-js" class="top-bar-link">
+    <i class="seosight-icon seoicon-arrow-to-bottom"></i>
+  </a>
+-->
+
+  <div class="container">
+    <div class="header-content-wrapper">
+
+      {% include "web/components/logo.html" %}
+
+      {% flatmenu request "mainmenu" %}
+
+{% comment %}<!--
+      {% include "web/components/cart.html" %}
+-->{% endcomment %}
+
+{% comment %}<!-- Кнопка под меню для открытия правого сайдбара
+      <div class="user-menu open-overlay">
+        <a href="#" class="user-menu-content js-open-aside">
+          <span></span>
+          <span></span>
+          <span></span>
+        </a>
+      </div>
+    </div>
+-->{% endcomment %}
+  </div>
+</header>
+
+{% include "web/components/right_panel.html" %}
+<div class="content-wrapper">
+{% comment %}<!--
+  {% include "web/containers/slider.html" %}
+  {% include "web/containers/services.html" %}
+  {% include "web/containers/call_to_action.html" %}
+  {% include "web/containers/article.html" %}
+  {% include "web/containers/article_video.html" %}
+  {% include "web/containers/advantages.html" %}
+  {% include "web/containers/counters.html" %}
+  {% include "web/containers/projects.html" %}
+  {% include "web/containers/reviews.html" %}
+  {% include "web/containers/rates.html" %}
+  {% include "web/containers/news.html" %}
+  {% include "web/containers/clients.html" %}
+  {% include "web/containers/subscribe.html" %}
+-->{% endcomment %}
+  {% block content %}{% endblock %}
+</div>
+
+{% comment %}<!--
+{% include "web/components/footer.html" %}
+-->{% endcomment %}
+{% include "web/components/alt_footer.html" %}
+
+{% include "web/components/login_popup.html" %}
+
+
+{% include "web/components/gotop.html" %}
+{% comment %}<!--
+{% include "web/components/search_popup.html" %}
+-->{% endcomment %}
+
+{% endblock %}
+
+<script src="/media/js/jquery-3.5.1.min.js"></script>
+
+<script src="/media/js/phil-mega-menu.js?v=4"></script>
+<script src="/media/js/swiper.jquery.min.js"></script>
+
+{% comment %}
+<!--Пока убрал, нах эти счетчики и прогрессбары
+<script src="/media/js/waypoints.js"></script>
+<script src="/media/js/jquery-countTo.js"></script>
+-->
+{% endcomment %}
+
+<!-- нужен для прокрутки в popup не влазящих на экран -->
+<script src="/media/js/jquery.mCustomScrollbar.js"></script>
+<script src="/media/js/imagesloaded.pkgd.min.js"></script>
+{% comment %}<!-- пока погасил, возможно, понадобится
+<script src="/media/js/jquery.magnific-popup.min.js"></script>
+-->{% endcomment %}
+<script src="/media/js/jquery.matchHeight-min.js"></script>
+<script src="/media/js/segment.js"></script>
+<script src="/media/js/bootstrap.js"></script>
+<script src="/media/js/Headroom.js"></script>
+
+{% comment %}
+<!-- чет сильно пухлые эти анимации - пока нахуй
+<script src="/media/js/velocity.js"></script>
+Нужен для определенных сцен - можно убрать впринципе
+<script src="/media/js/ScrollMagic.min.js"></script>
+<script src="/media/js/animation.velocity.min.js"></script>
+-->
+{% endcomment %}
+
+{% comment %}<!-- Пока не нужен
+<script src="/media/js/isotope.pkgd.min.js"></script>
+-->{% endcomment %}
+
+{% comment %}<!-- Пока закомментил, внутри вызывается
+функция на seo-gallery, может fancybox лучше?
+https://photoswipe.com/
+<script src="/media/js/photo-gallery.js"></script>
+-->{% endcomment %}
+
+{% comment %}<!-- Пока не нужен
+<script src="/media/js/ion.rangeSlider.js"></script>
+-->{% endcomment %}
+
+<script src="/media/js/main.js?v=4"></script>
+
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

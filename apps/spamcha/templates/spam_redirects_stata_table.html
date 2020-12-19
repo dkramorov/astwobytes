@@ -1,0 +1,73 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+  var ourLinkFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['spam_redirect'] ? data['spam_redirect']['our_link']  : '';
+  };
+  var extLinkFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['spam_redirect'] ? data['spam_redirect']['ext_link']  : '';
+  };
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Наша ссылка",
+        field: "spam_redirect__our_link",
+        headerFilterPlaceholder: "Наша ссылка",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: ourLinkFormatter,
+        width: 150,
+      },
+      {
+        title: "Переадресация",
+        field: "spam_redirect__ext_link",
+        headerFilterPlaceholder: "Переадресация",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: extLinkFormatter,
+        width: 150,
+      },
+      {
+        title: "Ид получателя",
+        field: "client_id",
+        headerFilterPlaceholder: "Ид получателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Email получателя",
+        field: "email",
+        headerFilterPlaceholder: "Email получателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+});
+</script>
+{% endblock %}

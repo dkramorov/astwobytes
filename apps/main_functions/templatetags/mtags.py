@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 
 from apps.main_functions.string_parser import kill_quotes, translit, summa_format, analyze_digit
 from apps.main_functions.catcher import defiz_phone
-from apps.main_functions.files import check_path, make_folder, copy_file, imageThumb, full_path, imagine_image
+from apps.main_functions.files import check_path, make_folder, copy_file, imageThumb, full_path, imagine_image, watermark_image
 from apps.main_functions.date_time import monthToStr, weekdayToStr
 
 register = template.Library()
@@ -111,23 +111,6 @@ def imagine(img: str, size: str, source: str, alt: str = ''):
 
     return '<img src="%s" alt="%s" loading="lazy" />' % (path_resized_img, kill_quotes(alt, 'strict_text', ' '))
 
-def reduce_opacity(im, opacity: float):
-    """Возвращает изображение с пониженной прозрачностью,
-       например, для вотермарки
-       :param im: открытое Image по полному пути
-       :param opacity: значение прозрачности
-    """
-    import ImageEnhance
-    assert opacity >= 0 and opacity <= 1
-    if im.mode != 'RGBA':
-        im = im.convert('RGBA')
-    else:
-        im = im.copy()
-    alpha = im.split()[3]
-    alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
-    im.putalpha(alpha)
-    return im
-
 @register.simple_tag
 def watermark(img_name: str,
               source: str,
@@ -135,82 +118,18 @@ def watermark(img_name: str,
               mark: str = 'img/apple-touch-icon-114.png',
               position: str = 'tile',
               opacity: float = 0.1,
-              folder: str = 'resized'):
+              folder: str = 'resized',
+              rotate: int = None):
     """Вотермарка
        :param img_name: Путь до изображения, например, logos/1.png
-       :param source: путь до исходной картинки
+       :param source: папка исходной картинки
        :param size: размер, например 150x150
        :param mark: оверлей-watermark (логотип)
        :param position: позиция вотермарки (tile/scale)
        :param opacity: значение прозрачности
        :param folder: папка, куда сохранить результат
     """
-    folder = '%s' % folder
-    size_array = (150, 150)
-    # Проверяем есть ли вообще с чем работать
-    path_img = os.path.join(source, img_name)
-    if check_path(path_img):
-        return UPS_PATH
-
-    make_folder(os.path.join(source, folder))
-
-    if 'x' in size:
-        size_array = size.split('x')
-        result = os.path.join(source, folder, 'watermark_%s_%s' % (size, img_name))
-        # Если уже есть вотермарка
-        if not check_path(result):
-            return '/media/%s' % result
-
-        # Если уже есть миниатюра
-        path_resized_img =  os.path.join(source, folder, '%s_%s' % (size, img_name))
-        if check_path(path_resized_img):
-            copy_file(path_img, path_resized_img)
-            imageThumb(path_resized_img, size_array[0], size_array[1])
-
-        # Переписываем параметры функции
-        img_name = '%s_%s' % (size, img_name)
-        # Переписываем рабочую папку
-        source = os.path.join(source, folder)
-    else:
-        result = os.path.join(source, folder, 'watermark_%s' % img_name)
-        # Если уже есть вотермарка
-        if not check_path(result):
-            return '/media/%s' % result
-
-    import Image
-
-    img_path = full_path(os.path.join(source, img_name))
-    if not check_path(img_path):
-        im = Image.open(img_path)
-    else:
-        return UPS_PATH
-
-    mark = Image.open(full_path(mark))
-    if opacity < 1:
-        mark = reduce_opacity(mark, opacity)
-    if im.mode != 'RGBA':
-        im = im.convert('RGBA')
-    # create a transparent layer the size of the image and draw the
-    # watermark in that layer.
-    layer = Image.new('RGBA', im.size, (0, 0, 0, 0))
-    if position == 'tile':
-        for y in range(0, im.size[1], mark.size[1]):
-            for x in range(0, im.size[0], mark.size[0]):
-                layer.paste(mark, (x, y))
-    elif position == 'scale':
-        # scale, but preserve the aspect ratio
-        ratio = min(float(im.size[0]) / mark.size[0], float(im.size[1]) / mark.size[1])
-        w = int(mark.size[0] * ratio)
-        h = int(mark.size[1] * ratio)
-        mark = mark.resize((w, h))
-        layer.paste(mark, ((im.size[0] - w) / 2, (im.size[1] - h) / 2))
-    else:
-        layer.paste(mark, position)
-
-    # composite the watermark with the layer
-    img = Image.composite(layer, im, layer)
-    img.save(full_path(result))
-    return '/media/%s' % result
+    return watermark_image(img_name, source, size, mark, position, opacity, folder, rotate)
 
 @register.simple_tag
 def translit_tag(text: str):

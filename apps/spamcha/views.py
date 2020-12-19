@@ -15,7 +15,7 @@ from django.conf import settings
 from apps.main_functions.files import check_path, full_path, file_size, make_folder, catch_file, ListDir, isForD, extension
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper, get_user_permissions
-from apps.main_functions.api_helper import ApiHelper
+from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
@@ -26,7 +26,9 @@ from .models import (SpamTable,
                      SpamRow,
                      EmailAccount,
                      EmailBlackList,
-                     SMSPhone, )
+                     SMSPhone,
+                     SpamRedirect,
+                     SpamRedirectStata, )
 
 # Локальный .env из папки
 from envparse import env
@@ -66,6 +68,24 @@ def api(request, action: str = 'spam_tables'):
         result = ApiHelper(request, black_list_vars, CUR_APP)
     else:
         result = ApiHelper(request, spam_tables_vars, CUR_APP)
+    return result
+
+def import_xlsx(request, action: str = 'email_accounts'):
+    """Апи-метод для сохранения данных из excel-файла
+                     удаления данных по excel-файлу
+       :param request: HttpRequest
+       :param action: какую модель использовать
+    """
+    if action == 'spam_rows':
+        spam_table_id = request.GET.get('row_id')
+        result = XlsxHelper(request, spam_rows_vars, CUR_APP,
+                            cond_fields = ['dest', 'spam_table_id'],
+                            reverse_params = {
+                                'spam_table_id': spam_table_id,
+                            })
+    else:
+        result = XlsxHelper(request, email_accounts_vars, CUR_APP,
+                            cond_fields = ['email'])
     return result
 
 @login_required
@@ -220,7 +240,6 @@ def spam_tables_images(request, *args, **kwargs):
                 })
     return JsonResponse(result, safe=False)
 
-
 spam_rows_vars = {
     'singular_obj': 'Получатель',
     'plural_obj': 'Получатели',
@@ -254,7 +273,9 @@ def show_spam_rows(request, spam_table_id: int, *args, **kwargs):
     mh_spam_tables.url_edit = reverse('%s:%s' % (CUR_APP, mh_vars_spam_tables['edit_urla']),
                                       kwargs={'action': 'edit', 'row_id': mh_spam_tables.row.id})
 
-    mh = create_model_helper(mh_vars, request, CUR_APP, reverse_params={'spam_table_id': spam_table_id})
+    mh = create_model_helper(mh_vars, request, CUR_APP, reverse_params={
+        'spam_table_id': spam_table_id
+    })
     mh.select_related_add('spam_table')
 
     # ---------------------------
@@ -274,7 +295,7 @@ def show_spam_rows(request, spam_table_id: int, *args, **kwargs):
     })
 
     context = mh.context
-
+    context['spam_table'] = mh_spam_tables.row
     mh.filter_add({'spam_table__id': mh_spam_tables.row.id})
 
     # -----------------------------
@@ -299,6 +320,12 @@ def show_spam_rows(request, spam_table_id: int, *args, **kwargs):
                       'cur_page': mh.raw_paginator['cur_page'],
                       'by': mh.raw_paginator['by'], }
         return JsonResponse(result, safe=False)
+
+    context['import_xlsx_url'] = reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
+                                         kwargs={'action': 'spam_rows'})
+    # Дополняем GET параметром url загрузки эксельки
+    context['import_xlsx_url'] += '?row_id=%s' % spam_table_id
+
     template = '%stable.html' % (mh.template_prefix, )
     return render(request, template, context)
 
@@ -468,6 +495,8 @@ def show_email_accounts(request, *args, **kwargs):
                       'cur_page': mh.raw_paginator['cur_page'],
                       'by': mh.raw_paginator['by'], }
         return JsonResponse(result, safe=False)
+    context['import_xlsx_url'] = reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
+                                         kwargs={'action': 'email_accounts'})
     template = '%stable.html' % (mh.template_prefix, )
     return render(request, template, context)
 
@@ -743,3 +772,118 @@ def search_sms_phones(request, *args, **kwargs):
                        cur_app = CUR_APP,
                        sfields = ('name', 'phone', 'code'), )
 
+redirects_vars = {
+    'singular_obj': 'Переадресация рассылки',
+    'plural_obj': 'Переадресации рассылок',
+    'rp_singular_obj': 'переадресации рассылки',
+    'rp_plural_obj': 'переадресаций рассылок',
+    'template_prefix': 'spam_redirects_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'spamcha',
+    'submenu': 'redirects',
+    'show_urla': 'show_redirects',
+    'create_urla': 'create_redirect',
+    'edit_urla': 'edit_redirect',
+    'model': SpamRedirect,
+}
+
+@login_required
+def show_redirects(request, *args, **kwargs):
+    """Вывод переадресаций рассылки"""
+    return show_view(request,
+                     model_vars = redirects_vars,
+                     cur_app = CUR_APP, )
+
+@login_required
+def edit_redirect(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование переадресаций рассылки"""
+    return edit_view(request,
+                     model_vars = redirects_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
+
+@login_required
+def redirects_positions(request, *args, **kwargs):
+    """Изменение переадресаций рассылки"""
+    result = {}
+    mh_vars = redirects_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_redirects(request, *args, **kwargs):
+    """Поиск переадресаций рассылки"""
+    return search_view(request,
+                       model_vars = redirects_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('our_link', 'ext_link'), )
+
+def srdr_goto(request, our_link):
+    """Переадресация для рассылки"""
+    dest = 'https://223-223.ru'
+    rdr = SpamRedirect.objects.filter(our_link=our_link).first()
+    if rdr:
+        dest = rdr.ext_link
+        email = request.GET.get('email')
+        try:
+            client_id = int(request.GET.get('client_id'))
+        except Exception:
+            client_id = 0
+        # Пишем в статистику
+        SpamRedirectStata.objects.create(spam_redirect=rdr, email=email, client_id=client_id)
+    return redirect(dest)
+
+redirects_stata_vars = {
+    'singular_obj': 'Статистика переадресации',
+    'plural_obj': 'Статистика переадресаций',
+    'rp_singular_obj': 'статистики переадресации',
+    'rp_plural_obj': 'статистик переадресаций',
+    'template_prefix': 'spam_redirects_stata_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'spamcha',
+    'submenu': 'redirects_stata',
+    'show_urla': 'show_redirects_stata',
+    'create_urla': 'create_redirect_stata',
+    'edit_urla': 'edit_redirect_stata',
+    'model': SpamRedirectStata,
+    'select_related_list': ('spam_redirect', ),
+}
+
+@login_required
+def show_redirects_stata(request, *args, **kwargs):
+    """Вывод статистики переадресаций рассылки"""
+    return show_view(request,
+                     model_vars = redirects_stata_vars,
+                     cur_app = CUR_APP, )
+
+@login_required
+def edit_redirect_stata(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование статистики переадресаций рассылки"""
+    return edit_view(request,
+                     model_vars = redirects_stata_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = None, )
+
+@login_required
+def redirects_stata_positions(request, *args, **kwargs):
+    """Изменение статистики переадресаций рассылки"""
+    result = {}
+    mh_vars = redirects_stata_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_redirects_stata(request, *args, **kwargs):
+    """Поиск переадресаций рассылки"""
+    return search_view(request,
+                       model_vars = redirects_stata_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('email', 'client_id'), )

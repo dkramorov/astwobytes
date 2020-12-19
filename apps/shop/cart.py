@@ -1,12 +1,17 @@
 # -*- coding:utf-8 -*-
+import logging
+from django.conf import settings
+
 from apps.personal.models import Shopper
 from apps.personal.utils import save_user_to_request
 from apps.products.models import Products
 from apps.flatcontent.flatcat import get_costs_types
-from apps.main_functions.string_parser import get_request_ip
+from apps.main_functions.string_parser import get_request_ip, summa_format
 from apps.main_functions.catcher import check_email, check_phone
 
 from .models import Orders, Purchases, PromoCodes
+
+logger = logging.getLogger('main')
 
 def get_purchase(pk: int,
                  shopper: Shopper,
@@ -241,9 +246,63 @@ def create_new_order(request, shopper, cart, comments: str = None):
             Purchases.objects.filter(pk=purchase.id).update(order=new_order)
         if 'promocode' in request.session:
             del request.session['promocode']
+
+        scheme = 'https://' if request.is_secure() else 'http://'
+        domain = '%s%s' % (scheme, request.META['HTTP_HOST'])
+        notify_about_order(new_order, purchases, domain=domain)
     return {
         'order': new_order,
         'errors': errors,
         'shopper_data': shopper_data,
     }
 
+def notify_about_order(order: Orders, purchases: list, domain: str = None):
+    """Оповещение о заказе через телеграм
+       :param order: экземпляр заказа
+       :param purchases: покупки
+       :param domain: адрес сайта
+    """
+    if not settings.TELEGRAM_ENABLED:
+        logger.info('TELEGRAM DISABLED')
+        return
+    from apps.telegram.telegram import TelegramBot
+    bot = TelegramBot()
+    bot.send_message('%s Заказ <a href="%s/shop/admin/orders/view/%s/">№%s</a>, на сумму %s ₽ от %s' % (
+        bot.get_emoji('hot'),
+        domain,
+        order.id,
+        order.number or order.id,
+        summa_format(order.total),
+        order.created.strftime('%H:%M:%S %d-%m-%Y')
+    ), parse_mode='html', disable_web_page_preview=True)
+    msg = ''
+    for i, purchase in enumerate(purchases):
+        msg += '%s. <a href="%s/product/%s/">%s</a> x %s (%s ₽) = %s ₽\n' % (
+            i + 1,
+            domain,
+            purchase.product_id,
+            purchase.product_name,
+            purchase.count,
+            summa_format(purchase.cost),
+            summa_format(purchase.total()),
+        )
+    msg += '\nПользователь:\n'
+    if order.shopper_name:
+         msg += 'Имя: %s\n' % order.shopper_name
+    if order.shopper_email:
+         msg += 'Email: %s\n' % order.shopper_email
+    if order.shopper_phone:
+         msg += 'Телефон: %s\n' % order.shopper_phone
+    if order.shopper_address:
+         msg += 'Адрес: %s\n' % order.shopper_address
+    if order.shopper_ip:
+         msg += 'ip: %s\n' % order.shopper_ip
+
+    if order.promocode:
+        msg += 'Промокод: %s\n' % order.promocode.code
+    if order.discount:
+        msg += 'Скидка на заказ %.2f\n' % order.disount
+    if order.comments:
+        msg += 'Комментарий: %s\n' % order.comments
+    msg += '-------------------'
+    bot.send_message(msg, parse_mode='html', disable_web_page_preview=True)

@@ -22,59 +22,66 @@
     {% if not cart %}
       <h2 class="text-center pt-100 pb-100">Ваша корзина пуста, сначала выберите, что хотите купить</h2>
     {% else %}
+      <h2 class="text-center pt-100 pb-100">Оформление заказа</h2>
       {% for error in errors %}
         <label class="error mistake">{{ error }}</label><br />
       {% endfor %}
-      <form action="/shop/checkout/" method="POST" id="confirm_order" class="checkout woocommerce-checkout">
+      <form action="/shop/checkout/" method="POST" id="confirm_order" class="authpane-form">
         {% csrf_token %}
-        <div class="col-md-6">
-          <p>
-            <label>Как к вам обращаться</label>
-            <input type="text" class="form-control required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}">
-          </p>
-        </div>
-        <div class="col-md-6">
-          <p>
-            <label>Ваше имя</label>
-            <input type="text" class="form-control" name="first_name" value="{% if shopper_data.first_name %}{{ shopper_data.first_name }}{% endif %}">
-          </p>
-        </div>
-        <div class="col-md-6">
-          <p>
-            <label>Ваша фамилия</label>
-            <input type="text" class="form-control" name="last_name" value="{% if shopper_data.last_name %}{{ shopper_data.last_name }}{% endif %}">
-          </p>
-        </div>
-        <div class="col-md-6">
-          <p>
-            <label>Ваше отчество</label>
-            <input type="text" class="form-control" name="middle_name" value="{% if shopper_data.middle_name %}{{ shopper_data.middle_name }}{% endif %}">
-          </p>
-        </div>
-        <div class="col-md-6">
-          <p>
-            <label>Ваш email</label>
-            <input type="text" class="form-control required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}">
-          </p>
-        </div>
-        <div class="col-md-6">
-          <p>
-            <label>Ваш телефон</label>
-            <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}">
-          </p>
-        </div>
-        <div class="col-md-12">
-          <p>
-            <label>Ваш адрес</label>
-            <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}">
-          </p>
+
+        <fieldset class="authpane-form blokc">
+          <legend class="PT red">Информация о получателе</legend>
+          <div class="iblokl" style="width:49%;">
+            <div class="form-row iblok">
+              <div class="form-label">
+                <label for="name">Получатель заказа</label><span>Ф.И.О.</span>
+              </div>
+              <div class="form-value">
+                <input class="afname checkme required" style="width:100%;" maxlength="150" type="text" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}" placeholder="Иван Петров">
+              </div>
+            </div>
+          </div>
+          <div class="iblokl" style="width:49%">
+            <div class="form-row iblok">
+              <div class="form-label">
+                <label for="name">Телефон</label><span>Оператор позвонит</span>
+              </div>
+              <div class="form-value ">
+                <input class="afphone checkme phone required" style="width:100%;" required="" maxlength="150" type="text" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}" placeholder="+7 999 999 9999">
+              </div>
+            </div>
+          </div>
+          <div class="iblokl" style="width:49%">
+            <div class="form-row iblok">
+              <div class="form-label">
+                <label for="name">Email</label><span>чтобы контролировать заказ</span>
+              </div>
+              <div class="form-value ">
+                <input class="afemail checkme email required" style="width:100%;" maxlength="150" type="text" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}" required="true" placeholder="email@email.ru">
+              </div>
+            </div>
+          </div>
+          <div class="iblokl" style="width:49%">
+            <div class="form-row iblok">
+              <div class="form-label">
+                <label for="name">Адрес</label><span>для доставки</span>
+              </div>
+              <div class="form-value ">
+                <input class="afdst checkme" style="width:100%;" maxlength="150" type="text" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}"></div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+        <br>
+        <div class="wc-proceed-to-checkout col-md-12">
+          <button type="submit" class="checkout-button button pull-right PT zakaz pn-button">Оформить заказ</button>
         </div>
         <div class="clearfix"></div><br>
 
         <div class="col-md-12">
           <h3 id="order_review_heading">Заказ на {{ cart.total|money_format }} ₽</h3>
-          <div id="order_review" class="woocommerce-checkout-review-order">
-            <table class="shop_table woocommerce-checkout-review-order-table">
+          <div id="order_review" class="news">
+            <table class="price">
               <thead>
                 <tr>
                   <th class="product-name">Наименование</th>
@@ -127,9 +134,6 @@
               </tfoot>
             </table>
           </div>
-        </div>
-        <div class="wc-proceed-to-checkout col-md-12">
-          <button type="submit" class="checkout-button button pull-right">Оформить заказ</button>
         </div>
       </form>
       <div class="clearfix"></div><br>

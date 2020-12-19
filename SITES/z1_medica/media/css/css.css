@@ -1554,7 +1554,7 @@ width:340px;padding:4px 9px;background-color:#fff;font-size:18px;-moz-box-sizing
  
  
 .afname,.afdst,   .afemail,  .afsite,  .afphone,  .afpass 
-{background:#fff url("/img/af.png") 5px 5px no-repeat; padding:3px; font-size:16px; padding-left:45px!important; 
+{background:#fff url("/media/img/af.png") 5px 5px no-repeat; padding:3px; font-size:16px; padding-left:45px!important; 
 min-height:30px; border-radius:6px;  margin-bottom:10px; }
 .afemail {background-position:5px -25px }
 .afpass {background-position:5px -59px }

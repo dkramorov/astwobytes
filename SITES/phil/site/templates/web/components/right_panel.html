@@ -1,0 +1,59 @@
+<div class="mCustomScrollbar">
+  <div class="popup right-menu">
+    <div class="right-menu-wrap">
+      <div class="user-menu-close js-close-aside">
+        <a href="#" class="user-menu-content js-clode-aside">
+          <span></span>
+          <span></span>
+        </a>
+      </div>
+
+      <h4>{{ containers.main.tags.right_panel.name }}</h4>
+      <br>
+      <div class="right_panel_desc">{{ containers.main.tags.right_panel.html|safe }}</div>
+
+{% comment %}<!--
+      {% include "web/components/logo.html" %}
+
+      <div class="text">{% if containers.main.tags.logo.html %}{{ containers.main.tags.logo.html|safe }}{% endif %}
+      </div>
+-->{% endcomment %}
+
+    </div>
+
+    {% include "web/components/feedback_form.html" %}
+{% comment %}<!-- Вместо формы логина,
+                  надо сюда вставить форму обратной связи
+    {% include "web/components/login_form.html" %}
+-->{% endcomment %}
+
+    <div class="widget contacts">
+{% comment %}<!--
+      {% include "web/components/get_in_touch.html" %}
+      <div class="contacts-item">
+        <i class="fa fa-phone"></i>
+        <div class="content">
+          <a href="{{ containers.main.tags.phone.link }}" class="title">{{ containers.main.tags.phone.html|safe }}</a>
+          <div class="sub-title">{{ containers.main.tags.worktime.html|safe }}</div>
+        </div>
+      </div>
+
+      <div class="contacts-item">
+        <i class="fa fa-envelope"></i>
+        <div class="content">
+          <a href="{{ containers.main.tags.email.link }}" class="title">{{ containers.main.tags.email.html|safe }}</a>
+          <p class="sub-title">{{ containers.main.tags.email.description }}</p>
+        </div>
+      </div>
+
+      <div class="contacts-item">
+        <i class="fa fa-map-marker"></i>
+        <div class="content">
+          <a class="title">{{ containers.main.tags.address.description }}</a>
+          <div class="sub-title">{{ containers.main.tags.address.html|safe }}</div>
+        </div>
+      </div>
+-->{% endcomment %}
+    </div>
+  </div>
+</div>

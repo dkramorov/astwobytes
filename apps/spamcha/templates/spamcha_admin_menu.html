@@ -26,6 +26,16 @@
         <span class="item-text">Телефоны для смс</span>
       </a>
     </li>
+    <li{% ifequal submenu 'redirects' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_redirects' %}">
+        <span class="item-text">Переадресации рассылки</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'redirects_stata' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_redirects_stata' %}">
+        <span class="item-text">Статистика переадресций</span>
+      </a>
+    </li>
   </ul>
 </li>
 {% endif %}

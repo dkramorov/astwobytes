@@ -30,9 +30,14 @@ if 'apps.afisha' in settings.INSTALLED_APPS:
         re_path(r'^afisha/', include('apps.afisha.urls')),
     ]
 if 'apps.spamcha' in settings.INSTALLED_APPS:
+    from apps.spamcha.views import srdr_goto
     # Рассылки
     urlpatterns += [
         re_path(r'^spamcha/', include('apps.spamcha.urls')),
+        # -----------------------------
+        # /srdr/goto/.../ Переадресация
+        # -----------------------------
+        url('^srdr/goto/(?P<our_link>.+)/$', srdr_goto, name='srdr_goto'),
     ]
 if 'apps.ws' in settings.INSTALLED_APPS:
     # websocket (chat)
@@ -93,6 +98,11 @@ if 'apps.weld' in settings.INSTALLED_APPS:
     # Модуль сварки стыков
     urlpatterns += [
         re_path(r'^weld/', include('apps.weld.urls')),
+    ]
+if 'apps.addresses' in settings.INSTALLED_APPS:
+    # Адреса объектов
+    urlpatterns += [
+        re_path(r'^addresses/', include('apps.addresses.urls')),
     ]
 if 'djapian' in settings.INSTALLED_APPS:
     # DJAPIAN SEARCH

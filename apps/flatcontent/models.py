@@ -195,6 +195,7 @@ class Blocks(Standard):
     title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     description = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     keywords = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    class_name = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Класс css')
 
     class Meta:
         verbose_name = 'Стат.контент - Блоки'

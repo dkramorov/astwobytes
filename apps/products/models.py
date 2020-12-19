@@ -28,6 +28,10 @@ class Products(Standard):
     # согда у нас есть несколько типов цен на товар
     min_price = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True) # 99 000 000 000,00
     max_price = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True) # 99 000 000 000,00
+    min_count = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Минимальное кол-во для заказа')
+    multiplicity = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Кратность товара, по сколько будет добавляться +/-')
 
     class Meta:
         verbose_name = 'Товары - товар/услуга'

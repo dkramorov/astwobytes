@@ -1,0 +1,77 @@
+{% load tags mtags %}
+<div class="prodtb-i tableview">
+  <div class="prodtb-i-top">
+    <button class="prodtb-i-toggle" type="button"></button>
+    <h3 class="prodtb-i-ttl product-title">
+      <a href="{{ product.link }}">{{ product.name }}</a>
+    </h3>
+    <div class="prodtb-i-info">
+      <span class="prodtb-i-price">
+        <b>{{ product.price|money_format }} ₽</b>
+      </span>
+      <p class="prodtb-i-qnt">
+        <input value="1" type="text" id="table_quantity_{{ product.id }}">
+        <a href="javascript:void(0);" class="prodtb-i-plus"><i class="fa fa-angle-up"></i></a>
+        <a href="javascript:void(0);" class="prodtb-i-minus"><i class="fa fa-angle-down"></i></a>
+      </p>
+    </div>
+    <p class="prodtb-i-action">
+      <a href="#" class="prodtb-i-favorites"><span>Избранное</span><i class="fa fa-heart"></i></a>
+      <a class="prodtb-i-compare" href="#"><span>Сравнить</span><i class="fa fa-bar-chart"></i></a>
+      <a href="#" class="qview-btn prodtb-i-qview"><span>Быстрый просмотр</span><i class="fa fa-search"></i></a>
+      <a href="javascript:void(0)" class="prodtb-i-buy add_to_cart_btn" data-product_id="{{ product.id }}"><span>В корзину</span><i class="fa fa-shopping-basket"></i></a>
+    </p>
+  </div>
+  <div class="prodlist-i">
+    <a class="list-img-carousel prodlist-i-img" href="{{ product.link }}">
+      <img src="{{ product.thumb }}" alt="{{ product.name|textize }}" loading="lazy">
+    </a>
+    <div class="prodlist-i-cont">
+      {% if product.mini_info %}
+        <div class="prodlist-i-txt">{{ product.mini_info|safe }}</div>
+      {% endif %}
+{% comment %}<!-- Цвет/размер
+      <div class="prodlist-i-skuwrap">
+        <div class="prodlist-i-skuitem">
+          <p class="prodlist-i-skuttl">Color</p>
+          <ul class="prodlist-i-skucolor">
+            <li class="active"><img src="img/color/blue.jpg" alt=""></li>
+            <li><img src="img/color/red.jpg" alt=""></li>
+            <li><img src="img/color/green.jpg" alt=""></li>
+          </ul>
+        </div>
+        <div class="prodlist-i-skuitem">
+          <p class="prodlist-i-skuttl">Clothes sizes</p>
+          <div class="offer-props-select">
+            <p>XS</p>
+            <ul>
+              <li><a href="#">S</a></li>
+              <li><a href="#">M</a></li>
+              <li><a href="#">L</a></li>
+              <li class="active"><a href="#">XS</a></li>
+              <li><a href="#">XL</a></li>
+              <li><a href="#">XXL</a></li>
+              <li><a href="#">XXXL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+-->{% endcomment %}
+    </div>
+    <ul class="prodlist-i-props2">
+      {% for item in product.props %}
+        {% if forloop.counter < 5 %}
+          <li>
+            <span class="prodlist-i-propttl"><span>{{ item.prop.name }}</span></span>
+            <span class="prodlist-i-propval">
+              {% for pvalue in item.values %}
+                {{ pvalue.str_value }}
+                {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
+              {% endfor %}
+            </span>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</div>

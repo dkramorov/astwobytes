@@ -8,6 +8,8 @@ app_name = 'spamcha'
 urlpatterns = [
     # получение по апи всех данных (т/к не секретно)
     url('^(?P<action>spam_tables|spam_rows|email_accounts|black_list)/api/$', views.api, name='api'),
+    url('^(?P<action>email_accounts|spam_rows)/import_xlsx/$', views.import_xlsx, name='import_xlsx'),
+
     # ----------------
     # Таблицы рассылок
     # ----------------
@@ -38,6 +40,22 @@ urlpatterns = [
     url('^admin/black_list/(?P<action>create)/$', views.edit_black_list, name='create_black_list'),
     url('^admin/black_list/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_black_list, name='edit_black_list'),
     path('admin/black_list/positions/', views.black_list_positions, name='black_list_positions'),
+    # -------------------------
+    # Переадресации для рассыли
+    # -------------------------
+    path('admin/redirects/', views.show_redirects, name='show_redirects'),
+    url('^admin/redirects/(?P<action>create)/$', views.edit_redirect, name='create_redirect'),
+    url('^admin/redirects/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_redirect, name='edit_redirect'),
+    path('admin/redirects/positions/', views.redirects_positions, name='redirects_positions'),
+    # аякс-поиск
+    path('redirects/search/', views.search_redirects, name='search_redirects'),
+    # ----------------------------
+    # Статистика по переадресациям
+    # ----------------------------
+    path('admin/redirects_stata/', views.show_redirects_stata, name='show_redirects_stata'),
+    url('^admin/redirects_stata/(?P<action>create)/$', views.edit_redirect_stata, name='create_redirect_stata'),
+    url('^admin/redirects_stata/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_redirect_stata, name='edit_redirect_stata'),
+    path('admin/redirects_stata/positions/', views.redirects_stata_positions, name='redirects_positions'),
     # ------------
     # Смс телефоны
     # ------------

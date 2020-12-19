@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+  var linkFormatter = function(cell, formatterParams, onRendered){
+    var value = cell.getValue();
+    var result = "<div class='padding-rl5 text-center'>";
+    if(value){
+      result += "{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.META.HTTP_HOST }}{% ifnotequal request.META.HTTP_PORT 80 %}{{ request.META.HTTP_PORT }}{% endifnotequal %}/srdr/goto/" + value + "/";
+    }
+    result += "</div>";
+    return result;
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Наша ссылка",
+        field: "our_link",
+        headerFilterPlaceholder: "Наша ссылка",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: linkFormatter,
+        width: 150,
+      },
+      {
+        title: "Переадресация",
+        field: "ext_link",
+        headerFilterPlaceholder: "Переадресация",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+});
+</script>
+{% endblock %}

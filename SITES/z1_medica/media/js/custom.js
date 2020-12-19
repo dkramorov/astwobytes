@@ -97,13 +97,6 @@ $('.basc').click(function(){  //$(this).fadeOut(100);
   $(this).attr('title','Добавить количество (товар уже есть в корзине)');
   $(this).fadeIn('slow');
 });
-$('.bascbut').live("click", function(){  //$(this).fadeOut(100);
-  addToBasket($(this).attr('id'));
-  $(this).attr('src','/img/bascetfull2.png');
-  $(this).attr('title','Добавить количество (товар уже есть в корзине)');
-  $(this).fadeIn('slow');
-});
-
 
 $(".notoper").click(function(){
   $('#ajaxbascet').animate({top:'-500px'}, 'slow')

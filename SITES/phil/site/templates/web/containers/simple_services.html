@@ -1,0 +1,30 @@
+{% load mtags %}
+<div class="container simple_services js-equal-child" id="simple_services">
+  <div class="row pt120 pb30">
+
+    <div class="portfolio_title">
+      {{ container.description|safe }}
+    </div>
+
+    {% for block in blocks %}
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        <div class="servises-item theme-module">
+
+          <div class="servises-item__content">
+            <h4 class="servises-title">{{ block.name }}</h4>
+            <div class="servises-text">
+              {{ block.html|safe }}
+            </div>
+          </div>
+          {% if block.link %}
+            <a href="{{ block.link }}" class="read-more">
+              <span>{{ block.description }}</span>
+              <i class="seoicon-right-arrow"></i>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      {% cycle '' '<div class="clearfix"></div>' %}
+    {% endfor %}
+  </div>
+</div>

@@ -107,6 +107,8 @@ if env('UPLOAD_TASKS_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.upload_tasks')
 if env('WELD_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.weld')
+if env('ADDRESSES_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.addresses')
 
 #CUSTOM_APPS += [
 #    'apps.upload_tasks',
@@ -246,6 +248,20 @@ def skip_static_requests(record):
         return False
     return True
 
+# telnet localhost 11211
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': [
+            '127.0.0.1:11211',
+            # another cache-servers
+        ],
+        'OPTIONS': {
+            'server_max_value_length': 1024 * 1024 * 2, # 2Mb object size
+        }
+    }
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': env('DISABLE_EXISTING_LOGGERS', cast=bool, default=True),
@@ -384,3 +400,5 @@ DJAPIAN_DATABASE_PATH = os.path.join(MEDIA_ROOT, 'djapian_base')
 DJAPIAN_VOCA = os.path.join(BASE_DIR, 'xapian64', 'spell')
 if env('DJAPIAN_APP', cast=bool, default=False):
     INSTALLED_APPS.append('djapian')
+
+YANDEX_MAPS_API_KEY = env.str('YANDEX_MAPS_API_KEY', default='')

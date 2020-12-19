@@ -1,7 +1,25 @@
 {% extends "skeleton.html" %}
 {% load tags mtags %}
 
-{% block extracontent %}{% endblock %}
+{% block extrahead %}
+<style type="text/css">
+  #facet_filters .sidebar{
+    display: inline-block;
+  }
+  #facet_filters .sidebar-title{
+    white-space: nowrap;
+    overflow-x: hidden;
+  }
+  #facet_filters .sidebar .product-categories{
+    display: block;
+    height: 150px;
+    overflow: scroll;
+  }
+</style>
+{% endblock %}
+
+{% block extracontent %}
+{% endblock %}
 
 {% block content %}
 <div class="shop-page-container mb-50">
@@ -68,6 +86,21 @@
             </a>
           </div>
         {% endif %}
+
+        <a href="javascript:void(0);" id="show_facet_filters">Показать все фильтры</a>
+        <form class="sidebar-area mb-35 hidden" id="facet_filters" action="{{ page.link }}">
+<!--
+          <div class="sidebar mb-35">
+            <h3 class="sidebar-title">Filter By</h3>
+            <ul class="product-categories">
+              <li><a class="active" href="shop-left-sidebar.html">Gold</a></li>
+              <li><a href="shop-left-sidebar.html">Green</a></li>
+              <li><a href="shop-left-sidebar.html">White</a></li>
+            </ul>
+          </div>
+-->
+        </form>
+
         <div class="shop-header mb-35">
           <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center">
@@ -188,6 +221,64 @@
         window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
       }
     });
+
+    $("#show_facet_filters").click(function(){
+      if($("#facet_filters").hasClass("hidden")){
+        $("#facet_filters").removeClass("hidden");
+        $(this).html("Скрыть все фильтры");
+      }else{
+        $("#facet_filters").addClass("hidden");
+        $(this).html("Показать все фильтры");
+      }
+    });
+
+    $.ajax({
+      type: "GET",
+      url: '{% url "products:facet_filters" page.id %}',
+    }).done(function(r){
+      //console.log(r);
+      var html = "";
+      var name = "";
+      var values_length;
+      var container = $("#facet_filters");
+      container.html("");
+      for(var key in r){
+        if(typeof(r[key]) == "boolean"){
+          continue;
+        }
+        values_length = r[key]['values'].length;
+        if(values_length < 2){
+          continue;
+        }
+        html += '<div class="sidebar col-md-3">';
+        name = r[key]['name'];
+        if(r[key]['measure'].length > 0){
+          name += ", " + r[key]['measure'];
+        }
+        html += '<h3 class="sidebar-title">' + name + '</h3>';
+        html += '<div class="product-categories">';
+        for(var i=0; i<values_length; i++){
+          //html += '<li><a>' + r[key]['values'][i]['value'] + '</a></li>';
+          html += '<label><input id="prop_' + key + '_' + r[key]['values'][i]['id'] + '" type="checkbox" name="prop_' + key + '" value="' + r[key]['values'][i]['id'] + '" /> ' + r[key]['values'][i]['value'] + '</label><br>';
+        }
+        html += '</div>';
+        html += '</div>';
+      }
+      html += '<div class="text-center"><button class="contact-form-btn mt-35" type="submit" value="1" name="ff"> Найти</button></div>';
+      container.html(html);
+
+      {% if q_string.q.ff %}
+        $("#show_facet_filters").click();
+        {% for key, value in q_string.q.items %}
+          {% if 'prop_' in key %}
+            $("#{{ key }}_{{ value }}").prop('checked', 'checked');
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    }).fail(function(){
+    });
+
+
   });
 </script>
 {% endblock %}

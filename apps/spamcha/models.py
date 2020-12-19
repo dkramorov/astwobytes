@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 import os
+import random
 from django.db import models
 from django.core.mail import send_mail, EmailMessage, get_connection
 
+from email.mime.text import MIMEText
+from email.header import Header
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+
 from apps.main_functions.models import Standard
-from apps.main_functions.files import full_path
+from apps.main_functions.files import full_path, watermark_image, blank_image
 from apps.main_functions.string_parser import kill_quotes
-from apps.main_functions.catcher import REGA_IMG
+from apps.main_functions.catcher import REGA_IMG, REGA_A
 
 class EmailBlackList(Standard):
     """Список email'ов на которые нельзя отправлять почту
@@ -84,16 +90,24 @@ class SpamTable(Standard):
         verbose_name_plural = 'Рассылка - Таблицы рассылки'
         #default_permissions = []
 
-    def get_text_msg(self, msg_type: str = 'plain'):
-        """Сформировать текстовое сообщение для отправки"""
-        from email.mime.text import MIMEText
-        from email.header import Header
-        from email.mime.image import MIMEImage
-        from email.mime.multipart import MIMEMultipart
+    def get_text_msg(self, msg_type: str = 'plain', **kwargs):
+        """Сформировать текстовое сообщение для отправки
+           :param msg_type: html или plain
+           :param kwargs: доп параметры
+                          client_id, email - для редиректов
+                          images_with_watermarks - вотермарчить изображения
+                          watermark_rotate - поворот вотермарки
+        """
         if not self.msg:
             return
         if not msg_type in ('plain', 'html'):
             msg_type = 'plain'
+
+        # Доп. параметры
+        dest_email = kwargs.get('email')
+        client_id = kwargs.get('client_id')
+        client_name = kwargs.get('client_name') or ''
+        images_with_watermarks = kwargs.get('images_with_watermarks') or ''
 
         if msg_type == 'html':
             html_part = MIMEMultipart(_subtype='related')
@@ -102,6 +116,23 @@ class SpamTable(Standard):
             for i, img in enumerate(search_images):
                 cid = 'inline_imga_%s' % i
                 self.msg = self.msg.replace(img, 'cid:%s' % cid)
+
+                if images_with_watermarks and img.startswith('/media/') and img.endswith('.png'):
+                    source, img_name = os.path.split(img)
+                    source = source.replace('/media/', '')
+                    # Заливаем случайным изображением,
+                    # со случайным поворотом
+                    mark = 'demo_mark.png'
+                    color = (random.randrange(0, 255),
+                             random.randrange(0, 255),
+                             random.randrange(0, 255), )
+                    demo_mark = blank_image('300x300', color)
+                    demo_mark.save(full_path(mark))
+                    rotate = kwargs.get('watermark_rotate', 0)
+
+                    watermark_image(img_name, source, size='', mark=mark, position='tile', opacity=0.02, folder='resized', rotate=rotate)
+                    img = os.path.join(source, 'resized', 'watermark_%s' % img_name)
+
                 img_path = full_path(img)
                 with open(img_path, 'rb') as f:
                     img_data = f.read()
@@ -112,6 +143,16 @@ class SpamTable(Standard):
                 images.append(html_img)
                 #html_part.attach(html_img)
 
+            search_hrefs = REGA_A.findall(self.msg)
+            if search_hrefs:
+                hrefs = set(search_hrefs)
+                for href in hrefs:
+                    # Хардкод, чтобы базу не долбить
+                    if '/srdr/goto/' in href:
+                        old_href = href.split('?')[0]
+                        new_href = '%s?email=%s&client_id=%s' % (old_href, dest_email, client_id)
+                        self.msg = self.msg.replace(href, new_href)
+
             html_text = MIMEText(self.msg, msg_type, 'utf-8')
             html_part.attach(html_text)
             for image in images:
@@ -119,19 +160,31 @@ class SpamTable(Standard):
             msg = html_part
         else:
             msg = MIMEText(self.msg, msg_type, 'utf-8')
-        msg['Subject'] = Header(self.name, 'utf-8')
+        subject = '%s. %s' % (self.name, client_name)
+        msg['Subject'] = Header(subject, 'utf-8')
         #msg['From'] = account.email
         #msg['To'] = ', '.join(recipients)
-        if self.reply_to:
-            msg.add_header('reply-to', self.reply_to)
+        # Не надо - а то как спам распознавать будет (проверить)
+        #if self.reply_to:
+        #    msg.add_header('reply-to', self.reply_to)
         return msg
 
 class SpamRow(Standard):
     """Запись в таблице для рассылки"""
-    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    dest = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Получатель')
-    spam_table = models.ForeignKey(SpamTable, blank=True, null=True, on_delete=models.CASCADE)
-    sender = models.ForeignKey(EmailAccount, blank=True, null=True, on_delete=models.SET_NULL)
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    dest = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True, verbose_name='Получатель')
+    spam_table = models.ForeignKey(SpamTable,
+        blank=True, null=True, on_delete=models.CASCADE)
+    sender = models.ForeignKey(EmailAccount,
+        blank=True, null=True, on_delete=models.SET_NULL)
+    client_id = models.IntegerField(blank=True,
+        null=True, db_index=True,
+        verbose_name='Ид получателя (для связи с CRM)')
+    client_name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Официальное название получателя (возможно, из CRM)')
 
     class Meta:
         verbose_name = 'Рассылка - Записи в таблицах рассылок'
@@ -164,3 +217,36 @@ class SMSPhone(Standard):
         if self.phone:
             self.phone = kill_quotes(self.phone, 'int')
         super(SMSPhone, self).save(*args, **kwargs)
+
+class SpamRedirect(Standard):
+    """Таблица для переадресаций,
+       заводим ссыль на наш сайт,
+       а с нашего переадресовываем куда надо,
+       чтобы собирать статистику кто жмакал по рассылке
+       /stata/redirect/(test)/ например,
+       переадресовывает на 223-223.ru
+    """
+    our_link = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    ext_link = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    class Meta:
+        verbose_name = 'Рассылка - Таблица переадресаций'
+        verbose_name_plural = 'Рассылка - Таблица переадресаций'
+        #default_permissions = []
+
+class SpamRedirectStata(Standard):
+    """Таблица статистики переадресаций,
+       пишем данные о том, что мы переадресовали"""
+    spam_redirect = models.ForeignKey(SpamRedirect,
+        blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name='Переадресация')
+    email = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True, verbose_name='Email получателя')
+    client_id = models.IntegerField(blank=True,
+        null=True, db_index=True,
+        verbose_name='Ид получателя (для связи с CRM)')
+    class Meta:
+        verbose_name = 'Рассылка - Таблица переадресаций'
+        verbose_name_plural = 'Рассылка - Таблица переадресаций'
+        #default_permissions = []

@@ -18,6 +18,7 @@ from apps.main_functions.views_helper import (show_view,
                                               search_view,
                                               special_model_vars, )
 
+from apps.flatcontent.flatcat import get_filters_for_cat
 from apps.flatcontent.models import Containers, Blocks
 from .models import (Products,
                      ProductsCats,
@@ -718,3 +719,10 @@ def edit_cat_product(request, action: str, row_id: int = None, *args, **kwargs):
                      action = action,
                      row_id = row_id,
                      extra_vars = None, )
+
+def facet_filters(request, cat_id):
+    """Получение фасетных фильтров
+       :param cat_id: ид категории
+    """
+    result = get_filters_for_cat(cat_id)
+    return JsonResponse(result, safe=False)

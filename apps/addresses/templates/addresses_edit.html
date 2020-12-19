@@ -1,0 +1,324 @@
+{% extends "core/base.html" %}{% load mtags %}
+
+{% block extrahead %}
+  <style type="text/css">
+    .mapContainer{
+      height:400px;
+      width: 100%;
+    }
+  </style>
+
+  <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={{ yandex_maps_api_key }}" type="text/javascript"></script>
+  <script type="text/javascript" src="/static/yandex_app/yandex_2_1.js"></script>
+
+<!-- TODO получать bounds видимой области и отображать имеющиеся в базе адреса -->
+  <script type="text/javascript">
+    //ymaps.ready(init);
+    var myMapContainer = "mapContainer";
+    $(document).ready(function(){
+      var kwargs = {};
+/*
+      kwargs['after_search'] = function(){
+        var found_object = get_map(myMapContainer).search_by_geocoder;
+      };
+*/
+      kwargs['default_town'] = "Иркутск"; // TODO Задать в настройках и передавать в шаблон
+      kwargs['search_address_by_click'] = 1;
+      kwargs['search_result_to_form'] = function(ind){
+        var myMap = get_map(myMapContainer);
+        console.log("search_result_to_form ", ind, myMap.search_results);
+        var meta_data = myMap.search_results[ind].properties.get("metaDataProperty.GeocoderMetaData");
+        var country = meta_data.AddressDetails.Country;
+        $("#address_country").val(country.CountryName);
+        var administrative_area = country.AdministrativeArea;
+        $("#address_state").val(administrative_area.AdministrativeAreaName);
+        var sub_administrative_area = administrative_area.SubAdministrativeArea;
+        $("#address_county").val(sub_administrative_area.SubAdministrativeAreaName);
+        var locality = sub_administrative_area.Locality;
+        $("#address_city").val(locality.LocalityName);
+
+        // -----------------------------------------------
+        // Разветвление на thoroughfare/dependent_locality
+        // -----------------------------------------------
+        var premise = null;
+        var dependent_locality = locality.DependentLocality;
+        if(typeof(dependent_locality) != "undefined"){
+          $("#address_street").val(dependent_locality.DependentLocalityName);
+          premise = dependent_locality.Premise;
+        }
+
+        var thoroughfare = locality.Thoroughfare;
+        if(typeof(thoroughfare) != "undefined"){
+          $("#address_street").val(thoroughfare.ThoroughfareName);
+          premise = thoroughfare.Premise;
+        }
+
+        if(premise != null){
+          $("#address_houseNumber").val(premise.PremiseNumber);
+        }
+
+        //console.log('precision', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData.precision'));
+        //console.log("Тип геообъекта: %s", firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData.kind'));
+
+        var coords = myMap.kwargs['click_coords'];
+        // В результатах поиска НЕ координаты клика, а результата поиска,
+        // поэтому все-таки ставим координаты клика в форму
+        //var coords = myMap.search_results[ind].geometry.getCoordinates();
+
+        $("#address_latitude").val(coords[0]);
+        $("#address_longitude").val(coords[1]);
+      }
+      create_new_map(myMapContainer);
+      wait_for_result(myMapContainer, function(){
+        var myMap = get_map(myMapContainer);
+        disable_map_wheel(myMapContainer);
+        myMap.kwargs = kwargs;
+        {% if row.latitude and row.longitude %}
+          var coords = [{{ row.latitude }}, {{ row.longitude }}];
+          set_map_center(myMapContainer, coords, 16);
+          // ----------------------------------
+          // Вручную добавляем в object_manager
+          // нашей карты сохраненную точку
+          // ----------------------------------
+          var myPoint = {"type": "Feature", "id": (myMap.search_results.length + myMap.myPoints.length), "geometry": {"type": "Point", "coordinates": coords}, "properties": {"balloonContent": "<p>{{ row.address_str|textize }}</p>", "clusterCaption": "Адрес", "hintContent": "<p>{{ row.address_str|textize }}</p>"}};
+          //alert(myPoint.geometry.coordinates);
+          myMap.myPoints.push(myPoint);
+          add_points_to_map(myMapContainer, [myPoint]);
+        {% endif %}
+      }, ["map"]);
+    });
+/*
+ymaps.ready(function () {
+    var myMap = new ymaps.Map('mapContainer', {
+            center: [55.751574, 37.573856],
+            zoom: 9
+        }, {
+            searchControlProvider: 'yandex#search'
+        }),
+        myPlacemark = new ymaps.Placemark(myMap.getCenter(), {
+            hintContent: 'Собственный значок метки',
+            balloonContent: 'Это красивая метка'
+        }, {
+            // Опции.
+            // Необходимо указать данный тип макета.
+            iconLayout: 'default#image',
+            // Своё изображение иконки метки.
+            iconImageHref: '/static/maps/ballons/dot.png',
+            // Размеры метки.
+            iconImageSize: [26, 46],
+            // Смещение левого верхнего угла иконки относительно
+            // её "ножки" (точки привязки).
+            iconImageOffset: [-25, -45]
+        });
+
+    myMap.geoObjects.add(myPlacemark);
+*/
+  </script>
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+
+          <!-- TODO авто-определение индекса -->
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Индекс</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Индекс" class="form-control" name="postalCode" value="{% if row.postalCode %}{{ row.postalCode }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Индекс</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Индекс" class="form-control" name="postalCode" value="{% if row.postalCode %}{{ row.postalCode }}{% endif %}" autocomplete="off" id="address_postalCode">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Штат</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Штат" class="form-control" name="state" value="{% if row.state %}{{ row.state }}{% endif %}" autocomplete="off" id="address_state">
+              <i>(первый уровень подразделения ниже страны)</i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Страна</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Страна" class="form-control" name="country" value="{% if row.country %}{{ row.country }}{% endif %}" autocomplete="off" id="address_country">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Округ</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Округ" class="form-control" name="county" value="{% if row.county %}{{ row.county }}{% endif %}" autocomplete="off" id="address_county">
+              <i>(второй уровень подразделения ниже страны)</i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Город</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Город" class="form-control" name="city" value="{% if row.city %}{{ row.city }}{% endif %}" autocomplete="off" id="address_city">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Район</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Район" class="form-control" name="district" value="{% if row.district %}{{ row.district }}{% endif %}" autocomplete="off" id="address_district">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Улица</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Улица" class="form-control" name="street" value="{% if row.street %}{{ row.street }}{% endif %}" autocomplete="off" id="address_street">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Подрайон</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Подрайон" class="form-control" name="subdistrict" value="{% if row.subdistrict %}{{ row.subdistrict }}{% endif %}" autocomplete="off" id="address_subdistrict">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Дом</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Дом" class="form-control" name="houseNumber" value="{% if row.houseNumber %}{{ row.houseNumber }}{% endif %}" autocomplete="off" id="address_houseNumber">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Дополнение к адресу</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Дополнение к адресу" class="form-control" name="additionalData" value="{% if row.additionalData %}{{ row.additionalData }}{% endif %}" autocomplete="off" id="address_houseNumber">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Название места</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Название места" class="form-control" name="place" value="{% if row.place %}{{ row.place }}{% endif %}" autocomplete="off" id="address_place">
+              <i>Например, ТЦ Юбилейный (торговый центр "Юбилейный")</i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Адрес строкой</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Адрес строкой" class="form-control" name="addressLines" value="{% if row.addressLines %}{{ row.addressLines }}{% endif %}" autocomplete="off" id="address_lines">
+              <i>Например, Ржанова, 164</i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Долгота</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Долгота" class="form-control" name="latitude" value="{% if row.latitude %}{{ row.latitude }}{% endif %}" autocomplete="off" id="address_latitude">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Широта</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Широта" class="form-control" name="longitude" value="{% if row.longitude %}{{ row.longitude }}{% endif %}" autocomplete="off" id="address_longitude">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-lg-12">
+              <div class="mapContainer" id="mapContainer"></div>
+            </div>
+          </div>
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+          // Обновление ссылок
+          update_links(r);
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+      function update_links(r){
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      {% if row %}
+        var progressbar = $('#progressbar-files'),
+          bar         = progressbar.find('.progress-bar-files'),
+          settings    = {
+            action: '{% url "addresses:edit_address" "img" row.id %}', // upload url
+            allow : '*.*',
+            param: 'img',
+            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+            loadstart: function() {
+              bar.css('width', '0%').text('0%');
+              progressbar.removeClass('hidden');
+            },
+            progress: function(percent) {
+              percent = Math.ceil(percent);
+              bar.css('width', percent+'%').text(percent+'%');
+            },
+            allcomplete: function(response) {
+              bar.css('width', '100%').text('100%');
+              setTimeout(function(){
+                progressbar.addClass('hidden');
+              }, 750);
+              // Upload Completed
+              //alert(response);
+
+              // Обновление ссылок
+              var r = JSON.parse(response);
+              update_links(r);
+            }
+          };
+        var select = new $.upload.select($('#upload-select-files'), settings),
+        drop   = new $.upload.drop($('#upload-drop-files'), settings);
+      {% endif %}
+    });
+  </script>
+{% endblock %}

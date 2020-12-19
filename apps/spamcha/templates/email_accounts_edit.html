@@ -15,6 +15,12 @@
         <div class="panel-body">
           {% csrf_token %}
           <div class="form-group">
+            <label class="col-lg-2 control-label">По шаблону</label>
+            <div class="col-lg-10">
+              <a href="javascript:void(0);" id="yandex_template">yandex</a>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-2 control-label">Email</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Email" class="form-control" name="email" value="{% if row.email %}{{ row.email }}{% endif %}" autocomplete="off" data-parsley-required data-parsley-type="email">
@@ -52,7 +58,24 @@
   <script src="/static/admin/js/parsley.min.js"></script>
   <script type="text/javascript">
     $(document).ready(function(){
-
+      $("#yandex_template").click(function(){
+        var email = $("#current_edit_form input[name='email']");
+        if(email.val() == ""){
+          email.val("@yandex.ru");
+        }
+        var smtp = $("#current_edit_form input[name='smtp_server']");
+        if(smtp.val() == ""){
+          smtp.val('smtp.yandex.ru');
+        }
+        var port = $("#current_edit_form input[name='smtp_port']");
+        if(port.val() == ""){
+          port.val('587');
+        }
+        var passwd = $("#current_edit_form input[name='passwd']");
+        if(passwd.val() == ""){
+          passwd.val('cnfylfhnysq');
+        }
+      });
       $("#current_edit_form").parsley();
       $("#current_edit_form").submit(function(e) {
         var $form = $(this);

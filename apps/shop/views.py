@@ -589,6 +589,8 @@ def cart(request, action):
                     product_measure=product.measure,
                     product_price=product.price or cost.cost,
                     product_code=product.code,
+                    product_min_count=product.min_count,
+                    product_multiplicity=product.multiplicity,
                     count=quantity,
                     cost=product.price or cost.cost,
                     cost_type=cost_type, )

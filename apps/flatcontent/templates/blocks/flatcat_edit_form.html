@@ -16,92 +16,22 @@
           <input type="text" placeholder="Каталог" class="form-control" name="container_name" value="{% if row.container %}{{ row.container.name }}{% else %}{{ container.name }}{% endif %}" autocomplete="off" readonly>
         </div>
       </div>
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Ссылка</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Ссылка" class="form-control" id="field_link" name="link" value="{% if row.link %}{{ row.link }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
 
-      {% if is_products %}
-        <!-- Привязанные товары -->
-        <div class="form-group">
-          <label class="col-lg-2 control-label">Привязанные товары ({{ products_count }})</label>
-          <div class="col-lg-10">
-            {% include "blocks/linked_products_select2.html" %}
-            <!-- Плавно переходим на таблицу товаров от select2
-                 Нужно передать в таблицу заготовленные фильтры под рубрику
-            -->
-            {% include "products_cats/products_tabulator_table.html" %}
-          </div>
-        </div>
-        <input type="hidden" id="cat_products_fordel" name="cat_products_fordel" value="" autocomplete="off"/>
-      {% endif %}
+      {% include "flatcontent_forms/row_link.html" %}
+      {% include "flatcontent_forms/row_blocks_products.html" %}
+      {% include "flatcontent_forms/row_tag.html" %}
+      {% include "flatcontent_forms/row_html.html" %}
+      {% include "flatcontent_forms/row_new_window.html" %}
+      {% include "flatcontent_forms/row_icon.html" %}
+      {% include "flatcontent_forms/row_seo_fields.html" %}
+      {% include "flatcontent_forms/row_class_name.html" %}
 
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Тег</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Содержимое (html)</label>
-        <div class="col-lg-10">
-          <textarea class="form-control" name="html" id="html_redactor">{% if row.html %}{{ row.html }}{% endif %}</textarea>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="col-lg-offset-2 col-lg-10">
-          <div class="checkbox c-checkbox">
-            <label>
-              <input type="checkbox" value="1" name="blank" {% if row.blank %} checked{% endif %} autocomplete="off">
-              <span class="fa fa-check"></span> Открывать ссылку в новом окне
-            </label>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Иконка</label>
-        <div class="col-lg-10">
-          <select name="icon" id="icon_fontawesome" autocomplete="off">
-            <option value=""></option>
-            {% if row.icon %}
-              <option value="{{ row.icon }}" selected>{{ row.icon }}</option>
-            {% endif %}
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Title</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Title" class="form-control" name="title" value="{% if row.title %}{{ row.title }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Description</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Description" class="form-control" name="description" value="{% if row.description %}{{ row.description }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Keywords</label>
-        <div class="col-lg-10">
-          <input type="text" placeholder="Keywords" class="form-control" name="keywords" value="{% if row.keywords %}{{ row.keywords }}{% endif %}" autocomplete="off">
-        </div>
-      </div>
       {% include "core/forms/row_image.html" %}
       {% include "core/forms/row_position.html" %}
       {% include "core/forms/row_is_active.html" %}
     </div>
     {% if is_tree %}
-      <div class="panel-footer">
-        <div class="col-12 text-right padding-tb5">
-          <button type="submit" class="btn btn-labeled btn-success">
-            <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
-          </button>
-        </div>
-        <div class="clearfix"></div>
-      </div>
+      {% include "flatcontent_forms/simple_save_button.html" %}
     {% else %}
       {% include "core/forms/footer_buttons.html" %}
     {% endif %}

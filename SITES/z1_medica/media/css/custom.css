@@ -10,3 +10,10 @@
 #usersendereror {width:220px}
 .loader {dispaly:inline-block; width:40px; height:40px; background:url("/media/misc/loader.gif") center no-repeat;}
 .whatdo, .weclose{cursor:pointer}
+.delitkolvoopen {
+    width: 23px;
+    height: 23px;
+    display: block;
+    background: url(/media/img/delbasc.png) center no-repeat;
+    cursor: pointer;
+}

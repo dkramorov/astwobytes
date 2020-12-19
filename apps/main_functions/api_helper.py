@@ -4,6 +4,7 @@ from io import BytesIO
 
 from django.http import JsonResponse
 from django.db.models import Q
+from django.db import transaction
 
 from apps.main_functions.functions import object_fields, object_fields_types
 from apps.main_functions.files import open_file, full_path
@@ -19,6 +20,7 @@ def ApiHelper(request,
        :param request: HttpRequest
        :param model_vars: по какой модели отдаем данные
        :param CUR_APP: текущее приложение
+       :param reverse_params: словарь для параметров в urls.py
        :param restrictions: аналог filters (массив Q() условий),
                             только уже из вьюхи, а по GET/POST
     """
@@ -67,18 +69,27 @@ def ApiHelper(request,
               'by': mh.raw_paginator['by'], }
     return JsonResponse(result, safe=False)
 
-def XlsxHelper(request, model_vars: dict, CUR_APP: str,
-               cond_fields: list = ['id']):
+def XlsxHelper(request,
+               model_vars: dict,
+               CUR_APP: str,
+               cond_fields: list = ['id'],
+               reverse_params: dict = None):
     """Апи-метод для сохранения данных из excel-файла
        :param request: HttpRequest
        :param model_vars: по какой модели отдаем данные
        :param CUR_APP: текущее приложение
        :param cond_fields: поля, по которым определяем аналог для обновления
+       :param reverse_params: словарь для параметров в urls.py по ним
+                              хитрожопински обновляются foreign keys
+                              через save_from_excel
     """
     result = {}
     mh_vars = model_vars.copy()
 
-    mh = create_model_helper(mh_vars, request, CUR_APP)
+    if not reverse_params:
+        reverse_params = {}
+
+    mh = create_model_helper(mh_vars, request, CUR_APP, reverse_params=reverse_params)
     result['perms'] = mh.permissions
 
     action = request.POST.get('action')
@@ -93,17 +104,23 @@ def XlsxHelper(request, model_vars: dict, CUR_APP: str,
             template = object_fields(mh.model(),
                                      pass_fields=('created', 'updated', 'img'))
             if count > 0:
-                names = [k for k in template.keys() if request.POST.get('data[0][%s]' % k)]
+                # тут проверяем именно наличие ключа,
+                # а не значение
+                names = [k for k in template.keys() if 'data[0][%s]' % k in request.POST]
                 # по шаблону модели обходим количество отправленных объектов
                 rows = [{k: request.POST.get('data[%s][%s]' % (i, k)) for k in names} for i in range(count)]
 
     if action == 'import_xlsx':
-        job = import_from_excel(mh.model, request.FILES.get('file'))
+        job = import_from_excel(mh.model,
+                                request.FILES.get('file'))
         if not job['errors']:
             result['success'] = 'Файл обработан, проверьте данные и подтвердите операцию'
     elif action == 'save':
         if 'create' in mh.permissions and 'edit' in mh.permissions:
-            job = save_from_excel(mh.model, rows, cond_fields)
+            job = save_from_excel(mh.model,
+                                  rows,
+                                  cond_fields=cond_fields,
+                                  reverse_params=reverse_params)
         else:
             job = {'errors': ['Нужны права на создание и редактирование, чтобы выполнить загрузку файлом']}
         if not job['errors']:
@@ -166,7 +183,9 @@ def accumulate_data(row, i, data):
             data.append(value)
     return value
 
-def import_from_excel(model, excel_file, required_names: list = None):
+def import_from_excel(model,
+                      excel_file,
+                      required_names: list = None):
     """Импорт данных из excel
        :param model: модель, в которую импортируем данные
        :param excel_file: экселька, например, request.FILES.get("excel_file")
@@ -216,11 +235,21 @@ def import_from_excel(model, excel_file, required_names: list = None):
     result['data'] = data[1:]
     return result
 
-def save_from_excel(model, data, cond_fields: list = None):
+def save_from_excel(model,
+                    data,
+                    cond_fields: list = None,
+                    reverse_params: dict = None):
     """Сохранение массива в базу
        :param model: модель, в которую импортируем данные
        :param data: массив с данными для импорта
        :param cond_fields: поля по которым ищем аналоги (обновляем)
+       :param reverse_params: словарь параметров, которые
+                              могут указывать на foreign keys
+
+            # inject reverse params for build response
+            # with correct foreign keys
+            if reverse_params:
+                item.update(reverse_params)
     """
     result = {'errors': []}
     if not data:
@@ -229,11 +258,24 @@ def save_from_excel(model, data, cond_fields: list = None):
     if not cond_fields:
         result['errors'].append('Не переданы условия для обновления')
         return result
-    created = 0
-    updated = 0
 
     field_types = object_fields_types(model())
 
+    # Небольшой хак на foreign key + reverse_params
+    # Убираем _id, и,
+    # если у нас есть такой foreign key,
+    # пробуем записать
+    fk_updates = {}
+    if reverse_params:
+        for rparam, rvalue in reverse_params.items():
+            if not rparam.endswith('_id'):
+                continue
+            rparam_fk_name = rparam.replace('_id', '')
+            if field_types.get(rparam_fk_name) == 'foreign_key':
+                fk_updates[rparam] = rvalue
+
+    create_tasks = []
+    update_tasks = []
     for item in data:
         cond = Q()
         # id обновлять - плохая затея
@@ -259,17 +301,26 @@ def save_from_excel(model, data, cond_fields: list = None):
                     item[k] = None
             elif field_type in ('boolean', ):
                 item[k] = True if item[k] in (1, '1') else False
+
+        if fk_updates:
+            item.update(fk_updates)
+
         for cond_field in cond_fields:
             cond.add(Q(**{cond_field: item.get(cond_field)}), Q.AND)
-        analog = model.objects.filter(cond).first()
+        analog = model.objects.filter(cond).only('id').first()
         if analog:
-            updated += 1
-            model.objects.filter(pk=analog.id).update(**item)
+            update_tasks.append({'id': analog.id, 'data': item})
         else:
-            created += 1
-            model.objects.create(**item)
-    result['created'] = created
-    result['updated'] = updated
+            create_tasks.append(item)
+
+    with transaction.atomic():
+        for update_task in update_tasks:
+            model.objects.filter(pk=update_task['id']).update(**update_task['data'])
+        for create_task in create_tasks:
+            model.objects.create(**create_task)
+
+    result['created'] = len(create_tasks)
+    result['updated'] = len(update_tasks)
     return result
 
 def drop_from_excel(model, data, cond_fields: list = None):
