@@ -236,7 +236,6 @@ def DefaultFeedback(request, **kwargs):
 
     return JsonResponse(result, safe=False)
 
-
 @login_required
 def settings(request, app: str = 'flatcontent'):
     """Настройки"""

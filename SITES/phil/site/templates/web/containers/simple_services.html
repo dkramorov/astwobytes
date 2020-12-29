@@ -2,8 +2,12 @@
 <div class="container simple_services js-equal-child" id="simple_services">
   <div class="row pt120 pb30">
 
-    <div class="portfolio_title">
-      {{ container.description|safe }}
+    <div class="col-lg-12">
+      <div class="col-lg-5">
+        <div class="portfolio_title">
+          {{ container.description|safe }}
+        </div>
+      </div>
     </div>
 
     {% for block in blocks %}

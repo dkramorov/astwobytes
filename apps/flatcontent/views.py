@@ -34,6 +34,16 @@ if 'apps.products' in settings.INSTALLED_APPS:
     is_products = True
     from apps.products.models import Products, ProductsCats
 
+is_domains = False
+if 'apps.languages' in settings.INSTALLED_APPS:
+    is_domains = True
+    from apps.languages.models import (
+        get_domain,
+        get_domains,
+        get_translate,
+        get_content_type,
+        translate_rows, )
+
 def api(request,
         action: str = 'containers',
         ftype: str = 'flatcat'):
@@ -919,9 +929,14 @@ def tree_co(request):
             node_id = int(request.GET.get('node_id'), 0)
             node = Blocks.objects.filter(container=container, pk=node_id).first()
             if node:
+                domains = []
+                if is_domains:
+                    domains = get_domains()
+                    get_translate([node], domains)
                 result = object_fields(node)
                 result['folder'] = node.get_folder()
                 result['thumb'] = node.thumb()
+                result['imagine'] = node.imagine()
                 mh_vars_blocks = blocks_vars.copy()
                 result['url_edit'] = reverse('%s:%s' % (CUR_APP,
                     mh_vars_blocks['edit_urla']),
@@ -960,8 +975,9 @@ def tree_co(request):
                 #        }
                 #        for product in ProductsCats.objects.select_related('product').filter(cat=node).values_list('product__id', 'product__name', 'product__code')
                 #    ]
-
                 result = {'row': result}
+                if domains:
+                    result['domains'] = {domain['pk']: domain['translations'] for domain in domains}
         # Получить каталог
         elif operation == 'get_children' and mh.permissions['view']:
             menus = []
@@ -1131,10 +1147,14 @@ def SearchLink(q_string: dict = None,
 
         hashed_link = serp_hash(link_with_params.encode('utf-8'))
         cache_var = '%s_%s' % (hashed_link, settings.DATABASES['default']['NAME'])
-        # Если сайт мультиязычный, то кэш нужен на домен
-        if settings.IS_DOMAINS:
+        # ------------------------
+        # Если сайт мультиязычный,
+        # то кэш нужен на домен
+        # ------------------------
+        if is_domains:
             domain = get_domain(request)
-            cache_var = "%s_%s" % (domain, cache_var)
+            if domain:
+                cache_var = '%s%s' % (domain['pk'], cache_var)
 
         # На хостинге может так случиться,
         # что мы будем в кэш пихать статику (файлы),
@@ -1341,13 +1361,16 @@ def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
         block_with_content.containers = sorted(ids_containers.values(), key=lambda x: x['position'])
 
     # Переводим блоки/контейнеры
-    if settings.IS_DOMAINS and request:
-        ct_blocks = ContentType.objects.get_for_model(Blocks)
-        ct_containers = ContentType.objects.get_for_model(Containers)
-        get_translations(all_blocks, ct_blocks)
-        translate_rows(all_blocks, request)
-        get_translations(all_containers, ct_containers)
-        translate_rows(all_containers, request)
+    # Если выбран не основной домен
+    if is_domains and request:
+        domains = get_domains()
+        domain = get_domain(request, domains)
+        if domain:
+            domains = [domain]
+            get_translate(all_blocks, domains)
+            translate_rows(all_blocks, domain)
+            get_translate(all_containers, domains)
+            translate_rows(all_containers, domain)
 
     if block_with_content:
         head_fill(block_with_content, q_string)

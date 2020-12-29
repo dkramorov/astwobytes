@@ -14,13 +14,14 @@ register = template.Library()
 # Если мультиязычный сайт
 # -----------------------
 is_domains = False
-if hasattr(settings, 'DOMAINS') and 'languages' in settings.INSTALLED_APPS:
-    from languages.models import Translate
-    from languages.views import (get_translations,
-                                 translate_rows,
-                                 cond_translations,
-                                 get_domain, )
+if 'apps.languages' in settings.INSTALLED_APPS:
     is_domains = True
+    from apps.languages.models import (
+        get_domain,
+        get_domains,
+        get_translate,
+        get_content_type,
+        translate_rows, )
 
 @register.inclusion_tag('web/flat_menu.html')
 def flatmenu(request, tag: str = None, containers: list = []):
@@ -33,9 +34,10 @@ def flatmenu(request, tag: str = None, containers: list = []):
         return result
     cache_time = 60 # 60 секунд хватит
     cache_var = '%s_flatmenu_%s' % (settings.DATABASES['default']['NAME'], tag)
-    if is_domains and request:
+    if is_domains:
         domain = get_domain(request)
-        cache_var += '_%s' % domain
+        if domain:
+            cache_var += '_%s' % domain['pk']
 
     inCache = cache.get(cache_var)
     if inCache:
@@ -51,10 +53,13 @@ def flatmenu(request, tag: str = None, containers: list = []):
         # --------------------------
         # Переводим блоки/контейнеры
         # --------------------------
-        if is_domains and request:
-            ct_blocks = ContentType.objects.get_for_model(Blocks)
-            get_translations(all_blocks, ct_blocks)
-            translate_rows(all_blocks, request)
+        if is_domains:
+            domains = get_domains()
+            domain = get_domain(request, domains)
+            if domain:
+                domains = [domain]
+                get_translate(all_blocks, domains)
+                translate_rows(all_blocks, domain)
 
         result['menus'] = menus
         cache.set(cache_var, result, cache_time)

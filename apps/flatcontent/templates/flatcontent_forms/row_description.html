@@ -1,6 +1,19 @@
 <div class="form-group">
-  <label class="col-lg-2 control-label">Описание</label>
+  <label class="col-lg-2 control-label">
+    Описание
+    <a href="javascript:void(0);" data-attr-translate="description" class="translate_toggle"><i class="fa fa-globe"></i></a>
+  </label>
   <div class="col-lg-10">
     <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>
   </div>
 </div>
+
+<!-- Переводы для description -->
+{% for domain in domains %}
+  <div class="form-group translate_description hidden">
+    <label class="col-lg-2 control-label">Описание {{ domain.name }} ({{ domain.domain }})</label>
+    <div class="col-lg-10">
+      <textarea placeholder="Описание {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_description_{{ domain.pk }}" id="description_redactor_{{ domain.pk }}" autocomplete="off">{% if domain.translations.description %}{{ domain.translations.description }}{% endif %}</textarea>
+    </div>
+  </div>
+{% endfor %}

@@ -1,7 +1,6 @@
 {% load mtags %}
 
 {% with ''|installed_apps as apps %}
-
 <a class="dropdown-toggle" data-play="fadeIn" data-toggle="dropdown" href="#">
   <em class="fa fa-cog"></em>
 </a>
@@ -10,6 +9,11 @@
   {% if 'flatcontent' in apps %}
     <li><a href="{% url 'main_functions:settings' 'flatcontent' %}">Настройки "Контент"</a></li>
   {% endif %}
+
+  {% if 'languages' in apps %}
+    <li><a href="{% url 'languages:select_language' %}">Выбор языка</a></li>
+  {% endif %}
+
 {% comment %}<!--
   <li>
     <div class="p">

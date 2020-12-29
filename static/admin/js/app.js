@@ -1482,6 +1482,17 @@
     }
   });
 
+  $("a.translate_toggle").click(function(){
+    var field_name = $(this).attr("data-attr-translate");
+    if($(this).hasClass("opened")){
+      $(this).removeClass("opened");
+      $("div.translate_" + field_name).addClass("hidden");
+    }else{
+      $(this).addClass("opened");
+      $("div.translate_" + field_name).removeClass("hidden");
+    }
+  });
+
 }(jQuery, window, document));
 
 function set_ajax_form(form_id, callback_success, callback_fail, is_file){

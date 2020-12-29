@@ -16,6 +16,15 @@
 
           <ul class="primary-menu-menu">
             {% for block in blocks %}
+
+              {% if forloop.first %}
+                <style type="text/css">
+                  .portfolio_side_info:after {
+                     content: "{{ block.title }}";
+                  }
+                </style>
+              {% endif %}
+
               <li{% if forloop.first %} class="active"{% endif %}>
                 <a href="javascript:void(0);">{{ block.name }}</a>
                 <div class="portfolio_counter">{{ block.description }}</div>
@@ -45,6 +54,24 @@
                       <div class="swiper-slide">
                         <img data-src="{% imagine item.img '1920x1080' item.get_folder True %}" alt="{{ item.name|textize }}" class="swiper-lazy">
                         <div class="swiper-lazy-preloader"></div>
+
+                        <table>
+                          <tr>
+                            <td colspan="3" class="hborder"></td>
+                          </tr>
+                          <tr>
+                            <td class="wborder"></td>
+                            <td class="text">
+                              <h6>{{ item.name }}</h6>
+                              {% if item.html %}{{ item.html|safe }}{% endif %}
+                            </td>
+                            <td class="wborder"></td>
+                          </tr>
+                          <tr>
+                            <td colspan="3" class="hborder"></td>
+                          </tr>
+                        </table>
+
                       </div>
                     {% endif %}
                     {% for subitem in item.sub %}
@@ -52,6 +79,23 @@
                         <div class="swiper-slide">
                           <img data-src="{% imagine subitem.img '1920x1080' subitem.get_folder True %}" alt="{{ subitem.name|textize }}" class="swiper-lazy">
                           <div class="swiper-lazy-preloader"></div>
+
+                          <table>
+                            <tr>
+                              <td colspan="3" class="hborder"></td>
+                            </tr>
+                            <tr>
+                              <td class="wborder"></td>
+                              <td class="text">
+                                <h6>{{ subitem.name }}</h6>
+                                {% if subitem.html %}{{ subitem.html|safe }}{% endif %}
+                              </td>
+                              <td class="wborder"></td>
+                            </tr>
+                            <tr>
+                              <td colspan="3" class="hborder"></td>
+                            </tr>
+                          </table>
                         </div>
                       {% endif %}
                     {% endfor %}

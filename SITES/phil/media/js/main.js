@@ -568,4 +568,11 @@ console.log('--------PHIL');
     $(this).parent().addClass("active");
   });
 
+  $('.fancybox').fancybox({
+  });
+
+  $(".swiper-container").click(function(){
+    $(".swiper-container .swiper-slide-active table").toggleClass("clicked");
+  });
+
 }(jQuery);

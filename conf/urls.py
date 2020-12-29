@@ -52,7 +52,7 @@ if 'apps.binary_com' in settings.INSTALLED_APPS:
 if 'apps.languages' in settings.INSTALLED_APPS:
     # Переводы
     urlpatterns += [
-        re_path(r'^', include('apps.languages.urls')),
+        re_path(r'^languages/', include('apps.languages.urls')),
     ]
 if 'apps.freeswitch' in settings.INSTALLED_APPS:
     # FREESWITCH

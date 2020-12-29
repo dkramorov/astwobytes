@@ -1,19 +1,21 @@
 {% load mtags %}
-<div class="container">
+<div class="container-fluid">
   <div class="row">
-    <div class="clients-item-wrap">
 
+    <div class="container">
       <div class="col-md-12 pb30">
         <div class="portfolio_title">
           {{ container.description|safe }}
         </div>
       </div>
       <div class="clearfix"></div>
+    </div>
 
+    <div class="clients-item-wrap">
       {% for block in blocks %}
         <div class="client-item{% if block.class_name %} {{ block.class_name }}{% endif %}">
           <a {% if block.link %}href="{{ block.link }}" {% endif %}target="_blank" class="client-image">
-            <img loading="lazy" src="{% imagine block.img '300x300' block.get_folder True %}" alt="{{ block.name }}" class="hover">
+            <img loading="lazy" src="{% imagine block.img '300x300' block.get_folder True %}" alt="{{ block.name }}" class="hover{% if block.class_name %} {{ block.class_name }}{% endif %}">
           </a>
         </div>
         {% cycle '' '' '' '' '<div class="lg-clearfix"></div>' '' '' '' '<div class="lg-clearfix"></div>' '' '<div class="lg-clearfix"></div>' %}

@@ -7,7 +7,6 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 
-from apps.main_functions.files import check_path, full_path, file_size
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper
@@ -15,9 +14,9 @@ from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 
-from .models import Translate
+from .models import Translate, get_domains
 
-CUR_APP = 'lanuages'
+CUR_APP = 'languages'
 languages_vars = {
     'singular_obj': 'Перевод',
     'plural_obj': 'Переводы',
@@ -34,61 +33,6 @@ languages_vars = {
     'edit_urla': 'edit_translate',
     'model': Translate,
 }
-
-def get_domain(request):
-    """Получить текущий домен для правильного перевода"""
-    domain = None
-    if not hasattr(settings, "DOMAINS") or not hasattr(request, "META"):
-        return domain
-    if "HTTP_HOST" in request.META:
-        domains = settings.DOMAINS
-        domain = request.META['HTTP_HOST']
-        # ----------------------------------------
-        # На localhost:8000 надо эмулировать домен
-        # то есть получать его по сессии
-        # ----------------------------------------
-        if settings.DEBUG:
-            domains = request.session.get('domain') or domains[0]['domain']
-    return domain
-
-def translate_rows(rows: list, request):
-    """Заполняем переводы для queryset rows
-       domains = settings.DOMAINS
-       :param rows: объекты queryset/list которые надо перевести
-       :param request: запрос"""
-    domain = get_domain(request)
-    for row in rows:
-        if hasattr(row, 'translations'):
-            if domain in row.translations:
-                for key, value in row.translations[domain].items():
-                    setattr(row, key, value)
-
-def get_translations(rows, ct):
-    """Вытаскиваем переводы для queryset/list
-       :param rows: объекты queryset/list которые надо перевести
-       :param ct: ContentType модели"""
-    domains = []
-    if hasattr(settings, 'DOMAINS'):
-        d = settings.DOMAINS
-        domains = [{
-            'pk':item['pk'],
-            'name':item['name'],
-            'domain': item['domain'],
-            'translations':{},
-        } for item in d if item['pk']]
-
-    ids = {}
-    for row in rows:
-        row.translations = {}
-        for item in domains:
-            row.translations[item['domain']] = {}
-        ids[row.id] = row
-
-    translations = Translate.objects.filter(content_type=ct, model_pk__in=ids.keys())
-    for translate in translations:
-        for item in domains:
-            if item['pk'] == translate.domain_pk:
-                ids[translate.model_pk].translations[item['domain']][translate.field] = translate.text
 
 def get_referer_path(referer):
     """Получение ссылки без домена от реферера
@@ -154,3 +98,19 @@ def translates_positions(request, *args, **kwargs):
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
+@login_required
+def select_language(request, lang: str = None):
+    """Выбор языка для заполнения в админке
+       Также правильно было бы и язык самой админки переключать
+    """
+    result = {}
+    mh_vars = languages_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'settings')
+    context = mh.context
+
+    if lang:
+        request.session['lang'] = lang
+
+    context['domains'] = get_domains()
+    template = '%sselect_lang.html' % mh.template_prefix
+    return render(request, template, context)

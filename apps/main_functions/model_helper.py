@@ -2,6 +2,7 @@
 import datetime
 import logging
 
+from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.db.models import Count, Q, Min, Max, fields
 from django.urls import reverse, resolve
@@ -16,6 +17,11 @@ from apps.main_functions.date_time import str_to_date
 from apps.main_functions.tabulator import tabulator_filters_and_sorters
 
 logger = logging.getLogger()
+
+is_domains = False
+if 'apps.languages' in settings.INSTALLED_APPS:
+    is_domains = True
+    from apps.languages.models import get_domains, save_translate, get_translate
 
 def get_user_permissions(user, model):
     """Права пользователя на модель
@@ -158,6 +164,11 @@ class ModelHelper:
         # Заполняем права на модель
         # -------------------------
         self.get_permissions()
+        # -------
+        # Перевод
+        # -------
+        self.domains = get_domains()
+        self.context['domains'] = self.domains
 
     def breadcrumbs_add(self, crumb:dict):
         """Добавление хлебных крошек"""
@@ -206,6 +217,11 @@ class ModelHelper:
                 self.row = row.get(pk=row_id)
             except self.model.DoesNotExist:
                 self.error = 1
+        # -------
+        # Перевод
+        # -------
+        if is_domains and self.row:
+            get_translate([self.row], self.context['domains'])
         return self.row
 
     def get_url_edit(self):
@@ -399,16 +415,6 @@ class ModelHelper:
                             continue
                         except foreign_keys[key].DoesNotExist:
                             continue
-            # --------------------------------------------
-            # Временное решение, надо прогонять, конечно,
-            # полностью через новый model_helper - TODO!!!
-            # --------------------------------------------
-            #if '__' in key:
-            #    foreign_key, foreign_field = key.split('__')
-            #    foreign_obj = getattr(self.row, foreign_key)
-            #    setattr(foreign_obj, foreign_field, value)
-            #    logger.warning('Update related %s {%s: %s}' % (foreign_obj, foreign_field, value))
-            #    continue
             setattr(self.row, key, value)
         # ---------------------------------
         # Переопределение своими значениями
@@ -440,6 +446,11 @@ class ModelHelper:
         # Загружаем файлы
         # ---------------
         self.uploads()
+        # -------
+        # Перевод
+        # -------
+        if is_domains:
+            domains = save_translate(self.row, self.row_vars, self.request.POST)
         return self.row
 
     def uploads(self, row = None,
@@ -718,6 +729,11 @@ class ModelHelper:
 
         result = query[records['start']:records['end']]
         self.context['rows'] = result
+        # -------
+        # Перевод
+        # -------
+        if is_domains:
+            domains = get_translate(result, self.context['domains'])
         return result
 
     def update_positions(self, custom_positions: list = None):

@@ -1,6 +1,19 @@
 <div class="form-group">
-    <label class="col-lg-2 control-label">Название</label>
+    <label class="col-lg-2 control-label">
+        Название
+        <a href="javascript:void(0);" data-attr-translate="name" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    </label>
     <div class="col-lg-10">
         <input type="text" placeholder="Название" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
     </div>
 </div>
+
+<!-- Переводы для name -->
+{% for domain in domains %}
+    <div class="form-group translate_name hidden">
+        <label class="col-lg-2 control-label">Название {{ domain.name }} ({{ domain.domain }})</label>
+        <div class="col-lg-10">
+            <input placeholder="Название {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_name_{{ domain.pk }}" value="{% if domain.translations.name %}{{ domain.translations.name }}{% endif %}" autocomplete="off">
+        </div>
+    </div>
+{% endfor %}

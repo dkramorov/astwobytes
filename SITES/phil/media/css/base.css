@@ -1057,8 +1057,12 @@ h6, .h6 {
   bottom: 0;
   right: 0;
 }
-.simple_contacts .copyright {
+.simple_contacts .bottom_right img {
+  max-width: 160px;
+}
+.simple_contacts .copyright p{
   color: #582371;
+  font-size: 15px;
 }
 .contact_row {
   margin-top: 40px;

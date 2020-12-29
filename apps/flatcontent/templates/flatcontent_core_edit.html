@@ -114,6 +114,9 @@
     $("#description_redactor").redactor({
       //air: true,
     });
+    {% for domain in domains %}
+      $("#description_redactor_{{ domain.pk }}").redactor();
+    {% endfor %}
 
     /* Заменится только обработчик события отправки формы для is_tree */
     {% if is_tree %}
@@ -278,7 +281,9 @@
     if(thumb === ''){
       thumb = '/static/img/empty.png';
     }
-    $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+    var date_now = Date.now()
+    $("#preview_img").attr("src", thumb + "?_=" + date_now);
+    $("#preview_img_full").attr("href", r['row']['imagine'] + "?_=" + date_now);
   }
 </script>
 {% endblock %}

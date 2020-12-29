@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+
+<p>Выберите язык для заполнения в панели управления</p>
+
+<a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' 'rus' %}">Русский</a>
+{% for domain in domains %}
+  <a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' domain.lang %}">{{ domain.name }}</a>
+{% endfor %}
+
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+});
+</script>
+{% endblock %}

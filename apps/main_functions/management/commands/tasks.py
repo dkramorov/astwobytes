@@ -104,7 +104,7 @@ class Command(BaseCommand):
 
         is_running = search_process(q = ('tasks', 'manage.py'))
         if is_running:
-            logger.error('Already running %s' % (is_running, ))
+            logger.info('Already running %s' % (is_running, ))
             exit()
 
         now = datetime.datetime.today()

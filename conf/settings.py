@@ -34,14 +34,14 @@ DOMAINS = [] # Можно из базы дополнить
 SUBDOMAINS = env('SUBDOMAINS', default='')
 if MAIN_DOMAIN and SUBDOMAINS:
     DOMAINS = [
-        {'pk': None, 'domain': MAIN_DOMAIN, 'name': 'Основной сайт'},
-        {'pk': None, 'domain': 'rus.%s' % (MAIN_DOMAIN, ), 'name': 'Основной сайт'},
+        {'pk': None, 'domain': MAIN_DOMAIN, 'name': 'Основной'},
+        {'pk': 0, 'domain': 'rus.%s' % (MAIN_DOMAIN, ), 'name': 'Основной'},
     ]
     sub_domains = []
     for i, item in enumerate(SUBDOMAINS.split(',')):
         sub_domain, name = item.split(':')
         sub_domains.append({
-            'pk': i,
+            'pk': i + 1, # without zero, zero - main site
             'domain': '%s.%s' % (sub_domain.strip(), MAIN_DOMAIN),
             'name': name.strip(),
         })

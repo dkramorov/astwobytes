@@ -11,11 +11,14 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import Count
 
+from apps.main_functions.fortasks import search_process
 from apps.main_functions.files import drop_folder
 from apps.main_functions.date_time import date_plus_days
 from apps.spamcha.models import SpamTable, SpamRow, EmailAccount, SpamRedirect
+from apps.telegram.telegram import TelegramBot
 
 logger = logging.getLogger(__name__)
+bot = TelegramBot()
 
 def get_accounts():
     """Достаем аккаунты для спама
@@ -76,6 +79,11 @@ class Command(BaseCommand):
         """Задача для рассылки
            python manage.py spam_task --spam_id=3 --dest_email=dk@223-223.ru --spam_delay=3 --images_with_watermarks --fake
         """
+        is_running = search_process(q = ('spam_task', 'manage.py'))
+        if is_running:
+            logger.info('Already running %s' % (is_running, ))
+            exit()
+
         by = 100
         SPAM_DELAY = 120
 
@@ -101,18 +109,37 @@ class Command(BaseCommand):
         if options.get('spam_id'):
             spam_id = int(options['spam_id'])
             spam = SpamTable.objects.filter(pk=spam_id).first()
+        else:
+            spam = SpamTable.objects.filter(is_active=True).first()
         if not spam:
-            logger.info('Spam not found')
+            inf = 'Spam not found'
+            logger.info(inf)
+            bot.send_message('%s %s' % (spam.get_emoji('hot'), inf))
             return
+
+        inf = '--- %s. %s (%s) ---' % (spam.id, spam.name, spam.tag)
+        logger.info(inf)
+        bot.send_message(inf)
+
         original_msg = spam.msg
         # Достаем все аккаунты
         accounts, accounts_len, acc_ind = get_accounts()
         if not accounts_len:
-            logger.info('ACCOUNTS ABSENTS')
+            inf = 'ACCOUNTS ABSENTS'
+            logger.info(inf)
+            bot.send_message('%s %s' % (bot.get_emoji('hot'), inf))
             return
         # Вытаскиваем получателей
         query = SpamRow.objects.filter(spam_table=spam, is_active=True)
         total_records = query.aggregate(Count('id'))['id__count']
+        if not total_records:
+            SpamTable.objects.filter(pk=spam.id).update(is_active=False)
+
+            inf = 'SpamTable %s done' % spam.id
+            logger.info(inf)
+            bot.send_message('%s %s' % (bot.get_emoji('hot'), inf))
+            return
+
         total_pages = total_records / by + 1
         total_pages = int(total_pages)
         counter = 0
@@ -139,23 +166,40 @@ class Command(BaseCommand):
                     'watermark_rotate': random.randrange(0, 360),
                 }
                 msg = spam.get_text_msg(msg_type='html', **kwargs)
-                logger.info('%s, %s=>%s' % (counter, acc.email, kwargs))
+
+                inf = '%s, %s=>%s' % (counter, acc.email, kwargs)
+                logger.info(inf)
+                bot.send_message(inf)
+
                 if not fake:
                     try:
                         acc.send_email(msg, row.dest)
                         counter += 1
                     except Exception as e:
                         logging.info(e)
-                        logging.info('Blocking acc %s' % acc.email)
+                        bot.send_message('%s %s' % (bot.get_emoji('hot'), e))
+
+                        inf = 'Blocking acc %s' % acc.email
+                        logging.info(inf)
+                        bot.send_message('%s %s' % (bot.get_emoji('hot'), inf))
+
                         acc.is_active=False
                         acc.save()
                         accounts, accounts_len, acc_ind = get_accounts()
                         if not accounts_len:
-                            logger.info('ACCOUNTS ABSENTS')
+                            inf = 'ACCOUNTS ABSENTS'
+                            logger.info(inf)
+                            bot.send_message('%s %s' % (bot.get_emoji('hot'), inf))
                             return
 
                 time.sleep(SPAM_DELAY)
                 spam.msg = original_msg
+
+
+        SpamTable.objects.filter(pk=spam.id).update(is_active=False)
+        inf = 'SpamTable %s done' % spam.id
+        logger.info(inf)
+        bot.send_message('%s %s' % (bot.get_emoji('hot'), inf))
 
 
 

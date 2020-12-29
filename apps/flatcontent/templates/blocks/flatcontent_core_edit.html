@@ -149,8 +149,15 @@ $(document).ready(function(){
     containment: 'parent'
   });
   $("#html_redactor").redactor({
-    //air: true,
+    focus: false,
+    animation: false,
   });
+  {% for domain in domains %}
+    $("#html_redactor_{{ domain.pk }}").redactor({
+      focus: false,
+      animation: false,
+    });
+  {% endfor %}
   function update_links(r){
     $("#field_link").val(r['row']['link']);
     var thumb = r['row']['thumb'];

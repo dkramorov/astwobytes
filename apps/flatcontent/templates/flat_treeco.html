@@ -21,6 +21,12 @@ $(document).ready(function(){
     focus: false,
     animation: false,
   });
+  {% for domain in domains %}
+    $("#html_redactor_{{ domain.pk }}").redactor({
+      focus: false,
+      animation: false,
+    });
+  {% endfor %}
   var root_url = '{% url "flatcontent:tree_co" %}';
   var flat_tree = $("#flat_tree");
   //$.jstree.defaults.search.ajax = true;
@@ -231,6 +237,8 @@ $(document).ready(function(){
       url: root_url,
       data: "container_id={{ row.id }}&operation=select_node&node_id=" + node_id,
     }).success(function(r) {
+      var field_name = '';
+      var field_value = '';
       var row = r['row'];
       container.parent().removeClass("hidden");
 
@@ -260,6 +268,23 @@ $(document).ready(function(){
       var is_active_checked = 'checked' ? row['is_active'] : '';
       container.find('input[name="is_active"]').prop('checked', is_active_checked);
       container.find('input[name="grab_img_by_url"]').val('');
+
+      var translate_fields = ['name', 'title', 'description', 'keywords'];
+      {% for domain in domains %}
+        for(var i=0; i<translate_fields.length; i++){
+          field_name = translate_fields[i];
+          field_value = '';
+          if(r['domains'][{{ domain.pk }}][field_name]){
+            field_value = r['domains'][{{ domain.pk }}][field_name];
+          }
+          container.find('input[name="translate_' + field_name + '_{{ domain.pk }}"]').val(field_value);
+        }
+        if(r['domains'][{{ domain.pk }}]['html']){
+          container.find('#html_redactor_{{ domain.pk }}').setCode(r['domains'][{{ domain.pk }}]['html']);
+        }else{
+          container.find('#html_redactor_{{ domain.pk }}').setCode('');
+        }
+      {% endfor %}
       // Если нет такого элемента - то и не надо мучать жопу
       if($("#linkcontainer_select2").length > 0){
         $("#linkcontainer_select2").empty().trigger('changed');

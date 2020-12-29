@@ -10,6 +10,7 @@ from django.db.models import Count
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.files import (make_folder,
+                                       drop_file,
                                        copy_file,
                                        open_file,
                                        check_path,
@@ -77,9 +78,7 @@ def recursive_fill_blocks(container,
                 continue
             setattr(block, k, v)
         if parent_block:
-            parents = parent_block.parents or ''
-            parents += '_%s' % parent_block.id
-            block.parents = parents
+            block.parents = '%s_%s' % (parent_block.parents or '', parent_block.id)
         block.save()
         imga = json_obj.get('img')
         if imga:
@@ -91,7 +90,7 @@ def recursive_fill_blocks(container,
         recursive_fill_blocks(container,
                               blocks,
                               block,
-                              '%s_%s' % (json_obj['parents'], json_obj['id']),
+                              '%s_%s' % (json_obj['parents'] or '', json_obj['id']),
                               blocks_path)
 
 def import_templates():
@@ -102,6 +101,10 @@ def import_templates():
         return
     for item in ListDir(import_path):
         template_path = os.path.join(import_path, item)
+        if isForD(template_path) == 'file':
+            if template_path.startswith('.DS_Store'):
+                drop_file(template_path)
+            continue
         json_path = os.path.join(template_path, 'template.json')
         blocks_path = os.path.join(template_path, 'blocks')
         with open_file(json_path, 'r', encoding='utf-8') as f:

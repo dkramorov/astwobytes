@@ -43,12 +43,19 @@
             </a>
           </li>
 -->{% endcomment %}
+          {% if request.session.lang %}
+            <li><a>{{ request.session.lang }}</a></li>
+          {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li class="dropdown">
             {% include "core/fast_menu.html" %}
           </li>
-          <li><a href="{% url 'login:logout_view' %}">Выход, {{ request.user }} <i class="fa fa-power-off"></i></a></li>
+          <li>
+            <a href="{% url 'login:logout_view' %}">
+              Выход, {{ request.user }} <i class="fa fa-power-off"></i>
+            </a>
+          </li>
 {% comment %}<!--
           <li>
             <a data-toggle="navbar-search" href="#">
