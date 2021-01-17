@@ -87,6 +87,16 @@ def save_translate(row, row_vars: list, request_post: dict):
 
 def get_domain(request, domains: list = None):
     """Получить текущий язык/домен
+       ---------------------------
+       При переключении языка между доменами
+       надо быть внимательным к сессии,
+       eсли мы берем язык из сессии,
+       то мы его берем на том домене, где мы находимся,
+       однако, если мы находимся на китайской версии и переключаемся,
+       то мы окажемся на новом домене, где сессия другая
+
+       В сессию язык надо писать, чтобы в шаблонах логику не повторять
+       ---------------------------
        :param request: HttpRequest
     """
     domain = None
@@ -99,9 +109,17 @@ def get_domain(request, domains: list = None):
         domains = get_domains()
 
     lang = request.META['HTTP_HOST'].split('.')[0]
+    # ---------
+    # По домену
+    # ---------
     for item in domains:
-        if item['domain'] == lang:
+        if item['domain'] == '%s.%s' % (lang, settings.MAIN_DOMAIN):
+            request.session['lang'] = lang
             return item
+        elif settings.DEFAULT_DOMAIN:
+            if request.META['HTTP_HOST'] == settings.MAIN_DOMAIN:
+                request.session['lang'] = settings.DEFAULT_DOMAIN
+                return item
     # --------------
     # Либо по сессии
     # --------------
@@ -113,6 +131,11 @@ def get_domain(request, domains: list = None):
     # -------------
     # Либо основной
     # -------------
+    if settings.DEFAULT_DOMAIN:
+        for item in domains:
+            if item['lang'] == settings.DEFAULT_DOMAIN:
+                request.session['lang'] = lang
+                return item
     return None
 
 def get_translate(rows, domains: list, only_fields: list = None):

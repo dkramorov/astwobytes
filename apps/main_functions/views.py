@@ -8,6 +8,7 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
+from django.views.decorators.csrf import csrf_exempt
 
 from apps.flatcontent.views import SearchLink
 from apps.main_functions.catcher import feedback_form, json_pretty_print
@@ -117,12 +118,17 @@ def edit_task(request, action:str, row_id:int = None, *args, **kwargs):
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
 
+@csrf_exempt
 def my_ip(request):
     """Апи-метод для получения ip-адреса"""
+    method = request.GET if request.method == 'GET' else request.POST
     result = {
-        'ip': request.META.get('REMOTE_ADDR'),
+        'ip': method.get('REMOTE_ADDR'),
         'ip_forwarded': request.META.get('HTTP_X_FORWARDED_FOR'),
     }
+    # на случай, если надо посмотреть тело json запроса
+    if hasattr(request, 'body') and request.body:
+        logger.info(json_pretty_print(json.loads(request.body)))
     return JsonResponse(result, safe=False)
 
 def DefaultFeedback(request, **kwargs):

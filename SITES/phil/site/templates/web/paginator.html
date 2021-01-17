@@ -1,8 +1,32 @@
+<div class="row">
+  <div class="col-lg-12">
+    <nav class="navigation align-center">
+      {% if paginator.prev_link %}
+        <a href="{{ paginator.prev_link }}" class="page-numbers prev">
+          <svg class="btn-prev">
+            <use xlink:href="#arrow-left"></use>
+          </svg>
+        </a>
+      {% endif %}
+      {% for page in pages %}
+        <a href="#" class="page-numbers bg-border-color current"><span>1</span></a>
+        <a href="#" class="page-numbers bg-border-color"><span>2</span></a>
+      {% endfor %}
+      {% if paginator.next_link %}
+        <a href="{{ paginator.next_link }}" class="page-numbers next">
+          <svg class="btn-next">
+            <use xlink:href="#arrow-right"></use>
+          </svg>
+        </a>
+      {% endif %}
+    </nav>
+  </div>
+</div>
+
+
 <ul class="pagi">
   {% if not paginator.onepage %}
-    {% if paginator.prev_link %}
-      <li class="pagi-prev"><a href="{{ paginator.prev_link }}"><i class="fa fa-angle-double-left"></i></a></li>
-    {% endif %}
+
     {% for page in pages %}
       {% if page.ellipsis %}
         <li><span>...</span></li>
@@ -12,9 +36,6 @@
         </li>
       {% endif %}
     {% endfor %}
-    {% if paginator.next_link %}
-      <li class="pagi-next"><a href="{{ paginator.next_link }}"><i class="fa fa-angle-double-right"></i></a></li>
-    {% endif %}
   {% endif %}
 
   <li><span>{{ paginator.total_records }} {{ ends }}</span></li>

@@ -9,7 +9,7 @@ from django.conf import settings
 
 from apps.flatcontent.models import Blocks
 from apps.flatcontent.views import SearchLink
-from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
+from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site, get_catalogue_lvl
 from apps.main_functions.views import DefaultFeedback
 from apps.products.models import Products
 from apps.personal.oauth import VK, Yandex
@@ -96,6 +96,37 @@ def cat_on_site(request, link: str = None):
     context['containers'] = containers
 
     return render(request, template, context)
+
+def cat_lvl(request):
+    """Аякс запрос по рубрике и получение подрубрик этой рубрики
+    """
+    container_id = request.GET.get('container_id')
+    cat_id = request.GET.get('node_id')
+    force_new = True if request.GET.get('force_new') else False
+    context = get_catalogue_lvl(request,
+                                container_id=container_id,
+                                cat_id=cat_id,
+                                force_new=force_new)
+    selected_id = request.GET.get('selected_id')
+    selected = Blocks.objects.filter(pk=selected_id).first()
+    if selected:
+        if not selected.parents:
+            for item in context:
+                if selected.id == item['id']:
+                    item['state']['opened'] = True
+        else:
+            parents = [int(parent) for parent in selected.parents.split('_') if parent]
+            for item in context:
+                if item['id'] in parents:
+                    item['state']['opened'] = True
+        for item in context:
+            if selected.id == item['id']:
+                item['state']['selected'] = True
+
+    for item in context:
+        item['icon'] = '/media/misc/crystall_icon.png'
+
+    return JsonResponse(context, safe=False)
 
 def product_by_link(request, link: str):
     """Вытаскиваем код товара по ссылке и возвращаем товар

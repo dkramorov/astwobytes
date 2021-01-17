@@ -42,7 +42,7 @@
                   {% for block in block_container %}
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                       <div class="case-item">
-                        <a class="case-item__thumb fancybox" href="{{ block.imagine }}" rel="gallery_{{ container.id }}">
+                        <a class="case-item__thumb" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
                           <img loading="lazy" src="{% imagine block.img '600x400' block.get_folder True %}" alt="{{ block.description|textize }}">
                           <table>
                             <tr>

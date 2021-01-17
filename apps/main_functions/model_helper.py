@@ -167,8 +167,9 @@ class ModelHelper:
         # -------
         # Перевод
         # -------
-        self.domains = get_domains()
-        self.context['domains'] = self.domains
+        if is_domains:
+            self.domains = get_domains()
+            self.context['domains'] = self.domains
 
     def breadcrumbs_add(self, crumb:dict):
         """Добавление хлебных крошек"""

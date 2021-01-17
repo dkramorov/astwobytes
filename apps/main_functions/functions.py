@@ -201,33 +201,58 @@ def object_fields(row,
         result[field.name] = value
     return result
 
-def recursive_fill(queryset, result, parents=''):
-    """Рекурсивное заполнение списка
-       parents - _x_y - заполнем вложенность по нему
-       fields - набор полей у модели"""
-    # ------------------------------------------------
-    # холостая пробежка - непонятно почему,
-    # но без нее не отображаются иногда все подрубрики
-    # ------------------------------------------------
+def recursive_fill(queryset,
+                   result: list,
+                   parents: str = ''):
+    """Рекурсивное заполнение списка,
+       элементы списка обычно queryset, но могут быть и dict
+       работаем со списоком, queryset может что-то кэшить
+       :param qyeryset: изначально результат запроса (например, model.filter)
+       :param result: аккумулируемый результат в процессе обратки
+       :param parents: какую вложенность сейчас обходим _x_y
+    """
+    if not isinstance(queryset, list):
+        queryset = list(queryset)
+
+    if not queryset:
+        return
+    is_dict = isinstance(queryset[0], dict)
+
     for item in queryset:
-        pass
-    for item in queryset:
-        if not item.parents:
-            item.parents = ''
-        if parents == item.parents:
-            item.sub = []
+        item_parents = item['parents'] if is_dict else item.parents
+        if not item_parents:
+            item_parents = ''
+        if parents == item_parents:
+            item_id = item['id'] if is_dict else item.id
+            if is_dict:
+                item['sub'] = []
+            else:
+                item.sub = []
             result.append(item)
-            next_parents = '%s_%s' % (item.parents, item.id)
-            recursive_fill(queryset, result[len(result)-1].sub, next_parents)
+            item_id = item['id'] if is_dict else item.id
+            next_parents = '%s_%s' % (item_parents, item_id)
+            result_sub = item['sub'] if is_dict else item.sub
+            recursive_fill(queryset, result_sub, next_parents)
 
 def sort_voca(queryset, reverse: bool = False):
     """Сортировка списка после рекурсивного заполнения по position
+       работаем как с экземплярами модели, так и со словарями
        sort in place ut.sort(key=lambda x: x.count, reverse=True)
        sort in new list newlist = sorted(ut, key=lambda x: x.count, reverse=True)
        {0: 17, 1: 12, 2: 47, 3: 32, 4: 74} =>
        sorted(d.items(), key=lambda (k, v): v, reverse=True)
        [(4, 74), (2, 47), (3, 32), (0, 17), (1, 12)] =>
        sorted(numbers, key=numbers.__getitem__)"""
+    if not queryset:
+        return queryset
+    is_dict = isinstance(queryset[0], dict)
+    if is_dict:
+        for item in queryset:
+            if 'sub' in item:
+                item['sub'] = sort_voca(item['sub'])
+        result = sorted(queryset, key=lambda x:x['position'], reverse=reverse)
+        return result
+
     for item in queryset:
         if item.sub:
             item.sub = sort_voca(item.sub)

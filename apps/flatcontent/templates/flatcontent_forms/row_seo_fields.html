@@ -1,7 +1,9 @@
 <div class="form-group">
   <label class="col-lg-2 control-label">
     Title
-    <a href="javascript:void(0);" data-attr-translate="title" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    {% if domains %}
+      <a href="javascript:void(0);" data-attr-translate="title" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    {% endif %}
   </label>
   <div class="col-lg-10">
     <input type="text" placeholder="Title" class="form-control" name="title" value="{% if row.title %}{{ row.title }}{% endif %}" autocomplete="off">
@@ -21,7 +23,9 @@
 <div class="form-group">
   <label class="col-lg-2 control-label">
     Description
-    <a href="javascript:void(0);" data-attr-translate="description" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    {% if domains %}
+      <a href="javascript:void(0);" data-attr-translate="description" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    {% endif %}
   </label>
   <div class="col-lg-10">
     <input type="text" placeholder="Description" class="form-control" name="description" value="{% if row.description %}{{ row.description }}{% endif %}" autocomplete="off">
@@ -41,7 +45,9 @@
 <div class="form-group">
   <label class="col-lg-2 control-label">
     Keywords
-    <a href="javascript:void(0);" data-attr-translate="keywords" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    {% if domains %}
+      <a href="javascript:void(0);" data-attr-translate="keywords" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    {% endif %}
   </label>
   <div class="col-lg-10">
     <input type="text" placeholder="Keywords" class="form-control" name="keywords" value="{% if row.keywords %}{{ row.keywords }}{% endif %}" autocomplete="off">

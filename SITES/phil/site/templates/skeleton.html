@@ -36,7 +36,9 @@
 -->{% endcomment %}
 
 <!--<link rel="stylesheet" type="text/css" href="/media/css/rtl.css">-->
+
 <link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css">
+
 {% block extrahead %}{% endblock %}
 </head>
 <body>
@@ -59,6 +61,9 @@
       {% include "web/components/logo.html" %}
 
       {% flatmenu request "mainmenu" %}
+
+      {% include "web/components/languages.html" %}
+
 
 {% comment %}<!--
       {% include "web/components/cart.html" %}
@@ -153,7 +158,9 @@
 https://photoswipe.com/
 <script src="/media/js/photo-gallery.js"></script>
 -->{% endcomment %}
+<script type="text/javascript" src="/media/js/sticky.min.js"></script>
 <script src="/static/fancybox/jquery.fancybox.min.js"></script>
+
 
 {% comment %}<!-- Пока не нужен
 <script src="/media/js/ion.rangeSlider.js"></script>
@@ -161,6 +168,7 @@ https://photoswipe.com/
 
 <script src="/media/js/main.js?v=4"></script>
 
-{% block extrascripts %}{% endblock %}
+{% block extrascripts %}
+{% endblock %}
 </body>
 </html>

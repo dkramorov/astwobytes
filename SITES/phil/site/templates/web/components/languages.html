@@ -1,0 +1,4 @@
+<ul class="nav-add">
+  <li class="lang{% if not request.session.lang or request.session.lang == 'eng' %} active{% endif %}"><a href="/languages/pick/eng/">EN</a></li>
+  <li class="lang{% if request.session.lang == 'chi' %} active{% endif %}"><a href="/languages/pick/chi/">中文</a></li>
+</ul>

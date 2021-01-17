@@ -1,0 +1,42 @@
+{% load mtags flatcontent_tags %}
+<div class="container simple_gallery">
+  <div class="row pt120 pb30">
+
+    <div class="col-lg-12">
+      <div class="col-lg-5">
+        <div class="portfolio_title_bg"></div>
+        <div class="portfolio_title">
+          {{ container.description|safe }}
+        </div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <br>
+    {% for block in blocks %}
+      <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 images">
+        {% if block.img %}
+          <div class="gallery_img">
+            {% imagine block.img '1024x768' block.get_folder %}
+            <table>
+              <tr>
+                <td colspan="3" class="hborder"></td>
+              </tr>
+              <tr>
+                <td class="wborder"></td>
+                <td class="text">
+                  {% if block.html %}{{ block.html|safe }}{% endif %}
+                </td>
+                <td class="wborder"></td>
+              </tr>
+              <tr>
+                <td colspan="3" class="hborder"></td>
+              </tr>
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+  </div>
+</div>

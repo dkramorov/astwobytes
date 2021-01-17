@@ -630,6 +630,7 @@
     padding: 45px 5px 15px 5px;
     font-size: 17px;
     line-height: 30px;
+    word-break: keep-all;
   }
 
   @media (max-width: 1024px) {
@@ -2650,7 +2651,7 @@ textarea {
         -o-transform: rotate(45deg); }
 
 .top-bar-dark {
-  background-color: #151414;
+  /*background-color: #151414;*/
   color: #797676; }
   .top-bar-dark a {
     color: #797676; }

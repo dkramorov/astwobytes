@@ -1,7 +1,9 @@
 <div class="form-group">
     <label class="col-lg-2 control-label">
         Название
+        {% if domains %}
         <a href="javascript:void(0);" data-attr-translate="name" class="translate_toggle"><i class="fa fa-globe"></i></a>
+        {% endif %}
     </label>
     <div class="col-lg-10">
         <input type="text" placeholder="Название" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>

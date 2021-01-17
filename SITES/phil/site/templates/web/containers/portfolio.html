@@ -22,6 +22,23 @@
                   .portfolio_side_info:after {
                      content: "{{ block.title }}";
                   }
+                  .portfolio_side_info.special {
+                    height: 30px;
+                  }
+                  .portfolio_side_info.special:after {
+                    float: none;
+                    position: absolute;
+                    left: -50px;
+                    top: 35px;
+                    -webkit-transform: none;
+                    -moz-transform: none;
+                    -o-transform: none;
+                    -ms-transform: none;
+                    transform: none;
+                    word-break: break-all;
+                    width: 20px;
+                    line-height: 22px;
+                  }
                 </style>
               {% endif %}
 
@@ -36,7 +53,7 @@
 
         <div class="clearfix"></div>
         <div class="col-lg-12">
-          <div class="portfolio_side_info">
+          <div class="portfolio_side_info{% if blocks %}{% if blocks.0.class_name %} {{ blocks.0.class_name }}{% endif %}{% endif %}">
           </div>
         </div>
 

@@ -3,10 +3,11 @@ from django.db.models import Count, Q, Max, Min
 from django.conf import settings
 from django.core.cache import cache
 
-from apps.main_functions.functions import recursive_fill, sort_voca
+from apps.main_functions.functions import recursive_fill, sort_voca, object_fields
 from apps.main_functions.paginator import myPaginator, navigator
 from apps.main_functions.string_parser import q_string_fill
-from .models import Containers, Blocks, get_ftype, FAT_HIER
+
+from .models import Containers, Blocks, get_ftype, prepare_jstree, FAT_HIER
 
 is_products = False
 
@@ -140,6 +141,41 @@ def get_catalogue_products_count(tag: str,
     cache.set(cache_var, pcats, cache_time)
     return pcats
 
+def get_catalogue_lvl(request,
+                      container_id: int,
+                      cat_id: int = None,
+                      cache_time: int = 300,
+                      force_new: bool = False):
+    """Вытаскиваем jstree категории (подкатегории)
+       :param request: HttpRequest
+       :param container_id: ид контейнера
+       :param cat_id: ид категории
+       :param cache_time: время кэширования
+       :param force_new: получить каталог без кэша
+    """
+    result = []
+    if not container_id or not container_id.isdigit():
+        return []
+    if not cat_id:
+        menus = Blocks.objects.filter(container=container_id, parents='').order_by('position')
+    else:
+        if cat_id.isdigit():
+            menus = Blocks.objects.filter(container=container_id, parents__endswith='_%s' % cat_id).order_by('position')
+        else:
+            menus = Blocks.objects.filter(container=container_id, parents='').order_by('position')
+
+    prepare_jstree(result, menus, lazy=True, fill_href=True)
+
+    # Узнать есть ли вложенность в каждом из menus
+    menus_parents = ['%s_%s' % (menu.parents or '', menu.id) for menu in menus]
+    counts = Blocks.objects.filter(parents__in=menus_parents).values('parents').annotate(Count('parents'))
+    ids_counts = {int(count['parents'].split('_')[-1]): count['parents__count'] for count in counts}
+    for item in result:
+        if not item['id'] in ids_counts:
+            item['children'] = False
+
+    return result
+
 def get_catalogue(request,
                   tag: str = None,
                   with_count: bool = False,
@@ -165,8 +201,6 @@ def get_catalogue(request,
         if with_count:
             inCache['products_count'] = get_catalogue_products_count(tag)
         return inCache
-    # Надо предусмотреть вытаскивание только нужных рубрик,
-    # потому что каталог может быть мега-пухлый
     container = Containers.objects.filter(
         tag = tag,
         state = 7,
@@ -174,7 +208,7 @@ def get_catalogue(request,
     ).first()
     menus = []
     if container:
-        # Если рубрик дохера, то будет больно
+        # Если рубрик дохера, то будет больно, избегаем этого
         cats = container.blocks_set.filter(is_active=True)
         count = cats.aggregate(Count('id'))['id__count']
         if count > FAT_HIER:
@@ -187,6 +221,7 @@ def get_catalogue(request,
     result = {
         'container': container,
         'menus': menus,
+        'fat_hier': count > FAT_HIER,
     }
 
     if not pass_cache:
@@ -247,6 +282,59 @@ def search_alt_catalogue(link: str):
     if catalogue:
         return catalogue_tag, is_root_level
     return None, None
+
+def get_facet_filters(request):
+    """Получаем фасетные фильтры из запроса,
+       находим по ним товары
+       :param request: HttpRequest
+    """
+    facet_filters = {}
+    for k in request.GET.keys():
+        if not k.startswith('prop_'):
+            continue
+        try:
+            key = int(k.replace('prop_', ''))
+        except ValueError:
+            continue
+        values = request.GET.getlist(k)
+        if not key in facet_filters:
+            facet_filters[key] = []
+
+        for value in values:
+            try:
+                value = int(value)
+            except ValueError:
+                continue
+            facet_filters[key].append(value)
+    if not facet_filters:
+        return {}
+    # Тут не получится собрать AND/OR запросами,
+    # т/к при выборке 2х значений, мы не сможем
+    # выбрать запись, где оба значения удволетворены,
+    # поэтому отфильтровываем по каждому
+    facet_query = Q()
+    ids_products = []
+    first_filter = True
+    for k, v in facet_filters.items():
+        prop_query = Q()
+        for item in v:
+            prop_query.add(Q(prop__id=item), Q.OR)
+        if first_filter:
+            ids_products = ProductsProperties.objects.filter(prop_query).values_list('product', flat=True)
+        else:
+            # Уже первый фильтр нихера не вернул,
+            # можно не продолжать
+            if not ids_products:
+                return {
+                    'ids_products': [],
+                    'facet_filters': facet_filters,
+                }
+            ids_products = ProductsProperties.objects.filter(prop_query).filter(product__in=ids_products).values_list('product', flat=True)
+
+    return {
+        'ids_products': list(ids_products),
+        'facet_filters': facet_filters,
+    }
 
 def get_cat_for_site(request,
                      link: str = None,
@@ -334,14 +422,22 @@ def get_cat_for_site(request,
             parent = parents[item]
             breadcrumbs.append({'name': parent.name, 'link': parent.link})
 
-    breadcrumbs.append({'name': page.name, 'link': page.link})
-
-    total_records = query.aggregate(Count('id'))['id__count']
-
     prefix = 'product__'
     if is_search:
         prefix = ''
 
+    # -----------------------------
+    # Фильтрация ProductsProperties
+    # В рамках одного свойства
+    # надо фильтровать по ИЛИ, не И
+    # -----------------------------
+    facet_filters = get_facet_filters(request)
+    if facet_filters:
+        query = query.filter(**{'%sid__in' % (prefix, ): facet_filters['ids_products']})
+
+
+    breadcrumbs.append({'name': page.name, 'link': page.link})
+    total_records = query.aggregate(Count('id'))['id__count']
     # Сортировка
     sort = request.GET.get('sort')
     if sort == 'price':
@@ -378,6 +474,7 @@ def get_cat_for_site(request,
     if with_props:
         get_props_for_products(products)
     get_costs_types(products)
+
     # TODO: кэшировать по ссылке
     return {
         'page': page,
@@ -389,6 +486,7 @@ def get_cat_for_site(request,
         'products': products,
         'cost_filter': cost_filter,
         'search_terms': search_terms,
+        'facet_filters': facet_filters.get('facet_filters'),
     }
 
 def get_props_for_products(products: list, only_props: list = None):
@@ -450,20 +548,23 @@ def get_props_for_products(products: list, only_props: list = None):
                 })
 
 def get_filters_for_cat(cat_id: int,
+                        search_facet: bool = True,
                         cache_time: int = 300,
                         force_new: bool = False):
     """Получение фильтров по рубрике
        Тут кэш обязателен
        :param cat_id: ид выбранной категории
+       :param search_facet: только фасеты для поиска (search_facet)
        :param cache_time: время кэширования
        :param force_new: игнорить кэш
        :return result: словарь фильтров
     """
     result = {}
     # 0) Проверяем в кэше
-    cache_var = '%s_%s_filters_for_cat' % (
+    cache_var = '%s_%s_filters_for_cat_%s' % (
         settings.DATABASES['default']['NAME'],
         cat_id,
+        1 if search_facet else 0,
     )
     inCache = cache.get(cache_var)
     if inCache and not force_new:
@@ -480,17 +581,24 @@ def get_filters_for_cat(cat_id: int,
     if cat_parents:
         parents ='%s_%s' % (cat_parents, cat.id)
     # 2) Находим вложенные рубрики
-    subcats = Blocks.objects.filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents)).values_list('id', flat=True)
+    subcats = Blocks.objects.filter(is_active=True).filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents)).values_list('id', flat=True)
     # 3) Находим товары привязанные к рубрике и подрубрикам
     cats = list(subcats)
     cats.append(cat.id)
     products = ProductsCats.objects.filter(cat__in=cats).values_list('product', flat=True)
     # 4) Находим привязанные значения свойств для товаров
     products = list(products)
-    ids_values = ProductsProperties.objects.filter(product__in=products).values_list('prop', flat=True) # это PropertiesValues
+    ids_values = ProductsProperties.objects.filter(product__in=products)
+    # Только фасеты поиска
+    if search_facet:
+        ids_search_props = Property.objects.filter(search_facet=True, is_active=True).values_list('id', flat=True)
+        ids_values = ids_values.filter(prop__prop__search_facet=True)
+
+    ids_values = ids_values.values_list('prop', flat=True) # это PropertiesValues
+
     ids_values = set(ids_values)
     # 5) Находим значения свойств
-    pvalues = PropertiesValues.objects.filter(pk__in=ids_values)
+    pvalues = PropertiesValues.objects.filter(pk__in=ids_values, is_active=True)
     # 6) Находим свойства по значениям
     ids_props = set([pvalue.prop_id for pvalue in pvalues])
     # TODO завести признак фасета для свойства (выводится в фильтрах)

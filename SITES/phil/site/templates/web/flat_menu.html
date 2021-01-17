@@ -15,7 +15,7 @@
   <ul class="primary-menu-menu">
     {% for menu in menus %}
       <li{% ifequal menu.link request.META.PATH_INFO %} class="active"{% endifequal %}>
-        <a href="{{ menu.link }}"{% if menu.class_name %} class="{{ menu.class_name|textize }}"{% endif %}>{{ menu.name }}</a>
+        <a href="{% ifnotequal request.META.PATH_INFO '/' %}{% if '#' in menu.link and not menu.link == '#' %}/{% endif %}{{ menu.link }}{% else %}{{ menu.link }}{% endifnotequal %}"{% if menu.class_name %} class="{{ menu.class_name|textize }}"{% endif %}>{{ menu.name }}</a>
         {% if menu.sub %}
           <ul class="dropdown">
             <li class="megamenu-item-info">
@@ -59,5 +59,22 @@
       <p>Введите ваш Email и получайте новости об акциях и скидках</p>
     </div>
   </div>
+</div>
+{% endifequal %}
+{% ifequal tag "portfolio" %}
+<div class="w-post-category col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<div class="prev"><i class="fa fa-angle-up"></i></div>
+  <ul class="primary-menu-menu">
+
+        {% for item in menus %}
+          {% for menu in item.sub %}
+            <li class="category-post-item{% ifequal menu.link request.META.PATH_INFO %} active{% endifequal %}">
+              <a href="{{ menu.link }}" class="category-title">{{ menu.name }}</a>
+            </li>
+          {% endfor %}
+        {% endfor %}
+
+  </ul>
+<div class="next"><i class="fa fa-angle-down"></i></div>
 </div>
 {% endifequal %}

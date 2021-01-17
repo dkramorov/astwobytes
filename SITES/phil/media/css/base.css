@@ -1048,6 +1048,7 @@ h6, .h6 {
   background-image: url('/media/img/footer_bg.png');
   background-position: top right;
   background-repeat: no-repeat;
+  background-size: 50%;
 }
 .simple_contacts .footer_logo {
   position: relative;
@@ -1072,6 +1073,8 @@ h6, .h6 {
 .wechat {
   color: #582371;
   padding-top: 10px;
+  display: inline-block;
+  text-align: center;
 }
 .lg-clearfix {
   display: none;
@@ -1128,4 +1131,21 @@ h6, .h6 {
   background-color: #582371;
   padding: 10px 20px;
   display: inline-block;
+}
+.nav-add .lang {
+  padding: 0 5px;
+}
+#site-header.headroom--not-top .nav-add {
+  height: 59px;
+}
+#site-header .nav-add .lang img{
+  height: 16px;
+  width: 16px;
+  margin-bottom: 8px;
+}
+#site-header .nav-add .lang a{
+  color: #a1a1a1;
+}
+#site-header .nav-add .lang.active a{
+  color: #582371;
 }

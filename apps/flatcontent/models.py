@@ -146,6 +146,30 @@ def update_blocks_vars(ftype, mh_vars):
         'submenu': ftype,
     })
 
+def prepare_jstree(data, menus, lazy: bool = False, fill_href: bool = False):
+    """Вспомогательная функция для построения
+       меню из queryset в формат jstree
+       :param data: результат
+       :param menus: иерархия менюшек
+       :param lazy: если хотим получать только текущий уровень
+    """
+    for menu in menus:
+        href = '#%s' % menu.id
+        if fill_href:
+            href = menu.link
+        data.append({
+            'id': menu.id,
+            'text': menu.name,
+            'state': {'opened': False, 'selected': False},
+            'children': [] if not lazy else True,
+            'a_attr': {
+                'href': href,
+            },
+        })
+        if hasattr(menu, 'sub'):
+            if menu.sub:
+                prepare_jstree(data[-1]['children'], menu.sub, fill_href)
+
 class Containers(Standard):
     """Контейнер служит как меню, в него можно
        вкладывать блоки, которые могут быть как

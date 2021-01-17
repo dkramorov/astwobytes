@@ -35,7 +35,7 @@ SUBDOMAINS = env('SUBDOMAINS', default='')
 if MAIN_DOMAIN and SUBDOMAINS:
     DOMAINS = [
         {'pk': None, 'domain': MAIN_DOMAIN, 'name': 'Основной'},
-        {'pk': 0, 'domain': 'rus.%s' % (MAIN_DOMAIN, ), 'name': 'Основной'},
+        #{'pk': 0, 'domain': 'rus.%s' % (MAIN_DOMAIN, ), 'name': 'Основной'},
     ]
     sub_domains = []
     for i, item in enumerate(SUBDOMAINS.split(',')):
@@ -46,8 +46,11 @@ if MAIN_DOMAIN and SUBDOMAINS:
             'name': name.strip(),
         })
     DOMAINS += sub_domains
-    #print('[DOMAINS]: %s' % (DOMAINS, ))
     IS_DOMAINS = True
+
+# Если нужно использовать домен, который в поддоменах,
+# то нужно указать его как DEFAULT_DOMAIN, например, eng
+DEFAULT_DOMAIN = env('DEFAULT_DOMAIN', default=None)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -71,6 +74,9 @@ ALLOWED_HOSTS = [
 # main_functions.tasks create_new_app
 # CUSTOM_APPS_START
 CUSTOM_APPS = [
+    # если надо https локально
+    # python manage.py runsslserver 8005
+    #'sslserver', # pip install django-sslserver
 ]
 # CUSTOM_APPS_END
 

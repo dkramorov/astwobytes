@@ -724,5 +724,10 @@ def facet_filters(request, cat_id):
     """Получение фасетных фильтров
        :param cat_id: ид категории
     """
-    result = get_filters_for_cat(cat_id)
+    method = request.GET if request.method == 'GET' else request.POST
+    search_facet = True if method.get('search_facet') else False
+    force_new = True if method.get('force_new') else False
+    result = get_filters_for_cat(cat_id,
+                                 search_facet=search_facet,
+                                 force_new=force_new)
     return JsonResponse(result, safe=False)

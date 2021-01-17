@@ -12,6 +12,7 @@ urlpatterns = [
     path('demo/', views.demo, name='demo'),
     # Каталог
     url('^cat/$', views.cat_on_site, name='cat_on_site'),
+    url('^cat/lvl/', views.cat_lvl, name='cat_lvl'),
     url('^cat/(?P<link>.+)/$', views.cat_on_site, name='cat_on_site'),
     url('^product/(?P<product_id>[0-9]+)/$', views.product_on_site, name='product_on_site'),
     url('^product/(?P<link>[a-z0-9_-]+)/$', views.product_by_link, name='product_by_link'),

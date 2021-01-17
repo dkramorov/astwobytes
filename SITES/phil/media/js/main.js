@@ -111,7 +111,6 @@ var PHIL={};
   PHIL.togglePanel=function(){
     d.length&&(d.toggleClass("opened"),
     o.toggleClass("overlay-enable"))
-console.log('--------PHIL');
   },
   PHIL.toggleSearch=function(){
     o.toggleClass("open"),e(".overlay_search-input").focus()
@@ -323,6 +322,9 @@ console.log('--------PHIL');
           crossFade:s
         },
         parallax:!0,
+        observer: true,
+        observeParents: true,
+
         onImagesReady:function(e){},
         onSlideChangeStart:function(e){
           if(swiper.find(".slider-slides").length){
@@ -568,11 +570,110 @@ console.log('--------PHIL');
     $(this).parent().addClass("active");
   });
 
-  $('.fancybox').fancybox({
-  });
+  $('.fancybox').fancybox();
 
   $(".swiper-container").click(function(){
     $(".swiper-container .swiper-slide-active table").toggleClass("clicked");
+  });
+
+  /* Ибучий сайдбар для project шаблона */
+
+  if($(".project .sidebar .primary-menu-menu").length > 0){
+    var sidebar_menu_item_height = 120;
+    var sidebar_menu_animating = false;
+    var sticky = null;
+    var sticky_container = $(".project .sidebar .primary-menu-menu");
+    var link_path = window.location.pathname;
+
+    function find_active_sidebar_menu(){
+      $(".project .sidebar .primary-menu-menu a").each(function(){
+        if($(this).attr("href") == link_path){
+          sticky_container.scrollTo($(this));
+        }
+      });
+    }
+    function create_sticky_portfolio_menu(){
+      sticky = new Sticky('.project .w-post-category', {
+        //'wrap': true,
+        'wrapWith': '<span class="sticky_wrapper"></span>',
+        'stickyClass': 'sticked',
+        'stickyContainer': '.sticky_container',
+      });
+    }
+    function check_resize_window(){
+      var windowWidth = $(window).width();
+      if (windowWidth > 799){
+        create_sticky_portfolio_menu();
+      }else if (sticky != null){
+        sticky.destroy();
+        sticky = null;
+      }
+      find_active_sidebar_menu();
+    }
+    $(window).resize(function(){
+      if(window.resizing) clearTimeout(window.resizing);
+      window.resizing = setTimeout(check_resize_window, 500);
+    });
+/*
+    $(window).scroll(function(){
+      if($("#site-header").hasClass("fadeIn")){
+        $(".project .sticky_wrapper .sticked").addClass("sticked2");
+      }else{
+        $(".project .sticky_wrapper .sticked").removeClass("sticked2");
+      }
+    });
+*/
+    $(".project .prev").click(function(){
+      if (sidebar_menu_animating) {
+        return;
+      }
+      sidebar_menu_animating = true;
+      sticky_container.animate({scrollTop: (sticky_container.scrollTop() - sidebar_menu_item_height)}, 400, 'swing', function(){
+        sidebar_menu_animating = false;
+      });
+    });
+    $(".project .next").click(function(){
+      if (sidebar_menu_animating) {
+        return;
+      }
+      sidebar_menu_animating = true;
+      sticky_container.animate({scrollTop: (sticky_container.scrollTop() + sidebar_menu_item_height)}, 400, "swing", function(){
+        sidebar_menu_animating = false;
+      });
+    });
+
+    if (link_path.indexOf('flatcontent') > -1){
+      var z = 0;
+      $(".sidebar .primary-menu-menu a").each(function(){
+        z += 1;
+        if(z > 5){
+          $(this).parent().addClass("hidden");
+        }
+      });
+      return;
+    }
+    var parts = link_path.split("/");
+    var part = "/" + parts[1] + "/";
+    $(".project .sidebar .primary-menu-menu a").each(function(){
+      if($(this).attr("href").indexOf(part) == -1){
+        $(this).parent().addClass("hidden");
+      }
+    });
+    // Только после того как спрятали,
+    // делаем показ активного меню,
+    // заставляем меню быть плавучим
+    check_resize_window();
+  }
+  /* Ибучее портфолио с мультислайдером
+     https://swiperjs.com/demos/
+   */
+  $(".dynamic_portfolio_link").click(function(){
+    var container_id = $(this).attr('data-container_id');
+    var block_id = $(this).attr('data-block_id');
+    $("#dynamic_portfolio_" + container_id + " .dynamic_portfolio_link").removeClass("active");
+    $(this).addClass("active");
+    $(".portfolio_swiper").addClass("hidden");
+    $("#portfolio_" + container_id + "_" + block_id).removeClass("hidden");
   });
 
 }(jQuery);

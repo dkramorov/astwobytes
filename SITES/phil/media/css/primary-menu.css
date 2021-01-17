@@ -248,12 +248,11 @@
   position: relative;
 }
 .primary-menu-menu ul.dropdown li a {
-  font-family: "Lato", sans-serif;
   font-size: 16px;
   font-weight: 400;
   padding: 10px 40px 10px 40px;
   position: relative;
-  color: #acacac;
+  color: #582371;
   -webkit-transition:all .4s ease-out;
   transition: all .4s ease-out;
   display: block;
@@ -298,7 +297,6 @@
 }
 
 .primary-menu-menu > li.has-megamenu .megamenu ul > li a {
-  font-family: "Lato", sans-serif;
   font-size: 16px;
   font-weight: 400;
   padding: 10px 0;
@@ -414,7 +412,7 @@
 .primary-menu-menu > li > .megamenu .megamenu-item-info .megamenu-item-info-text,
 .primary-menu-menu > li > .dropdown .megamenu-item-info .megamenu-item-info-text {
   font-size: 14px;
-  color: #ccc;
+  color: #582371;
   line-height: 1.3;
 }
 

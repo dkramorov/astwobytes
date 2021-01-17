@@ -1,8 +1,10 @@
 <div class="sidebar mb-35">
   <h3 class="sidebar-title">{{ container.name }}</h3>
+  <div id="flat_tree" data-attr-container_id="{{ container.id }}"></div>
+{% comment %}<!--
   <ul class="product-categories">
     {% for menu in menus %}
-      <li>
+      <li id="li_{{ menu.id }}">
         <a{% ifequal request.META.PATH_INFO menu.link %} class="active"{% endifequal %} href="{{ menu.link }}">{{ menu.name }}</a>
         {% if menu.sub %}
           <ul class="level2">
@@ -23,4 +25,5 @@
       </li>
     {% endfor %}
   </ul>
+-->{% endcomment %}
 </div>

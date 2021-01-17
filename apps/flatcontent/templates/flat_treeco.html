@@ -180,7 +180,12 @@ $(document).ready(function(){
       data: "container_id={{ row.id }}&operation=rename_node&node_id=" + node_id + "&parent_id=" + parent_id + "&name=" + data.text,
     }).done(function(r) {
       // renamed
-      flat_tree.jstree(true).set_id(data.node, r.id);
+      flat_tree.jstree().set_id(data.node, r.id);
+      // Приходится вручную обновлять ид и ссыль якоря (a),
+      // иначе создать 2 подряд узла не получится,
+      // будет одинаковый id и йух выберешь второй
+      data.node.a_attr.id = r.id;
+      data.node.a_attr.href = '#' + r.id;
     });
   })
   .on("delete_node.jstree", function (e, data) {
@@ -269,7 +274,7 @@ $(document).ready(function(){
       container.find('input[name="is_active"]').prop('checked', is_active_checked);
       container.find('input[name="grab_img_by_url"]').val('');
 
-      var translate_fields = ['name', 'title', 'description', 'keywords'];
+      var translate_fields = ['name', 'title', 'description', 'keywords', 'class_name'];
       {% for domain in domains %}
         for(var i=0; i<translate_fields.length; i++){
           field_name = translate_fields[i];
@@ -287,11 +292,30 @@ $(document).ready(function(){
       {% endfor %}
       // Если нет такого элемента - то и не надо мучать жопу
       if($("#linkcontainer_select2").length > 0){
+        var flink = "/flatcontent/admin/flatpages/";
+        var tr;
+        var menus_tbody = $(".linked_menus table tbody");
         $("#linkcontainer_select2").empty().trigger('changed');
+        menus_tbody.html("");
         if(row['linkcontainer'] !== undefined){
           for(var i=0; i<row['linkcontainer'].length; i++){
             var item = row['linkcontainer'][i];
             $("#linkcontainer_select2").append($("<option value='" + item['id'] + "' selected>" + item['name'] + " #" + item['id'] + " (" + item['tag'] + ")</option>"));
+            // И в таблицу докидываем
+            tr = "<tr>";
+            tr += "<td>";
+            tr += "<a href='" + flink + item['id'] + "/" + "' target='_blank'>" + item['name'] + "</a>";
+            tr += "</td>";
+            tr += "<td>" + item['id'] + "</td>";
+            tr += "<td>" + item['tag'] + "</td>";
+            tr += "<td>";
+            tr += "<a target='_blank' class='btn-xs btn btn-primary pull-left' href='" + flink + "edit/" + item['id'] + "/" + "'><i class='fa fa-edit'></i></a>";
+            tr += "<a target='_blank' class='btn-xs btn btn-info pull-left ml' target='_blank' href='" + flink + "show/" + item['id'] + "/" + "'><i class='fa fa-eye'></i></a>";
+            tr += "<a target='_blank' class='btn-xs btn btn-info pull-left ml' href='" + flink + "tree/" + item['id'] + "/" + "'><i class='fa fa-sitemap'></i></a>";
+            tr += "</td>";
+            tr += "</tr>";
+
+            menus_tbody.append($(tr));
           }
         }
         $("#linkcontainer_select2").trigger('changed');

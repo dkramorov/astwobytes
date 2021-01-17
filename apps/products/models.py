@@ -141,10 +141,15 @@ class Property(Standard):
         (3, 'Выбор из вариантов radio'),
         (4, 'Множественный выбор из вариантов checkbox'),
     )
-    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    code = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    ptype = models.IntegerField(choices=ptype_choices, blank=True, null=True, db_index=True)
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    code = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    ptype = models.IntegerField(choices=ptype_choices,
+        blank=True, null=True, db_index=True)
     measure = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Единица измерения')
+    search_facet = models.BooleanField(db_index=True, default=False,
+        verbose_name='Отображать в фильтрах для поиска')
 
 class PropertiesValues(Standard):
     """Свойства для товаров/услуг

@@ -1,7 +1,9 @@
 <div class="form-group">
   <label class="col-lg-2 control-label">
     Описание
-    <a href="javascript:void(0);" data-attr-translate="description" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    {% if domains %}
+      <a href="javascript:void(0);" data-attr-translate="description" class="translate_toggle"><i class="fa fa-globe"></i></a>
+    {% endif %}
   </label>
   <div class="col-lg-10">
     <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>

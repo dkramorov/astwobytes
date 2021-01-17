@@ -51,6 +51,22 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         minWidth: 80,
       },
+      {
+        title: "Фасет поиска",
+        field: "search_facet",
+        headerFilterPlaceholder: "Фасет поиска",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        editable: false,
+        editor: "select",
+        formatter: booleanFormatter,
+        width: 90,
+        downloadTitle: "search_facet",
+        //accessorDownload: accessor_is_active,
+      },
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}
       {% include "core/tabulator_cell/actions.html" %}

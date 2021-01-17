@@ -4644,8 +4644,14 @@ p.result-show-message {
       .sidebar-area .sidebar h3.sidebar-title {
         font-size: 15px; }
  }
+  .sidebar-area .sidebar ul li {
+    font-size: 0.9em;
+  }
+  .sidebar-area .sidebar > ul > li {
+    padding-left: 0;
+    font-size: 1em;
+  }
   .sidebar-area .sidebar ul.product-categories li {
-    padding-right: 25px;
     margin-bottom: 7px; }
     .sidebar-area .sidebar ul.product-categories li a {
       line-height: 27px;
@@ -4788,6 +4794,21 @@ p.result-show-message {
     overflow: hidden; }
     .sidebar-area .sidebar a.compare:hover {
       background-color: #80bb01; }
+
+#flat_tree {
+  margin-left: -24px;
+}
+.jstree-anchor {
+    /*enable wrapping*/
+    white-space : normal !important;
+    /*ensure lower nodes move down*/
+    height : auto !important;
+    /*offset icon width*/
+    padding-right : 24px;
+}
+.jstree-default .jstree-node {
+  margin-left: 12px !important;
+}
 
 /*-- Sidebar Price --*/
 .sidebar-price #price-range {

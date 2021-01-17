@@ -969,7 +969,7 @@
 		}
 	});
 
-/*----- 
+/*-----
 	Payment Method Select
 	--------------------------------*/
 	$('[name="payment-method"]').on('click', function(){
@@ -995,6 +995,97 @@
     $("input.phone").mask("8(999)9 999-999");
   }
 
+  function recursive_fill_menu(menus, parent_id){
+    var href = window.location.pathname;
+    var class_name = '';
+    var menu;
+    var container = $("#li_" + parent_id);
+    container.append($("<ul id='ul_" + parent_id + "'></ul>"));
+    var subcontainer = $("#ul_" + parent_id);
 
+    for(var i=0; i<menus.length; i++){
+      menu = menus[i];
+
+      class_name = '';
+      if(href == menu['link']){
+        class_name = " class='active' ";
+        var parent;
+        var parents = menu['parents'].split('_');
+        for (var j=0; j<parents.length; j++){
+          parent = parents[j];
+          if(parent){
+            $("#li_" + parent + " > a").addClass("active");
+          }
+        }
+      }
+
+      subcontainer.append($("<li id='li_" + menu['id'] + "'><a href='" + menu['link'] + "'" + class_name + ">" + menu['name'] + "</a></li>"));
+      if(menu['sub'] && menu['sub'].length > 0){
+        recursive_fill_menu(menu['sub'], menu['id']);
+      }
+
+    }
+  }
+/*
+  var cats = $(".sidebar-area ul.product-categories > li");
+  if(cats.length > 0) {
+    var cat_id = window.cat_id;
+    if(cat_id > 0) {
+      $.ajax({
+        type: "GET",
+        url: '/cat/lvl/' + cat_id + '/',
+      }).done(function(r){
+        recursive_fill_menu(r['menus'], r['parent']);
+        $("#li_" + r['parent'] + " > a").addClass("active");
+      });
+    }
+  }
+*/
+
+  var flat_tree = $("#flat_tree");
+  if(flat_tree.length > 0) {
+    var container_id = flat_tree.attr('data-attr-container_id');
+    flat_tree.jstree({
+      // state будет помнить состояние
+      "plugins": ["wholerow"],
+      "core" : {
+        "animation": 0,
+        "check_callback" : true,
+        "data" : {
+          "cache": false,
+          "url" : "/cat/lvl/",
+          "data" : function (node) {
+            return {
+              "node_id" : node.id == "#" ? "" : node.id,
+              "container_id": container_id,
+              "selected_id": window.cat_id,
+            };
+          },
+          "worker": false,
+        }
+      }
+    })
+    .bind("loaded.jstree", function(e, data) {
+    })
+    .bind("select_node.jstree", function (event, data) {
+      var href = data.node.a_attr.href;
+      document.location.href = href;
+    })
+    .on("changed.jstree", function (e, data) {
+      if(!data.node){
+        return;
+      }
+      if(data.node.id.indexOf('container_') > -1){
+        return;
+      }
+      // Если уже этот узел выбран
+      var node_id = data.node.id;
+      var container = $("#current_edit_form");
+    })
+    .bind('hover_node.jstree', function() {
+      var bar = $(this).find('.jstree-wholerow-hovered');
+      bar.css('height', bar.parent().children('a.jstree-anchor').height() + 'px');
+    });
+  }
 
 })(jQuery);

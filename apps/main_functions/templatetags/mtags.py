@@ -5,7 +5,6 @@ import os
 
 from django import template
 from django.conf import settings
-from django.core.cache import cache
 from django.utils.safestring import mark_safe
 
 from apps.main_functions.string_parser import kill_quotes, translit, summa_format, analyze_digit

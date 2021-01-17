@@ -27,6 +27,7 @@ from .models import (Containers,
                      get_ftype,
                      update_containers_vars,
                      update_blocks_vars,
+                     prepare_jstree,
                      FAT_HIER, )
 
 is_products = False
@@ -252,6 +253,21 @@ def show_containers(request, ftype: str, *args, **kwargs):
     template = '%stable.html' % template_prefix
     return render(request, template, context)
 
+def reverse_edit(mh_vars: dict, ftype: str, action: str, row_id: int):
+    """Вспомогательная функция для ссылки редактирования контейнера,
+       чтобы трехэтажный kwargs не писать каждый раз
+       :param mh_vars: словарь с данными по модельке
+       :param ftype: тип стат. страничек
+       :param action: действие
+       :param row_id: ид для реверса
+    """
+    edit_link = '%s:%s' % (CUR_APP, mh_vars['edit_urla'])
+    return reverse(edit_link, kwargs={
+        'ftype': ftype,
+        'action': action,
+        'row_id': row_id,
+    })
+
 @login_required
 def edit_container(request, ftype: str, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование контейнера"""
@@ -270,14 +286,32 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
     # ----------------------------
     if ftype in ('flatmenu', 'flatmain'):
         context['is_products'] = False
+    # ----------------------------
+    # Подливаем линковку к менюшке
+    # ----------------------------
+    elif ftype == 'flatpages':
+        links = LinkContainer.objects.select_related('block').filter(container=mh.row)
+        edit_link = '%s:%s' % (CUR_APP, mh_vars['edit_urla'])
+        fmenu = 'flatmenu'
+        context['links'] = [{
+            'id': link.block.id,
+            'container_id': link.block.container_id,
+            'name': link.block.name,
+            'tag': link.block.tag,
+            'link': link.block.link,
+            'blocks': reverse('%s:%s' % (CUR_APP, blocks_vars['show_urla']),
+                              kwargs={'ftype': fmenu, 'container_id': link.block.container_id}),
+            'edit': reverse_edit(mh_vars, fmenu, 'edit', link.block.container_id),
+            'tree': reverse_edit(mh_vars, fmenu, 'tree', link.block.container_id),
+        } for link in links]
+
     context['ftype_state'] = ftype_state
 
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
     if mh.row:
-        mh.url_tree = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                              kwargs={'ftype': ftype, 'action': 'tree', 'row_id': mh.row.id})
+        mh.url_tree = reverse_edit(mh_vars, ftype, 'tree', mh.row.id)
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['thumb'] = mh.row.thumb()
         context['row']['imagine'] = mh.row.imagine()
@@ -327,10 +361,7 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
             new_container.id = None
             new_container.save()
             fill_from_template(new_container, row.state)
-            urla = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                           kwargs={'ftype': ftype,
-                                   'action': 'edit',
-                                   'row_id': new_container.id})
+            urla = reverse_edit(mh_vars, ftype, 'edit', new_container.id)
             return redirect(urla)
 
         elif action == 'show' and row:
@@ -887,27 +918,6 @@ def search_blocks(request, *args, **kwargs):
 
     return JsonResponse(result, safe=False)
 
-def prepare_jstree(data, menus, lazy: bool = False):
-    """Вспомогательная функция для построения
-       меню из queryset в формат jstree
-       :param data: результат
-       :param menus: иерархия менюшек
-       :param lazy: если хотим получать только текущий уровень
-    """
-    for menu in menus:
-        data.append({
-            'id': menu.id,
-            'text': menu.name,
-            'state': {'opened': False, 'selected': False},
-            'children': [] if not lazy else True,
-            'a_attr': {
-                'href': '#%s' % menu.id,
-            },
-        })
-        if hasattr(menu, 'sub'):
-            if menu.sub:
-                prepare_jstree(data[-1]['children'], menu.sub)
-
 @login_required
 def tree_co(request):
     """Дерево контейнера и операции над ним"""
@@ -1044,7 +1054,10 @@ def tree_co(request):
             update_linkcontainer(request, container, menu)
             # Записываем привязки товаров к рубрике
             update_productscats(request, container, menu)
-            result = {'success': True, 'id': menu.id}
+            result = {
+                'success': True,
+                'id': menu.id,
+            }
         elif operation == 'drop_node' and mh.permissions['drop']:
             node_id = request.GET.get('node_id')
             menu = Blocks.objects.filter(pk=node_id, container=container).first()

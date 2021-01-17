@@ -117,8 +117,10 @@
     .header {
       position: relative;
       padding: 15px 0; }
- }
-
+  }
+  .header.fadeOut {
+    z-index: 1;
+  }
   .header .logo {
     margin-bottom: 0;
     display: block;
@@ -1570,6 +1572,12 @@
   padding-left: 10px;
   margin-bottom: 30px;
 }
+.portfolio_subtitle {
+  font-size: 1.2em;
+  padding-left: 10px;
+  color: #582371;
+  margin-bottom: 20px;
+}
 .portfolio_title:before {
   content: " ";
   position: absolute;
@@ -1616,6 +1624,9 @@
   font-size: 1.8em;
   font-family: Verdana, Arial, Helvetica, sans-serif;
   color: #e7e1ee;
+}
+.portfolio_swiper.hidden {
+  display: none !important;
 }
 @media (max-width: 799px) {
   .portfolio_title_bg {
@@ -1719,7 +1730,78 @@
     color: #582371;
   }
 }
+.project .project_desc {
+  padding-left: 25px;
+  color: #582371;
+}
+.project .w-post-category .post-category-wrap .category-post-item a {
+  color: #582371;
+}
+.project .project_img {
+  margin-bottom: 25px;
+}
+/* --- Меню для проекта --- */
+.sidebar .primary-menu-menu,
+.project .images {
+  margin-top: 40px;
+}
+.sidebar .primary-menu-menu li.category-post-item {
+  display: block;
+  margin-bottom: 15px;
+}
 
+
+/*------------- project sticky menu --------------*/
+.project .sidebar .primary-menu-menu {
+  max-height: 300px;
+  /*overflow: scroll;*/
+  overflow: hidden;
+}
+.project .sticky_wrapper .sticked2 {
+  margin-top: 120px;
+}
+.project .sidebar .next,
+.project .sidebar .prev {
+  position: absolute;
+  left: 0;
+}
+.project .sidebar .prev {
+  top: 0;
+}
+.project .sidebar .next {
+  bottom: -50px;
+}
+
+.project .next,
+.project .prev {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+.project .next,
+.project .prev {
+  margin-left: 20px;
+  text-align: center;
+}
+.project .next i,
+.project .prev i {
+  color: #e53863;
+  font-size: 30px;
+}
+.project .next i,
+.project .prev i {
+  background: -moz-linear-gradient(left, #e53863 50%, #582371 100%);
+  background: -webkit-linear-gradient(left, #e53863 50%,#582371 100%);
+  background: -o-linear-gradient(left, #e53863 50%,#582371 100%);
+  background: -ms-linear-gradient(left, #e53863 50%,#582371 100%);
+  background: linear-gradient(left, #e53863 50%,#582371 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.project .sidebar .hidden {
+  display: none !important;
+}
 /*------------- Simple Services ---------------*/
 .simple_services .servises-item .servises-item__content .servises-text {
   color: #582371;
@@ -1747,7 +1829,46 @@
 .simple_services .servises-item__content {
   padding-bottom: 40px;
 }
-/*------------- Simple Services ---------------*/
+/*------------ Simple gallery -------------*/
+.simple_gallery table .text {
+  text-align: center;
+  font-size: 1.35em;
+  color: #582371;
+}
+.simple_gallery .gallery_img {
+  margin-bottom: 25px;
+}
+@media (min-width: 800px) {
+  .simple_gallery table {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    background-color: rgba(255, 255, 255, 0.65);
+    border: 0;
+    opacity: 0;
+    -webkit-animation: fadeOut 0.65s; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadeOut 0.65s; /* Firefox < 16 */
+    -ms-animation: fadeOut 0.65s; /* Internet Explorer */
+    -o-animation: fadeOut 0.65s; /* Opera < 12.1 */
+    animation: fadeOut 0.65s;
+  }
+  .simple_gallery .gallery_img:hover table {
+    opacity: 1;
+    -webkit-animation: fadeIn 0.65s; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadeIn 0.65s; /* Firefox < 16 */
+    -ms-animation: fadeIn 0.65s; /* Internet Explorer */
+    -o-animation: fadeIn 0.65s; /* Opera < 12.1 */
+    animation: fadeIn 0.65s;
+  }
+  .simple_gallery table .text {
+    width: 300px;
+    font-size: 1.8em;
+  }
+}
+/*------------- Simple Team ---------------*/
 .simple_team {
   background-repeat: no-repeat;
   background-position: top left;
@@ -1761,6 +1882,17 @@
   font-size: 26px;
   position: relative;
   top: 6px;
+}
+#team_details .portfolio_title {
+  margin-bottom: 5px;
+}
+#team_details .simple_team {
+  background-position: top right;
+  background-image: url('/media/img/team_details_bg.png');
+}
+.team_details_desc {
+  color: #582371;
+  line-height: 30px;
 }
 /*------------- Recent-post-slider --------------*/
 .recent-post-slider {
@@ -1958,19 +2090,24 @@
 
 .swiper-container .swiper-slide-active table {
   opacity: 0;
-  -webkit-animation: fadeOut 1s; /* Safari, Chrome and Opera > 12.1 */
-  -moz-animation: fadeOut 1s; /* Firefox < 16 */
-  -ms-animation: fadeOut 1s; /* Internet Explorer */
-  -o-animation: fadeOut 1s; /* Opera < 12.1 */
+  -webkit-animation: fadeOut 1s;
+  -moz-animation: fadeOut 1s;
+  -ms-animation: fadeOut 1s;
+  -o-animation: fadeOut 1s;
   animation: fadeOut 1s;
+}
+.swiper-container:hover:after {
+  /*border: 0;*/
 }
 .swiper-container:hover .swiper-slide-active table {
   opacity: 1;
-  -webkit-animation: fadeIn 1s; /* Safari, Chrome and Opera > 12.1 */
-  -moz-animation: fadeIn 1s; /* Firefox < 16 */
-  -ms-animation: fadeIn 1s; /* Internet Explorer */
-  -o-animation: fadeIn 1s; /* Opera < 12.1 */
+  -webkit-animation: fadeIn 1s;
+  -moz-animation: fadeIn 1s;
+  -ms-animation: fadeIn 1s;
+  -o-animation: fadeIn 1s;
   animation: fadeIn 1s;
+
+  background: rgba(88, 35, 113, 0.5);
 }
 .swiper-container table h6 {
   font-size: 1.4em;
@@ -1995,7 +2132,7 @@
   height: 25%;
 }
 .swiper-container table .text {
-  background-color: rgba(255, 255, 255, 0.45);
+  background-color: rgba(255, 255, 255, 0.65);
   width: 50%;
   height: 50%;
   padding: 25px;

@@ -6,6 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
@@ -34,35 +35,44 @@ languages_vars = {
     'model': Translate,
 }
 
-def get_referer_path(referer):
+def get_referer_path(request):
     """Получение ссылки без домена от реферера
-       :param referer: ссылка с которой пришел пользователь"""
-    if not referer:
-        return referer
+       :param request: HttpRequest"""
+    referer = request.META.get('HTTP_REFERER')
+    if not referer or 'languages/pick' in referer:
+        return '/'
     referer = referer.replace('http://', '')
     referer = referer.replace('https://', '')
     referer = referer.replace('www.', '')
     referer = referer.replace(request.META.get('HTTP_HOST', ''), '')
     return referer
 
-def PickLanguage(request, lang):
+def pick_language(request, lang):
     """Переключение языка
+       :param request: HttpRequest
        :param lang: язык (домен) на который переключаемся"""
-    goto = None
-    referer = None
-    if hasattr(request, 'META'):
-        referer = get_referer_path(request.META.get('HTTP_REFERER'))
-        if not referer:
-            return redirect('/')
-    if hasattr(settings, 'DOMAINS'):
-        domains = settings.DOMAINS
-        for domain in domains:
-            if domain['domain'].startswith("%s." % lang):
-                if settings.DEBUG:
-                    request.session['domain'] = domain['domain']
-                    return redirect(referer)
-                return redirect("http://%s%s" % (domain['domain'], referer))
-    return redirect("/")
+    schema = 'https://' if request.is_secure() else 'http://'
+    referer = get_referer_path(request)
+    domains = get_domains()
+    for domain in domains:
+        if domain['domain'].startswith("%s." % lang):
+            request.session['lang'] = lang
+            #if settings.DEBUG:
+            #    return redirect(referer)
+            # Если домен совпадает с доменом по умолчанию,
+            # тогда переадресацию делаюм на MAIN_DOMAIN
+            dest = '%s%s%s' % (schema, domain['domain'], referer)
+            if settings.DEFAULT_DOMAIN == lang:
+                dest = '%s%s%s' % (schema, settings.MAIN_DOMAIN, referer)
+            return redirect(dest)
+
+    # Если домен не нашелся, удаляем
+    try:
+        del request.session['lang']
+    except Exception:
+        pass
+
+    return redirect(referer)
 
 def api(request, action: str = 'languages'):
     """Апи-метод для получения всех данных"""

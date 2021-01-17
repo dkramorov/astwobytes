@@ -16,6 +16,7 @@
     overflow: scroll;
   }
 </style>
+<script type="text/javascript">window.cat_id = {{ page.id }};</script>
 {% endblock %}
 
 {% block extracontent %}
@@ -235,6 +236,7 @@
     $.ajax({
       type: "GET",
       url: '{% url "products:facet_filters" page.id %}',
+      data: 'search_facet=1',
     }).done(function(r){
       //console.log(r);
       var html = "";
@@ -259,7 +261,7 @@
         html += '<div class="product-categories">';
         for(var i=0; i<values_length; i++){
           //html += '<li><a>' + r[key]['values'][i]['value'] + '</a></li>';
-          html += '<label><input id="prop_' + key + '_' + r[key]['values'][i]['id'] + '" type="checkbox" name="prop_' + key + '" value="' + r[key]['values'][i]['id'] + '" /> ' + r[key]['values'][i]['value'] + '</label><br>';
+          html += '<label><input id="prop_' + key + '_' + r[key]['values'][i]['id'] + '" type="checkbox" name="prop_' + key + '" value="' + r[key]['values'][i]['id'] + '" autocomplete="off" /> ' + r[key]['values'][i]['value'] + '</label><br>';
         }
         html += '</div>';
         html += '</div>';
@@ -269,15 +271,14 @@
 
       {% if q_string.q.ff %}
         $("#show_facet_filters").click();
-        {% for key, value in q_string.q.items %}
-          {% if 'prop_' in key %}
-            $("#{{ key }}_{{ value }}").prop('checked', 'checked');
-          {% endif %}
+        {% for key, value in facet_filters.items %}
+          {% for item in value %}
+            $("#prop_{{ key }}_{{ item }}").prop('checked', 'checked');
+          {% endfor %}
         {% endfor %}
       {% endif %}
     }).fail(function(){
     });
-
 
   });
 </script>
