@@ -902,8 +902,31 @@ def search_blocks(request, *args, **kwargs):
     mh.select_related_add('container')
     rows = mh.standard_show()
 
+    # Родительские блоки
+    all_ids_parents = []
+    ids_parents = {}
+    ids_rows = {row.id: row for row in rows}
+    for row_id, row in ids_rows.items():
+        if not row.parents:
+            continue
+        ids_parents[row_id] = [int(parent) for parent in row.parents.split('_') if parent]
+        all_ids_parents += ids_parents[row_id]
+    parents = Blocks.objects.filter(pk__in=all_ids_parents)
+    all_parents = {parent.id: parent for parent in parents}
     for row in rows:
-        name = '%s > %s #%s' % (row.container.name, row.name, row.id)
+        if not row.id in ids_parents:
+            continue
+        row.parents_arr = []
+        for parent in ids_parents[row.id]:
+            if parent in all_parents:
+                row.parents_arr.append(all_parents[parent])
+
+    for row in rows:
+        parents = ''
+        if hasattr(row, 'parents_arr'):
+            for parent in row.parents_arr:
+                parents += ' > %s #%s' % (parent.name, parent.id)
+        name = '%s%s > %s #%s' % (row.container.name, parents, row.name, row.id)
         if row.tag:
             name += ' (%s)' % (row.tag, )
         # При поиске по шаблону отдаем тег, а не id в поле id

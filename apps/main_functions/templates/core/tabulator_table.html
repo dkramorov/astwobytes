@@ -123,6 +123,9 @@ var accessor_is_active = function(value, data, type, params, column){
   //console.log(params, value, value ? 1: 0);
   return value ? 1: 0;
 }
+var accessor_not_empty = function(value, data, type, params, column){
+  return value ? value : '';
+}
 $(document).ready(function(){
   //trigger download of data.csv file
   $("#download-csv").click(function(){

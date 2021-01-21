@@ -11,7 +11,13 @@ from PIL import Image, ImageEnhance
 
 from django.conf import settings
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('main')
+# Попробовать подзаглушить логи для PIL,
+# а то сыпет своими STREAM b'IHDR' 16 13
+# STREAM b'IDAT' 41 8192 - подзаебал уже
+#pil_logger = logging.getLogger('PIL')
+#pil_logger.setLevel(logging.INFO)
+
 DEFAULT_FOLDER = settings.MEDIA_ROOT
 
 def image_size(img_name, path):
@@ -186,8 +192,9 @@ def imageThumb(img, *args):
     except IOError:
         drop_file(our_img)
         return False
-    #if not im.mode == "RGB":
-        #im = im.convert("RGB")
+    if im.mode == 'RGBA':
+        if img[-3:].lower() == 'jpg':
+            im = im.convert('RGB')
     original_width, original_height = im.size
     # --------------------------------------------
     # Масштабируем только если размеры изображения
@@ -202,7 +209,7 @@ def imageThumb(img, *args):
         try:
             im.save(our_img)
         except IOError:
-            logger.error('NOTHING HELP, removing img %s, mode %s' % (our_img, im.mode))
+            logger.info('NOTHING HELP, removing img %s, mode %s' % (our_img, im.mode))
             drop_file(our_img)
             return False
     return True

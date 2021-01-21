@@ -121,6 +121,25 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
             context['cats'] = row.productscats_set.select_related('cat', 'cat__container').all()
+
+            # Вывод родительских рубрик
+            all_ids_parents = []
+            ids_parents = {}
+            ids_cats = {item.cat.id: item.cat for item in context['cats']}
+            for k, v in ids_cats.items():
+                if v.parents:
+                    ids_parents[k] = [int(parent) for parent in v.parents.split('_') if parent]
+                    all_ids_parents += ids_parents[k]
+            parents = Blocks.objects.filter(pk__in=all_ids_parents)
+            all_parents = {parent.id: parent for parent in parents}
+            for item in context['cats']:
+                if not item.cat.id in ids_parents:
+                    continue
+                item.parents = []
+                for parent in ids_parents[item.cat.id]:
+                    if parent in all_parents:
+                        item.parents.append(all_parents[parent])
+
             context['props'] = row.productsproperties_set.select_related('prop', 'prop__prop').all()
             context['photos'] = row.productsphotos_set.all()
             context['seo'] = row.get_seo()

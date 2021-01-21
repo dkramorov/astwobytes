@@ -18,7 +18,6 @@ from apps.flatcontent.models import Containers, Blocks
 from apps.products.models import Products, Property, PropertiesValues, ProductsProperties, ProductsCats, ProductsPhotos
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.files import open_file, make_folder
-from apps.products.models import Products, ProductsPhotos, ProductsCats
 
 logger = logging.getLogger(__name__)
 

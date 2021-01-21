@@ -1,0 +1,69 @@
+{% load mtags %}
+<div class="shop-product-wrap grid row no-gutters mb-35">
+{% for product in products %}
+  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+    <div class="gf-product shop-grid-view-product">
+      <div class="image">
+        <a href="{{ product.link }}">
+          {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
+          <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
+        </a>
+        <div class="product-hover-icons">
+          <a href="javascript:void(0);" onclick="add_to_cart({{ product.id }})" data-tooltip="Добавить в корзину">
+            <span class="icon_cart_alt"></span>
+          </a>
+{% comment %}<!--
+          <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> </a>
+          <a href="#" data-tooltip="Compare"> <span class="arrow_left-right_alt"></span> </a>
+          <a href="#" data-tooltip="Quick view" data-toggle = "modal" data-target="#quick-view-modal-container"> <span class="icon_search"></span> </a>
+-->{% endcomment %}
+        </div>
+      </div>
+      <div class="product-content">
+        <div class="product-categories">
+          <a href="{{ page.link }}">{{ page.name }}</a>
+        </div>
+        <h3 class="product-title"><a href="{{ product.link }}">{{ product.name }}</a></h3>
+        <div class="price-box">
+          {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
+          <span class="discounted-price">{{ product.price|money_format }} руб</span>
+        </div>
+      </div>
+    </div>
+    <div class="gf-product shop-list-view-product">
+      <div class="image">
+        <a href="{{ product.link }}">
+          {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
+          <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
+        </a>
+{% comment %}<!--
+        <div class="product-hover-icons">
+          <a href="#" data-tooltip="Quick view" data-toggle = "modal" data-target="#quick-view-modal-container"> <span class="icon_search"></span> </a>
+        </div>
+-->{% endcomment %}
+      </div>
+      <div class="product-content">
+        <div class="product-categories">
+          <a href="{{ page.link }}">{{ page.name }}</a>
+        </div>
+        <h3 class="product-title"><a href="{{ product.link }}">{{ product.name }}</a></h3>
+        <div class="price-box mb-20">
+          {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
+          <span class="discounted-price">{{ product.price|money_format }} руб</span>
+        </div>
+        <div class="product-description">{% if product.mini_info %}{{ product.mini_info|safe }}{% else %}{% endif %}</div>
+        <div class="list-product-icons">
+          <a href="javascript:void(0);" onclick="add_to_cart({{ product.id }})" data-tooltip="Добавить в корзину">
+            <span class="icon_cart_alt"></span>
+          </a>
+{% comment %}<!--
+          <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> </a>
+          <a href="#" data-tooltip="Compare"> <span class="arrow_left-right_alt"></span> </a>
+-->{% endcomment %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% if paginator %}{{ paginator|safe }}{% endif %}

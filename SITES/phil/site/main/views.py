@@ -6,11 +6,13 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 from apps.flatcontent.models import Blocks
 from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
 from apps.main_functions.views import DefaultFeedback
+from apps.main_functions.catcher import json_pretty_print
 #from apps.products.models import Products
 #from apps.personal.oauth import VK, Yandex
 #from apps.personal.utils import save_user_to_request, remove_user_from_request
@@ -337,3 +339,28 @@ def checkout(request):
         template = 'web/order/confirmed.html'
 
     return render(request, template, context)
+
+@csrf_exempt
+def test(request):
+    """Апи-метод для получения ip-адреса"""
+    method = request.GET if request.method == 'GET' else request.POST
+    result = {
+        'ip': method.get('REMOTE_ADDR'),
+        'ip_forwarded': request.META.get('HTTP_X_FORWARDED_FOR'),
+    }
+    # на случай, если надо посмотреть тело json запроса
+    if hasattr(request, 'body') and request.body:
+        print(json_pretty_print(json.loads(request.body)))
+        result = {
+            'apiVersion': '1',
+            'error': {
+                'code':400,
+                'message': 'bad request',
+                'errors': [{
+                    'reason': 'requiredFieldMissing',
+                    'message': 'pickup: required field pointOfServiceId missing',
+                }]
+            },
+        }
+        return JsonResponse(result, safe=False, status=400)
+    return JsonResponse(result, safe=False)

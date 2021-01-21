@@ -24,6 +24,7 @@ var excel_table = null;
 $(document).ready(function(){
   excel_table = new Tabulator("#excel-table", {
     layout: "fitColumns",
+    height: 600,
     columns:[
       {
         title: "Ид получателя",
@@ -90,6 +91,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         width: 150,
         downloadTitle: "client_id",
+        accessorDownload: accessor_not_empty,
       },
       {
         title: "Наименования получателя (компания)",
@@ -99,6 +101,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         width: 150,
         downloadTitle: "client_name",
+        accessorDownload: accessor_not_empty,
       },
       {
         title: "Имя получателя",
@@ -108,6 +111,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         width: 150,
         downloadTitle: "name",
+        accessorDownload: accessor_not_empty,
       },
       {
         title: "Email получателя",
@@ -117,6 +121,7 @@ $(document).ready(function(){
         headerFilterFunc: "like",
         width: 150,
         downloadTitle: "dest",
+        accessorDownload: accessor_not_empty,
       },
       {
         title: "Отправитель",
@@ -125,6 +130,8 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         width: 150,
+        downloadTitle: "sender__email",
+        accessorDownload: accessor_not_empty,
       },
       /* Флаг на отправку - включен, значит надо отправить */
       {% include "core/tabulator_cell/is_active.html" %}

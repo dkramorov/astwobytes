@@ -2,6 +2,7 @@
 import json
 
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
@@ -87,6 +88,13 @@ def cat_on_site(request, link: str = None):
     containers = {}
 
     if request.is_ajax():
+        # Если запрос по фасетному поиску,
+        # отдаем отрендеренный шаблон
+        if request.GET.get('ff'):
+            context = {
+                'plp': render_to_string('web/cat/plp.html', context),
+                'my_paginator': context['my_paginator'],
+            }
         return JsonResponse(context, safe=False)
     template = 'web/cat/%slist.html' % (mh_vars['template_prefix'], )
 

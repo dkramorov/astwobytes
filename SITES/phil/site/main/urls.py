@@ -26,5 +26,7 @@ urlpatterns = [
     # Оформление заказа
     path('shop/cart/', views.show_cart, name='show_cart'),
     path('shop/checkout/', views.checkout, name='checkout'),
+
+    path('api/ecom/1/orders', views.test),
 ]
 

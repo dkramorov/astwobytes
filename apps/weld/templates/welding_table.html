@@ -233,10 +233,6 @@ $(document).ready(function(){
     result += "</div>";
     return result;
   };
-
-  var accessor_not_empty = function(value, data, type, params, column){
-    return value ? value : '';
-  }
   var accessor_state = function(value, data, type, params, column){
     return state_choices[value];
   }
@@ -336,7 +332,8 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 250,
-        frozen:true,
+        frozen: true,
+        accessorDownload: accessor_not_empty,
       },
       {
         title: "Дата заявки на НК",

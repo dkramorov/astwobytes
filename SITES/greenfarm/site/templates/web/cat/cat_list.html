@@ -3,6 +3,15 @@
 
 {% block extrahead %}
 <style type="text/css">
+  #show_facet_filters {
+    display: block;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4b7ea9;
+    text-align:center;
+    padding: 10px;
+    margin-bottom: 5px;
+  }
   #facet_filters .sidebar{
     display: inline-block;
   }
@@ -14,6 +23,33 @@
     display: block;
     height: 150px;
     overflow: scroll;
+  }
+
+  /* LOADER */
+  .lds-dual-ring {
+    margin: 0 auto;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+  }
+  .lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 6px solid #4b7ea9;
+    border-color: #4b7ea9 transparent #4b7ea9 transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+  }
+  @keyframes lds-dual-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 </style>
 <script type="text/javascript">window.cat_id = {{ page.id }};</script>
@@ -87,8 +123,9 @@
             </a>
           </div>
         {% endif %}
+        {% if page.html %}{{ page.html|safe }}<br />{% endif %}
 
-        <a href="javascript:void(0);" id="show_facet_filters">Показать все фильтры</a>
+        <a href="javascript:void(0);" id="show_facet_filters">Показать фильтры</a>
         <form class="sidebar-area mb-35 hidden" id="facet_filters" action="{{ page.link }}">
 <!--
           <div class="sidebar mb-35">
@@ -119,82 +156,13 @@
                   <option value="-price"{% ifequal q_string.q.sort '-price' %} selected{% endifequal %}>Цена по убыванию</option>
                 </select>
               </div>
-              <p class="result-show-message">{{ my_paginator.total_records }} {{ my_paginator.ends }}</p>
+              <p class="result-show-message" id="my_paginator">{{ my_paginator.total_records }} {{ my_paginator.ends }}</p>
             </div>
           </div>
         </div>
-
-        <div class="shop-product-wrap grid row no-gutters mb-35">
-          {% for product in products %}
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-              <div class="gf-product shop-grid-view-product">
-                <div class="image">
-                  <a href="{{ product.link }}">
-                    {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
-                    <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
-                  </a>
-                  <div class="product-hover-icons">
-                    <a href="javascript:void(0);" onclick="add_to_cart({{ product.id }})" data-tooltip="Добавить в корзину">
-                      <span class="icon_cart_alt"></span>
-                    </a>
-{% comment %}<!--
-                    <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> </a>
-                    <a href="#" data-tooltip="Compare"> <span class="arrow_left-right_alt"></span> </a>
-                    <a href="#" data-tooltip="Quick view" data-toggle = "modal" data-target="#quick-view-modal-container"> <span class="icon_search"></span> </a>
--->{% endcomment %}
-                  </div>
-
-                </div>
-                <div class="product-content">
-                  <div class="product-categories">
-                    <a href="{{ page.link }}">{{ page.name }}</a>
-                  </div>
-                  <h3 class="product-title"><a href="{{ product.link }}">{{ product.name }}</a></h3>
-                  <div class="price-box">
-                    {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
-                    <span class="discounted-price">{{ product.price|money_format }} руб</span>
-                  </div>
-                </div>
-              </div>
-              <div class="gf-product shop-list-view-product">
-                <div class="image">
-
-                  <a href="{{ product.link }}">
-                    {% comment %}<!--<span class="onsale">Sale!</span>-->{% endcomment %}
-                    <img src="{% imagine product.img '300x300' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
-                  </a>
-{% comment %}<!--
-                  <div class="product-hover-icons">
-                    <a href="#" data-tooltip="Quick view" data-toggle = "modal" data-target="#quick-view-modal-container"> <span class="icon_search"></span> </a>
-                  </div>
--->{% endcomment %}
-                </div>
-                <div class="product-content">
-                  <div class="product-categories">
-                    <a href="{{ page.link }}">{{ page.name }}</a>
-                  </div>
-                  <h3 class="product-title"><a href="{{ product.link }}">{{ product.name }}</a></h3>
-                  <div class="price-box mb-20">
-                    {% if product.old_price %}<span class="main-price">{{ product.old_price|money_format }} руб</span>{% endif %}
-                    <span class="discounted-price">{{ product.price|money_format }} руб</span>
-                  </div>
-                  <div class="product-description">{% if product.mini_info %}{{ product.mini_info|safe }}{% else %}{% endif %}</div>
-
-                  <div class="list-product-icons">
-                    <a href="javascript:void(0);" onclick="add_to_cart({{ product.id }})" data-tooltip="Добавить в корзину">
-                      <span class="icon_cart_alt"></span>
-                    </a>
-{% comment %}<!--
-                    <a href="#" data-tooltip="Add to wishlist"> <span class="icon_heart_alt"></span> </a>
-                    <a href="#" data-tooltip="Compare"> <span class="arrow_left-right_alt"></span> </a>
--->{% endcomment %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          {% endfor %}
+        <div id="products_container">
+          {% include "web/cat/plp.html" %}
         </div>
-        {% if paginator %}{{ paginator|safe }}{% endif %}
       </div>
     </div>
   </div>
@@ -203,6 +171,7 @@
 
 {% block extrascripts %}
 <script type="text/javascript" src="/static/js/cat.js"></script>
+<script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
 {% if search_terms %}
 <script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
 <script type="text/javascript">
@@ -215,6 +184,18 @@
 {% endif %}
 <script type="text/javascript">
   $(document).ready(function(){
+    $("#facet_filters").ajaxForm({
+      beforeSubmit: showLoading,
+      success: showResponse,
+    });
+    function showLoading() {
+      $("#products_container").html("<div class='text-center'><div class='lds-dual-ring'></div></div>");
+    }
+    function showResponse(r, statusText, xhr, $form){
+      $("#products_container").html(r['plp']);
+      $("#my_paginator").html(r['my_paginator']['total_records'] + " " + r['my_paginator']['ends']);
+    }
+
     $("#sort-by").change(function(){
       var value = $(this).val();
       var new_url = rebuild_query_path_with_param("sort", value);
@@ -226,10 +207,10 @@
     $("#show_facet_filters").click(function(){
       if($("#facet_filters").hasClass("hidden")){
         $("#facet_filters").removeClass("hidden");
-        $(this).html("Скрыть все фильтры");
+        $(this).html("Скрыть фильтры");
       }else{
         $("#facet_filters").addClass("hidden");
-        $(this).html("Показать все фильтры");
+        $(this).html("Показать фильтры");
       }
     });
 
@@ -266,7 +247,7 @@
         html += '</div>';
         html += '</div>';
       }
-      html += '<div class="text-center"><button class="contact-form-btn mt-35" type="submit" value="1" name="ff"> Найти</button></div>';
+      html += '<div class="text-center hidden"><button class="contact-form-btn mt-35" type="submit" value="1" name="ff"> Найти</button></div>';
       container.html(html);
 
       {% if q_string.q.ff %}
@@ -277,6 +258,11 @@
           {% endfor %}
         {% endfor %}
       {% endif %}
+
+      $("#facet_filters input[type='checkbox']").change(function(){
+        $("#facet_filters button[type='submit']").click();
+      });
+
     }).fail(function(){
     });
 

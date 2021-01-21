@@ -39,7 +39,8 @@ def catalogue(request):
         request,
         tag = get_default_catalogue(),
         cache_time = 60,
-        force_new = False)
+        force_new = False,
+        fat_hier = 500)
     result['request'] = request
     return result
 

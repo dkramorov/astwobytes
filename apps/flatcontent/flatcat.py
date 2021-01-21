@@ -180,16 +180,22 @@ def get_catalogue(request,
                   tag: str = None,
                   with_count: bool = False,
                   cache_time: int = 300,
-                  force_new: bool = False):
+                  force_new: bool = False,
+                  fat_hier: int = None):
     """Получить каталог для сайта
        :param request: HttpRequest
        :param tag: тег Containers с каталогом
        :param with_count: вытащить по каждой рубрике кол-во товара
        :param cache_time: кэш
        :param force_new: получить каталог без кэша
+       :param custom_fat_hier: сколько рубрик считать жирной иерархией?
     """
     if not tag:
         tag = settings.DEFAULT_CATALOGUE_TAG
+
+    MY_FAT_HIER = FAT_HIER
+    if fat_hier:
+        MY_FAT_HIER = fat_hier
 
     pass_cache = False
     cache_var = '%s_%s_catalogue' % (
@@ -211,7 +217,7 @@ def get_catalogue(request,
         # Если рубрик дохера, то будет больно, избегаем этого
         cats = container.blocks_set.filter(is_active=True)
         count = cats.aggregate(Count('id'))['id__count']
-        if count > FAT_HIER:
+        if count > MY_FAT_HIER:
             pass_cache = True
             cats = cats.filter(parents='')
 
@@ -221,7 +227,7 @@ def get_catalogue(request,
     result = {
         'container': container,
         'menus': menus,
-        'fat_hier': count > FAT_HIER,
+        'fat_hier': count > MY_FAT_HIER,
     }
 
     if not pass_cache:
