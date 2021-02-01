@@ -64,6 +64,10 @@
     {% include "addresses_admin_menu.html" %}
   {% endif %}
 
+  {% if 'contractors' in apps %}
+    {% include "contractors_admin_menu.html" %}
+  {% endif %}
+
   {% include "main_functions_admin_menu.html" %}
 </ul>
 {% endwith %}

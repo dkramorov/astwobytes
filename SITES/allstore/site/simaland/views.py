@@ -28,6 +28,7 @@ simaland_vars = {
     'submenu': 'simaland',
     'cart_urla': 'simaland_cart',
     'cart_singular_obj': 'Корзина покупок',
+    'order_singular_obj': 'Заказы',
     'credentials_urla': 'simaland_credentials',
     'credentials_singular_obj': 'Настройки аккаунта',
 }
@@ -47,6 +48,7 @@ def simaland_credentials(request):
     """Настройки аккаунта sima-land.ru"""
     context = simaland_vars.copy()
     context['singular_obj'] = context['credentials_singular_obj']
+    context['submenu'] = 'credentials'
     root_url = reverse('%s:%s' % (CUR_APP, context['credentials_urla']))
     context['root_url'] = root_url
 
@@ -84,6 +86,7 @@ def simaland_cart(request):
     """Апи по корзинке товаров sima-land.ru"""
     context = simaland_vars.copy()
     context['singular_obj'] = context['cart_singular_obj']
+    context['submenu'] = 'cart'
     root_url = reverse('%s:%s' % (CUR_APP, context['cart_urla']))
     context['root_url'] = root_url
 
@@ -95,7 +98,6 @@ def simaland_cart(request):
     if row:
         context['row'] = row
         simaland = SimaLand(login=row.attr, passwd=row.value)
-        simaland.get_jwt()
         cart = simaland.get_cart()
         new_cart = {}
         if cart:
@@ -162,3 +164,25 @@ def simaland_cart(request):
     template = '%scart.html' % (context['template_prefix'], )
     return render(request, template, context)
 
+@login_required
+def simaland_orders(request):
+    """Апи по заказам sima-land.ru"""
+    context = simaland_vars.copy()
+    context['singular_obj'] = context['order_singular_obj']
+    context['submenu'] = 'orders'
+    root_url = reverse('%s:%s' % (CUR_APP, context['cart_urla']))
+    context['root_url'] = root_url
+
+    simaland_breadcrumbs(context)
+
+    row = Config.objects.filter(name=SIMALAND_KEY).first()
+    simaland = None
+    if row:
+        context['row'] = row
+        simaland = SimaLand(login=row.attr, passwd=row.value)
+        orders = simaland.get_orders()
+        context['orders'] = orders['items']
+        context['pages'] = orders['_meta']
+
+    template = '%sorders.html' % (context['template_prefix'], )
+    return render(request, template, context)

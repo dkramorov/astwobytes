@@ -62,19 +62,40 @@
 </div>
 {% endifequal %}
 {% ifequal tag "portfolio" %}
-<div class="w-post-category col-lg-12 col-md-12 col-sm-12 col-xs-12">
-<div class="prev"><i class="fa fa-angle-up"></i></div>
+<div class="w-post-category col-lg-12 col-md-12 col-sm-12 col-xs-12 vertical-menu">
+  <div class="prev"><i class="fa fa-angle-up"></i></div>
   <ul class="primary-menu-menu">
-
-        {% for item in menus %}
-          {% for menu in item.sub %}
-            <li class="category-post-item{% ifequal menu.link request.META.PATH_INFO %} active{% endifequal %}">
-              <a href="{{ menu.link }}" class="category-title">{{ menu.name }}</a>
-            </li>
-          {% endfor %}
-        {% endfor %}
-
+    {% for item in menus %}
+      {% for menu in item.sub %}
+        <li class="category-post-item{% ifequal menu.link request.META.PATH_INFO %} active{% endifequal %}">
+          <a href="{{ menu.link }}" class="category-title">{{ menu.name }}</a>
+        </li>
+      {% endfor %}
+    {% endfor %}
   </ul>
-<div class="next"><i class="fa fa-angle-down"></i></div>
+  <div class="next"><i class="fa fa-angle-down"></i></div>
+</div>
+<div class="w-post-category col-lg-12 col-md-12 col-sm-12 col-xs-12 horizontal-menu">
+  <table>
+    <tr>
+      <td>
+        <div class="prev"><i class="fa fa-angle-left"></i></div>
+      </td>
+      <td>
+        <ul class="primary-menu-menu">
+          {% for item in menus %}
+            {% for menu in item.sub %}
+              <li class="category-post-item{% ifequal menu.link request.META.PATH_INFO %} active{% endifequal %}">
+                <a href="{{ menu.link }}" class="category-title">{{ menu.name }}</a>
+              </li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </td>
+      <td>
+        <div class="next"><i class="fa fa-angle-right"></i></div>
+      </td>
+    </tr>
+  </table>
 </div>
 {% endifequal %}

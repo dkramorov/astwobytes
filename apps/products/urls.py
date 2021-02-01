@@ -13,13 +13,16 @@ urlpatterns = [
     # админка
     path('admin/', views.show_products, name='show_products'),
     url('^admin/(?P<action>create)/$', views.edit_product, name='create_product'),
-    url('^admin/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_product, name='edit_product'),
+    url('^admin/(?P<action>edit|drop|img|copy)/(?P<row_id>[0-9]{1,11})/$', views.edit_product, name='edit_product'),
     path('admin/positions/', views.products_positions, name='products_positions'),
+
     # аякс-поиск товаров
     path('search/', views.search_products, name='search_products'),
+
     # фотки товаров/услуг
     path('admin/photos/', views.show_photos, name='show_photos'),
     url('^admin/photos/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_photo, name='edit_photo'),
+
     # товары по категории (блоку)
     url('^admin/show_cats_products/$', views.show_cats_products, name='show_cats_products'),
     url('^admin/edit_cat_product/(?P<action>create)/$', views.edit_cat_product, name='create_cat_product'),
@@ -48,6 +51,7 @@ urlpatterns = [
     url('^admin/costs/(?P<action>create)/$', views.edit_cost, name='create_cost'),
     url('^admin/costs/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_cost, name='edit_cost'),
     path('admin/costs/positions/', views.costs_positions, name='costs_positions'),
+
     # аякс-поиск свойств
     path('costs/search/', views.search_costs, name='search_costs'),
 

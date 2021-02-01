@@ -104,6 +104,11 @@ if 'apps.addresses' in settings.INSTALLED_APPS:
     urlpatterns += [
         re_path(r'^addresses/', include('apps.addresses.urls')),
     ]
+if 'apps.contractors' in settings.INSTALLED_APPS:
+    # Контрагенты
+    urlpatterns += [
+        re_path(r'^contractors/', include('apps.contractors.urls')),
+    ]
 if 'djapian' in settings.INSTALLED_APPS:
     # DJAPIAN SEARCH
     from djapian.utils import load_indexes

@@ -77,6 +77,7 @@ class Products(Standard):
         """
         if not self.id:
             return
+        seo_block = None
         seo_tag = 'seo_for_products'
         product_tag = 'product_%s' % self.id
         link = self.link()

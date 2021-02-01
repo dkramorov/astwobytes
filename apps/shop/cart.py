@@ -9,7 +9,7 @@ from apps.flatcontent.flatcat import get_costs_types
 from apps.main_functions.string_parser import get_request_ip, summa_format
 from apps.main_functions.catcher import check_email, check_phone
 
-from .models import Orders, Purchases, PromoCodes
+from apps.shop.models import Orders, Purchases, PromoCodes
 
 logger = logging.getLogger('main')
 

@@ -772,7 +772,8 @@ class ModelHelper:
         return result
 
 def create_model_helper(mh_vars, request, CUR_APP: str,
-                        action: str = None, reverse_params: dict = None,
+                        action: str = None,
+                        reverse_params: dict = None,
                         disable_fas: bool = False):
     """Вспомогательная функция для создания ModelHelper
        :param mh_vars: константы для модели (название объекта, модель, ссылки)

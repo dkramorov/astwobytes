@@ -10,6 +10,11 @@
         <span class="item-text">Корзина покупок</span>
       </a>
     </li>
+    <li{% ifequal submenu 'orders' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'main:simaland_orders' %}">
+        <span class="item-text">Заказы</span>
+      </a>
+    </li>
     <li{% ifequal submenu 'credentials' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'main:simaland_credentials' %}">
         <span class="item-text">Настройки аккаунта</span>

@@ -1,0 +1,133 @@
+{% extends "core/base.html" %}
+{% load mtags %}
+
+{% block extrahead %}
+  <style type="text/css">
+    p.error {
+      color: brown;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+<h3>{{ order_singular_obj }}<br /><small>{{ plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  {% for order in orders %}
+    <div class="col-sm-12">
+      <div class="panel">
+        <div class="panel-body">
+          <h3 class="mt0">Заказ № {{ order.id }}</h3>
+          <hr>
+          <div class="box-placeholder col-sm-6">
+            <h4>Оплата</h4>
+            <p>Итог со скидками и доставкой: {{ order.total }}</p>
+            <p>Промежуточный итог (без скидок и доставки): {{ order.subtotal }}</p>
+            <p>Сумма скидки на товары: {{ order.discount }}</p>
+            <p>Идентификатор оплаты: {{ order.payment_id }}</p>
+            <p>Идентификатор типа оплаты: {{ order.payment_type_id }}</p>
+            <p>Стоимость сборки: {{ order.assembly_cost }}</p>
+            <p>Идентификатор статуса: {{ order.status_id }}</p>
+            <p>Дата создания: {{ order.created_at }}</p>
+            <p>Дата создания корзины этого заказа: {{ order.cart_created_at }}</p>
+            <p>Дата изменения: {{ order.updated_at }}</p>
+          </div>
+          <div class="box-placeholder col-sm-6">
+            <h4>Доставка</h4>
+            <p>Стоимость доставки: {{ order.delivery_sum }}</p>
+            <p>Доп. плата за доставку: {{ order.delivery_extra_price_total }}</p>
+            <p>Идентификатор адреса доставки (используется при создании заказа): {{ order.delivery_address_id }}</p>
+            <p>Строка с информацией о выбранной доставке (Выбрана доставка 08.10.2016 в промежуток времени с 9:00 до 12:00): {{ order.delivery_project_info }}</p>
+            <p>Тип доставки (используется при создании заказа): {{ order.delivery_type_id }}</p>
+            <p>Быстрая доставка: {{ order.is_fast_delivery }}</p>
+            <p>Дата отгрузки клиенту: {{ order.shipping_date }}</p>
+
+            <p>Пинкод подтверждения получения отгрузки: {{ order.pin_code }}</p>
+            <p>Пинкод получения отгрузки подтверждён: {{ order.is_pin_code_confirmed }}</p>
+<!--
+
+            <p>SID проекта доставки: {{ order.delivery_project_sid }}</p>
+            <p>SID времени доставки: {{ order.delivery_time_period_sid }}</p>
+            <p>Идентификатор типа самовывоза (используется при создании заказа): {{ order.pickup_type_id }}</p>
+-->
+          </div>
+          <div class="clearfix"></div>
+          <div class="box-placeholder col-sm-6">
+            <h4>Информация о заказе</h4>
+            <p>Идентификатор менеджера заказа: {{ order.manager_id }}</p>
+            <p>Комментарий к заказу: {{ order.comment }}</p>
+            <p>Комментарий менеджера: {{ order.manager_comment }}</p>
+            <p>ID заказа для дозаказа: {{ order.re_ordering_id }}</p>
+            <p>Содержит товар, собранный поштучно: {{ order.has_item_with_by_the_piece_addition }}</p>
+            <p>Действие менеджера (1 - не указано, 2 - звонок не требуется, 3 - позвонить сейчас): {{ order.manager_action }}</p>
+            <p>Пользоваетль авторизован: {{ order.is_user_logged }}</p>
+            <p>Количество товаров: {{ order.items_count }}</p>
+            <p>Количество товаров в штуках: {{ order.unit_count }}</p>
+<!--
+            <p>Содержит заявку участника: {{ order.is_jp_request }}</p>
+            <p>Идентификатор типа уведомления: {{ order.notification_type_id }}</p>
+            <p>Услуга: {{ order.is_service }}</p>
+            <p>Идентификатор контрагента: {{ order.counterparty_id }}</p>
+            <p>Использовать простую электронную подпись: {{ order.is_use_digital_signature }}</p>
+-->
+          </div>
+          <div class="box-placeholder col-sm-6">
+            <h4>Информация о пользователе</h4>
+            <p>Id пользователя: {{ order.user_id }}</p>
+            <p>Идентификатор пользователя (рекламного агента): {{ order.ad_user_id }}</p>
+            <p>Телефон (используется при создании заказа): {{ order.phone }}</p>
+            <p>Тип пользователя (1 - физ. лицо; 2 - юр. лицо; 3 - ИП): {{ order.person_type }}</p>
+            <p>ФИО, указанные при оформлении: {{ order.contact_person }}</p>
+            <p>Email: {{ order.email }}</p>
+<!--
+            <p>Источник рекламного агента: {{ order.ad_source }}</p>
+            <p>Канал рекламного агента: {{ order.ad_channel }}</p>
+            <p>Кампания рекламного агента: {{ order.ad_campaign }}</p>
+            <p>Анонимный идентификатор google пользователя: {{ order.google_cid }}</p>
+            <p>Идентификатор юридического лица (используется при создании заказа): {{ order.legal_entity_id }}</p>
+-->
+          </div>
+          <div class="clearfix"></div>
+          {% for product in order.items %}
+            <div class="box-placeholder col-sm-6">
+              <h4>Товар {{ product.id }}</h4>
+              <p>Артикул товара: {{ product.item_sid }}</p>
+              {% if product.item_img %}<p><img src="{{ product.item_img }}" loading="lazy" /></p>{% endif %}
+              <p>Название товара: {{ product.item_name }}</p>
+              <p>Url адрес товара: {{ product.item_url }}</p>
+              <p>Название торговой марки: {{ product.trademark_name }}</p>
+              <p>Название страны-производителя: {{ product.country_name }}</p>
+              <p>Шильдики товара: {{ product.item_flags }}</p>
+              <p>Идентификатор счета: {{ product.check_id }}</p>
+              <p>Идентификатор товара: {{ product.item_id }}</p>
+              <p>Цена в счете (со всеми скидками): {{ product.price }}</p>
+              <p>Количество оплаченных товаров в счёте: {{ product.qty }}</p>
+              <p>Фактическое количество товаров (реально в фуре поехало клиенту): {{ product.real_qty }}</p>
+              <p>Собран поштучно: {{ product.has_been_added_by_the_piece }}</p>
+            </div>
+          {% endfor %}
+{% comment %}<!--
+        <div class="panel-footer">
+          <div class="col-lg-6 col-sm-6 padding-tb5">
+            <button class="btn btn-labeled btn-default" onclick="window.print();">
+              <span class="btn-label"><i class="fa fa-print"></i></span>Печать
+            </button>
+          </div>
+          <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+            <a class="btn btn-labeled btn-danger" href="{{ root_url }}?refill_cart=1">
+              <span class="btn-label"><i class="fa fa-shopping-cart"></i></span>Пересобрать по заказам
+            </a>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+-->{% endcomment %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}

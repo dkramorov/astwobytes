@@ -67,7 +67,7 @@
                   <td>{{ order.created|date:'d-m-Y H:i:s' }}</td>
                   <td>Оформлен</td>
                   <td>{{ order.total|money_format }} ₽</td>
-                  <td><a href="javascript:void(0);" class="btn">Посмотреть</a></td>
+                  <td><a href="{% url 'main:show_order' order.id %}" class="btn">Посмотреть</a></td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -156,7 +156,6 @@
 <script src="/static/js/feedback.js"></script>
 <script type="text/javascript">
   $(document).ready(function(){
-    
     var profile = new FeedBack("profile_form", {
       "wait": "Ждите...",
       //"send": "Отправить",

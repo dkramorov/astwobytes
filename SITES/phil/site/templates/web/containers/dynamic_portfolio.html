@@ -62,24 +62,25 @@
                       {% for item in block.images %}
                         {% if item.img %}
                           <div class="swiper-slide">
-                            <img data-src="{% imagine item.img '1920x1080' item.get_folder True %}" alt="{{ item.name|textize }}" class="swiper-lazy">
+                            <img data-src="{% imagine item.img '1200x768' item.get_folder True %}" alt="{{ item.name|textize }}" class="swiper-lazy">
                             <div class="swiper-lazy-preloader"></div>
                             <table>
                               <tr>
-                                <td colspan="3" class="hborder"></td>
+                                <td colspan="3" class="hborder">&nbsp;</td>
                               </tr>
                               <tr>
-                                <td class="wborder"></td>
+                                <td class="wborder">&nbsp;</td>
                                 <td class="text">
                                   <h6>{{ item.custom_block.name }}</h6>
                                   {% if item.custom_block.html %}{{ item.custom_block.html|safe }}{% endif %}
                                 </td>
-                                <td class="wborder"></td>
+                                <td class="wborder">&nbsp;</td>
                               </tr>
                               <tr>
-                                <td colspan="3" class="hborder"></td>
+                                <td colspan="3" class="hborder">&nbsp;</td>
                               </tr>
                             </table>
+                            <div class="clearfix"></div>
                           </div>
                         {% endif %}
                       {% endfor %}

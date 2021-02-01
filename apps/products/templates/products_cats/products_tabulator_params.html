@@ -5,12 +5,17 @@ var pkFormatter = function(cell, formatterParams, onRendered){
 };
 var productFormatter = function(cell, formatterParams, onRendered){
   var data = cell.getRow().getData();
-  return data['product'] ? data['product']['name']  : '';
+  var link = data['product'] ? data['product']['name']  : '';
+  if(link){
+    link = "<a target='_blank' href='" + data['edit_urla'] + "'>" + link + "</a>";
+  }
+  return link;
 };
 var codeFormatter = function(cell, formatterParams, onRendered){
   var data = cell.getRow().getData();
   return data['product'] ? data['product']['code']  : '';
 };
+
 main_table = new Tabulator("#main-table", {
   {% include "core/tabulator_table_params.html" %}
   columns:[

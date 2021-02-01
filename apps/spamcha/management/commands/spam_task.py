@@ -85,7 +85,7 @@ class Command(BaseCommand):
             exit()
 
         by = 100
-        SPAM_DELAY = 120
+        SPAM_DELAY = 15
 
         if options.get('spam_delay'):
             SPAM_DELAY = int(options['spam_delay'])
@@ -140,11 +140,16 @@ class Command(BaseCommand):
             bot.send_message('%s %s' % (bot.get_emoji('hot'), inf))
             return
 
-        total_pages = total_records / by + 1
+        ids_rows = query.values_list('id', flat=True)
+        ids_rows = list(ids_rows)
+
+        total_pages = len(ids_rows) / by + 1
         total_pages = int(total_pages)
         counter = 0
         for i in range(total_pages):
-            rows = query[i*by:i*by+by]
+            pks = ids_rows[i*by:i*by+by]
+            #rows = query[i*by:i*by+by]
+            rows = SpamRow.objects.filter(pk__in=pks)
             for row in rows:
                 if acc_ind >= accounts_len - 1:
                     acc_ind = 0

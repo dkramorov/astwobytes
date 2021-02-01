@@ -23,15 +23,28 @@
                   {{ block.html|safe }}
                 </div>
               </div>
+{% comment %}<!--
               {% if block.link %}
                 <a class="read-more" href="{{ block.link }}">
-                  <span>More about us</span>
+                  <span>{{ block.title }}</span>
                   <i class="seoicon-right-arrow"></i>
                 </a>
               {% endif %}
+-->{% endcomment %}
             </div>
           </div>
         {% endfor %}
+
+        {% if blocks.0.link %}
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="features-item">
+              <a class="read-more" href="{{ blocks.0.link }}">
+                <span>{{ blocks.0.title }}</span>
+                <i class="seoicon-right-arrow"></i>
+              </a>
+            </div>
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>

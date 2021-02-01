@@ -10,9 +10,55 @@ from apps.telegram.telegram import TelegramBot
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
+    # USAGE:
+    # python manage.py telegram_send_test_message --proxy='10.10.9.1:3128' --token='' --chat_id='-478220379' --text='Потестуа'
+    def add_arguments(self, parser):
+        parser.add_argument('--token',
+            action = 'store',
+            dest = 'token',
+            type = str,
+            default = False,
+            help = 'Set bot token')
+        parser.add_argument('--chat_id',
+            action = 'store',
+            dest = 'chat_id',
+            type = str,
+            default = False,
+            help = 'Set bot chat_id')
+        parser.add_argument('--proxy',
+            action = 'store',
+            dest = 'proxy',
+            type = str,
+            default = False,
+            help = 'Set bot proxy')
+        parser.add_argument('--text',
+            action = 'store',
+            dest = 'text',
+            type = str,
+            default = False,
+            help = 'Set message text')
     def handle(self, *args, **options):
-        bot = TelegramBot()
+        kwargs = {}
+        token = options.get('token')
+        if token:
+            kwargs['token'] = token
+        chat_id = options.get('chat_id')
+        if chat_id:
+            kwargs['chat_id'] = chat_id
+        proxy = options.get('proxy')
+        if proxy:
+            kwargs['proxies'] = {
+                'http': proxy,
+                'https': proxy,
+            }
+        logger.info(kwargs)
+
+        bot = TelegramBot(**kwargs)
+
         test_msg = '%s - Тестовое сообщение' % (bot.get_emoji('clearSky'), )
+        if options.get('text'):
+            test_msg = options['text']
+
         logger.info(json_pretty_print(bot.send_message(test_msg, parse_mode='HTML')))
 
 

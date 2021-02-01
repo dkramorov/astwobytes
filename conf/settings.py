@@ -71,13 +71,15 @@ ALLOWED_HOSTS = [
     #'.example.com.',  # Also allow FQDN and subdomains
 ]
 
-# main_functions.tasks create_new_app
 # CUSTOM_APPS_START
 CUSTOM_APPS = [
+    # main_functions.tasks create_new_app
+]
+if DEBUG and env('SSLSERVER', cast=bool, default=False):
     # если надо https локально
     # python manage.py runsslserver 8005
     #'sslserver', # pip install django-sslserver
-]
+    CUSTOM_APPS.append('sslserver')
 # CUSTOM_APPS_END
 
 # Сайт
@@ -115,6 +117,8 @@ if env('WELD_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.weld')
 if env('ADDRESSES_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.addresses')
+if env('CONTRACTORS_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.contractors')
 
 #CUSTOM_APPS += [
 #    'apps.upload_tasks',

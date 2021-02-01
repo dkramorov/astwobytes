@@ -1,0 +1,9 @@
+{% if perms.contractors.view_contractor %}
+<li{% ifequal menu 'contractors' %} class="active"{% endifequal %}>
+  <a href="{% url 'contractors:show_contractors' %}">
+    <em class="fa fa-meh-o"></em>
+    <div class="label label-primary pull-right"></div>
+    <span class="item-text">Контрагенты</span>
+  </a>
+</li>
+{% endif %}

@@ -7,8 +7,11 @@
 
 {% block content %}
 {% if row %}
-  <a target="_blank" class="btn btn-primary pull-right" href="{{ row.link }}">
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm" href="{{ row.link }}">
     <em class="fa fa-eye fa-fw mr-sm"></em> Просмотр
+  </a>
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm" href="{% url 'products:edit_product' 'copy' row.id %}">
+    <em class="fa fa-copy fa-fw mr-sm"></em> Дублировать
   </a>
 {% endif %}
 

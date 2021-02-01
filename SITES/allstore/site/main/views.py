@@ -16,6 +16,7 @@ from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import save_user_to_request, remove_user_from_request
 from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
+from apps.shop.order import get_order
 from apps.shop.models import Orders
 
 CUR_APP = 'main'
@@ -300,7 +301,7 @@ def show_cart(request):
 
     return render(request, template, context)
 
-order_vars = {
+checkout_vars = {
     'singular_obj': 'Подтверждение заказа',
     'template_prefix': 'order_',
     'show_urla': 'cart',
@@ -308,7 +309,7 @@ order_vars = {
 
 def checkout(request):
     """Оформление заказа - Подтверждение заказа"""
-    mh_vars = order_vars.copy()
+    mh_vars = checkout_vars.copy()
     context = {}
     q_string = {}
     containers = {}
@@ -320,7 +321,7 @@ def checkout(request):
 
     page = SearchLink(q_string, request, containers)
     if not page:
-        page = Blocks(name=order_vars['singular_obj'])
+        page = Blocks(name=checkout_vars['singular_obj'])
     context['breadcrumbs'] = [{
         'name': 'Подтверждение заказа',
         'link': reverse('%s:%s' % (CUR_APP, 'checkout')),
@@ -335,5 +336,41 @@ def checkout(request):
     context.update(**create_new_order(request, shopper, cart))
     if 'order' in context and context['order']:
         template = 'web/order/confirmed.html'
+
+    return render(request, template, context)
+
+order_vars = {
+    'singular_obj': 'Заказ',
+    'template_prefix': 'order_',
+    'show_urla': 'show_order',
+}
+
+def show_order(request, order_id: int):
+    """Просмотр оформленного заказа"""
+    mh_vars = order_vars.copy()
+    context = {}
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/order/order.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=mh_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Заказ',
+        'link': reverse('%s:%s' % (CUR_APP, 'show_order'),
+                        kwargs={'order_id': order_id}),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+    result = get_order(shopper, order_id)
+    context['cart'] = result.get('cart', {})
+    context['cart']['purchases'] = result.get('purchases', [])
+    context['order'] = result.get('order')
 
     return render(request, template, context)

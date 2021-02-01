@@ -1,7 +1,7 @@
 На примере spam_email_accounts
 
 -------------------------------------------------
-в шаблон
+в шаблон table
 {% include "core/breadcrumbs.html" %}
 {% include "core/excel/xlsx_form_import.html" %}
 
@@ -14,6 +14,7 @@ var excel_table = null;
 $(document).ready(function(){
   excel_table = new Tabulator("#excel-table", {
     layout: "fitColumns",
+    height: 600,
     columns:[
       {% include "core/tabulator_cell/id.html" %}
       {

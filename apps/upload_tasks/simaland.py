@@ -65,6 +65,9 @@ class SimaLand:
         r = self.s.post('%s/signin' % self.api_url, json=params)
         if r.status_code == 204:
             self.s.headers.update(r.headers)
+            return True
+        logger.info('%s => %s' % (r.status_code, r.text))
+        return False
 
     # api v3
     def get_jwt_v3(self):
@@ -371,6 +374,85 @@ class SimaLand:
         }
         r = self.s.put('%s%s' % (self.api_url_v3, endpoint), json=params)
         return r.json()
+
+    # api v3
+    def get_orders(self):
+        """Получение списка заказов
+        """
+        self.get_jwt_v3()
+        endpoint = '/order/'
+        params = {'expand': 'items'}
+        r = self.s.get('%s%s' % (self.api_url_v3, endpoint), params=params)
+        return r.json()
+
+    # api v3
+    def get_order(self, order_id: int):
+        """Получение заказа
+           :param order_id: id заказа
+        """
+        self.get_jwt_v3()
+        endpoint = '/order/%s/' % order_id
+        params = {'expand': 'items'}
+        r = self.s.get('%s%s' % (self.api_url_v3, endpoint), params=params)
+        return r.json()
+
+    # api v3
+    def get_settlements(self, settlement_id: str = '56'):
+        """Получение списка доставок,
+           много страничек
+           :param settlement_id: через запятую ид поселений
+        """
+        self.get_jwt_v3()
+        endpoint = '/settlement-ext/'
+        params = {}
+        r = self.s.get('%s%s' % (self.api_url_v3, endpoint), json=params)
+        return r.json()
+
+    # api v3
+    def get_settlement(self, settlement_id: str = '56'):
+        """Получение списка доставок,
+           много страничек
+           :param settlement_id: через запятую ид поселений
+        """
+        self.get_jwt_v3()
+        endpoint = '/settlement-ext/%s/' % settlement_id
+        params = {}
+        r = self.s.get('%s%s' % (self.api_url_v3, endpoint), json=params)
+        return r.json()
+
+    # api v3
+    def get_delivery_directions(self):
+        """Получение списка направлений
+           {
+             "entrance_type": 0,
+             "free_sum": 10000,
+             "id": 56,
+             "is_delivery_to_front_door": false,
+             "name": "Иркутское направление"
+           },
+        """
+        self.get_jwt_v3()
+        endpoint = '/delivery-direction/'
+        params = {}
+        r = self.s.get('%s%s' % (self.api_url_v3, endpoint), json=params)
+        return r.json()
+
+    # api v3
+    def delivery_calc(self, address: str):
+        """Калькулятор адресной доставки
+           :param address: адрес строкой
+        """
+        self.get_jwt_v3()
+        endpoint = '/delivery-calc/'
+        params = {}
+        r = self.s.post('%s%s' % (self.api_url_v3, endpoint), json=params)
+        return r.json()
+
+
+
+
+
+
 
     # DEPRICATED
     def raw_auth(self):

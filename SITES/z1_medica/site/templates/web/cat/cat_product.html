@@ -17,15 +17,20 @@
           <td>
             <div id="imtvgblock" class="product_container">
               <div class="sliding_product">
-                <a href="{{ product.imagine }}" class="bigimgtovar">
+                <a href="{{ product.imagine }}" class="bigimgtovar" id="big0">
                   <img src="{% imagine product.img '800x600' product.get_folder True %}" loading="lazy">
                 </a>
+                {% for photo in photos %}
+                  <a href="{{ photo.imagine }}" class="bigimgtovar" id="big{{ photo.id }}">
+                    <img src="{% imagine photo.img '800x600' photo.get_folder True %}" loading="lazy">
+                  </a>
+                {% endfor %}
               </div>
             </div>
             <div id="imtvgmenu">
-              <img class="smallimg" src="{{ product.thumb }}" loading="lazy">
+              <img class="smallimg" src="{{ product.thumb }}" loading="lazy" rel="0">
               {% for photo in photos %}
-                <img class="smallimg" src="{{ photo.thumb }}" loading="lazy">
+                <img class="smallimg" src="{{ photo.thumb }}" loading="lazy" rel="{{ photo.id }}">
               {% endfor %}
             </div>
           </td>
@@ -87,7 +92,7 @@
         <span class="contctype" id="contctype0" style="display:block">
           {{ product.info|safe }}
         </span>
-        <span class="contctype" id="contctype1" style="display:none">
+        <span class="contctype" id="contctype10" style="display:none">
           <h2>Технические характеристики</h2>
           <table width="100%" cellpadding="0" cellspacing="0" class="gallery clearfix">
             <tr>
@@ -128,7 +133,8 @@
       $(".smallimg").removeClass("sel0");
       im.addClass("sel0");
       $(".bigimgtovar").fadeOut();
-      $("#big"+im.attr("rel")).fadeIn();
+      $("#big" + im.attr("rel")).fadeIn();
+      console.log(im.attr("rel"));
     })
 
     $(".menctype").click(function(){

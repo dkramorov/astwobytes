@@ -1056,7 +1056,7 @@ h6, .h6 {
 .simple_contacts .bottom_right {
   position: absolute;
   bottom: 0;
-  right: 0;
+  right: 15px;
 }
 .simple_contacts .bottom_right img {
   max-width: 160px;
@@ -1075,6 +1075,11 @@ h6, .h6 {
   padding-top: 10px;
   display: inline-block;
   text-align: center;
+}
+@media screen and (max-width: 400px) {
+  .wechat {
+    margin-left: -33px;
+  }
 }
 .lg-clearfix {
   display: none;

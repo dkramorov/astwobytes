@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
+import os
 import json
+import logging
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -7,10 +9,13 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Count
 
+from apps.main_functions.files import check_path, copy_file
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper, ModelHelper
+from apps.main_functions.model_helper import (create_model_helper,
+                                              ModelHelper,
+                                              tabulator_filters_and_sorters, )
 from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 from apps.main_functions.string_parser import analyze_digit
 from apps.main_functions.views_helper import (show_view,
@@ -29,6 +34,8 @@ from .models import (Products,
                      CostsTypes,
                      Costs,
                      CURRENCY_CHOICES, )
+
+logger = logging.getLogger('main')
 
 CUR_APP = 'products'
 products_vars = {
@@ -71,17 +78,84 @@ def import_xlsx(request, action: str = 'vocabulary'):
                         cond_fields = ['code'])
     return result
 
+def get_products_cats(ids_products: dict):
+    """Получение категорий по списку товаров (пока без хлебных крох)
+       :param ids_products: словарь идентификаторов товаров
+    """
+    cats = ProductsCats.objects.select_related('cat').filter(product__in=ids_products).values('product', 'cat__id', 'cat__link', 'cat__name')
+    for cat in cats:
+        if not ids_products[cat['product']]:
+            ids_products[cat['product']] = []
+        ids_products[cat['product']].append({
+            'id': cat['cat__id'],
+            'link': cat['cat__link'],
+            'name': cat['cat__name'],
+        })
+
 @login_required
 def show_products(request, *args, **kwargs):
     """Вывод товаров"""
-    extra_vars = {
-        'import_xlsx_url': reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
-                                   kwargs={'action': 'products'}),
-    }
-    return show_view(request,
-                     model_vars = products_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = extra_vars, )
+    mh_vars = products_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, disable_fas=True)
+
+    filters_and_sorters = tabulator_filters_and_sorters(request)
+    for rsorter in filters_and_sorters['sorters']:
+        if not rsorter in ('cat', '-cat'):
+            mh.order_by_add(rsorter)
+    for rfilter in filters_and_sorters['filters']:
+        mh.filter_add(rfilter)
+    mh.context['fas'] = filters_and_sorters['params']
+    # Чтобы получить возможность модифицировать фильтры и сортировщики
+    mh.filters_and_sorters = filters_and_sorters
+
+    context = mh.context
+    context['import_xlsx_url'] = reverse('%s:%s' % (CUR_APP, 'import_xlsx'),
+                                         kwargs={'action': 'products'})
+    # Условие под выборку определенной категории
+    cat_filter = filters_and_sorters['params'].get('filters', {})
+    if 'cat' in cat_filter:
+        ids_products = ProductsCats.objects.filter(cat=cat_filter['cat']).values_list('product', flat=True)
+        ids_products = list(ids_products)
+        mh.filter_add(Q(pk__in = ids_products))
+
+    special_model_vars(mh, mh_vars, context)
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        only_fields = (
+            'id',
+            'name',
+            'code',
+            'price',
+            'img',
+            'is_active',
+            'position',
+        )
+        rows = mh.standard_show(only_fields=only_fields)
+
+        ids_products = {row.id: None for row in rows}
+        get_products_cats(ids_products)
+
+        result = []
+        for row in rows:
+            item = object_fields(row, only_fields=only_fields)
+            item['actions'] = row.id
+            item['folder'] = row.get_folder()
+            item['thumb'] = row.thumb()
+            item['imagine'] = row.imagine()
+            if ids_products[row.id]:
+                item['cat'] = ids_products[row.id]
+            result.append(item)
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
 
 def add_photo2gallery(photo, product, context):
     """Добавить фото к товару/услугу в галерею
@@ -98,6 +172,63 @@ def add_photo2gallery(photo, product, context):
     if not 'row' in context:
         context['row'] = object_fields(product)
     context['row']['is_gallery'] = True
+
+def create_double(product):
+    """Создать дубль товара/услуги
+       TODO: если несколько цен
+       :param product: Product model instance
+    """
+    pass_fields = ('id', 'created', 'updated', 'position', 'parents', 'code')
+    new_product = Products()
+    for field in object_fields(product, pass_fields=pass_fields):
+       value = getattr(product, field)
+       setattr(new_product, field, value)
+    code = '%s-DOUBLE' % product.code
+    new_product.code = code
+    new_product.save()
+
+    # Изображение
+    if product.img:
+        imga = os.path.join(product.get_folder(), product.img)
+        if not check_path(imga):
+            new_imga = os.path.join(new_product.get_folder(), product.img)
+            copy_file(imga, new_imga)
+
+    # Галерея
+    gallery = ProductsPhotos.objects.filter(product=product)
+    for photo in gallery:
+        imga = os.path.join(photo.get_folder(), photo.img)
+        if not check_path(imga):
+            params = {
+                'name': photo.name,
+                'product': new_product,
+                'img': photo.img,
+            }
+            new_photo = ProductsPhotos.objects.create(**params)
+            new_imga = os.path.join(new_photo.get_folder(), photo.img)
+            copy_file(imga, new_imga)
+
+    # Рубрики
+    cats = ProductsCats.objects.select_related('cat').filter(product=product)
+    for cat in cats:
+        ProductsCats.objects.create(product=new_product, cat=cat.cat)
+
+    # SEO
+    seo_block = product.get_seo()
+    if seo_block:
+        seo = {
+            'seo_title': seo_block.title,
+            'seo_description': seo_block.description,
+            'seo_keywords': seo_block.keywords,
+        }
+        new_product.fill_seo(**seo)
+
+    # Свойства товара
+    props = ProductsProperties.objects.select_related('prop').filter(product=product)
+    for prop in props:
+        ProductsProperties.objects.create(product=new_product, prop=prop.prop)
+
+    return new_product
 
 @login_required
 def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
@@ -120,7 +251,7 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                 'link': mh.url_edit,
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
-            context['cats'] = row.productscats_set.select_related('cat', 'cat__container').all()
+            context['cats'] = row.productscats_set.select_related('cat', 'cat__container').filter(cat__isnull=False)
 
             # Вывод родительских рубрик
             all_ids_parents = []
@@ -150,6 +281,12 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                 context['success'] = '%s удален' % (mh.singular_obj, )
             else:
                 context['error'] = 'Недостаточно прав'
+        elif action == 'copy' and row:
+            # Дублирование товара
+            double = create_double(row)
+            kwargs = {'row_id': double.id, 'action': 'edit'}
+            return redirect(reverse('%s:%s' % (CUR_APP, 'edit_product'),
+                                               kwargs=kwargs))
     elif request.method == 'POST':
         pass_fields = []
         if request.POST.get('2gallery'):
@@ -557,6 +694,8 @@ def edit_product_pvalue(request, action: str, row_id: int = None, *args, **kwarg
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
+    special_model_vars(mh, mh_vars, context)
+
     if request.method == 'GET':
         if action == 'drop' and row:
             if mh.permissions['drop']:
@@ -595,7 +734,6 @@ def edit_product_pvalue(request, action: str, row_id: int = None, *args, **kwarg
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
-
     return JsonResponse(context, safe=False)
 
 costs_vars = {
@@ -710,11 +848,14 @@ def show_cats_products(request, *args, **kwargs):
             'product': ('id', 'name', 'code'),
             #'cat': ('name', ),
         }
+        edit_urla = reverse('%s:%s' % (CUR_APP, 'edit_product'),
+                            kwargs={'action': 'edit', 'row_id': 0})
         for row in rows:
             item = object_fields(row,
                                  only_fields=only_fields,
                                  fk_only_keys=fk_keys, )
             item['actions'] = row.id
+            item['edit_urla'] = edit_urla.replace('/0/', '/%s/' % row.id)
             #item['folder'] = row.get_folder()
             #item['thumb'] = row.thumb()
             #item['imagine'] = row.imagine()
