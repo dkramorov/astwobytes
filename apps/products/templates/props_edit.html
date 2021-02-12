@@ -56,7 +56,9 @@
         {% include "core/forms/footer_buttons.html" %}
       </form>
     </div>
-    {% include "props_tabulator_table.html" %}
+    {% if action != 'create' %}
+      {% include "props_tabulator_table.html" %}
+    {% endif %}
   </div>
 </div>
 {% endblock %}

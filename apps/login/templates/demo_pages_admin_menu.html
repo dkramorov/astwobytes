@@ -105,5 +105,10 @@
         <span class="item-text">Чат</span>
       </a>
     </li>
+    <li{% ifequal submenu "mail" %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='mail' %}">
+        <span class="item-text">Почта</span>
+      </a>
+    </li>
   </ul>
 </li>

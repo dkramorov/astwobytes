@@ -123,7 +123,8 @@ def my_ip(request):
     """Апи-метод для получения ip-адреса"""
     method = request.GET if request.method == 'GET' else request.POST
     result = {
-        'ip': method.get('REMOTE_ADDR'),
+        'method': request.method,
+        'ip': request.META.get('REMOTE_ADDR'),
         'ip_forwarded': request.META.get('HTTP_X_FORWARDED_FOR'),
     }
     # на случай, если надо посмотреть тело json запроса
@@ -152,7 +153,8 @@ def DefaultFeedback(request, **kwargs):
        kwargs['additional_conds'] - доп. валидация
        kwargs['additional_conds'] = [
          {"name":"sms", "error":u"Неправильный смс-код", "value":"1234"},
-         ..., ]"""
+         ..., ]
+    """
     q_string = kwargs.get('q_string', {})
     breadcrumbs = kwargs.get('breadcrumbs', [])
     result = {'errors': []}
@@ -166,10 +168,10 @@ def DefaultFeedback(request, **kwargs):
 
     isError = None
     if not breadcrumbs:
-        breadcrumbs.append({'name': 'Обратная связь', 'link': '/feedback/'})
-    # ---
-    # GET
-    # ---
+        breadcrumbs.append({
+            'name': 'Обратная связь',
+            'link': '/feedback/',
+        })
     if request.method == "GET":
         product = kwargs.get('product')
         q_string['recall'] = kwargs.get('recall')
@@ -183,8 +185,6 @@ def DefaultFeedback(request, **kwargs):
         context['containers'] = containers
         context['product'] = product
         return render(request, template, context)
-    # ----
-    # POST
     # -------------------
     # Дополнительные поля
     # -------------------
@@ -226,12 +226,22 @@ def DefaultFeedback(request, **kwargs):
         for item in fv:
             feedback_vars['result'] += item
 
+        logger.info('\n[--- SENDING EMAIL ---]' +
+                    '\n[TITLE]:%s' % feedback_vars['title'] +
+                    '\n[MSG]: %s' % feedback_vars['result'] +
+                    '\n[SENDER]: %s' % feedback_vars['sender'] +
+                    '\n[EMAILS]: %s' % feedback_vars['emails'] +
+                    '\n[---------------------]')
+
         mail = EmailMessage(feedback_vars['title'], feedback_vars['result'], feedback_vars['sender'], feedback_vars['emails'])
         mail.content_subtype = 'html'
         if feedback_vars['file']:
             mail.attach(feedback_vars['file']['name'], feedback_vars['file']['content'], feedback_vars['file']['content_type'])
         if not do_not_send:
-            mail.send()
+            try:
+                mail.send()
+            except Exception as e:
+                result['error'] = str(e)
         else:
             logger.info(json_pretty_print(feedback_vars))
     # ---------------------------
@@ -251,13 +261,20 @@ def settings(request, app: str = 'flatcontent'):
     settings_store = {
         'flatcontent': {
             'name': 'Настройки раздела "Контент" и стат. страничек',
-        }
+            'user_defined': False, # Не зависят от пользователя
+        },
+        'spamcha': {
+            'name': 'Настройки почты',
+            'user_defined': True, # Зависят от пользователя
+        },
     }
     name = settings_store[app]['name']
+    user_defined = settings_store[app]['user_defined']
     root_url = reverse('main_functions:settings', args=[app])
     context = {
          'app': app,
          'title': name,
+         'user_defined': user_defined,
          'breadcrumbs': [{
              'name': name,
              'link': root_url,
@@ -277,8 +294,11 @@ def settings(request, app: str = 'flatcontent'):
                 'attr': request.POST.get('attr_%s' % i),
                 'value': request.POST.get('value_%s' % i),
             })
-        if permissions['edit']:
-            Config.objects.filter(attr__startswith=app_label).delete()
+        if permissions['edit'] or user_defined:
+            configs = Config.objects.filter(attr__startswith=app_label)
+            if user_defined:
+                configs = configs.filter(user=request.user)
+            configs.delete()
             for setting in settings:
                 if not setting['attr']:
                     continue
@@ -287,13 +307,18 @@ def settings(request, app: str = 'flatcontent'):
                 analog = Config(attr=setting['attr'])
                 analog.name = setting['name']
                 analog.value = setting['value']
+                if user_defined:
+                    analog.user = request.user
                 analog.save()
             result['success'] = 'Данные успешно сохранены'
         else:
             result['error'] = 'Недостаточно прав'
         return JsonResponse(result, safe=False)
 
-    context['rows'] = Config.objects.filter(attr__startswith='%s_' % app)
+    configs = Config.objects.filter(attr__startswith='%s_' % app)
+    if user_defined:
+        configs = configs.filter(user=request.user)
+    context['rows'] = configs
     for row in context['rows']:
         if row.attr and row.attr.startswith(app):
             row.attr = row.attr.split(app_label, 1)[1]

@@ -7,7 +7,7 @@ from django import template
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
-from apps.main_functions.string_parser import kill_quotes, translit, summa_format, analyze_digit
+from apps.main_functions.string_parser import kill_quotes, translit, summa_format, analyze_digit, kill_html
 from apps.main_functions.catcher import defiz_phone
 from apps.main_functions.files import check_path, make_folder, copy_file, imageThumb, full_path, imagine_image, watermark_image
 from apps.main_functions.date_time import monthToStr, weekdayToStr
@@ -53,6 +53,18 @@ def textize(text: str):
     if not isinstance(text, str):
         return text
     text = kill_quotes(text, 'strict_text', ' ')
+    return text
+
+@register.filter(name='htmlless')
+def htmlless(text: str):
+    """Убираем из текста все теги html
+       :param text: текст
+    """
+    if not text:
+        return ''
+    if not isinstance(text, str):
+        return text
+    text = kill_html(text)
     return text
 
 @register.filter(name='cut_length')

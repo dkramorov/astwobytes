@@ -43,8 +43,8 @@
         <div class="col-md-4">
           <div>
             <input class="form-control" type="text" id="flat_tree_search" placeholder="Поиск" />
+            <div id="flat_tree"></div>
           </div>
-          <div id="flat_tree"></div>
         </div>
         <div class="col-md-8">
           <!-- Панель для динамического редактирования блоков -->
@@ -177,7 +177,6 @@
           }
           return query;
         },
-
         //data: "only_templates=1",
         cache: false,
         dataType: 'json',
@@ -190,18 +189,18 @@
       tags: true,
       ajax: {
         url: "{% url 'flatcontent:search_containers' %}",
-
         data: function (params) {
           var query = {
             q: params.term,
             without_templates: 1,
             without_menus: 1,
             without_main: 1,
+            without_seo_prices: 1,
+            without_cats: 1,
             page: params.page || 1,
           }
           return query;
         },
-
         //data: "without_templates=1&without_menus=1&without_main=1",
         cache: false,
         dataType: 'json',

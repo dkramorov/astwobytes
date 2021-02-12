@@ -16,4 +16,5 @@ urlpatterns = [
     path('admin/positions/', views.contractors_positions, name='contractors_positions'),
     # аякс-поиск
     path('contractors/search/', views.search_contractors, name='search_contractors'),
+    path('info_by_inn/', views.info_by_inn, name='info_by_inn'),
 ]

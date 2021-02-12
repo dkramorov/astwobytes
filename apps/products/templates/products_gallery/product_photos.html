@@ -1,0 +1,68 @@
+{% load mtags %}
+{% comment %}<!--
+Можно заменить input на select
+Добавить модель, которая будет предоставлять значения select
+-->{% endcomment %}
+<div class="form-group">
+  <div class="col-lg-2 text-right">
+    <div class="checkbox c-checkbox">
+      <label>
+        <input type="checkbox" value="1" id="add2gallery_checkbox" name="2gallery" />
+        <span class="fa fa-check"></span>
+      </label>
+    </div>
+    <label for="add2gallery_checkbox">Если опция выбрана, фото будет добавляться в галерею, в противном случае, будет заменяться основное изображение товара</label>
+  </div>
+  <div class="col-lg-10">
+    <h4>Галерея товара</h4>
+    <div class="row-masonry row-masonry-md-4 row-masonry-sm-2" id="product_gallery">
+      {% for photo in photos %}
+        <div class="col-masonry" id="photo_index_{{ photo.id }}">
+          <a href="{{ photo.imagine }}" target="_blank">
+            <img src="{% imagine photo.img '150x150' photo.get_folder True %}" alt="{{ photo.name|textize }}" class="img-thumbnail img-responsive" loading="lazy">
+          </a>
+
+          <table class="table gallery">
+            <tr>
+              <td class="first">
+                <a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_photo" onclick="prepare_for_drop_photo({{ photo.id }})"><i class="fa fa-trash"></i></a>
+              </td>
+              <td>
+                <input type="text" value="{% if photo.name %}{{ photo.name }}{% endif %}" autocomplete="off" id="photo_name_{{ photo.id }}">
+              </td>
+              <td class="last">
+                <a href="javascript:void(0);" class="mt-sm btn-xs btn btn-success update_photo_name" data-photo_id="{{ photo.id }}"><i class="fa fa-check"></i></a>
+              </td>
+            </tr>
+          </table>
+
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  function update_gallery_links(r){
+    // Добавление фотки в галерею
+    var photo = r['photo'];
+    var photo_name = photo['name'] ? photo['name'] : '';
+    var html = '';
+    html += '<div class="col-masonry" id="photo_index_' + photo['id'] + '">';
+    html += '<a href="' + photo['imagine'] + '" target="_blank">';
+    html += '<img src="' + photo['thumb'] + '" class="img-thumbnail img-responsive" loading="lazy">';
+    html += '<a>';
+    html += '<table class="table gallery">';
+    html += '<tr>';
+    html += '<td class="first">';
+    html += '<a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_photo" onclick="prepare_for_drop_photo(' + photo['id'] + ')">';
+    html += '<i class="fa fa-trash"></i></a>';
+    html += '</td><td>';
+    html += '<input type="text" value="' + photo_name + '" autocomplete="off" id="photo_name_' + photo['id'] + '">';
+    html += '</td><td class="last">';
+    html += '<a href="javascript:void(0);" class="mt-sm btn-xs btn btn-success update_photo_name" data-photo_id="' + photo['id'] + '"><i class="fa fa-check"></i></a>';
+    html += '</td>';
+    html += '</tr>';
+    html += '</table>';
+    $("#product_gallery").append($(html));
+  }
+</script>

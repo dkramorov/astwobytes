@@ -1,0 +1,114 @@
+{% load mtags %}
+{% comment %}<!--
+Можно заменить input на select
+Добавить модель, которая будет предоставлять значения select
+-->{% endcomment %}
+<div class="form-group">
+  <div class="col-lg-2 text-right">
+    <div class="checkbox c-checkbox">
+      <label>
+        <input type="checkbox" value="1" id="add2gallery_checkbox" name="2gallery" />
+        <span class="fa fa-check"></span>
+      </label>
+    </div>
+    <label for="add2gallery_checkbox">Если опция выбрана, фото будет добавляться в галерею, в противном случае, будет заменяться основное изображение товара</label>
+  </div>
+  <div class="col-lg-10">
+    <h4>Галерея товара</h4>
+    <div class="row-masonry row-masonry-md-4 row-masonry-sm-2" id="product_gallery">
+      {% for photo in photos %}
+        <div class="col-masonry" id="photo_index_{{ photo.id }}">
+          <a href="{{ photo.imagine }}" target="_blank">
+            <img src="{% imagine photo.img '150x150' photo.get_folder True %}" alt="{{ photo.name|textize }}" class="img-thumbnail img-responsive" loading="lazy">
+          </a>
+
+          <table class="table gallery">
+            <tr>
+              <td class="first">
+                <a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_photo" onclick="prepare_for_drop_photo({{ photo.id }})"><i class="fa fa-trash"></i></a>
+              </td>
+              <td class="text-center">
+                <select class="photo_name_select" id="photo_name_{{ photo.id }}" autocomplete="off">
+                  <option value=""></option>
+                  <option value="1"{% ifequal photo.name "1" %} selected{% endifequal %}>Красный</option>
+                  <option value="2"{% ifequal photo.name "2" %} selected{% endifequal %}>Черный</option>
+                  <option value="3"{% ifequal photo.name "3" %} selected{% endifequal %}>Живые фото</option>
+                  <option value="8"{% ifequal photo.name "8" %} selected{% endifequal %}>Серебристый</option>
+                  <option value="7"{% ifequal photo.name "7" %} selected{% endifequal %}>Серый</option>
+                  <option value="6"{% ifequal photo.name "6" %} selected{% endifequal %}>Зеленый</option>
+                  <option value="5"{% ifequal photo.name "5" %}selected{% endifequal %}>Оранжевый</option>
+                  <option value="4"{% ifequal photo.name "4" %}selected{% endifequal %}>Черно-красный</option>
+                </select>
+              </td>
+              <td class="last">
+                <a href="javascript:void(0);" class="mt-sm btn-xs btn btn-success update_photo_name" data-photo_id="{{ photo.id }}"><i class="fa fa-check"></i></a>
+              </td>
+            </tr>
+          </table>
+
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  function update_gallery_links(r){
+    // Добавление фотки в галерею
+    var photo = r['photo'];
+    var photo_name = photo['name'] ? photo['name'] : '';
+    var html = '';
+    var sel1 = photo['name'] == "1" ? " selected" : "";
+    var sel2 = photo['name'] == "2" ? " selected" : "";
+    var sel3 = photo['name'] == "3" ? " selected" : "";
+    var sel4 = photo['name'] == "4" ? " selected" : "";
+    var sel5 = photo['name'] == "5" ? " selected" : "";
+    var sel6 = photo['name'] == "6" ? " selected" : "";
+    var sel7 = photo['name'] == "7" ? " selected" : "";
+    var sel8 = photo['name'] == "8" ? " selected" : "";
+    html += '<div class="col-masonry" id="photo_index_' + photo['id'] + '">';
+    html += '<a href="' + photo['imagine'] + '" target="_blank">';
+    html += '<img src="' + photo['thumb'] + '" class="img-thumbnail img-responsive" loading="lazy">';
+    html += '<a>';
+    html += '<table class="table gallery">';
+    html += '<tr>';
+    html += '<td class="first">';
+    html += '<a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_photo" onclick="prepare_for_drop_photo(' + photo['id'] + ')">';
+    html += '<i class="fa fa-trash"></i></a>';
+    html += '</td><td>';
+
+    html += '<select class="photo_name_select" id="photo_name_' + photo['id'] + '" autocomplete="off">';
+    html += '<option value=""></option>';
+    html += '<option value="1"' + sel1 + '>Красный</option>';
+    html += '<option value="2"' + sel2 + '>Черный</option>';
+    html += '<option value="3"' + sel3 + '>Живые фото</option>';
+    html += '<option value="8"' + sel8 + '>Серебристый</option>';
+    html += '<option value="7"' + sel7 + '>Серый</option>';
+    html += '<option value="6"' + sel6 + '>Зеленый</option>';
+    html += '<option value="5"' + sel5 + '>Оранжевый</option>';
+    html += '<option value="4"' + sel4 + '>Черно-красный</option>';
+    html += '</select>';
+
+    html += '</td><td class="last">';
+    html += '<a href="javascript:void(0);" class="mt-sm btn-xs btn btn-success update_photo_name" data-photo_id="' + photo['id'] + '"><i class="fa fa-check"></i></a>';
+    html += '</td>';
+    html += '</tr>';
+    html += '</table>';
+    $("#product_gallery").append($(html));
+    $("#photo_name_" + photo['id']).select2({
+      placeholder: 'Выберите раздел фото',
+      allowClear: true,
+      //width: '100%',
+      //tags: true,
+    });
+  }
+  $(document).ready(function(){
+    // Выполнится нормально, потому что (document).ready
+    // хотя select2 загружается поздже
+    $('.photo_name_select').select2({
+      placeholder: 'Выберите раздел фото',
+      allowClear: true,
+      //width: '100%',
+      //tags: true,
+    });
+  });
+</script>

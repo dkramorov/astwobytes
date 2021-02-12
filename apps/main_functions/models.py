@@ -4,6 +4,7 @@ import datetime
 import os
 
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 
 from apps.main_functions.files import (check_path,
@@ -231,8 +232,11 @@ class Config(Standard):
     value = models.CharField(max_length = 255,
                              blank = True, null = True,
                              db_index = True)
+    user = models.ForeignKey(User,
+                             blank = True, null = True,
+                             on_delete = models.CASCADE)
     class Meta:
-        verbose_name = 'Админка - Настрока'
+        verbose_name = 'Админка - Настройка'
         verbose_name_plural = 'Админка - Настройки'
 
 class Tasks(Standard):

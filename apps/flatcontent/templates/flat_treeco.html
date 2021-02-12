@@ -142,6 +142,9 @@ $(document).ready(function(){
             "label": "{{ action_edit }} {{ rp_singular_obj }}",
             "action": function (obj) {
               tree.edit($node);
+              // Выбираем отредактированную ноду
+              tree.deselect_all();
+              tree.select_node(tree.select_node($node));
             }
           },
           "Remove": {
@@ -149,10 +152,14 @@ $(document).ready(function(){
             "separator_after": false,
             "label": "{{ action_drop }} {{ rp_singular_obj }}",
             "action": function (obj) {
-              tree.delete_node($node);
-              var parent = flat_tree.jstree(true).get_node($node.parent);
-              var description = "<strong>Удаление в рубрике \"" + parent.text + "\": </strong><br />";
-              description += "<strong>\"" + $node.text + "\"</strong>";
+              var selected_arr = tree.get_selected();
+              for(var i=0; i<selected_arr.length; i++){
+                tree.delete_node(tree.get_node(selected_arr[i]));
+              }
+              //tree.delete_node($node);
+              //var parent = flat_tree.jstree(true).get_node($node.parent);
+              //var description = "<strong>Удаление в рубрике \"" + parent.text + "\": </strong><br />";
+              //description += "<strong>\"" + $node.text + "\"</strong>";
             }
           }
         };
@@ -186,6 +193,10 @@ $(document).ready(function(){
       // будет одинаковый id и йух выберешь второй
       data.node.a_attr.id = r.id;
       data.node.a_attr.href = '#' + r.id;
+
+      // Выбираем отредактированную ноду
+      flat_tree.jstree().deselect_all();
+      flat_tree.jstree().select_node(flat_tree.jstree().select_node(r.id));
     });
   })
   .on("delete_node.jstree", function (e, data) {

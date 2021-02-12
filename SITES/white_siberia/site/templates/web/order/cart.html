@@ -1,0 +1,144 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-section section mb-50">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <form action="#">
+          <div class="cart-table table-responsive mb-40">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="pro-thumbnail">Фото</th>
+                  <th class="pro-title">Наименование</th>
+                  <th class="pro-price">Цена</th>
+                  <th class="pro-quantity">Кол-во</th>
+                  <th class="pro-subtotal">Итого</th>
+                  <th class="pro-remove">Удалить</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for purchase in cart.purchases %}
+                  <tr>
+                    <td class="pro-thumbnail">
+                      <a href="{{ purchase.link }}">
+                        <img src="{{ purchase.thumb }}" class="img-fluid" alt="{{ purchase.product_name|textize }}" loading="lazy">
+                      </a>
+                    </td>
+                    <td class="pro-title">
+                      <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
+                    </td>
+                    <td class="pro-price">
+                      <span>{{ purchase.cost|money_format }} ₽</span>
+                    </td>
+                    <td class="pro-quantity">
+                      <div class="pro-qty" id="qbuttons_{{ purchase.id }}">
+                        <input type="text" value="{{ purchase.count }}" id="quantity_{{ purchase.id }}">
+                      </div>
+                    </td>
+                    <td class="pro-subtotal">
+                      <span>{{ purchase.total|money_format }} ₽</span>
+                    </td>
+                    <td class="pro-remove">
+                      <a id="purchase_drop_{{ purchase.id }}" href="javascript:void(0);">
+                        <i class="fa fa-trash-o"></i>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </form>
+        <div class="row">
+          <div class="col-lg-6 col-12">
+{% comment %}<!--
+            <div class="calculate-shipping">
+              <h4>Доставка</h4>
+              <form action="#">
+                <div class="row">
+                  <div class="col-md-6 col-12 mb-25">
+                    <select class="nice-select">
+                      <option>Bangladesh</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 col-12 mb-25">
+                    <select class="nice-select">
+                      <option>Dhaka</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 col-12 mb-25">
+                    <input type="text" placeholder="Postcode / Zip">
+                  </div>
+                  <div class="col-md-6 col-12 mb-25">
+                    <input type="submit" value="Estimate">
+                  </div>
+                </div>
+              </form>
+            </div>
+-->{% endcomment %}
+            <div class="discount-coupon">
+              <h4>Промокод</h4>
+              <form action="#">
+                <div class="row">
+                  <div class="col-md-6 col-12 mb-25">
+                    <input type="text" placeholder="Код промокода">
+                  </div>
+                  <div class="col-md-6 col-12 mb-25">
+                    <input type="submit" value="Применить">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="col-lg-6 col-12 d-flex">
+            <div class="cart-summary">
+              <div class="cart-summary-wrap">
+                <h4>Итого</h4>
+                <p>Без скидки <span>{{ cart.total|money_format  }} ₽</span></p>
+                <p>Скидка{% if cart.promocode %} (промокод <strong>{{ cart.promocode }}</strong>){% endif %} <span>{{ cart.discount|money_format }} ₽</span></p>
+                <h2>Итого <span>{{ cart.total_with_discount|money_format }} ₽</span></h2>
+              </div>
+              <div class="cart-summary-button">
+                <button id="goto_checkout_order" class="checkout-btn">Оформить заказ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#goto_checkout_order").click(function(){
+      window.location.href = "/shop/checkout/";
+    });
+    {% for purchase in cart.purchases %}
+      quantity_listener("{{ purchase.id }}",
+                        $("#qbuttons_{{ purchase.id }} .inc"),
+                        $("#qbuttons_{{ purchase.id }} .dec"),
+                        true // сразу обновить
+      );
+      purchase_drop_listener("{{ purchase.id }}",
+                             $("#purchase_drop_{{ purchase.id }}")
+      );
+      promocode_activate_listener($("#activate_promocode"), $("#activate_promocode_btn"));
+    {% endfor %}
+  });
+</script>
+{% endblock %}

@@ -1,22 +1,23 @@
-<div class="widget login">
+<form class="widget login" action="/feedback/" method="POST" id="feedback_form">
+  {% csrf_token %}
   {% for block in containers.main.tags.right_panel.sub %}
     {% ifequal block.tag 'name' %}
-      <input class="input-standard-white" placeholder="{{ block.description }}" type="text">
+      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="name" data-msg="Enter your name">
     {% endifequal %}
     {% ifequal block.tag 'email' %}
-      <input class="input-standard-white" placeholder="{{ block.description }}" type="text">
+      <input class="input-standard-white email" placeholder="{{ block.description }}" type="text" name="email" data-msg="Enter correct email">
     {% endifequal %}
     {% ifequal block.tag 'phone' %}
-      <input class="input-standard-white" placeholder="{{ block.description }}" type="text">
+      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="phone" data-msg="Enter your phone">
     {% endifequal %}
     {% ifequal block.tag 'qq' %}
-      <input class="input-standard-white" placeholder="{{ block.description }}" type="text">
+      <input class="input-standard-white" placeholder="{{ block.description }}" type="text" name="qq">
     {% endifequal %}
     {% ifequal block.tag 'contacts' %}
-      <textarea class="input-standard-white" placeholder="{{ block.description }}"></textarea>
+      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="contacts"></textarea>
     {% endifequal %}
     {% ifequal block.tag 'description' %}
-      <textarea class="input-standard-white" placeholder="{{ block.description }}"></textarea>
+      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="description"></textarea>
     {% endifequal %}
     {% ifequal block.tag 'attach' %}
       <div class="upload_file_title">{{ block.description }}</div>
@@ -30,13 +31,33 @@
     {% ifequal block.tag 'warning' %}
       <div class="confirm-wrap">
         <div class="checkbox">
-          <input id="confirm_rules" type="checkbox" name="confirm_rules" value="1">
+
+          <input id="confirm_rules" type="checkbox" name="confirm_rules" value="1" class="required">
           <label for="confirm_rules" class="upload_confirm">{{ block.description }}</label>
         </div>
       </div>
+      <div class="feedback_alerts form-field">
+        <div class="alert alert-success successMessage" role="alert" style="display:none;">
+          <button class='close' type='button'>×</button>
+          Thank you! Message sent.
+        </div>
+        <div class="alert alert-warning notifyMessage" role="alert" style="display:none;">
+          <button class='close' type='button'>×</button>
+          Please wait ...
+        </div>
+        <div class="alert alert-danger errorMessage" role="alert" style="display:none;">
+          <button class='close' type='button'>×</button>
+          Error Sorry, message not sent, please, call us
+        </div>
+        <div class="alert alert-info errorCaptcha" role="alert" style="display:none;">
+          <button class='close' type='button'>×</button>
+          Captcha wrong! Repeat captcha once again
+        </div>
+      </div>
     {% endifequal %}
+
     {% ifequal block.tag 'submit' %}
       <button type="submit" class="submit_button">{{ block.description }}</button>
     {% endifequal %}
   {% endfor %}
-</div>
+</form>

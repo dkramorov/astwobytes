@@ -14,10 +14,11 @@ from django.db.models import Q, Count
 from apps.main_functions.files import check_path, copy_file
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import (create_model_helper,
+                                              get_user_permissions,
                                               ModelHelper,
                                               tabulator_filters_and_sorters, )
 from apps.main_functions.api_helper import ApiHelper, XlsxHelper
-from apps.main_functions.string_parser import analyze_digit
+from apps.main_functions.string_parser import analyze_digit, translit
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view,
@@ -195,7 +196,7 @@ def create_double(product):
             copy_file(imga, new_imga)
 
     # Галерея
-    gallery = ProductsPhotos.objects.filter(product=product)
+    gallery = ProductsPhotos.objects.filter(product=product).order_by('position')
     for photo in gallery:
         imga = os.path.join(photo.get_folder(), photo.img)
         if not check_path(imga):
@@ -272,7 +273,7 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                         item.parents.append(all_parents[parent])
 
             context['props'] = row.productsproperties_set.select_related('prop', 'prop__prop').all()
-            context['photos'] = row.productsphotos_set.all()
+            context['photos'] = row.productsphotos_set.all().order_by('position')
             context['seo'] = row.get_seo()
         elif action == 'drop' and row:
             if mh.permissions['drop']:
@@ -288,7 +289,7 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
             return redirect(reverse('%s:%s' % (CUR_APP, 'edit_product'),
                                                kwargs=kwargs))
     elif request.method == 'POST':
-        pass_fields = []
+        pass_fields = ['min_price', 'max_price']
         if request.POST.get('2gallery'):
             pass_fields.append('grab_img_by_url')
         mh.post_vars(pass_fields=pass_fields)
@@ -313,8 +314,11 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                 cats = Blocks.objects.filter(pk__in=ids_cats)
                 for cat in cats:
                     ProductsCats.objects.create(product=mh.row, cat=cat)
-            # SEO
+            # ------------
+            # SEO/articles
+            # ------------
             seo = {k: request.POST.get(k) for k in ('seo_title', 'seo_description', 'seo_keywords')}
+            seo['linkcontainer'] = request.POST.getlist('linkcontainer')
             mh.row.fill_seo(**seo)
 
             # Загрузка в галерею,
@@ -435,6 +439,13 @@ def edit_photo(request, action: str, row_id: int = None, *args, **kwargs):
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
+        elif action == 'update' and row:
+            if mh.permissions['edit']:
+                row.name = request.POST.get('name')
+                row.save()
+                context['success'] = 'Данные успешно записаны'
+            else:
+                context['error'] = 'Недостаточно прав'
         elif action == 'img' and request.FILES:
             mh.uploads()
     if mh.row:
@@ -464,11 +475,102 @@ props_vars = {
     'edit_urla': 'edit_prop',
     'model': Property,
     'custom_model_permissions': Products,
+    'search_result_format': ('{} ({}) #{}', 'name code id'),
 }
+
+def fast_create_props(request):
+    """Быстрое создание свойств пачкой
+       :param request: HttpRequest
+    """
+    result = {}
+    perms = get_user_permissions(request.user, props_vars['model'])
+    if not request.method == 'POST' or not request.POST.get('props') or not perms['create']:
+        result['error'] = 'Недостаточно прав' if not perms['create'] else 'Нет данных для сохранения'
+        return JsonResponse(result, safe=False)
+
+    props = []
+    props_count = request.POST.get('props', 0)
+    try:
+        props_count = int(props_count)
+    except ValueError:
+        return JsonResponse(result, safe=False)
+    for i in range(props_count):
+        props.append({
+            'name': request.POST.get('name_%s' % i).strip(),
+            'code': request.POST.get('code_%s' % i).strip(),
+        })
+    already_exists = 0
+    created = 0
+    for prop in props:
+        if not prop['name']:
+            continue
+        code = prop['code'] or translit(prop['name'])
+        analog = Property.objects.filter(code=code)
+        if analog:
+            already_exists += 1
+            continue
+        analog = Property.objects.create(name=prop['name'], code=code)
+        created += 1
+    result['success'] = 'Данные успешно сохранены'
+    if already_exists:
+        result['success'] += '<br>Уже найдено свойств: %s' % already_exists
+        result['success'] += '<br>Добавлено новых свойств: %s' % created
+    if not created:
+        result['error'] = 'Не добавлено ни одного свойство'
+    return JsonResponse(result, safe=False)
+
+def fast_props2cat(request):
+    """Быстрое добавление свойств к товарам по рубрике
+       :param request: HttpRequest
+    """
+    result = {}
+    perms = get_user_permissions(request.user, props_vars['model'])
+    if not request.method == 'POST' or not request.POST.get('props2cat') or not perms['edit']:
+        result['error'] = 'Недостаточно прав' if not perms['edit'] else 'Нет данных для сохранения'
+        return JsonResponse(result, safe=False)
+    props2cat = request.POST.getlist('props2cat')
+    cat_id = request.POST.get('cat')
+    if not props2cat or not cat_id:
+        result['error'] = 'Недостаточно данных'
+        return JsonResponse(result, safe=False)
+    props2cat = [int(prop_id) for prop_id in props2cat if prop_id]
+    pcats = ProductsCats.objects.select_related('product').filter(cat=cat_id)
+
+    pvalues = PropertiesValues.objects.filter(prop__in=props2cat).order_by('position')
+    ids_pvalues = {}
+    for pvalue in pvalues:
+        if pvalue.prop_id in ids_pvalues:
+            continue
+        ids_pvalues[pvalue.prop_id] = pvalue
+
+    props = Property.objects.filter(pk__in=ids_pvalues.keys())
+    ids_props = {prop.id: prop for prop in props}
+
+    for pcat in pcats:
+        for prop_id in props2cat:
+            if not prop_id in ids_props:
+                logger.info('[ERROR]: prop not found %s' % prop_id)
+            prop = ids_props[prop_id]
+            # Любое значение свойства привязано
+            analog = ProductsProperties.objects.filter(prop__prop=prop, product=pcat.product).aggregate(Count('id'))['id__count']
+            if analog:
+                continue
+            # Нету нифуя - создаем свойство из первого значения св-ва
+            pvalue = ids_pvalues[prop.id]
+            ProductsProperties.objects.create(prop=pvalue, product=pcat.product)
+    result['success'] = 'Данные успешно сохранены'
+    return JsonResponse(result, safe=False)
 
 @login_required
 def show_props(request, *args, **kwargs):
     """Вывод свойств для товаров/услуг"""
+    if request.method == 'POST':
+        if request.POST.get('props'):
+            # Быстрое создание свойств пачкой
+            return fast_create_props(request)
+        if request.POST.get('props2cat'):
+            # Быстрое добавление свойств к товарам по рубрике
+            return fast_props2cat(request)
     return show_view(request,
                      model_vars = props_vars,
                      cur_app = CUR_APP,
@@ -548,12 +650,20 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
             result = {}
             pk = request.POST.get('id')
             value = request.POST.get('value')
+            if value:
+                value = value.strip()
             is_active = request.POST.get('is_active')
             prop = PropertiesValues(prop=row)
             if pk:
                 analog = PropertiesValues.objects.filter(pk=pk, prop=row).first()
                 if analog:
                     prop = analog
+            else:
+                # Дубли нам не нужны
+                analog = PropertiesValues.objects.filter(prop=row, str_value=value)
+                if analog:
+                    result['error'] = 'Вы создаете дубликат'
+                    return JsonResponse(result, safe=False)
             prop.str_value = value
             prop.is_active = True if is_active else False
 
@@ -585,7 +695,7 @@ def search_props(request, *args, **kwargs):
     return search_view(request,
                        model_vars = props_vars,
                        cur_app = CUR_APP,
-                       sfields = None, )
+                       sfields = ('name', 'code', 'id'), )
 
 pvalues_vars = {
     'singular_obj': 'Значение свойства',
@@ -719,12 +829,19 @@ def edit_product_pvalue(request, action: str, row_id: int = None, *args, **kwarg
         if action == 'create' or (action == 'edit' and row):
             if action == 'create' and product and prop:
                 if mh.permissions['create'] and prop:
-                    row = ProductsProperties.objects.create(
-                        product=product,
-                        prop = prop,
+                    analog = ProductsProperties.objects.filter(
+                        product = product,
+                        prop = prop
                     )
-                    context['success'] = 'Данные успешно записаны'
-                    context['row'] = {'id': row.id}
+                    if analog:
+                        context['error'] = 'Такое свойство уже присвоено этому товару'
+                    else:
+                        row = ProductsProperties.objects.create(
+                            product = product,
+                            prop = prop,
+                        )
+                        context['success'] = 'Данные успешно записаны'
+                        context['row'] = {'id': row.id}
                 else:
                     context['error'] = 'Недостаточно прав'
             if action == 'edit' and row and prop and product and product.id == row.product_id:

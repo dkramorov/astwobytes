@@ -138,7 +138,7 @@ def edit_order(request, action: str, row_id: int = None, *args, **kwargs):
             else:
                 context['error'] = 'Недостаточно прав'
     elif request.method == 'POST':
-        pass_fields = ()
+        pass_fields = ('payed', 'external_number')
         mh.post_vars(pass_fields=pass_fields)
         if action == 'create' or (action == 'edit' and row):
             if action == 'create':

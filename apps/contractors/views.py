@@ -11,12 +11,11 @@ from django.conf import settings
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper, XlsxHelper
-
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
-
-from .models import Contractor
+from apps.contractors.services import get_info_by_inn
+from apps.contractors.models import Contractor
 
 CUR_APP = 'contractors'
 contractors_vars = {
@@ -112,3 +111,11 @@ def search_contractors(request, *args, **kwargs):
                        cur_app = CUR_APP,
                        sfields = None, )
 
+@login_required
+def info_by_inn(request, *args, **kwargs):
+    """Изменение позиций контрагентов
+       :param request: HttpRequest
+    """
+    method = request.GET if request.method == 'GET' else request.POST
+    result = get_info_by_inn(method.get('inn'))
+    return JsonResponse(result, safe=False)

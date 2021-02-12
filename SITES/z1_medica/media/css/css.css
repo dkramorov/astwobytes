@@ -929,7 +929,7 @@ input, textarea {border:1px solid #ccc; padding:3px; }
 }
 .boxgroup h3 {
 padding-left:20px; 
-background:#6bc491;
+background:#00a1e6;
 text-shadow:1px 1px rgba(0,0,0,0.2);
 color:#fff;
 border-top-right-radius:6px;
@@ -1120,7 +1120,7 @@ border-radius: 10px;
     left: 110px;
     top: 173px;
 }
-#toppanel {width:100%; height:50px;  position:fixed; background:rgba(230,230,230,.98) url(/media/img/main_bg.gif);  display:block; text-align:center; z-index:990; 
+#toppanel {width:100%; height:50px;  position:fixed; background-color: #00a1e6;  display:block; text-align:center; z-index:990; 
 /*box-shadow:0 0 15px rgba(0,0,0,.15); */
 border-bottom:1px solid rgba(0,0,0,.15); 
 border-top:1px solid rgba(255,255,255,.3); 
@@ -1159,7 +1159,7 @@ z-index:1650;
 a.pn-button:hover {color:#fff; text-decoration:none}
 #slogans {display:inline-block; color:#999; text-shadow:1px 1px #fff; margin-left:10px; display:none }
 /*font-weight:bolder*/
-.cont {display:block; font-weight:bolder; padding-left:35px; background-repeat:no-repeat; text-shadow:1px 1px #fff; font-size:14px; margin-bottom:7px;min-height:30px; }
+.cont {display:block; font-weight:bolder; padding-left:55px; background-repeat:no-repeat; text-shadow:1px 1px #fff; font-size:14px; margin-bottom:7px;min-height:30px; }
 .cont span  {display:block; /*color:#777; /*font-size:13px; margin-top:5px*/  font-weight:normal; }
 /*.cont span a, .cont span a:visited {display:block; color:#777; font-weight:normal;font-size:12px; text-decoration:underline; margin-top:5px}*/
 .kolich {

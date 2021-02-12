@@ -20,7 +20,7 @@ register = template.Library()
 @register.filter(name = 'dynamic_portfolio')
 def dynamic_portfolio(request):
     cache_time = 300
-    cache_var = '%s_dynamic_portfolio' % (settings.DATABASES['default']['NAME'], )
+    cache_var = '%s_dynamic_portfolio' % (settings.PROJECT_NAME, )
     domains = get_domains()
     domain = get_domain(request, domains)
     if domain:

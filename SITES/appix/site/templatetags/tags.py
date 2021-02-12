@@ -90,7 +90,7 @@ def random_products(request,
        :param cache_time: время кэширования
     """
     cache_var = '%s_random_products_%s_%s' % (
-        settings.DATABASES['default']['NAME'],
+        settings.PROJECT_NAME,
         tag,
         size,
     )

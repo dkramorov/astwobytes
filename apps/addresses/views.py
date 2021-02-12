@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import ModelHelper, create_model_helper
 from apps.main_functions.api_helper import ApiHelper
 
 from apps.main_functions.views_helper import (show_view,
@@ -89,20 +89,16 @@ def search_addresses(request, *args, **kwargs):
     """Поиск объектов
        :param request: HttpRequest
     """
-    return search_view(request,
-                       model_vars = addresses_vars,
-                       cur_app = CUR_APP,
-                       sfields = None, )
-
     result = {'results': []}
     mh = ModelHelper(Address, request)
     mh_vars = addresses_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
-    mh.search_fields = ('id', 'name')
+
+    mh.search_fields = ('id', 'postalCode', 'city', 'district', 'subdistrict', 'street', 'addressLines', 'place')
     rows = mh.standard_show()
     for row in rows:
-        result['results'].append({'text': '%s (%s)' % (row.name, row.id), 'id': row.id})
+        result['results'].append({'text': row.address_str(), 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:

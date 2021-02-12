@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from apps.flatcontent.models import Containers, Blocks
+from apps.main_functions.models import Config
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,13 @@ def fill_flatmain():
         copyright = Blocks.objects.create(
             container=container, tag='copyright',
             name='Copyright', html='<p>&copy; 2020 Все права защищены</p>',
+            state=3,
+        )
+    company_name = Blocks.objects.filter(container=container, tag='company_name').first()
+    if not company_name:
+        company_name = Blocks.objects.create(
+            container=container, tag='company_name',
+            title='RGBA и COMPыта', name='Название компании',
             state=3,
         )
     social = Blocks.objects.filter(container=container, tag='social').first()
@@ -140,9 +148,46 @@ def fill_flatmenu():
                 tag='_%s_feedbackpage' % menu.tag,
             )
 
+def fill_settings():
+    """Настройки"""
+    feedback = Config.objects.filter(attr='flatcontent_feedback').first()
+    if not feedback:
+        feedback = Config.objects.create(name='Почта обратной связи',
+                                         attr='flatcontent_feedback',
+                                         value='dkramorov@mail.ru')
+
 class Command(BaseCommand):
+    """Заливаем демонстрационными данными сайт"""
+    def add_arguments(self, parser):
+        parser.add_argument('--flatmain',
+            action = 'store_true',
+            dest = 'flatmain',
+            default = False,
+            help = 'Fill only flatmain')
+        parser.add_argument('--flatmenu',
+            action = 'store_true',
+            dest = 'flatmenu',
+            default = False,
+            help = 'Fill only flatmenu')
+        parser.add_argument('--flatsettings',
+            action = 'store_true',
+            dest = 'flatsettings',
+            default = False,
+            help = 'Fill only settings')
+
     def handle(self, *args, **options):
-        """Заливаем демонстрационными данными сайт"""
+        if options.get('flatmain'):
+            fill_flatmain()
+            return
+        if options.get('flatmenu'):
+            fill_flatmenu()
+            return
+        if options.get('flatsettings'):
+            fill_settings()
+            return
         fill_flatmain()
         fill_flatmenu()
+        fill_settings()
+
+
 

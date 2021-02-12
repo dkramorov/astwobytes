@@ -1,0 +1,25 @@
+{% load mtags %}
+<div class="container pb-1 article">
+  <div class="row pt-4">
+    <div class="col pl-0 pr-0">
+      <div class="overflow-hidden mb-3">
+        <h2 class="text-12 mb-5 pt-5">
+          <span>{{ container.description|safe }}</span>
+        </h2>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2">
+    {% for block in blocks %}
+    {% if block.img %}
+      <div class="col-md-12 pl-0 pr-0 pb-5">
+        <div class="imga"><img src="{% imagine block.img '1920x1080' block.get_folder True %}" /></div>
+      </div>
+    {% endif %}
+    <div class="col-md-12 pl-0 pr-0">
+      <div class="title mb-4">{{ block.name }}</div>
+      <div class="desc">{{ block.html|safe }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

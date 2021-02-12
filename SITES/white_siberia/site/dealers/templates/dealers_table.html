@@ -1,0 +1,95 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+  var city_choices = {
+    "": "Без фильтра",
+    {% for city in city_choices %}
+      {{ city.0 }}: "{{ city.1 }}",
+    {% endfor %}
+  };
+  var cityFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return city_choices[pk];
+  };
+  var accessor_city = function(value, data, type, params, column){
+    return city_choices[value];
+  }
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Город",
+        field: "city",
+        headerFilterPlaceholder: "Город",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: city_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: cityFormatter,
+        width: 90,
+        accessorDownload: accessor_city,
+      },
+      {% include "core/tabulator_cell/name.html" %}
+      {
+        title: "Адрес",
+        field: "address",
+        headerFilterPlaceholder: "Адрес",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Режим работы",
+        field: "worktime",
+        headerFilterPlaceholder: "Режим работы",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Сайт",
+        field: "site",
+        headerFilterPlaceholder: "Сайт",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Телефон",
+        field: "phone",
+        headerFilterPlaceholder: "Телефон",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {% include "core/tabulator_cell/image.html" %}
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+});
+</script>
+{% endblock %}

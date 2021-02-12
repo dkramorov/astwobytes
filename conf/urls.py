@@ -21,8 +21,15 @@ urlpatterns = [
 # Подключение приложений через .env
 # ---------------------------------
 if 'apps.site' in settings.INSTALLED_APPS:
-    # Сайт (вставляем выше статики)
+    # Сайт
     urlpatterns.insert(1, re_path(r'^', include('apps.site.main.urls')))
+# ---------------------------
+# Подключаем custom site apps
+# ---------------------------
+for app in settings.INSTALLED_APPS:
+    if app.startswith('apps.site.'):
+        prefix = app.split('.')[-1]
+        urlpatterns.insert(1, re_path(r'^%s/' % prefix, include('%s.urls' % app)))
 
 if 'apps.afisha' in settings.INSTALLED_APPS:
     # Афиша

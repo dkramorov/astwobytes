@@ -33,7 +33,7 @@ def flatmenu(request, tag: str = None, containers: list = []):
     if not tag:
         return result
     cache_time = 60 # 60 секунд хватит
-    cache_var = '%s_flatmenu_%s' % (settings.DATABASES['default']['NAME'], tag)
+    cache_var = '%s_flatmenu_%s' % (settings.PROJECT_NAME, tag)
     if is_domains:
         domain = get_domain(request)
         if domain:
@@ -96,18 +96,18 @@ def flatcontent(request,
         # Контент для всех страничек
         # --------------------------
         if 'container' in container:
-            if hasattr(container['container'], 'tag'):
-                if container['container'].tag:
-                    t = 'main'
-                    if container['container'].tag == t:
-                        containers = {}
-                        containers[t] = {}
-                        containers[t]['tags'] = {}
-                        for block in container['blocks']:
-                            if hasattr(block, "tag"):
-                                if block.tag:
-                                    containers[t]['tags'][block.tag] = block
-                        result['containers'] = containers
+            t = 'main'
+            if not hasattr(container['container'], 'tag') or not container['container'].tag == t:
+                continue
+            if container['container'].tag == t:
+                containers = {}
+                containers[t] = {}
+                containers[t]['tags'] = {}
+                for block in container['blocks']:
+                    if not hasattr(block, 'tag') or not block.tag:
+                        continue
+                    containers[t]['tags'][block.tag] = block
+                result['containers'] = containers
 
     for item in page.containers:
         if not item:

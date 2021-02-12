@@ -11,13 +11,23 @@ var irkutsk_coords = [52.286387, 104.28066];
 // Демо функция как загрузить
 // Яндекс.Карты на страничку
 // --------------------------
-function load_yandex_maps_scripts(){
-  $.getScript( "//api-maps.yandex.ru/2.1/?lang=ru_RU", function(data, textStatus, jqxhr){
-    console.log(data); // Data returned
-    console.log(textStatus); // Success
-    console.log(jqxhr.status); // 200
-    console.log("Load was performed");
-  });
+function load_yandex_maps_script(api_key, callback){
+  if(window.load_yandex_maps_script_status){
+    if(typeof(callback) != "undefined"){
+      console.log("Call callback function");
+      callback();
+    }
+    return;
+  }
+  // Чтобы повторно не грузить
+  window.load_yandex_maps_script_status = 1;
+  $.getScript( "//api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=" + api_key).done(function(script, textStatus) {
+    console.log("Yandex maps loaded", textStatus);
+    if(typeof(callback) != "undefined"){
+      console.log("Call callback function");
+      callback();
+    }
+  })
 }
 
 // --------------------------------------------
@@ -124,6 +134,7 @@ function init_new_map(){
     // ObjectManager принимает те же опции, что и кластеризатор.
     gridSize: 32
   });
+  // https://yandex.ru/dev/maps/jsapi/doc/2.1/ref/reference/map.GeoObjects.html
   myMap.geoObjects.add(object_manager);
   myMap.object_manager = object_manager;
 
@@ -385,6 +396,22 @@ function coords_in_map(coords, mapContainer){
     }
   }
   return false;
+}
+
+// ---------------------------
+// Находим placemark в массиве
+// myMap.myPoints, например,
+// чтобы открыть балун
+// ---------------------------
+function find_placemark_by_id(point_id, myMap){
+  var point;
+  for(var i=0; i<myMap.myPoints.length; i++){
+    point = myMap.myPoints[i];
+    if(point_id == point['id']){
+      return point;
+    }
+  }
+  return null;
 }
 
 // ---------------------------------------

@@ -59,6 +59,73 @@ def get_costs_types(products):
             ids_products[cost_value.product_id].costs_by_tag[cost_type.tag] = cost
         ids_products[cost_value.product_id].costs.append(cost)
 
+def get_breadcrumbs_for_product(product, breadcrumbs: list):
+    """Хлебные крошки для товара с кэшем
+       :param product: экземпляр модели Products
+       :param breadcrumbs: массив с хлебными крошками
+    """
+    cache_time = 600
+    cache_var = '%s_product_breadcrumbs_%s' % (
+        settings.PROJECT_NAME,
+        product.id,
+    )
+    inCache = cache.get(cache_var)
+    if inCache:
+        for crumb in inCache.get('breadcrumbs', []):
+            breadcrumbs.append(crumb)
+        return inCache.get('rubric')
+
+    rubric = None
+    pcat = product.productscats_set.all().values('cat', 'cat__parents', 'cat__container').first()
+    if not pcat:
+        return []
+
+    container = Containers.objects.filter(pk=pcat['cat__container']).values('name').first()
+    if container:
+        breadcrumbs.append({
+            'name': container['name'],
+            'link': '/cat/',
+        })
+
+    cond = Q()
+    cond.add(Q(pk=pcat['cat']), Q.OR)
+    parents = []
+    if pcat['cat__parents']:
+        parents_arr = pcat['cat__parents'].split('_')
+        for parent in parents_arr:
+            if not parent:
+                continue
+            cond.add(Q(pk=parent), Q.OR)
+            parents.append(int(parent))
+
+    cats = Blocks.objects.filter(cond)
+    ids_cats = {cat.id: cat for cat in cats}
+    for parent in parents:
+        if not parent in ids_cats:
+            continue
+        cat = ids_cats[parent]
+        breadcrumbs.append({
+            'name': cat.name,
+            'link': cat.link,
+        })
+    cat = ids_cats.get(pcat['cat'])
+    if cat:
+        rubric = cat
+        breadcrumbs.append({
+            'name': cat.name,
+            'link': cat.link,
+        })
+    breadcrumbs.append({
+        'name': product.name,
+        'link': product.link(),
+    })
+    result = {
+        'rubric': rubric,
+        'breadcrumbs': breadcrumbs,
+    }
+    cache.set(cache_var, result, cache_time)
+    return rubric
+
 def get_product_for_site(request, price_id: int):
     """Получить товар/услугу для сайта"""
     page = None
@@ -73,40 +140,7 @@ def get_product_for_site(request, price_id: int):
         # достаем рубрики товара
         # рассчитываем хлебные крошки
         # ---------------------------
-        pcat = product.productscats_set.all().values_list('cat', 'cat__parents').first()
-        if pcat:
-            cond = Q()
-            cond.add(Q(pk=pcat[0]), Q.OR)
-            parents = []
-            if pcat[1]:
-                parents_arr = pcat[1].split('_')
-                for parent in parents_arr:
-                    if not parent:
-                        continue
-                    cond.add(Q(pk=parent), Q.OR)
-                    parents.append(int(parent))
-
-            cats = Blocks.objects.filter(cond)
-            ids_cats = {cat.id: cat for cat in cats}
-            for parent in parents:
-                if not parent in ids_cats:
-                    continue
-                cat = ids_cats[parent]
-                breadcrumbs.append({
-                    'name': cat.name,
-                    'link': cat.link,
-                })
-            cat = ids_cats.get(pcat[0])
-            if cat:
-                rubric = cat
-                breadcrumbs.append({
-                    'name': cat.name,
-                    'link': cat.link,
-                })
-        breadcrumbs.append({
-            'name': product.name,
-            'link': product.link(),
-        })
+        rubric = get_breadcrumbs_for_product(product, breadcrumbs)
     get_props_for_products([product])
     get_costs_types([product])
     result = {
@@ -127,7 +161,7 @@ def get_catalogue_products_count(tag: str,
        :param force_new: получить каталог без кэша
     """
     cache_var = '%s_%s_pcats' % (
-        settings.DATABASES['default']['NAME'],
+        settings.PROJECT_NAME,
         tag,
     )
     inCache = cache.get(cache_var)
@@ -199,7 +233,7 @@ def get_catalogue(request,
 
     pass_cache = False
     cache_var = '%s_%s_catalogue' % (
-        settings.DATABASES['default']['NAME'],
+        settings.PROJECT_NAME,
         tag,
     )
     inCache = cache.get(cache_var)
@@ -213,6 +247,7 @@ def get_catalogue(request,
         is_active = True,
     ).first()
     menus = []
+    count = 0
     if container:
         # Если рубрик дохера, то будет больно, избегаем этого
         cats = container.blocks_set.filter(is_active=True)
@@ -454,6 +489,9 @@ def get_cat_for_site(request,
         query = query.order_by('-%smax_price' % prefix)
         q_string['q']['sort'] = '-price'
         q_string['sort_name_filter'] = 'Цена по убыванию'
+    else:
+        # По умолчанию сортировка по позиции
+        query = query.order_by('%sposition'% prefix)
 
     paginator_template = 'web/paginator.html'
     my_paginator, records = myPaginator(total_records, q_string['page'], q_string['by'])
@@ -568,7 +606,7 @@ def get_filters_for_cat(cat_id: int,
     result = {}
     # 0) Проверяем в кэше
     cache_var = '%s_%s_filters_for_cat_%s' % (
-        settings.DATABASES['default']['NAME'],
+        settings.PROJECT_NAME,
         cat_id,
         1 if search_facet else 0,
     )

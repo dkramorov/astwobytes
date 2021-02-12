@@ -446,9 +446,11 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
 def search_containers(request, *args, **kwargs):
     """Поиск контейнеров
        Параметры GET для поиска:
-           :param without_templates: Без шаблонов state__in=(99,100)
-           :param without_menus: Без менюшек state=1
-           :param without_main: Без контента для всех страничек state=2
+           :param without_templates: Без шаблонов (99,100)
+           :param without_menus: Без менюшек (1)
+           :param without_main: Без контента для всех страничек (2)
+           :param without_seo_prices: Без сео страничек для товаров (4)
+           :param without_cats: Без каталогов (7)
            :param with_images: Только с изображениями
            :param only_templates: Только шаблоны state__in=(99,100)
            :param only_cats: Только рубрики state=7
@@ -458,15 +460,26 @@ def search_containers(request, *args, **kwargs):
     mh = ModelHelper(Containers, request)
 
     # Исключение из поиска определенных типов контейнеров
+    exclude_ids = []
     without_templates = request.GET.get('without_templates')
     if without_templates:
-        mh.exclude_add(Q(state__in=(99, 100)))
+        exclude_ids.append(99)
+        exclude_ids.append(100)
     without_menus = request.GET.get('without_menus')
     if without_menus:
-        mh.exclude_add(Q(state=1))
+        exclude_ids.append(1)
     without_main = request.GET.get('without_main')
     if without_main:
-        mh.exclude_add(Q(state=2))
+        exclude_ids.append(2)
+    without_seo_prices = request.GET.get('without_seo_prices')
+    if without_seo_prices:
+        exclude_ids.append(4)
+    without_cats = request.GET.get('without_cats')
+    if without_cats:
+        exclude_ids.append(7)
+    if exclude_ids:
+        mh.exclude_add(Q(state__in=exclude_ids))
+
     only_templates = request.GET.get('only_templates')
     if only_templates:
         mh.filter_add(Q(state__in=(99, 100)))
@@ -1182,7 +1195,7 @@ def SearchLink(q_string: dict = None,
             link_with_params += '?%s' % (query_string, )
 
         hashed_link = serp_hash(link_with_params.encode('utf-8'))
-        cache_var = '%s_%s' % (hashed_link, settings.DATABASES['default']['NAME'])
+        cache_var = '%s_%s' % (hashed_link, settings.PROJECT_NAME)
         # ------------------------
         # Если сайт мультиязычный,
         # то кэш нужен на домен
@@ -1264,6 +1277,7 @@ def SearchLink(q_string: dict = None,
     containers = []
     if block_with_content:
         containers = LinkContainer.objects.select_related('container').filter(block=block_with_content)
+        block_with_content.tags = []
     if containers:
         for container in containers:
             all_containers.append(container.container) # Для перевода
@@ -1274,6 +1288,8 @@ def SearchLink(q_string: dict = None,
                 'products': [],
                 'position': container.position,
             }
+            if container.container.tag:
+                block_with_content.tags.append(container.container.tag)
     templar(ids_containers, mcap, block_with_content, all_containers, all_blocks, q_string, request)
 
     # -----

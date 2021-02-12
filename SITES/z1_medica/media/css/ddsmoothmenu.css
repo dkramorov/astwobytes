@@ -74,18 +74,18 @@ position:relative;
  font-weight:400;
  font-size:22px;
 
-  text-shadow: 1px 1px rgba(255,255,255,.3);
+  /*text-shadow: 1px 1px rgba(255,255,255,.3);*/
 }
 
-* html .ddsmoothmenu ul li a{ /*IE6 hack to get sub menu links to behave correctly*/
+* html .ddsmoothmenu ul li a{ IE6 hack to get sub menu links to behave correctly*/
 display: inline-block;
 }
 .ddsmoothmenu ul li a:link, .ddsmoothmenu ul li a:visited {
-  color: #333;
+  color: #fff;
   
 }
 .ddsmoothmenu ul li ul li a:link , .ddsmoothmenu ul li ul li a:visited{
-  color: #000;
+  color: #fff;
  font-weight:bolder;
 
   border-radius:none;
@@ -119,10 +119,10 @@ border-bottom-left-radius:6px;
 
 .ddsmoothmenu ul li a:hover, .ddsmoothmenu ul li a.selected 
 {
-  color: rgb(0, 153, 102);
+  color:#fff;
 /*#722b8e;
 */
-  background:url(../img/bodybg.png);
+  background-color:#00a1e6;
   box-shadow:2px 2px 4px rgba(0,0,0,.3);  
   border-radius:5px;
   /*border-top-right-radius:5px;*/
@@ -153,7 +153,7 @@ border-bottom-left-radius:6px;
   left: 0;
   display: none; /*collapse all sub menus to begin with*/
   visibility: hidden;
-  background:#eee url(../img/bodybg.png);
+  background-color: #00a1e6;
   border-radius:6px;
   border-top-left-radius:0;
   margin-top:-3px;
@@ -189,7 +189,7 @@ top: 0;
   
   font-variant: normal;
   color: #000;
-  text-shadow: 1px 1px #fff;
+  /*text-shadow: 1px 1px #fff;*/
   text-align: left;
   /*background-image: url(../img/body.jpg);*/
   

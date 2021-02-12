@@ -303,3 +303,57 @@ class LinkContainer(Standard):
     class Meta:
         verbose_name = 'Стат.контент - Линковка меню к контейнерам'
         verbose_name_plural = 'Стат.контент - Линковка меню к контейнерам'
+
+def get_link_containers(block: Blocks):
+    """Получение привязанных контейнеров к блоку
+       :param block: блок, к котому ищем привязки
+    """
+    if not block:
+        return []
+    result = block.linkcontainer_set.select_related('container').order_by('position')
+    block.linkcontainers = [link.container for link in result]
+    return block.linkcontainers
+
+def link_containers2block(block: Blocks, ids_containers: list):
+    """Привязать к блоку контейнеры
+       через LinkContainer
+       :param block: блок, к которому делаем привязку
+       :param ids_containers: список ид контейнеров для привязки
+    """
+    ids_containers = [int(container_id) for container_id in ids_containers]
+    clist = {container_id: None for container_id in ids_containers}
+    containers = Containers.objects.filter(pk__in=ids_containers)
+    for container in containers:
+        clist[container.id] = container
+    # ----------------
+    # Старая структура
+    # ----------------
+    analogs = LinkContainer.objects.filter(block=block).values_list('container', flat=True)
+    analogs = list(analogs)
+
+    if not analogs and not ids_containers:
+        return
+
+    linkcontainer = [] # Новая структура
+    for i, container_id in enumerate(ids_containers):
+        if not container_id in clist or not clist[container_id]:
+            continue
+        container = clist[container_id]
+        if container.id in analogs:
+            LinkContainer.objects.filter(block=block, container=container).update(position=i)
+        else:
+            LinkContainer.objects.create(block=block, container=container, position=i)
+        linkcontainer.append(container.id)
+    # ----------------------
+    # Удаление тех привязок,
+    # которые не встретились
+    # ----------------------
+    fordel = []
+    for analog in analogs:
+        if not analog in linkcontainer:
+            fordel.append(analog)
+    if fordel:
+        LinkContainer.objects.filter(block=block, container__in=fordel).delete()
+
+
+

@@ -21,7 +21,7 @@ urlpatterns = [
 
     # фотки товаров/услуг
     path('admin/photos/', views.show_photos, name='show_photos'),
-    url('^admin/photos/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_photo, name='edit_photo'),
+    url('^admin/photos/(?P<action>edit|drop|update)/(?P<row_id>[0-9]{1,11})/$', views.edit_photo, name='edit_photo'),
 
     # товары по категории (блоку)
     url('^admin/show_cats_products/$', views.show_cats_products, name='show_cats_products'),

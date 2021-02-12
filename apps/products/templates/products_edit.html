@@ -3,6 +3,29 @@
 {% block extrahead %}
 <link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
 <link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
+<style type="text/css">
+  table.gallery tr td.first,
+  table.gallery tr td.last {
+    padding: 0;
+    text-align: center;
+    padding-bottom: 6px;
+  }
+  table.gallery tr td {
+    border-top: 0;
+  }
+  .col-masonry {
+    border: 1px solid #ccc;
+  }
+  .col-masonry .img-thumbnail {
+    display: block;
+    margin: 0 auto;
+    background-color: transparent;
+    border: 0;
+  }
+  table.gallery tr td input {
+    width: 100%;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -118,55 +141,14 @@
 
           <div class="panel panel-default">
             <div class="panel-heading">
-              <strong>SEO (title, meta-теги)</strong>
+              <strong>SEO, статьи</strong>
             </div>
             <div class="panel-body">
-              <div class="form-group">
-                <label class="col-lg-2 control-label">Title</label>
-                <div class="col-lg-10">
-                  <input type="text" placeholder="Title" class="form-control" name="seo_title" value="{% if seo.title %}{{ seo.title }}{% endif %}" autocomplete="off">
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-lg-2 control-label">Description</label>
-                <div class="col-lg-10">
-                  <input type="text" placeholder="Description" class="form-control" name="seo_description" value="{% if seo.description %}{{ seo.description }}{% endif %}" autocomplete="off">
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-lg-2 control-label">Keywords</label>
-                <div class="col-lg-10">
-                  <input type="text" placeholder="Keywords" class="form-control" name="seo_keywords" value="{% if seo.keywords %}{{ seo.keywords }}{% endif %}" autocomplete="off">
-                </div>
-              </div>
+              {% include "products_menus/products_menu_links.html" %}
             </div>
           </div>
           {% include "core/forms/row_image.html" %}
-
-          <div class="form-group">
-            <div class="col-lg-2 text-right">
-
-              <div class="checkbox c-checkbox">
-                <label>
-                  <input type="checkbox" value="1" id="add2gallery_checkbox" name="2gallery" />
-                  <span class="fa fa-check"></span>
-                </label>
-              </div>
-
-              <label for="add2gallery_checkbox">Если опция выбрана, фото будет добавляться в галерею, в противном случае, будет заменяться основное изображение товара</label>
-            </div>
-            <div class="col-lg-10">
-              <h4>Галерея товара</h4>
-              <div class="row-masonry row-masonry-md-4 row-masonry-sm-2" id="product_gallery">
-                {% for photo in photos %}
-                  <div class="col-masonry" id="photo_index_{{ photo.id }}">
-                    <img src="{% imagine photo.img '150x150' photo.get_folder True %}" alt="{{ photo.name|textize }}" class="img-thumbnail img-responsive">
-                    <br /><a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_photo" onclick="prepare_for_drop_photo({{ photo.id }})"><i class="fa fa-trash"></i></a>
-                  </div>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
+          {% include "products_gallery/product_photos.html" %}
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
         </div>
@@ -199,198 +181,252 @@
 {% endblock %}
 
 {% block extrascripts %}
-  <div id="ajax_drop_photo" tabindex="-1" role="dialog" aria-labelledby="myModalLabelPhoto" aria-hidden="true" class="modal fade">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
-          <h4 id="myModalLabelPhoto" class="modal-title">{{ action_drop }} фото из галереи товара</h4>
-        </div>
-        <div class="modal-body">Вы уверены, что хотите удалить фото id=<span id="ajax_drop_photo_id"></span><span class="hidden" id="ajax_drop_photo_ind"></span>?</div>
-        <div class="modal-footer">
-          <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
-          <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_photo_button">Да</button>
-        </div>
+<div id="ajax_drop_photo" tabindex="-1" role="dialog" aria-labelledby="myModalLabelPhoto" aria-hidden="true" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
+        <h4 id="myModalLabelPhoto" class="modal-title">{{ action_drop }} фото из галереи товара</h4>
+      </div>
+      <div class="modal-body">Вы уверены, что хотите удалить фото id=<span id="ajax_drop_photo_id"></span><span class="hidden" id="ajax_drop_photo_ind"></span>?</div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
+        <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_photo_button">Да</button>
       </div>
     </div>
   </div>
-  <form class="hidden" method="get" action="{{ root_url }}" id="current_drop_photo_form">{% csrf_token %}</form>
+</div>
+<form class="hidden" method="get" action="{{ root_url }}" id="current_drop_photo_form">{% csrf_token %}</form>
 
-  <script src="/static/redactor/jquery.browser.js"></script>
-  <script src="/static/redactor/redactor.js"></script>
-  <script src="/static/admin/js/parsley.min.js"></script>
-  {% include "props_scripts.html" %}
-  <script type="text/javascript">
-
-    function prepare_for_drop_photo(pk, row_index){
-      $("#ajax_drop_photo_id").html(pk);
-      $("#current_drop_photo_form").attr("action", "{{ root_url }}photos/drop/" + pk + "/");
-    }
-
-    $(document).ready(function(){
-      // -------------
-      // Удаление фото
-      // -------------
-      $('#ajax_drop_photo_button').click(function(){
-        var pk = $('#ajax_drop_photo_id').html();
-        var $form = $('#current_drop_photo_form');
-        var msg = 'Произошла ошибка, сообщите администратору';
-        var status = 'danger';
-
+<script src="/static/redactor/jquery.browser.js"></script>
+<script src="/static/redactor/redactor.js"></script>
+<script src="/static/admin/js/parsley.min.js"></script>
+{% include "props_scripts.html" %}
+<script type="text/javascript">
+  // ---------------
+  // Обновление фото
+  // ---------------
+  function update_photo_name_listeners(){
+    $(".update_photo_name").each(function(){
+      if($(this).hasClass("touched")){
+        return;
+      }
+      $(this).addClass("touched");
+      $(this).click(function(){
+        var urla = "{% url 'products:edit_photo' 'update' 0 %}";
+        var photo_id = $(this).attr("data-photo_id");
+        urla = urla.replace("/0/", "/" + photo_id + "/");
+        var name = $("#photo_name_" + photo_id).val();
         $.ajax({
-          type: $form.attr('method'),
-          url: $form.attr('action'),
-          data: $form.serialize()
+          type: "POST",
+          url: urla,
+          data: {
+            csrfmiddlewaretoken: getCookie('csrftoken'),
+            name: name,
+          },
         }).done(function(r) {
           if(r.error){
             msg = r.error;
           }else if(r.success){
             msg =  r.success;
             status = 'success';
-            // Удаляем блок с фото
-            $("#photo_index_" + pk).remove();
           }
           $.notify({
             message: msg,
           },{
            status: status,
           });
-        }).fail(function() {
-          $.notify({
-            message: msg,
-          },{
-            status: status,
-          });
         });
       });
-
-      $("#current_edit_form").parsley();
-      $("#current_edit_form").submit(function(e) {
-        var $form = $(this);
-        var msg = 'Произошла ошибка, обновите страничку';
-        var status = 'danger'; // success, warning, info, danger
-        $.ajax({
-          type: $form.attr('method'),
-          url: $form.attr('action'),
-          data: $form.serialize()
-        }).done(function(r) {
-          if(r.error){
-            msg = r.error;
-          }else if(r.success){
-            msg =  r.success;
-            status = 'success';
-            //$("#current_edit_form").attr("action", r.redirect);
-            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
-          }
-          $.notify({
-            message: msg,
-          },{
-            status: status,
-          });
-          // Обновление ссылок
-          update_links(r);
-
-        }).fail(function() {
-          $.notify({
-            message: msg,
-          },{
-            status: status,
-          });
-        });
-        //отмена действия по умолчанию для кнопки submit
-        e.preventDefault();
-      });
-
-      function update_links(r){
-        // Обновление фотки
-        if(r['row']['is_gallery']){
-          // Добавление фотки в галерею
-          var photo = r['photo'];
-          var html = '';
-          html += '<div class="col-masonry" id="photo_index_' + photo['id'] + '">';
-          html += '<img src="' + photo['thumb'] + '" class="img-thumbnail img-responsive">';
-          html += '<br /><a href="javascript:void(0);" class="mt-sm btn-xs btn btn-danger" data-toggle="modal" data-target="#ajax_drop_photo" onclick="prepare_for_drop_photo(' + photo['id'] + ')">';
-          html += '<i class="fa fa-trash"></i></a>';
-          html += '</div>'
-          $("#product_gallery").append($(html));
-          return;
-        }else{
-          var thumb = r['row']['thumb'];
-          if(thumb === ''){
-            thumb = '/static/img/empty.png';
-          }
-          $("#preview_img_full").attr("href", r['row']['imagine'] + "?_=" + Date.now());
-          $("#preview_img").attr("src", thumb + "?_=" + Date.now());
-        }
-      }
-
-      $("#html_mini_info").redactor({
-        //air: true,
-      });
-      $("#html_info").redactor({
-        //air: true,
-      });
-
-      $('#cats_select2').select2({
-        placeholder: 'Какие категории привязать',
-        width: '100%',
-        //tags: true,
-        ajax: {
-          delay: 150,
-          url: "{% url 'flatcontent:search_blocks' %}",
-
-          data: function (params) {
-            var query = {
-              q: params.term,
-              only_cats: 1,
-              page: params.page || 1,
-            }
-            return query;
-          },
-
-          //data: "only_cats=1",
-          cache: false,
-          dataType: 'json',
-        }
-      });
-
-      {% if row %}
-        var progressbar = $('#progressbar-files'),
-          bar         = progressbar.find('.progress-bar-files'),
-          settings    = {
-            action: '{% url "products:edit_product" "img" row.id %}', // upload url
-            allow : '*.*',
-            param: 'img',
-            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
-            // Загрузка в галерею, если выбрана опция
-            before: function(o) {
-              o.params['2gallery'] = $("#add2gallery_checkbox").prop('checked') ? 1 : '';
-            },
-            loadstart: function() {
-              bar.css('width', '0%').text('0%');
-              progressbar.removeClass('hidden');
-            },
-            progress: function(percent) {
-              percent = Math.ceil(percent);
-              bar.css('width', percent+'%').text(percent+'%');
-            },
-            allcomplete: function(response) {
-              bar.css('width', '100%').text('100%');
-              setTimeout(function(){
-                progressbar.addClass('hidden');
-              }, 750);
-              // Upload Completed
-              //alert(response);
-            },
-            complete: function(response) {
-              // Обновление ссылок
-              var r = JSON.parse(response);
-              update_links(r);
-            }
-          };
-        var select = new $.upload.select($('#upload-select-files'), settings),
-        drop   = new $.upload.drop($('#upload-drop-files'), settings);
-      {% endif %}
     });
-  </script>
+  }
+  function prepare_for_drop_photo(pk, row_index){
+    $("#ajax_drop_photo_id").html(pk);
+    $("#current_drop_photo_form").attr("action", "{{ root_url }}photos/drop/" + pk + "/");
+  }
+  $(document).on("keypress", function(e) {
+    // ------------------------------------
+    // Подтверждение удаления фото по Enter
+    // ------------------------------------
+    if(e.which == 13) {
+      if($("#ajax_drop_photo").hasClass("in")){
+        $("#ajax_drop_photo").modal('hide');
+        $("#ajax_drop_photo_button").click();
+      }
+    }
+  });
+  $(document).ready(function(){
+    update_photo_name_listeners();
+    // -------------
+    // Удаление фото
+    // -------------
+    $('#ajax_drop_photo_button').click(function(){
+      var pk = $('#ajax_drop_photo_id').html();
+      var $form = $('#current_drop_photo_form');
+      var msg = 'Произошла ошибка, сообщите администратору';
+      var status = 'danger';
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          // Удаляем блок с фото
+          $("#photo_index_" + pk).remove();
+        }
+        $.notify({
+          message: msg,
+        },{
+         status: status,
+        });
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+    });
+    $("#current_edit_form").parsley();
+    $("#current_edit_form").submit(function(e) {
+      var $form = $(this);
+      var msg = 'Произошла ошибка, обновите страничку';
+      var status = 'danger'; // success, warning, info, danger
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          //$("#current_edit_form").attr("action", r.redirect);
+          {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+        }
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+        // Обновление ссылок
+        update_links(r);
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+      //отмена действия по умолчанию для кнопки submit
+      e.preventDefault();
+    });
+    function update_links(r){
+      // Обновление фотки
+      if(r['row']['is_gallery']){
+        // Добавление фотки в галерею
+        update_gallery_links(r);
+      }else{
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img_full").attr("href", r['row']['imagine'] + "?_=" + Date.now());
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      update_photo_name_listeners();
+    }
+    $("#html_mini_info").redactor({
+      //air: true,
+    });
+    $("#html_info").redactor({
+      //air: true,
+    });
+    $('#cats_select2').select2({
+      placeholder: 'Какие категории привязать',
+      width: '100%',
+      //tags: true,
+      ajax: {
+        delay: 150,
+        url: "{% url 'flatcontent:search_blocks' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            only_cats: 1,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        //data: "only_cats=1",
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    {% if row %}
+      var progressbar = $('#progressbar-files'),
+        bar         = progressbar.find('.progress-bar-files'),
+        settings    = {
+          action: '{% url "products:edit_product" "img" row.id %}', // upload url
+          allow : '*.*',
+          param: 'img',
+          params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+          // Загрузка в галерею, если выбрана опция
+          before: function(o) {
+            o.params['2gallery'] = $("#add2gallery_checkbox").prop('checked') ? 1 : '';
+          },
+          loadstart: function() {
+            bar.css('width', '0%').text('0%');
+            progressbar.removeClass('hidden');
+          },
+          progress: function(percent) {
+            percent = Math.ceil(percent);
+            bar.css('width', percent+'%').text(percent+'%');
+          },
+          allcomplete: function(response) {
+            bar.css('width', '100%').text('100%');
+            setTimeout(function(){
+              progressbar.addClass('hidden');
+            }, 750);
+            // Upload Completed
+          },
+          complete: function(response) {
+            // Обновление ссылок
+            var r = JSON.parse(response);
+            update_links(r);
+          }
+        };
+      var select = new $.upload.select($('#upload-select-files'), settings),
+          drop   = new $.upload.drop($('#upload-drop-files'), settings);
+    {% endif %}
+
+    $('#linkcontainer_select2').select2({
+      placeholder: 'Какие странички привязать',
+      width: '100%',
+      //tags: true,
+      ajax: {
+        url: "{% url 'flatcontent:search_containers' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            without_templates: 1,
+            without_menus: 1,
+            without_main: 1,
+            without_seo_prices: 1,
+            without_cats: 1,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        //data: "without_templates=1&without_menus=1&without_main=1",
+        cache: false,
+        dataType: 'json',
+      }
+    });
+  });
+</script>
 {% endblock %}

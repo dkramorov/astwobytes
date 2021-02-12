@@ -1154,3 +1154,11 @@ h6, .h6 {
 #site-header .nav-add .lang.active a{
   color: #582371;
 }
+label.error {
+  color: #d70000 !important;
+}
+button.close {
+  float: right;
+  border: 0;
+  background: transparent;
+}

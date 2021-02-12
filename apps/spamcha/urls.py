@@ -65,4 +65,9 @@ urlpatterns = [
     path('admin/sms_phones/positions/', views.sms_phones_positions, name='sms_phones_positions'),
     # аякс-поиск
     path('sms_phones/search/', views.search_sms_phones, name='search_sms_phones'),
+
+    # ------------------
+    # Почта пользователя
+    # ------------------
+    path('admin/mailbox/', views.show_mailbox, name='show_mailbox'),
 ]

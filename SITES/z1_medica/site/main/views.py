@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import json
+import time
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
@@ -17,6 +18,7 @@ from apps.personal.utils import save_user_to_request, remove_user_from_request
 from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
 from apps.shop.models import Orders
+from apps.shop.sbrf import SberPaymentProovider
 
 CUR_APP = 'main'
 main_vars = {
@@ -335,5 +337,102 @@ def checkout(request):
     context.update(**create_new_order(request, shopper, cart))
     if 'order' in context and context['order']:
         template = 'web/order/confirmed.html'
+
+    # Если пользователь вернулся
+    # на страничку оформленного заказа,
+    # например, для оплаты
+    if request.GET.get('order_id'):
+        order_id = request.GET['order_id']
+        if order_id.isdigit():
+            order = Orders.objects.filter(pk=order_id, shopper=shopper).first()
+            if order:
+                template = 'web/order/confirmed.html'
+                context['order'] = order
+                sber = SberPaymentProovider()
+                order_status = sber.get_order_status(order.external_number, order.id)
+                context['order_status'] = order_status
+    # -----------------------------------------
+    # Если пользователь пытается оплатить заказ
+    # -----------------------------------------
+    if 'order' in context and request.GET.get('pay') == 'sbrf':
+        order = context['order']
+        scheme = 'http://'
+        if request.is_secure():
+            scheme = 'https://'
+        host = '%s%s' % (scheme, request.META['HTTP_HOST'])
+        env = ''
+        if settings.DEBUG:
+            env = 'test_%s' % str(time.time())
+        params = {
+            'amount': int(order.total * 100),
+            'orderNumber': '%s%s' % (env, order.id),
+            'returnUrl': '%s/payment/sbrf/success/' % host,
+            'failUrl': '%s/payment/sbrf/fail/' % host,
+            #'description': 'Тестовый заказ',
+            'clientId': shopper.id,
+            'email': shopper.email,
+            'phone': shopper.phone,
+        }
+        sber = SberPaymentProovider()
+        register_order = sber.register_do(**params)
+        context.update(register_order)
+        # ------------------------
+        # Переадресация на форму и
+        # запись номера заказа
+        # ------------------------
+        if 'formUrl' in register_order:
+            Orders.objects.filter(pk=order.id).update(external_number=register_order['orderId'])
+            return redirect(register_order['formUrl'])
+    return render(request, template, context)
+
+
+payment_vars = {
+    'singular_obj': 'Оплата заказа',
+    'template_prefix': 'order_',
+    'show_urla': 'payment',
+}
+
+def payment(request, provider: str, action: str):
+    """Оплата заказа
+       :param request: HttpRequest
+       :param provider: sbrf/
+       :param action: success/fail
+    """
+    mh_vars = payment_vars.copy()
+    context = {
+        'provider': provider,
+        'action': action,
+    }
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/order/payment.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=order_vars['singular_obj'])
+    kwargs = {
+      'provider': provider,
+      'action':action,
+    }
+    context['breadcrumbs'] = [{
+        'name': 'Оплата заказа',
+        'link': reverse('%s:%s' % (CUR_APP, 'payment'), kwargs=kwargs),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+
+    if request.GET.get('orderId'):
+        order_id = request.GET['orderId']
+        order = Orders.objects.filter(shopper=shopper, external_number=order_id).first()
+        if order:
+            sber = SberPaymentProovider()
+            order_status = sber.get_order_status(order.external_number, order.id)
+            context['order_status'] = order_status
+            context['order'] = order
 
     return render(request, template, context)

@@ -27,6 +27,18 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-lg-2 control-label">Оплачено</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="0.00" class="form-control" name="payed" value="{% if row.payed %}{{ row.payed }}{% endif %}" autocomplete="off" disabled>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Номер в платежной системе</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Номер в платежной системе" class="form-control" name="external_number" value="{% if row.external_number %}{{ row.external_number }}{% endif %}" autocomplete="off" disabled>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-2 control-label">Скидка</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Скидка" class="form-control" name="discount" value="{% if row.discount %}{{ row.discount }}{% endif %}" autocomplete="off">

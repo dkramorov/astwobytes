@@ -9,11 +9,101 @@
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
+{% if perms.edit %}
+  <form class="panel panel-default form-horizontal" action="{{ root_url }}" method="post" id="props2cat_form">
+    {% csrf_token %}
+    <div class="panel-heading">{{ plural_obj }} - Добавление к товарам рубрики
+      <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
+        <em class="fa fa-times"></em>
+      </a>
+      <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть/Развернуть" class="pull-right">
+        <em class="fa fa-plus"></em>
+      </a>
+    </div>
+    <div class="clearfix"></div>
+    <div class="panel-wrapper collapse">
+      <div class="panel-body">
+
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Категория</label>
+          <div class="col-lg-10">
+            <select id="cat_select2" name="cat" autocomplete="off"></select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Свойства</label>
+          <div class="col-lg-10">
+            <select id="props_select2" name="props2cat" autocomplete="off" multiple></select>
+          </div>
+        </div>
+
+      </div>
+      <div class="panel-footer">
+        <div class="col-lg-6 col-sm-6 padding-tb5">
+          <button type="submit" class="btn btn-labeled btn-success">
+            <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
+          </button>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </form>
+{% endif %}
+{% if perms.create %}
+  <form class="panel panel-default" action="{{ root_url }}" method="post" id="props_create_form">
+    {% csrf_token %}
+    <div class="panel-heading">{{ plural_obj }} - Быстрое добавление
+      <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
+        <em class="fa fa-times"></em>
+      </a>
+      <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть/Развернуть" class="pull-right">
+        <em class="fa fa-plus"></em>
+      </a>
+    </div>
+    <div class="clearfix"></div>
+    <div class="panel-wrapper collapse">
+      <div class="panel-body">
+        <div id="props-table"></div>
+        <div id="props_form"></div>
+      </div>
+      <div class="panel-footer">
+        <div class="col-lg-6 col-sm-6 padding-tb5">
+          <button type="submit" class="btn btn-labeled btn-success">
+            <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
+          </button>
+        </div>
+        <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+          <a id="add_prop" href="javascript:void(0);" class="btn btn-default">Добавить свойство</a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </form>
+{% endif %}
 {% include "core/tabulator_table.html" %}
 {% endblock %}
 
 {% block extrascripts %}
 <script type="text/javascript">
+
+var props_table = null;
+function fill_props(){
+  // Заполнение формы настройками,
+  // вызываем перед отправкой в $("#props_create_form").submit
+  $("#props_form").html();
+  var values_data = "";
+  var props = props_table.getRows();
+  var values = null;
+  for(var i=0; i<props.length; i++){
+    values = props[i].getData();
+    values_data += "<input type='hidden' name='name_" + i + "' value='" + values['name'] + "' />";
+    values_data += "<input type='hidden' name='code_" + i + "' value='" + values['code'] + "' />";
+  }
+  values_data += "<input type='hidden' name='props' value='" + props.length + "' />";
+  $("#props_form").html($(values_data));
+}
+
 var main_table = null;
 $(document).ready(function(){
 
@@ -72,6 +162,160 @@ $(document).ready(function(){
       {% include "core/tabulator_cell/actions.html" %}
     ],
   });
+
+  $("#props_create_form").submit(function(e) {
+    fill_props();
+    var $form = $(this);
+    var data = $form.serialize();
+    var msg = 'Произошла ошибка, обновите страничку';
+    var status = 'danger'; // success, warning, info, danger
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: data,
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+        {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    });
+    //отмена действия по умолчанию для кнопки submit
+    e.preventDefault();
+  });
+
+  props_table = new Tabulator("#props-table", {
+    data: [],
+    persistentLayout: true,
+    persistentSort: true,
+    persistenceID: "{{ root_url }}",
+    persistentFilter: false,
+    layout: "fitColumns",
+    columns:[
+      {
+        title: "Название свойства",
+        field: "name",
+        headerFilterPlaceholder: "Название свойства",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        editor: "input",
+        width: 150,
+      },
+      {
+        title: "Код свойства",
+        field: "code",
+        headerFilterPlaceholder: "Код свойства",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        editor: "input",
+        width: 150,
+      },
+      {
+        title: "Действия",
+        formatter: "buttonCross",
+        width: 120,
+        align:"center",
+        cellClick:function(e, cell){
+          cell.getRow().delete();
+        }
+      },
+    ],
+  });
+  $("#add_prop").click(function(){
+    var rows = props_table.getRows();
+    props_table.addRow({
+      'name': 'НовоеСвойство',
+      'code': '',
+    });
+  });
+
+
+  $("#props2cat_form").submit(function(e) {
+    var $form = $(this);
+    var data = $form.serialize();
+    var msg = 'Произошла ошибка, обновите страничку';
+    var status = 'danger'; // success, warning, info, danger
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: data,
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+        {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    });
+    //отмена действия по умолчанию для кнопки submit
+    e.preventDefault();
+  });
+
+  $('#props_select2').select2({
+    placeholder: 'Какие свойства привязать',
+    width: '100%',
+    tags: true,
+    ajax: {
+      delay: 150,
+      url: "{% url 'products:search_props' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      cache: false,
+      dataType: 'json',
+    }
+  });
+
+  $('#cat_select2').select2({
+    placeholder: 'К какой категории привязать',
+    width: '100%',
+    //tags: true,
+    ajax: {
+      delay: 150,
+      url: "{% url 'flatcontent:search_blocks' %}",
+      data: function (params) {
+        var query = {
+          q: params.term,
+          only_cats: 1,
+          page: params.page || 1,
+        }
+        return query;
+      },
+      //data: "only_cats=1",
+      cache: false,
+      dataType: 'json',
+    }
+  });
+
 });
 </script>
 {% endblock %}

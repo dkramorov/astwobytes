@@ -142,6 +142,7 @@ function edit_on_fly(cell){
       is_active: data.is_active ? 1 : '',
     },
   }).done(function(r) {
+    var status = 'danger';
     if(r.error){
       msg = r.error;
     }else if(r.success){

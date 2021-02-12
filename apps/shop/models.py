@@ -63,6 +63,11 @@ class Orders(Standard):
         (2, 'В обработке'),
         (3, 'Оформлен'),
     )
+    payment_choices = (
+        (1, 'Не оплачен'),
+        (2, 'Частично оплачен'),
+        (3, 'Оплачен'),
+    )
     number = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Номер заказа')
@@ -93,6 +98,15 @@ class Orders(Standard):
         blank=True, null=True, db_index=True)
     shopper_ip = models.CharField(max_length=255,
         blank=True, null=True, db_index=True)
+    payed = models.DecimalField(blank=True, null=True, db_index=True,
+        max_digits=13, decimal_places=2,
+        verbose_name='Оплаченная сумма')
+    #payment_status = models.IntegerField(choices=payment_choices,
+    #    blank=True, null=True, db_index=True,
+    #    verbose_name='Статус оплаты')
+    external_number = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Внешний номер заказа от платежной системы')
 
     class Meta:
         verbose_name = 'Магазин - Заказ'
@@ -153,6 +167,7 @@ class Transactions(Standard):
     """Транзакция по онлайн оплате"""
     payment_choices = (
         (1, 'YandexKassa'),
+        (2, 'Сбербанк'),
     )
     uuid = models.CharField(max_length=255,
         blank=True, null=True, db_index=True)

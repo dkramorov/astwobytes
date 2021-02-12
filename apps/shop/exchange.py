@@ -22,7 +22,8 @@ def create_orders_xml(dest: str = 'orders.xml',
        :param scheme_version: версия схемы xml
     """
     now = datetime.datetime.today()
-    content = '<КоммерческаяИнформация ВерсияСхемы="%s" ДатаФормирования="%s">\n' % (scheme_version, now.strftime('%Y-%m-%d %H:%M:%S'))
+    content = '<?xml version="1.0" encoding="UTF-8"?>'
+    content += '\n<КоммерческаяИнформация ВерсияСхемы="%s" ДатаФормирования="%s">\n' % (scheme_version, now.strftime('%Y-%m-%d %H:%M:%S'))
 
     by = 50
     tab = '  '

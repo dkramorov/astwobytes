@@ -72,9 +72,13 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">ИНН</label>
+            <label class="col-lg-2 control-label">ИНН
+              <a href="javascript:void(0)" id="get_info_by_inn"><i class="fa fa-user"></i></a>
+            </label>
             <div class="col-lg-10">
-              <input type="text" placeholder="ИНН" class="form-control" name="inn" value="{% if row.inn %}{{ row.inn }}{% endif %}" autocomplete="off">
+              <input type="text" placeholder="ИНН" class="form-control" name="inn" value="{% if row.inn %}{{ row.inn }}{% endif %}" autocomplete="off" id="form-inn-field">
+              <div class="inn_info">
+              </div>
             </div>
           </div>
           <div class="form-group">
@@ -182,6 +186,27 @@
 
   <script type="text/javascript">
     $(document).ready(function(){
+
+      $("#get_info_by_inn").click(function(){
+        $.ajax({
+          type: 'GET',
+          url: '{% url "contractors:info_by_inn" %}',
+          data: 'inn=' + $("#form-inn-field").val()
+        }).done(function(r) {
+          var html = "<table class='table'>";
+          html += "<tr><td>ИНН</td>" + "<td>" + r['inn'] + "</td></tr>";
+          html += "<tr><td>Организация</td>" + "<td>" + r['full_name'] + "</td></tr>";
+          html += "<tr><td>Наименование</td>" + "<td>" + r['name'] + "</td></tr>";
+          html += "<tr><td>Адрес</td>" + "<td>" + r['address'] + "</td></tr>";
+          html += "<tr><td>Директор</td>" + "<td>" + r['director'] + "</td></tr>";
+          html += "<tr><td>ОГРН</td>" + "<td>" + r['ogrn'] + "</td></tr>";
+          html += "<tr><td>КПП</td>" + "<td>" + r['kpp'] + "</td></tr>";
+          html += "<tr><td>Дата рег.</td>" + "<td>" + r['reg'] + "</td></tr>";
+          html += "</table>";
+          $(".inn_info").html($(html));
+        });
+      });
+
       $("#current_edit_form").parsley();
       $("#current_edit_form").submit(function(e) {
         var $form = $(this);
@@ -268,9 +293,6 @@
           data: function (params) {
             var query = {
               q: params.term,
-              without_templates: 1,
-              without_menus: 1,
-              without_main: 1,
               page: params.page || 1,
             }
             return query;

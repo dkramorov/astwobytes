@@ -260,12 +260,14 @@ def search_view(request,
        шаблон для вывода результатов, например,
        результат будет такой '{} ({})'.format(row.name, row.id)
     """
+    context = {}
     result = {'results': []}
     model = model_vars['model']
     mh = ModelHelper(model, request)
     mh_vars = model_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
+        context[k] = v
 
     # Общие поля для поиска
     if not sfields:
@@ -286,7 +288,7 @@ def search_view(request,
         useful_fk = [field.rsplit('__', 1)[0]
                          for field in voca if '__' in field]
 
-    special_model_vars(mh, mh_vars, {})
+    special_model_vars(mh, mh_vars, context)
 
     # ----------------------------
     # Если поля foreign_key,

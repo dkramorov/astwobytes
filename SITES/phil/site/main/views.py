@@ -135,12 +135,15 @@ def product_on_site(request, product_id: int):
 def feedback(request):
     """Страничка обратной связи"""
     kwargs = {
-        'force_send': 1, # Принудительная отправка
+        #'force_send': 1, # Принудительная отправка
         #'fv': [],
         #'dummy': 1, # Не возвращаем HttpResponse
         #'do_not_send': 1, # Не отправляем письмо
         'fields':[
-          {'name': 'test_field', 'value': 'Тестовое поле'},
+            {'name': 'test_field', 'value': 'Тестовое поле'},
+            {'name': 'qq', 'value': 'QQ'},
+            {'name': 'contacts', 'value': 'Название компании и контакты'},
+            {'name': 'description', 'value': 'Описание проекта'},
         ],
     }
     return DefaultFeedback(request, **kwargs)

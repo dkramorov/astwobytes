@@ -1,3 +1,20 @@
+/*
+  USAGE:
+  $(document).ready(function(){
+    var profile = new FeedBack("profile_form", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Профиль обновлен",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": "",
+      "callback_error": "",
+      "dont_reset_on_submit": 1, // or 1
+      //"errorClass": "invalid",
+    });
+  });
+*/
 // ---------------------------------------
 // Класс для отправки формы обратной связи
 // requirements:
@@ -47,7 +64,9 @@ class FeedBack {
         if(fb_alerts.length < 1){
             console.log(fid, "zero-length .feedback_alerts");
         }else{
-            fb_alerts.html(alerts);
+            if($(fid + " .feedback_alerts .successMessage").length == 0){
+              fb_alerts.html(alerts);
+            }
         }
         var input_submit = $(fid + " [type='submit']:not(.freeze)");
         instance.close_listener(fid);
@@ -66,6 +85,7 @@ class FeedBack {
             // ---------------------------------
             //errorClass: "invalid"
             //http://jqueryvalidation.org/validate/#toptions
+            ignore: [], // Для скрытых чекбоксов
         });
         $(fid).ajaxForm({
             beforeSubmit: function(){
@@ -97,14 +117,18 @@ class FeedBack {
                 });
                 // Выводим либо стандартную ошибку,
                 // либо ошибки responseText['errors']
-                if(responseText['error'] || responseText['errors']){
+                if(responseText['error'] || (responseText['errors'] && responseText['errors'].length > 0)){
                     $(fid + " .notifyMessage").hide();
                     if(responseText['error_captcha']){
                         $(fid + " .errorCaptcha").show();
                         return;
                     }
-                    if(responseText['errors']){
+                    if(responseText['errors'] && responseText['errors'].length > 0){
                         $(fid + " .errorMessage").html(fb_close + responseText['errors'].join('<br>'));
+                        instance.close_listener(fid);
+                    }
+                    if(responseText['error']){
+                        $(fid + " .errorMessage").html(fb_close + responseText['error']);
                         instance.close_listener(fid);
                     }
                     $(fid + " .errorMessage").show();

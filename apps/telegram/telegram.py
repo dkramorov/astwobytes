@@ -69,8 +69,11 @@ class TelegramBot:
     # parse_mode = 'HTML' (<b>123</b>)
     # parse_mode = 'Markdown'
     # --------------------------------
-    def send_message(self, text: str, chat_id: int = None, parse_mode: str = None,
-                     disable_web_page_preview: bool = False):
+    def send_message(self, text: str,
+                     chat_id: int = None,
+                     parse_mode: str = None,
+                     disable_web_page_preview: bool = False,
+                     timeout: int = 20):
         if not settings.TELEGRAM_ENABLED:
             return {'error': 'Telegram is disabled in settings'}
         params = {
@@ -84,7 +87,8 @@ class TelegramBot:
             resp = requests.post(
                 "{}{}".format(self.api_url, 'sendMessage'),
                 params,
-                proxies = self.proxies
+                proxies = self.proxies,
+                timeout = timeout
             )
             if not resp.status_code == 200:
                 logger.error('Telegram response: %s' % (resp.text, ))
@@ -109,7 +113,11 @@ class TelegramBot:
     # with open(fname, "rb") as f:
     #   TelegramBot().send_document(f))
     # ---------------------------------
-    def send_file(self, input_file, caption='', chat_id=None, file_type: str = 'doc'):
+    def send_file(self, input_file,
+                  caption='',
+                  chat_id=None,
+                  file_type: str = 'doc',
+                  timeout: int = 20):
         """Отправка файла в телеграм чат
            :param input_file: открытый дескриптор файла
            :param caption: заголовок файла
@@ -129,7 +137,8 @@ class TelegramBot:
                 "{}{}".format(self.api_url, method),
                 files=files,
                 data=params,
-                proxies=self.proxies
+                proxies=self.proxies,
+                timeout = timeout
             )
             if not resp.status_code == 200:
                 logger.error('Telegram response: %s' % (resp.text, ))

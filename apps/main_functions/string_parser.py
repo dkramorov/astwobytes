@@ -12,6 +12,7 @@ rega_int = re.compile('[^0-9]', re.U+re.I+re.DOTALL)
 rega_quotes = re.compile('[\'"`]', re.U+re.I+re.DOTALL)
 rega_strict_text = re.compile('[^0-9a-zA-Zа-яА-ЯёЁ/-]', re.U+re.I+re.DOTALL)
 rega_html = re.compile('(<[^>]+>)?', re.U+re.I+re.DOTALL)
+rega_style = re.compile('(<style[^>]*>.+</style>)?', re.U+re.I+re.DOTALL)
 rega_ip = re.compile('([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})')
 
 def check_ip(ip: str):
@@ -190,13 +191,18 @@ def random_boolean():
     return variants[random.randrange(0, 2)]
 
 def kill_html(text):
-  """Убирает все теги из текста"""
+  """Убирает все теги из текста
+     :param text: текст с хтмл
+  """
   if text:
+      text = rega_style.sub('', text)
       text = rega_html.sub('', text)
   return text
 
-def translit(text):
-    """Транслит текста с русского в латиницу"""
+def translit(text: str):
+    """Транслит текста с русского в латиницу
+       :param text: текст для транслита
+    """
     if not text:
         return ''
     alphabet = string.ascii_lowercase

@@ -30,29 +30,36 @@
         var meta_data = myMap.search_results[ind].properties.get("metaDataProperty.GeocoderMetaData");
         var country = meta_data.AddressDetails.Country;
         $("#address_country").val(country.CountryName);
+
         var administrative_area = country.AdministrativeArea;
         $("#address_state").val(administrative_area.AdministrativeAreaName);
+
+        /* SubAdministrativeArea может не быть */
+        var locality;
         var sub_administrative_area = administrative_area.SubAdministrativeArea;
-        $("#address_county").val(sub_administrative_area.SubAdministrativeAreaName);
-        var locality = sub_administrative_area.Locality;
-        $("#address_city").val(locality.LocalityName);
-
-        // -----------------------------------------------
-        // Разветвление на thoroughfare/dependent_locality
-        // -----------------------------------------------
+        if(!sub_administrative_area){
+          locality = administrative_area.Locality;
+        }else{
+          $("#address_county").val(sub_administrative_area.SubAdministrativeAreaName);
+          locality = sub_administrative_area.Locality;
+        }
         var premise = null;
-        var dependent_locality = locality.DependentLocality;
-        if(typeof(dependent_locality) != "undefined"){
-          $("#address_street").val(dependent_locality.DependentLocalityName);
-          premise = dependent_locality.Premise;
+        if(locality){
+          $("#address_city").val(locality.LocalityName);
+          // -----------------------------------------------
+          // Разветвление на thoroughfare/dependent_locality
+          // -----------------------------------------------
+          var dependent_locality = locality.DependentLocality;
+          if(typeof(dependent_locality) != "undefined"){
+            $("#address_street").val(dependent_locality.DependentLocalityName);
+            premise = dependent_locality.Premise;
+          }
+          var thoroughfare = locality.Thoroughfare;
+          if(typeof(thoroughfare) != "undefined"){
+            $("#address_street").val(thoroughfare.ThoroughfareName);
+            premise = thoroughfare.Premise;
+          }
         }
-
-        var thoroughfare = locality.Thoroughfare;
-        if(typeof(thoroughfare) != "undefined"){
-          $("#address_street").val(thoroughfare.ThoroughfareName);
-          premise = thoroughfare.Premise;
-        }
-
         if(premise != null){
           $("#address_houseNumber").val(premise.PremiseNumber);
         }

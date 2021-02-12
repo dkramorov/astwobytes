@@ -434,7 +434,10 @@ def extension(fname, mime='image'):
     return result
 
 def ListDir(path, ignore_default_folder=False):
-    """Список папок и файлов"""
+    """Список папок и файлов
+       :param path: путь
+       :param ignore_default_folder: если надо список не в media
+    """
     path = os.path.join(DEFAULT_FOLDER, path)
     if not path.startswith(DEFAULT_FOLDER) and not ignore_default_folder:
         return []
@@ -446,7 +449,9 @@ def ListDir(path, ignore_default_folder=False):
     return dirs
 
 def isForD(path):
-    """Проверка пути - файл это или папка"""
+    """Проверка пути - файл это или папка
+       :param path: путь
+    """
     path = os.path.join(DEFAULT_FOLDER, path)
     if os.path.isdir(path):
         return 'dir'

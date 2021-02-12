@@ -565,8 +565,6 @@ var RLANG = {
         // paste
         var oldsafari = false;
         if ($.browser.webkit && navigator.userAgent.indexOf('Chrome') === -1){
-          var arr = $.browser.version.split('.');
-          if (arr[0] < 536) oldsafari = true;
         }
 
         if (this.isMobile(true) === false && oldsafari === false){

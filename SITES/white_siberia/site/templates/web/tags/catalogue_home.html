@@ -1,0 +1,33 @@
+{% load mtags %}
+<div class="container py-2 catalogue">
+  <div class="row mb-5 pb-3">
+    {% for menu in menus %}
+      <div class="col-md-6 col-lg-4 mb-5 mb-lg-0">
+        <div class="card text-center rounded-0">
+          <div class="p-5 card">
+            <a class="my-4" href="{{ menu.link }}" {% if menu.blank %} target="_blank"{% endif %}>
+              <img src="{{ menu.imagine }}" loading="lazy" />
+              <h4 class="font-weight-bold">{{ menu.name }}</h4>
+            </a>
+          </div>
+{% comment %}<!--
+        <div class="card flip-card flip-card-3d text-center rounded-0">
+          <div class="flip-front p-5 card">
+            <a class="flip-content my-4" href="{{ menu.link }}">
+              <img src="{{ menu.imagine }}" loading="lazy" />
+              <h4 class="font-weight-bold">{{ menu.name }}</h4>
+            </a>
+          </div>
+
+          <div class="flip-back d-flex align-items-center p-5 card">
+            <a class="flip-content my-4" href="{{ menu.link }}">
+              <img src="{{ menu.imagine }}" loading="lazy" />
+              <h4 class="font-weight-bold">{{ menu.name }}</h4>
+            </a>
+          </div>
+-->{% endcomment %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

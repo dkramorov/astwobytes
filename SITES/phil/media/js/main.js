@@ -727,4 +727,17 @@ var PHIL={};
       table.height(table.parent().find('img').height());
   });
 
+  /* Форма обратной связи */
+  var feedback_form = new FeedBack("feedback_form", {
+    "wait": "Ждите...",
+    //"send": "Отправить",
+    "success": "Профиль обновлен",
+    "progress": "Пожалуйста, ждите...",
+    "error": "Произошла ошибка, сообщите нам по телефону",
+    "error_captcha": "Не пройдена проверка на работа",
+    "callback_success": "",
+    "callback_error": "",
+    "dont_reset_on_submit": 1, // or 1
+    //"errorClass": "invalid",
+  });
 }(jQuery);

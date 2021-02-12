@@ -1,0 +1,28 @@
+<div class="form-group">
+  <label class="col-lg-2 control-label">Title</label>
+  <div class="col-lg-10">
+    <input type="text" placeholder="Title" class="form-control" name="seo_title" value="{% if seo.title %}{{ seo.title }}{% endif %}" autocomplete="off">
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-lg-2 control-label">Description</label>
+  <div class="col-lg-10">
+    <input type="text" placeholder="Description" class="form-control" name="seo_description" value="{% if seo.description %}{{ seo.description }}{% endif %}" autocomplete="off">
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-lg-2 control-label">Keywords</label>
+  <div class="col-lg-10">
+    <input type="text" placeholder="Keywords" class="form-control" name="seo_keywords" value="{% if seo.keywords %}{{ seo.keywords }}{% endif %}" autocomplete="off">
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-lg-2 control-label">Привязанные странички</label>
+  <div class="col-lg-10">
+    <select id="linkcontainer_select2" name="linkcontainer" autocomplete="off" multiple>
+      {% for container in seo.linkcontainers %}
+        <option value="{{ container.id }}" selected>{{ container.name }} #{{ container.id }} ({{ container.tag }})</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>

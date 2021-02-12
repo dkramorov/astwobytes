@@ -126,15 +126,15 @@ z-index:515;
 display:inline-block;
  padding:5px;
  
-background:#ebebeb ;
+background:#fff ;
 text-align:left;
  position:relative;
 
 /*url(../img/eee.jpg) 0 -7px repeat-x; */
 border-radius:6px; 
 width:98%;
-border:1px  solid rgba(255,255,255,.8);
-box-shadow: 0  2px 4px rgba(0,0,0,0.2);
+/*border:1px  solid rgba(255,255,255,.8);
+box-shadow: 0  2px 4px rgba(0,0,0,0.2);*/
 
  }
 #searchpanel.mobilestyle

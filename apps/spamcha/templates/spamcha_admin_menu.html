@@ -6,6 +6,11 @@
     <span class="item-text">Спамчик</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'spamcha' %} in{% endifequal %}">
+    <li{% ifequal submenu 'mailbox' %} class="active"{% endifequal %}>
+      <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_mailbox' %}">
+        <span class="item-text">Почтовый ящик</span>
+      </a>
+    </li>
     <li{% ifequal submenu 'spam_tables' %} class="active"{% endifequal %}>
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_spam_tables' %}">
         <span class="item-text">Рассылки</span>

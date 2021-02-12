@@ -51,40 +51,35 @@ def defiz_phone(phone):
             phone = '%s (%s) %s-%s' % (phone[0], phone[1:5], phone[5:8], phone[8:])
     return phone
 
-def check_email(email):
-    """Проверка емайла на валидность
-       :param email: email
-    """
-    if email:
-        if REGA_EMAIL.match(email):
-            return email
-    return None
-
 def check_phone(phone):
     """Проверка телефона на валидность
        :param phone: телефон
     """
-    if phone:
-        phone = kill_quotes(phone, 'int')
-        if len(phone) == 11 and phone[0] in ('7', '8'):
-            phone = '8%s' % phone[1:]
-            return phone
-    return None
+    if not phone:
+        return
+    phone = kill_quotes(phone, 'int')
+    if len(phone) == 11 and phone[0] in ('7', '8'):
+        phone = '8%s' % phone[1:]
+        return phone
+
+def check_email(email):
+    """Проверка емайла на валидность
+       :param email: email
+    """
+    if not email or not REGA_EMAIL.match(email):
+        return None
+    return email
 
 def feedback_emails():
     """Поиск emailов, разделенных пробелом
        для обратной связи, заполняется в Config"""
     emails = []
-    conf = Config.objects.filter(name='feedback', attr='emails', value__isnull=False).first()
-    if conf:
-        emails_array = conf.value.replace(',', ' ').split(' ')
-        for email in emails_array:
-            if not email:
-                continue
-            if check_email(email):
-                emails.append(email)
-    else:
-        emails.append('dkramorov@mail.ru', )
+    configs = Config.objects.filter(attr='flatcontent_feedback', value__isnull=False).values_list('value', flat=True)
+    if not configs:
+        return []
+    for config in configs:
+        if check_email(config):
+            emails.append(config)
     return emails
 
 def feedback_form(request, q_string: dict = None,

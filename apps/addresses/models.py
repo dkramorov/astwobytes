@@ -67,6 +67,8 @@ class Address(Standard):
     def save(self, *args, **kwargs):
         self.latitude = self.fix_decimal(self.latitude)
         self.longitude = self.fix_decimal(self.longitude)
+        if not self.addressLines:
+            self.addressLines = self.address_str()
         super(Address, self).save(*args, **kwargs)
 
     def address_str(self):
@@ -75,17 +77,20 @@ class Address(Standard):
         for field in ('postalCode',
                       #'country', 'state', 'county',
                       'city', 'district', 'subdistrict',
-                      'street', 'houseNumber', ):
+                      'street', 'houseNumber', 'place'):
             value = getattr(self, field)
             if value:
-                if field.name == 'additionalData':
-                    result += '(%s) ' % value
+                result += value
+
+                if field == 'place':
+                    place = self.place or self.addressLines or ''
+                    if place:
+                        place = '(%s)' % place
+
+                elif not field == 'houseNumber':
+                    result += ', '
                 else:
-                    result += value
-                    if not field.name == 'houseNumber':
-                        result += ', '
-                    else:
-                        result += ' '
+                    result += ' '
         return result
 
 

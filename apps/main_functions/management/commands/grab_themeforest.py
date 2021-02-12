@@ -472,6 +472,14 @@ class Parser:
             # -----------------------
             if 'data:' in match_img:
                 continue
+            # ----------------------------------
+            # Какие-то долбаебы в картинку якорь
+            # и бывает, что это все что там есть
+            # ----------------------------------
+            if '#' in old_path:
+                old_path = old_path.split('#')[0].strip()
+            if not old_path:
+                continue
 
             img = self.findpath(css, kill_quotes(old_path, 'quotes'))
             img_name = os.path.split(img)[1]
@@ -495,6 +503,7 @@ class Parser:
                     img_file_path = img_file_path + str(self.z)
             if not img in self.img_repeated:
                 self.img_repeated.append(img)
+
             with open_file(img_file_path, 'wb+') as f:
                 f.write(contents)
 

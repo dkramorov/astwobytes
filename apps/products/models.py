@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from apps.flatcontent.models import Containers, Blocks
+from apps.flatcontent.models import (Containers,
+                                     Blocks,
+                                     link_containers2block,
+                                     get_link_containers, )
 from apps.main_functions.models import Standard
 from apps.main_functions.string_parser import translit
 
@@ -73,10 +76,14 @@ class Products(Standard):
 
     def fill_seo(self, **kwargs):
         """Заполнение сео-полей для товара,
-           просто создаем ссылку с сео-полями по ссылке товара
+           заполнение привязок к статьям (привязваем контейнеры)
+           просто создаем ссылку с сео-полями по ссылке товара,
         """
         if not self.id:
             return
+        seo_fields = ('seo_title', 'seo_description', 'seo_keywords')
+        linkcontainer = kwargs.get('linkcontainer')
+
         seo_block = None
         seo_tag = 'seo_for_products'
         product_tag = 'product_%s' % self.id
@@ -96,6 +103,7 @@ class Products(Standard):
                 state=4,
                 container=seo_container,
                 tag=product_tag,
+                link=link,
             )
         else:
             for block in seo_blocks:
@@ -106,10 +114,11 @@ class Products(Standard):
                 seo_block = seo_blocks[0]
         seo_block.link = link
         seo_block.name = self.name
-        for key in ('seo_title', 'seo_description', 'seo_keywords'):
+        for key in seo_fields:
             field = key.replace('seo_', '')
             setattr(seo_block, field, kwargs.get(key))
         seo_block.save()
+        link_containers2block(seo_block, linkcontainer)
 
     def get_seo(self):
         """Получить сео для товара"""
@@ -132,6 +141,8 @@ class Products(Standard):
                 break
         if not seo_block and seo_blocks:
             seo_block = seo_blocks[0]
+
+        get_link_containers(seo_block)
         return seo_block
 
 class Property(Standard):
@@ -186,14 +197,18 @@ class ProductsCats(models.Model):
 
 class ProductsPhotos(Standard):
     """Галереи для товаров"""
-    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
 
 class CostsTypes(Standard):
     """Разные типы цен для товаров"""
-    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    currency = models.IntegerField(choices=CURRENCY_CHOICES, blank=True, null=True, db_index=True)
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    tag = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    currency = models.IntegerField(choices=CURRENCY_CHOICES,
+        blank=True, null=True, db_index=True)
 
 class Costs(models.Model):
     """Цены для товара/услуги

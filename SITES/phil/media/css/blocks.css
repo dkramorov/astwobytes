@@ -2350,12 +2350,17 @@ textarea {
     border-radius: 3px;
     background-color: #e53863;
     border: none; }
-  .checkbox input[type=checkbox]:checked + label:before {
+  .checkbox input[type=checkbox]:checked + label:before,
+  .checkbox input.valid + label + label:before{
     content: "\2714";
     font-size: 14px;
     color: #fff;
     text-align: center;
-    line-height: 14px; }
+    line-height: 14px;
+  }
+  .checkbox input.valid + label + label:before {
+    color: #582371;
+  }
   .checkbox.checkbox-with-background {
     border-radius: 50px;
     background-color: #f7f9f9;

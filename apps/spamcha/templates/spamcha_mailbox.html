@@ -1,0 +1,167 @@
+{% extends "core/base.html" %}
+{% load mtags %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+
+<h3>{{ singular_obj }}<br /><small>{{ plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-lg-2 col-md-12">
+    <div class="clearfix mb-lg">
+      <button type="button" data-toggle="collapse" data-target=".mb-boxes" class="btn btn-sm btn-default hidden-lg pull-right">
+        <em class="fa fa-bars fa-fw fa-lg"></em>
+      </button>
+      <button type="button" class="btn btn-primary">
+        <em class="fa fa-pencil"></em>
+        <span>Написать</span>
+      </button>
+    </div>
+    <ul class="mb-boxes nav nav-pills nav-stacked">
+      <li class="p">
+        <small class="text-muted">Почта</small>
+      </li>
+
+      {% for item in mailbox %}
+      <li{% comment %} class="active"{% endcomment %}>
+        <a href="javascript:void(0);" class="imap_folder" id="imap_folder_{{ forloop.counter }}" data-name="{{ item.name }}">
+          <span class="label label-primary pull-right">{{ item.ids|length }}</span>
+          <span>{{ item.name }} ({{ item.count }})</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="clearfix hidden-lg"></div>
+  <div class="col-lg-5 col-sm-12">
+    <table class="table table-hover mb-mails">
+      <tbody id="current_messages">
+{% comment %}<!--
+        <tr class="mb-mail-active">
+          <td>
+            <div class="checkbox c-checkbox">
+              <label>
+                <input type="checkbox">
+                <span class="fa fa-check"></span>
+              </label>
+            </div>
+          </td>
+          <td>
+            <div class="mb-mail-date">10:30pm</div>
+            <img src="app/img/user/01.jpg" alt="Mail Avatar" class="mb-mail-avatar">
+            <div class="pull-left">
+              <div class="mb-mail-from">Adrian Davis</div>
+              <div class="mb-mail-subject">Vestibulum vel dui vel magna vulputate</div>
+            </div>
+            <div class="mb-mail-preview">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ...</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="checkbox c-checkbox">
+              <label>
+                <input type="checkbox">
+                <span class="fa fa-check"></span>
+              </label>
+            </div>
+          </td>
+          <td>
+            <div class="mb-mail-date">10:30pm</div>
+            <img src="app/img/user/02.jpg" alt="Mail Avatar" class="mb-mail-avatar">
+            <div class="pull-left">
+              <div class="mb-mail-from">Abigail Rose</div>
+              <div class="mb-mail-subject">Nulla dictum egestas leo at lobortis.</div>
+            </div>
+            <div class="mb-mail-preview">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ...</div>
+          </td>
+        </tr>
+-->{% endcomment %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-5 visible-md visible-lg">
+    <div class="mb-panel">
+      <div class="clearfix mb">
+        <div class="btn-group pull-left">
+          <button type="button" class="btn btn-default btn-sm">
+            <em class="fa fa-mail-reply text-gray-dark"></em>
+          </button>
+          <button type="button" class="btn btn-default btn-sm">
+            <em class="fa fa-mail-reply-all text-gray-dark"></em>
+          </button>
+          <button type="button" class="btn btn-default btn-sm">
+            <em class="fa fa-mail-forward text-gray-dark"></em>
+          </button>
+        </div>
+        <div class="btn-group pull-right">
+          <button type="button" class="btn btn-default btn-sm">
+            <em class="fa fa-exclamation text-gray-dark"></em>
+          </button>
+          <button type="button" class="btn btn-default btn-sm">
+            <em class="fa fa-times text-gray-dark"></em>
+          </button>
+        </div>
+      </div>
+      <h3>Заголовок письма</h3>
+      <div class="clearfix">
+        <p class="pull-left m0">
+          <span class="text-muted mr">From:</span><a href="#">От кого</a>
+        </p>
+        <p class="pull-right m0">
+          <span>10:56</span>
+        </p>
+      </div>
+      <hr>
+      <p class="text-md">Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма Текст письма </p>
+      <hr>
+      <form action="/" class="mb-panel-form">
+        <textarea placeholder="Написать ответ" class="form-control mb-panel-form-reply"></textarea>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".imap_folder").click(function(){
+      $.ajax({
+        type: 'GET',
+        url: '{{ root_url }}',
+        data: 'folder=' + $(this).attr('data-name'),
+      }).done(function(r) {
+        var html = "";
+        var email;
+        for(var i=0; i<r['length']; i++){
+          email = r[i]['email'];
+          html += '<tr>';
+          html += '<td>';
+          html += '<div class="checkbox c-checkbox">';
+          html += '<label>';
+          html += '<input type="checkbox">';
+          html += '<span class="fa fa-check"></span>';
+          html += '</label>';
+          html += '</div>';
+          html += '</td>';
+          html += '<td>';
+          html += '<div class="mb-mail-date">' + email['time'] + '<br>' + email['date'] + '</div>';
+          html += '<div class="pull-left">';
+          html += '<div class="mb-mail-from">' + email['from'] + '</div>';
+          html += '<div class="mb-mail-subject">' + email['subject'] +'</div>';
+          html += '</div>';
+          html += '<div class="mb-mail-preview">' + email['body'] + '</div>';
+          html += '</td>';
+          html += '</tr>';
+        }
+        $("#current_messages").html(html);
+      });
+
+    });
+  });
+</script>
+{% endblock %}

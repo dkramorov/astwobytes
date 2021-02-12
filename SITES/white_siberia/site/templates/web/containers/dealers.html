@@ -1,0 +1,85 @@
+{% load tags mtags %}
+{% with request|load_dealers as cities %}
+<div class="container pb-1 dealers">
+  <div class="row pt-4">
+    <div class="col pr-lg-0 pl-lg-0 pr-md-0 pl-md-0">
+      <div class="overflow-hidden mb-3">
+        <h2 class="text-12 mb-5 pt-5" id="dealers_title">
+          <span>{{ container.description|safe }}</span>
+        </h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-2">
+    <div id="mapContainer"></div>
+  </div>
+
+  <div class="row mb-2 pr-lg-0 pl-lg-0 pr-md-0 pl-md-0">
+    <div class="form-group col-md-12">
+      <input type="text" value="" class="form-control form-control-lg py-2" placeholder="Поиск по дилеру" id="search_dealer_field">
+    </div>
+  </div>
+
+  <div class="row mb-2">
+    {% for city in cities %}
+      <div class="col-md-12 pr-lg-0 pl-lg-0 pr-md-0 pl-md-0 city_row" id="city_row_{{ city.id }}">
+        <div class="title mb-4 mt-3">{{ city.name }}</div>
+      </div>
+      {% for dealer in city.dealers %}
+        <div class="col-lg-3 col-md-4 col-sm-6 pr-lg-0 pl-lg-0 pr-md-0 pl-md-0 mb-3 dealer_row" id="dealer_row_{{ dealer.id }}">
+          <div class="name mb-2 pr-3">{{ dealer.name }}</div>
+          {% if dealer.address %}
+            <div class="address mb-2 pr-3">
+              <div class="label">Адрес</div>
+              <div class="desc"><a id="dealer_address_{{ dealer.id }}" href="javascript:void(0);">{{ dealer.address|safe }}</a></div>
+            </div>
+          {% endif %}
+          {% if dealer.worktime %}
+            <div class="worktime mb-2 pr-3">
+              <div class="label">Время работы</div>
+              <div class="desc">{{ dealer.worktime|safe }}</div>
+            </div>
+          {% endif %}
+          {% if dealer.site %}
+            <div class="site mb-2">
+              <div class="label">Сайт</div>
+              <div class="desc">{{ dealer.site|safe }}</div>
+            </div>
+          {% endif %}
+          {% if dealer.phone %}
+            <div class="phone mb-2">
+              <div class="label">Телефон</div>
+              <div class="desc">{{ dealer.phone|safe }}</div>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+<script type="text/javascript">
+  var mapContainer_points = Array();
+  {% for city in cities %}
+    {% for dealer in city.dealers %}
+      {% if dealer.coords %}
+        mapContainer_points.push({
+          "type": "Feature",
+          "id": "{{ dealer.id }}",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [{{ dealer.coords.0 }}, {{ dealer.coords.1 }}],
+          },
+          "properties": {
+            "balloonContent": "<strong>{{ dealer.name|textize }}</strong><br>{{ dealer.address|textize }}{% if dealer.phone %}<br>{{ dealer.phone|safe }}{% endif %}{% if dealer.worktime %}{{ dealer.worktime|safe }}{% endif %}{% if dealer.site %}{{ dealer.site|safe }}{% endif %}{% if dealer.email %}{{ dealer.email|safe }}{% endif %}",
+            "clusterCaption": "Дилеры",
+            "hintContent": "{{ dealer.address|textize }}",
+          },
+          "terms": "{{ city.name }} {{ dealer.name }} {{ dealer.address|textize }} {{ dealer.phone|htmlless }}".toLowerCase(),
+          "city_id": "{{ city.id }}",
+        });
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+</script>
+{% endwith %}

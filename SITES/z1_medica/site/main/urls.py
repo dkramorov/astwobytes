@@ -26,4 +26,5 @@ urlpatterns = [
     # Оформление заказа
     path('shop/cart/', views.show_cart, name='show_cart'),
     path('shop/checkout/', views.checkout, name='checkout'),
+    url('payment/(?P<provider>sbrf)/(?P<action>success|fail)/$', views.payment, name='payment'),
 ]

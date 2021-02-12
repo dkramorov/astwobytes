@@ -21,14 +21,14 @@ from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view,
                                               special_model_vars, )
-
-from .models import (SpamTable,
-                     SpamRow,
-                     EmailAccount,
-                     EmailBlackList,
-                     SMSPhone,
-                     SpamRedirect,
-                     SpamRedirectStata, )
+from apps.spamcha.imap import ImapProvider
+from apps.spamcha.models import (SpamTable,
+                                 SpamRow,
+                                 EmailAccount,
+                                 EmailBlackList,
+                                 SMSPhone,
+                                 SpamRedirect,
+                                 SpamRedirectStata, )
 
 # Локальный .env из папки
 from envparse import env
@@ -887,3 +887,39 @@ def search_redirects_stata(request, *args, **kwargs):
                        model_vars = redirects_stata_vars,
                        cur_app = CUR_APP,
                        sfields = ('email', 'client_id'), )
+
+mailbox_vars = {
+    'singular_obj': 'Почтовый ящик',
+    'plural_obj': 'Почтовые ящики',
+    'rp_singular_obj': 'почтового ящика',
+    'rp_plural_obj': 'почтовых ящиков',
+    'template_prefix': 'spamcha_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'spamcha',
+    'submenu': 'mailbox',
+    'show_urla': 'show_mailbox',
+}
+@login_required
+def show_mailbox(request, *args, **kwargs):
+    """Почтовый ящик пользователя"""
+    mh_vars = mailbox_vars.copy()
+    context = mh_vars
+    root_url = reverse('%s:%s' % (CUR_APP, mh_vars['show_urla']))
+    context['root_url'] = root_url
+    context['breadcrumbs'] = [{
+        'name': mh_vars['singular_obj'],
+        'link': root_url,
+    }]
+
+    imap = ImapProvider(request.user)
+    if imap.authorized:
+        if request.GET.get('folder') and request.is_ajax():
+            result = imap.all_letters(request.GET['folder'], by=4)
+            return JsonResponse(result, safe=False)
+        else:
+            context['mailbox'] = imap.get_folders()
+
+    template = '%smailbox.html' % mh_vars['template_prefix']
+    return render(request, template, context)

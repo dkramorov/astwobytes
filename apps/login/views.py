@@ -758,6 +758,8 @@ def demo(request, action='panels'):
 
         'calendar': 'demo/demo_calendar.html',
         'chat': 'demo/demo_chat.html',
+
+        'mail': 'demo/demo_mail.html',
     }
     context = {}
     context['menu'] = 'demo'

@@ -289,7 +289,7 @@ class ModelHelper:
 
         types = object_fields_types(self.model())
         auto_now_fields = object_auto_now_fields(self.model)
-        pass_fields += ("id", "created", "updated", "img")
+        pass_fields += ('id', 'created', 'updated', 'img')
         row_vars = {}
 
         form_fields = [field.name for field in self.model().__class__._meta.fields

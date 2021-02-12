@@ -1,0 +1,29 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<article class="stylization">
+  <div class="woocommerce">
+    {% if action == 'fail' %}
+      <h3>Произошла ошибка при попытке оплаты, пожалуйста, сообщите нам по телефону</h3>
+    {% endif %}
+    {% if action == 'success' %}
+      <h3>Оплата успешно прошла</h3>
+    {% endif %}
+    <h3>Заказ № {% if order.number %}{{ order.number }}{% else %}{{ order.id }}{% endif %} на сумму {{ order.total|money_format }} ₽ от {{ order.created|date:'d-m-Y H:i:s' }}</h3>
+  </div>
+</article>
+<br><br>
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+
+{% endblock %}
+
+{% block subscribe %}{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}

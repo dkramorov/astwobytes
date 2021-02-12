@@ -1,0 +1,53 @@
+{% load mtags %}
+<div class="row products product-thumb-info-list mb-5" {% comment %}data-plugin-masonry data-plugin-options="{'layoutMode': 'fitRows'}"{% endcomment %}>
+  {% for product in products %}
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="product_card mb-4">
+        <div class="product">
+          <div class="product-thumb-info border-0 mb-3">
+{% comment %}<!--
+            <div class="product-thumb-info-badges-wrapper">
+              <span class="badge badge-ecommerce badge-success">NEW</span>
+            </div>
+            <div class="addtocart-btn-wrapper">
+              <a href="" class="text-decoration-none addtocart-btn" data-tooltip data-original-title="">
+                <i class="icons icon-bag"></i>
+              </a>
+            </div>
+            <a href="" class="quick-view text-uppercase font-weight-semibold text-2">Быстрый просмотр</a>
+-->{% endcomment %}
+            <a href="{{ product.link }}">
+              <div class="product-thumb-info-image">
+                <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine product.img '600x400' product.get_folder True %}" loading="lazy">
+            </div>
+            </a>
+          </div>
+
+          <div class="pl-4 pr-4 pb-1">
+            <div class="d-flex justify-content-between">
+              <div>
+                <a href="{{ page.link }}" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-1">{{ page.name }}</a>
+                <h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="{{ product.link }}" class="text-color-dark text-color-hover-primary">{{ product.name }}</a></h3>
+              </div>
+              {% comment %}<!--
+              <a href="#" class="text-decoration-none text-color-default text-color-hover-dark text-4"><i class="fa fa-heart"></i></a>
+              -->{% endcomment %}
+            </div>
+{% comment %}<!--
+            <div title="Rated 5 out of 5">
+              <input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'default', 'size':'xs'}">
+            </div>
+-->{% endcomment %}
+            <p class="price text-5 mb-3">
+              {% if product.old_price %}
+                <span class="sale text-color-dark font-weight-semi-bold">{{ product.old_price|money_format }} ₽</span>
+              {% endif %}
+              <span class="amount">{{ product.price|money_format }} ₽</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% if paginator %}{{ paginator|safe }}{% endif %}
