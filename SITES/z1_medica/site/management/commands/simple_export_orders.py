@@ -17,6 +17,18 @@ from apps.shop.models import Orders, Purchases
 
 logger = logging.getLogger('main')
 
+def notify_about_unloading(msg: str = ''):
+    """Оповещение о выгрузке через телеграм
+    """
+    if not settings.TELEGRAM_ENABLED:
+        logger.info('TELEGRAM DISABLED')
+        return
+    from apps.telegram.telegram import TelegramBot
+    bot = TelegramBot()
+    bot.send_message('Выгрузка заказов %s' % (
+        msg,
+    ), parse_mode='html', disable_web_page_preview=True)
+
 def create_orders_xml(dest: str = 'orders.xml',
                       scheme_version: str = '2.03'):
     """Создание xml с заказами
@@ -107,7 +119,11 @@ class Command(BaseCommand):
         dest = 'orders.xml'
         if options.get('dest'):
             dest = options['dest']
-        create_orders_xml(dest=dest)
+
+        try:
+            create_orders_xml(dest=dest)
+        except Exception as e:
+            notify_about_unloading(str(e))
 
 
 

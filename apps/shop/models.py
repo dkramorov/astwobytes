@@ -149,10 +149,15 @@ class Orders(Standard):
     def get_purchases(self):
         """Получить покупки по заказу"""
         result = []
+        costs_types = CostsTypes.objects.all().values('id', 'name')
+        ids_costs_types = {cost_type['id']: cost_type for cost_type in costs_types}
         for purchase in self.purchases_set.all():
+            cost_type = ids_costs_types.get(purchase.cost_type_id)
             result.append({
                 'id': purchase.product_id,
                 'name': purchase.product_name,
+                'cost_type_id': cost_type['id'] if cost_type else '',
+                'cost_type_name': cost_type['name'] if cost_type else '',
                 'manufacturer': purchase.product_manufacturer,
                 'measure': purchase.product_measure,
                 'price': purchase.product_price,
@@ -161,6 +166,7 @@ class Orders(Standard):
                 'cost': purchase.cost,
                 'total': (purchase.cost * purchase.count) if purchase.cost and purchase.count else 0,
             })
+
         return result
 
 class Transactions(Standard):

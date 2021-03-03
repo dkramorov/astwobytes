@@ -1,0 +1,175 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/media/css/checkout.css" />
+<style type="text/css">
+  label.error{
+    color: #d20000 !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container pr-lg-0 pl-lg-0 mb-5 pb-5">
+  {% if not cart %}
+    <h2>Ваша корзина пуста, сначала выберите, что хотите купить</h2>
+  {% else %}
+    {% for error in errors %}
+      <label class="error mistake">{{ error }}</label><br />
+    {% endfor %}
+    <form action="/shop/checkout/" method="POST" id="confirm_order" class="checkout-form">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-lg-7 mb-4 mb-lg-0">
+          <h2 class="text-color-dark font-weight-bold text-5-5 mb-3">Контактная информация</h2>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Как к вам обращаться <span class="text-color-danger">*</span></label>
+              <input type="text" class="form-control h-auto py-2 required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}" />
+            </div>
+            <div class="form-group col-md-6">
+              <label>Ваше имя</label>
+              <input type="text" class="form-control h-auto py-2" name="first_name" value="{% if shopper_data.first_name %}{{ shopper_data.first_name }}{% endif %}" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Ваша фамилия</label>
+              <input type="text" class="form-control h-auto py-2" name="last_name" value="{% if shopper_data.last_name %}{{ shopper_data.last_name }}{% endif %}" />
+            </div>
+            <div class="form-group col-md-6">
+              <label>Ваше отчество</label>
+              <input type="text" class="form-control h-auto py-2" name="middle_name" value="{% if shopper_data.middle_name %}{{ shopper_data.middle_name }}{% endif %}" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Ваш email <span class="text-color-danger">*</span></label>
+              <input type="text" class="form-control h-auto py-2 required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}" />
+            </div>
+            <div class="form-group col-md-6">
+              <label>Ваш телефон <span class="text-color-danger">*</span></label>
+              <input type="text" class="form-control h-auto py-2 required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>Ваш адрес</label>
+              <input type="text" class="form-control h-auto py-2" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}" />
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="card border-width-3 border-radius-0 border-color-hover-dark" data-plugin-sticky data-plugin-options="{'minWidth': 991, 'containerSelector': '.row', 'padding': {'top': 85}}">
+            <div class="card-body">
+              <h4 class="font-weight-bold text-uppercase text-4 mb-3">Заказ на {{ cart.total|money_format }} ₽</h4>
+              <table class="shop_table cart-totals mb-3">
+                <tbody>
+                  {% for purchase in cart.purchases %}
+                    <tr>
+                      <td>
+                        <strong class="d-block text-color-dark line-height-1 font-weight-semibold">{{ purchase.product_name }} <span class="product-qty"> x {{ purchase.count }}</span></strong>
+                        {% if purchase.cost_type_id %}
+                          <span class="text-1">{{ purchase.cost_type.name }}</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-right align-top">
+                        <span class="amount font-weight-medium text-color-grey">{{ purchase.total|money_format }} ₽</span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  <tr class="cart-subtotal">
+                    <td class="border-top-0">
+                      <strong class="text-color-dark">Итого</strong>
+                    </td>
+                    <td class="border-t op-0 text-right">
+                      <strong>
+                        <span class="amount font-weight-medium">{{ cart.total|money_format }} ₽</span>
+                      </strong>
+                    </td>
+                  </tr>
+{% comment %}<!--
+                  <tr class="shipping">
+                    <td colspan="2">
+                      <strong class="d-block text-color-dark mb-2">Доставка</strong>
+                      <div class="d-flex flex-column">
+                        <label class="d-flex align-items-center text-color-grey mb-0" for="shipping_method1">
+                          <input id="shipping_method1" type="radio" class="mr-2" name="shipping_method" value="free" checked />Почта
+                        </label>
+                        <label class="d-flex align-items-center text-color-grey mb-0" for="shipping_method2">
+                          <input id="shipping_method2" type="radio" class="mr-2" name="shipping_method" value="local-pickup" />Транспортная компания
+                        </label>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="total">
+                    <td>
+                      <strong class="text-color-dark text-3-5">Total</strong>
+                    </td>
+                    <td class="text-right">
+                      <strong class="text-color-dark">
+                        <span class="amount text-color-dark text-5">
+                          {{ cart.total_with_discount|money_format }} ₽
+                        </span>
+                      </strong>
+                    </td>
+                  </tr>
+                  <tr class="payment-methods">
+                    <td colspan="2">
+                      <strong class="d-block text-color-dark mb-2">Payment Methods</strong>
+                      <div class="d-flex flex-column">
+                        <label class="d-flex align-items-center text-color-grey mb-0" for="payment_method1">
+                          <input id="payment_method1" type="radio" class="mr-2" name="payment_method" value="cash-on-delivery" checked />Cash On Delivery
+                        </label>
+                        <label class="d-flex align-items-center text-color-grey mb-0" for="payment_method2">
+                          <input id="payment_method2" type="radio" class="mr-2" name="payment_method" value="paypal" />PayPal
+                        </label>
+                      </div>
+                    </td>
+                  </tr>
+-->{% endcomment %}
+                </tbody>
+              </table>
+              <button type="submit" class="btn btn-primary btn-modern btn-block text-uppercase text-3 py-3">Оформить заказ <i class="fa fa-arrow-right ml-2"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+</div>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+
+<script type="text/javascript">
+  jQuery(document).ready(function($){
+    //demo_fill_order();
+    $("input[type='text'].phone").mask("8(999)9 999-999");
+    $("#confirm_order input[type='submit']").attr("disabled", false);
+    $("#confirm_order").validate({
+      messages: {
+        name: "Введите ваше имя, чтобы мы могли знать как к вам обращаться",
+        phone: "Введите телефон, чтобы мы связались с вами по заказу",
+        email: "Введите email, чтобы вы могли восстановить доступ к аккаунту",
+      },
+      submitHandler: function(form) {
+        $("#confirm_order button[type='submit']").html("Ждите...").attr("disabled", "disabled");
+        form.submit();
+      }
+    });
+  });
+</script>
+{% endblock %}

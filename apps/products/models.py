@@ -75,14 +75,14 @@ class Products(Standard):
         return link
 
     def fill_seo(self, **kwargs):
-        """Заполнение сео-полей для товара,
+        """Заполнение сео-полей/статей для товара,
            заполнение привязок к статьям (привязваем контейнеры)
            просто создаем ссылку с сео-полями по ссылке товара,
         """
         if not self.id:
             return
         seo_fields = ('seo_title', 'seo_description', 'seo_keywords')
-        linkcontainer = kwargs.get('linkcontainer')
+        linkcontainer = kwargs.get('linkcontainer', [])
 
         seo_block = None
         seo_tag = 'seo_for_products'

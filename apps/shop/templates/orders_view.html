@@ -67,6 +67,7 @@
           <thead>
             <tr>
               <th>Наименование</th>
+              <th>Тип цены</th>
               <th>Цена</th>
               <th>Кол-во</th>
               <th class="text-right">Итого</th>
@@ -76,6 +77,7 @@
             {% for purchase in row.purchases %}
               <tr>
                 <td>{{ purchase.name }} (код {{ purchase.code }})</td>
+                <td>{% if purchase.cost_type_name %}{{ purchase.cost_type_name }}{% endif %}</td>
                 <td>{{ purchase.cost|money_format }} ₽</td>
                 <td>{{ purchase.count }}</td>
                 <td class="text-right">{{ purchase.total|money_format }} ₽</td>

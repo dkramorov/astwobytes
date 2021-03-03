@@ -5,7 +5,7 @@ box-shadow:none!important;
 body{background-color:#fff;
 color:#333;
 font-family:Roboto,sans-serif;
-font-size:14px;
+font-size:15px;
 line-height:26px;
 margin:0}
 body a{outline:none!important}
@@ -73,7 +73,7 @@ transition:ease height 300ms}
 #header .header-row{display:flex;
 flex-grow:1;
 align-items:center;
-align-self:stretch;
+/*align-self:stretch; в сафари старом выравнивает по верху - плохо */
 max-height:100%}
 #header .header-column{display:flex;
 align-self:stretch;
@@ -134,10 +134,12 @@ margin:1rem 0;
 position:relative;
 z-index:1}
 #header .header-logo img{transition:all .3s ease;
+max-height: 100px;
 position:relative;
 top:0;
 image-rendering:-webkit-optimize-contrast;
 transform:translateZ(0)}
+.sticky-header-active #header .header-logo img { max-height: 70px; }
 #header .header-nav{padding:16px 0;
 padding:1rem 0;
 min-height:70px}
@@ -669,7 +671,6 @@ font-weight:600;
 padding:.5rem 1rem;
 letter-spacing:-.5px;
 text-transform:uppercase}
-#header .header-nav-main nav>ul>li>a:after{display:none}
 #header .header-nav-main nav>ul>li>a:active{background-color:transparent;
 text-decoration:none;
 color:#ccc}
@@ -2096,7 +2097,7 @@ html.ie #header .header-column .header-extra-info .feature-box .feature-box-info
 @media(max-width:991px){html.safari #header .header-body{overflow:visible!important}
 }
 .page-header{background-color:#212529;
-margin:0 0 35px;
+margin:0;
 padding:30px 0;
 position:relative;
 text-align:left}
@@ -2141,7 +2142,7 @@ z-index:1}
 .page-header.page-header-modern h1{font-size:28px}
 .page-header.page-header-modern.page-header-sm h1{font-size:22px}
 .page-header.page-header-modern.page-header-md{padding:50px 0}
-.page-header.page-header-modern.page-header-lg{padding:65px 0}
+.page-header.page-header-modern.page-header-lg{padding:65px 0 5px;}
 .page-header.page-header-modern.page-header-lg h1{font-size:32px}
 .page-header.page-header-modern.page-header-background{padding:130px 0;
 background-size:cover}

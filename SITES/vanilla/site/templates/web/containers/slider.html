@@ -1,0 +1,27 @@
+{% load mtags %}
+<div class="owl-carousel-wrapper slider">
+  <div class="owl-carousel nav-style-1 dots-inside dots-horizontal-center show-dots-hover nav-inside nav-inside-plus nav-dark nav-md nav-font-size-md show-nav-hover mb-0" data-plugin-options="{'responsive': {'0': {'items': 1}, '479': {'items': 1}, '768': {'items': 1}, '979': {'items': 1}, '1199': {'items': 1}}, 'loop': true, 'autoHeight': false, 'margin': 0, 'dots': true, 'dotsVerticalOffset': '-75px', 'nav': true, 'mouseDrag': true, 'touchDrag': true, 'pullDrag': true, 'autoplay': false, 'autoplayTimeout': 9000, 'autoplayHoverPause': true, 'rewind': true, 'navText': ['<div class=\'promo__prev\'><svg class=\'promo__arrow\' viewBox=\'0 0 257 491\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M245.342 490.787C242.511 490.792 239.794 489.672 237.79 487.672L3.123 253.006C-1.041 248.841 -1.041 242.089 3.123 237.923L237.79 3.25599C241.883 -0.981008 248.635 -1.09801 252.873 2.99399C257.11 7.08699 257.227 13.839 253.135 18.077C253.049 18.166 252.962 18.253 252.873 18.339L25.758 245.454L252.894 472.569C257.065 476.729 257.073 483.483 252.913 487.654C250.907 489.664 248.182 490.792 245.342 490.787Z\' fill=\'white\'></path></svg></div>', '<div class=\'promo__next\'><svg class=\'promo__arrow\' viewBox=\'0 0 257 491\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M10.787 -6.18969e-06C13.618 -0.00500594 16.335 1.11498 18.339 3.11498L253.006 237.781C257.17 241.946 257.17 248.698 253.006 252.864L18.3389 487.531C14.2459 491.768 7.49392 491.885 3.25592 487.793C-0.981079 483.7 -1.09807 476.948 2.99393 472.71C3.07993 472.621 3.16692 472.534 3.25592 472.448L230.371 245.333L3.23497 18.218C-0.936034 14.058 -0.944046 7.30399 3.21595 3.13299C5.22195 1.12299 7.94697 -0.00500644 10.787 -6.18969e-06Z\' fill=\'white\'></path></svg></div>']}" id="slider_owl_carousel">
+    {% for block in blocks %}
+    <div  class="position-relative" style="background-image: url('{{ block.imagine }}');">
+      <div class="{% comment %}container {% endcomment %}pl-5 position-relative z-index-3">
+        <div class="row slide">
+          <div class="col-lg-6">
+            <div class="flex-column special_bottom_left">
+              <div class="text-color-light text-12 mb-4">
+                <div class="position-relative">
+                  {{ block.name }}
+                  <br>
+                  {{ block.html|safe }}
+                </div>
+              </div>
+              {% if block.link %}
+                <a href="{{ block.link }}"{% if block.blank %} target="_blank"{% endif %} class="btn btn-dark rounded-0 font-weight-bold hover-animate-icon">Подробнее <i class="fa fa-arrow-right"></i> </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

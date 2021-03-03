@@ -1,0 +1,110 @@
+{% load mtags flatcontent_tags %}<!doctype html><html class="no-js smooth-scroll-off" lang="en">
+<head>
+{% include "skeleton_header.html" %}
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0">
+<link rel="stylesheet" href="/media/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="/media/css/pageloader.css">
+<link rel="stylesheet" href="/media/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="/media/css/swiper.min.css">
+<link rel="stylesheet" href="/media/css/vegas.min.css">
+<link rel="stylesheet" href="/media/css/jquery.fullpage.min.css">
+
+<link rel="stylesheet" href="/media/css/main.css">
+<link rel="stylesheet" href="/media/css/custom.css">
+{% block extrahead %}{% endblock %}
+</head>
+<body class="body-page">
+{% block body %}
+
+<div class="page-loader" id="page-loader">
+  <div>
+    <div class="icon ion-spin"></div>
+    <p>Загрузка</p>
+  </div>
+</div>
+
+<div class="page-cover">
+  <div class="cover-bg pos-abs size-full bg-img" data-image-src="/media/misc/bg-default.jpg"></div>
+  <!-- Прозрачность фона
+  <div class="cover-bg pos-abs size-full bg-cover-gradientradial opacity-9"></div>
+  -->
+
+  {% flatcontent request page 'video_bg' %}
+</div>
+
+<header class="page-header loading-anim">
+  <nav id="navbar-menu" class="navbar navbar-top bd-bottom ">
+    <div class="navbar-group">
+      <a class="navbar-brand logo-brand bd-right" href="/">
+        <span class="logo">
+          <img class="light-logo" src="{{ containers.main.tags.logo.thumb }}" alt="{{ containers.main.tags.logo.title|textize }}">
+        </span>
+{% comment %}<!--
+        <span class="text">
+          <span class="line strong t-upper t-spaced">
+            <span>Офиц.<span class="fw-light">представитель</span></span>
+          </span>
+        </span>
+-->{% endcomment %}
+      </a>
+      {% flatmenu request "mainmenu" %}
+    </div>
+
+    <div class="navbar-group group-right ">
+{% comment %}<!--
+      <div class="navbar-social">
+        <ul class="icons">
+          <li>
+            <a href="/"><i class="icon fa fa-twitter"></i></a>
+          </li>
+          <li><a href="/"><i class="icon fa fa-instagram"></i></a></li>
+        </ul>
+      </div>
+-->{% endcomment %}
+      <div class="navbar-toggler">
+        <a id="menu-icon" class="menu-toggler btn- btn btn-line-b py-3 py-md-0" href="#">
+          <span class="icon icon-menu icon-menu-a">
+            <span class="bars">
+              <span class="bar1"></span>
+              <span class="bar2"></span>
+            </span>
+          </span>
+          <span class="bd-left text multiline t-upper fs-normal d-none d-md-flex">
+            <span class="line">Меню</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </nav>
+{% comment %}<!-- Это меню разное для всех страничек,
+                  поэтому оно через шаблон
+  {% flatmenu request "slidermenu" %}
+-->{% endcomment %}
+  {% flatcontent request page 'slider_menu' %}
+  {% flatmenu request "mobilemenu" %}
+</header>
+
+<main class="page-main fullpage-scroll anim-slide-scroll" id="mainpage">
+{% block content %}{% endblock %}
+</main>
+
+{% endblock %}
+<script src="/media/js/jquery-1.12.4.min.js"></script>
+<script src="/media/js/vegas.min.js"></script>
+<script src="/media/js/swiper.min.js"></script>
+<script src="/media/js/scrolloverflow.min.js"></script>
+<script src="/media/js/jquery.fullpage.min.js"></script>
+<script src="/media/js/jqueryvalidation.min.js"></script>
+<script src="/media/js/form_script.js"></script>
+<script src="/media/js/main.js"></script>
+{% block extrascripts %}{% endblock %}
+{% if containers.main.tags.google_analytics.html %}
+  {{ containers.main.tags.google_analytics.html|safe }}
+{% endif %}
+{% if containers.main.tags.yandex_metrika.html %}
+  {{ containers.main.tags.yandex_metrika.html|safe }}
+{% endif %}
+</body>
+</html>

@@ -1,16 +1,18 @@
 {% load tags mtags %}
 {% with request|load_dealers as cities %}
-<div class="container pb-1 dealers">
-  <div class="row pt-4">
-    <div class="col pr-lg-0 pl-lg-0 pr-md-0 pl-md-0">
-      <div class="overflow-hidden mb-3">
-        <h2 class="text-12 mb-5 pt-5" id="dealers_title">
-          <span>{{ container.description|safe }}</span>
-        </h2>
+<div class="container dealers">
+  <div id="dealers_title"></div>
+  {% if container.description %}
+    <div class="row">
+      <div class="col pr-lg-0 pl-lg-0 pr-md-0 pl-md-0">
+        <div class="overflow-hidden mb-3">
+          <h2 class="text-12 mb-5">
+            <span>{{ container.description|safe }}</span>
+          </h2>
+        </div>
       </div>
     </div>
-  </div>
-
+  {% endif %}
   <div class="row mb-2">
     <div id="mapContainer"></div>
   </div>
@@ -71,7 +73,7 @@
             "coordinates": [{{ dealer.coords.0 }}, {{ dealer.coords.1 }}],
           },
           "properties": {
-            "balloonContent": "<strong>{{ dealer.name|textize }}</strong><br>{{ dealer.address|textize }}{% if dealer.phone %}<br>{{ dealer.phone|safe }}{% endif %}{% if dealer.worktime %}{{ dealer.worktime|safe }}{% endif %}{% if dealer.site %}{{ dealer.site|safe }}{% endif %}{% if dealer.email %}{{ dealer.email|safe }}{% endif %}",
+            "balloonContent": "<strong>{{ dealer.name|textize }}</strong><br>{{ dealer.address|textize }}{% if dealer.phone %}<br>{{ dealer.phone|replace_quotes|safe }}{% endif %}{% if dealer.worktime %}{{ dealer.worktime|replace_quotes|safe }}<br>{% endif %}{% if dealer.site %}{{ dealer.site|replace_quotes|safe }}{% endif %}{% if dealer.email %}{{ dealer.email|replace_quotes|safe }}{% endif %}",
             "clusterCaption": "Дилеры",
             "hintContent": "{{ dealer.address|textize }}",
           },

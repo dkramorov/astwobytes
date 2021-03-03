@@ -1,0 +1,106 @@
+{% load mtags %}
+<section data-id="team" class="section section-slide section-page fp-auto-height-responsive">
+  {% if container.description %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        {% comment %}<!--<span>ЗАКРАШЕННЫЙ</span>
+                         <span class="text-stroke">ОБВОД</span>
+        -->{% endcomment %}
+        <span>{{ container.description|safe }}</span>
+      </h3>
+    </div>
+  {% endif %}
+
+  <div class="slide-size-width anim">
+    <div class="section-slides slider-a swiper-container">
+      <div class="swiper-wrapper slider-wrapper">
+        {% for block in blocks %}
+          <div class="swiper-slide slide-item">
+            <div class="slide-a slide-anim">
+              <div class="slide-bg"></div>
+              <div class="slide-title"></div>
+              <div class="slide-content">
+                <div class="c-wrapper width-medium">
+                  <div class="row">
+                    <div class="col col-12 col-md-6 order-md-1">
+                      <header class="slide-image pr-md-3 anim-1">
+                        <img class="img rounded-border" alt="{{ block.name|textize }}" src="{% imagine block.img '800x600' block.get_folder True %}">
+                      </header>
+                    </div>
+
+                    <div class="col col-12 col-md-6 order-md-2">
+                      <div class="slide-text pl-md-3">
+                        {% if block.name %}
+                          <div class="s-header anim-1">
+                            <h3 class="title">{{ block.name }}</h3>
+                          </div>
+                        {% endif %}
+                        <div class="s-content anim-2">
+                          {% if block.html %}
+                            <div class="pr-lg-5">
+                              {{ block.html|safe }}
+                            </div>
+                          {% endif %}
+                          {% if block.link %}
+                            <a class="btn btn-line-a" href="{{ block.link }}">
+                              <span class="text">{{ block.description }}</span>
+                              <span class="icon icon-menu icon-arrow-a icon-anim">
+                                <span class="arrow-right"></span>
+                              </span>
+                            </a>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="slider-controls">
+        <div class="controls-wrapper width-medium">
+          <div class="row">
+
+            <div class="col-12 col-md-6">
+              <div class="slider-arrow pr-md-3 anim-3">
+                <div class="btns btn-arrows">
+                  <a class="slider-prev btn btn-line-a" href="#">
+                    <span class="icon icon-menu icon-arrow-a icon-anim">
+                      <span class="arrow-left"></span>
+                    </span>
+                    <span class="text">Пред</span>
+                  </a>
+                  <a class="slider-next btn btn-line-a" href="#">
+                    <span class="text">След</span>
+                    <span class="icon icon-menu icon-arrow-a icon-anim">
+                      <span class="arrow-right"></span>
+                    </span>
+                  </a>
+                </div>
+              </div>
+              <!-- пагинация -->
+              <div class="slider-pagination swiper-pagination"></div>
+
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="swiper-container slider-thumbs-a pl-md-3 anim-4">
+                <div class="thumbs-pagination"></div>
+                <div class="swiper-wrapper">
+                  {% for block in blocks %}
+                    <div class="swiper-slide">
+                      <img class="img" alt="{{ block.name|textize }}" src="{{ block.thumb }}">
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

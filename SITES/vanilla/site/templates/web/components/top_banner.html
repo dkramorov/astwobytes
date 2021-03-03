@@ -1,0 +1,19 @@
+{% if containers.main.tags.top_banner.html %}
+<div class="notice-top-bar bg-dark">
+  <button class="hamburguer-btn hamburguer-btn-light notice-top-bar-close m-0 active" data-set-active="false">
+    <span class="close">
+      <span></span>
+      <span></span>
+    </span>
+  </button>
+  <div class="container">
+    <div class="row justify-content-center py-2">
+      <div class="col-9 col-md-12 text-center">
+        <div class="text-color-light mb-0">
+          {{ containers.main.tags.top_banner.html|safe }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

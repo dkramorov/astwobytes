@@ -1,0 +1,30 @@
+{% load mtags %}
+<div class="row mapa">
+  {% if container.description %}
+    <div class="col-md-12">
+      <h2>{{ container.description|safe }}</h2>
+    </div>
+  {% endif %}
+  {% for block in blocks %}
+    {% ifequal block.tag "map" %}
+      <div class="col-md-8">
+        {% if block.html %}{{ block.html|safe }}{% endif %}
+      </div>
+    {% endifequal %}
+  {% endfor %}
+  <div class="col-md-4">
+    <div class="card">
+      {% for block in blocks %}
+        {% if not block.tag %}
+          <div class="title">{{ block.name }}</div>
+          <div class="desc">{{ block.html|safe }}</div>
+        {% endif %}
+      {% endfor %}
+      {% for block in blocks %}
+        {% ifequal block.tag "button" %}
+          <a href="{{ block.link }}"{% if block.blank %} target="_blank"{% endif %} class="btn btn-primary">{{ block.name }}</a>
+        {% endifequal %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

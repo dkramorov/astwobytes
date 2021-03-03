@@ -130,7 +130,7 @@
           </div>
           <div class="row stylization">
             <div class="col-md-12 form-field">
-              <button class="save-change-btn">Сохранить</button>
+              <button class="save-change-btn btn btn-primary">Сохранить</button>
             </div>
           </div>
         </form>
@@ -140,7 +140,6 @@
   </div>
 </div>
 <div class="clearfix clear"></div>
-
 
 {% for container in page.containers %}
   {% flatcontent request page container.container.tag %}
@@ -156,7 +155,6 @@
 <script src="/static/js/feedback.js"></script>
 <script type="text/javascript">
   $(document).ready(function(){
-    
     var profile = new FeedBack("profile_form", {
       "wait": "Ждите...",
       //"send": "Отправить",

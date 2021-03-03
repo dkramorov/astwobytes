@@ -1,8 +1,10 @@
 {% if perms.personal.view_personal %}
 <li{% ifequal menu 'personal' %} class="active"{% endifequal %}>
-  <a href="{% url 'personal:show_shoppers' %}">
+  <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-users"></em>
-    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <div class="label label-primary pull-right">
+      <i class="fa fa-angle-down"></i>
+    </div>
     <span class="item-text">Посетители</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'personal' %} in{% endifequal %}">

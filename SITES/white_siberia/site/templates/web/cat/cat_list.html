@@ -54,12 +54,14 @@
   @media(min-width:1024px){
     .product .product-thumb-info {
       background-color: #fff;
-      height: 290px;
+      height: 320px;
     }
   }
-  .product_card {
+  .product_card:hover {
     box-shadow: 0 3px 12px 1px rgba(0,0,0,.2);
-    background-color: #f7f9fc;
+  }
+  .product_card {
+    background-color: #f8f8f8;
   }
 
 </style>
@@ -70,7 +72,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container pl-lg-0 pr-lg-0 pl-md-0 pr-md-0">
+  {% comment %}<!--
   <div class="row">
     <div class="col-lg-12">
       <h1 class="block-title text-center">
@@ -78,9 +81,9 @@
       </h1>
     </div>
   </div>
-  {% comment %}<!--<div class="masonry-loader masonry-loader-showing">все товары</div>-->{% endcomment %}
-    {% include "web/cat/plp.html" %}
-
+  <div class="masonry-loader masonry-loader-showing">все товары</div>
+  -->{% endcomment %}
+  {% include "web/cat/plp.html" %}
 </div>
 {% for container in page.containers %}
   {% flatcontent request page container.container.tag %}

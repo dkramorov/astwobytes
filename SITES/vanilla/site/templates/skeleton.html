@@ -1,0 +1,145 @@
+{% load flatcontent_tags mtags %}<!DOCTYPE html><html>
+<head>
+{% include "skeleton_header.html" %}
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+<link rel="stylesheet" href="/media/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/admin/css/font-awesome.min.css">
+<link rel="stylesheet" href="/media/css/animate.compat.css">
+<link rel="stylesheet" href="/media/css/simple-line-icons.min.css">
+<link rel="stylesheet" href="/media/css/owl.carousel.min.css">
+<link rel="stylesheet" href="/media/css/owl.theme.default.min.css">
+<!--
+<link rel="stylesheet" href="/media/css/magnific-popup.min.css">
+-->
+<link rel="stylesheet" href="/media/css/theme.css?v=2">
+<link rel="stylesheet" href="/media/css/theme-elements.css?v=2">
+<link rel="stylesheet" href="/media/css/theme-blog.css">
+<link rel="stylesheet" href="/media/css/theme-shop.css">
+<!--
+<link id="skinCSS" rel="stylesheet" href="/media/css/skin-landing.css">
+-->
+<link rel="stylesheet" href="/static/youtube_app/lazy_youtube.css">
+<link rel="stylesheet" href="/media/css/custom.css?v=2">
+<script src="/media/js/modernizr.min.js"></script>
+{% block extrahead %}{% endblock %}
+</head>
+<body data-target="#header" data-spy="scroll" data-offset="100">
+{% block body %}
+<div class="body">
+{% comment %}<!--
+  {% include "web/components/top_banner.html" %}
+-->{% endcomment %}
+  <header id="header" data-plugin-options="{'stickyEnabled': true, 'stickyEnableOnBoxed': true, 'stickyEnableOnMobile': true, 'stickyChangeLogo': false, 'stickyStartAt': 1, 'stickyHeaderContainerHeight': 70}">
+    <div class="header-body header-border-bottom overflow-visible">
+      <div class="header-container container">
+        <div class="header-row py-1">
+          {% include "web/components/logo.html" %}
+          {% flatmenu request "mainmenu" %}
+          {% include "web/components/cart.html" %}
+        </div>
+      </div>
+    </div>
+  </header>
+  <div role="main" class="main">
+    {% include "web/components/breadcrumbs_white.html" %}
+    {% block content %}{% endblock %}
+  </div>
+
+  <footer id="footer" class="color-primary border-0 mt-0">
+    <div class="container py-5">
+      <div class="row pt-4">
+{% comment %}<!--
+        {% flatmenu request "bottommenu" %}
+-->{% endcomment %}
+        <div class="col-lg-4 col-md-4 mb-4 mb-lg-0">
+          <h4 class="font-weight-bold text-color-dark text-4-5 mb-3">Контакты</h4>
+          <div class="payment-cc text-color-dark"><i class="fa fa-phone pr-3"></i> {{ containers.main.tags.phone.html|safe }}</div>
+          <div class="payment-cc text-color-dark"><i class="fa fa-map-marker pr-3"></i> {{ containers.main.tags.address.html|safe }}</div>
+          <div class="payment-cc text-color-dark"><i class="fa fa-envelope pr-3"></i> {{ containers.main.tags.email.html|safe }}</div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 mb-3">
+          <h4 class="font-weight-bold text-color-dark text-4-5 mb-3">Режим работы</h4>
+          <div class="payment-cc payment-cc-no-hover-effect text-color-dark justify-content-lg-start">
+            <i class="fa fa-clock-o pr-3"></i> {{ containers.main.tags.worktime.html|safe }}
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 mb-4">
+          <h4 class="font-weight-bold text-color-dark text-4-5 mb-3">Сообщества</h4>
+          <ul class="social-icons social-icons-medium mr-3 mb-0">
+            {% for block in containers.main.tags.social.sub %}
+              <li>
+                <a href="{{ block.link }}" target="_blank" title="{{ block.name|textize }}" class="text-color-dark"><i class="fa fa-{{ block.icon }}"></i></a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+{% comment %}<!--
+        <div class="col-lg-4 col-md-4">
+          <h4 class="font-weight-bold text-color-dark text-4-5 mb-3">Методы оплаты</h4>
+          <div class="payment-cc payment-cc-no-hover-effect text-color-dark justify-content-center justify-content-lg-start">
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-paypal"></i>
+            <i class="fab fa-cc-mastercard"></i>
+          </div>
+        </div>
+-->{% endcomment %}
+      </div>
+    </div>
+    <div class="footer-copyright bg-transparent">
+      <div class="container py-2">
+        <div class="row">
+          <div class="col text-center py-4">
+            {{ containers.main.tags.copyright.html|safe }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+{% if containers.main.tags.yandex_metrika.html %}
+  {{ containers.main.tags.yandex_metrika.html|safe }}
+{% endif %}
+{% if containers.main.tags.google_analytics.html %}
+  {{ containers.main.tags.google_analytics.html|safe }}
+{% endif %}
+
+{% endblock %}
+<script type="text/javascript">
+  var yandex_maps_api_key = "{% settings_value 'YANDEX_MAPS_API_KEY' %}";
+  var cart_id = "#headerTopCartDropdown";
+</script>
+<script src="/media/js/jquery.min.js"></script>
+{% include "shop_js.html" %}
+<script src="/media/js/jquery.appear.min.js"></script>
+<script src="/media/js/jquery.easing.min.js"></script>
+<script src="/media/js/jquery.cookie.min.js"></script>
+
+<!-- Всплывающие подсказки-->
+<script src="/media/js/popper.min.js"></script>
+
+<script src="/media/js/bootstrap.min.js"></script>
+<script src="/media/js/jquery.validate.min.js"></script>
+<script src="/media/js/jquery.easypiechart.min.js"></script>
+<script src="/media/js/jquery.gmap.min.js"></script>
+<script src="/media/js/lazysizes.min.js"></script>
+<script src="/media/js/jquery.isotope.min.js"></script>
+<script src="/media/js/owl.carousel.min.js"></script>
+<!--
+<script src="/media/js/jquery.magnific-popup.min.js"></script>
+-->
+<script src="/media/js/jquery.vide.min.js"></script>
+{% comment %}
+<!-- SVG Animation
+<script src="/media/js/vivus.min.js"></script>
+-->{% endcomment %}
+<script src="/media/js/theme.js"></script>
+<script src="/media/js/theme.init.js"></script>
+<script type="text/javascript" src="/static/yandex_app/yandex_2_1.js"></script>
+<script src="/static/youtube_app/lazy_youtube.js"></script>
+<script src="/media/js/custom.js?v=2"></script>
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

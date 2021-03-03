@@ -2,7 +2,7 @@
 {% load tags mtags %}
 
 {% block extrahead %}
-
+<link rel="stylesheet" href="/static/fancybox/jquery.fancybox.min.css">
 {% endblock %}
 
 {% block page_title %}{{ product.name }}{% endblock %}
@@ -17,11 +17,11 @@
           <td>
             <div id="imtvgblock" class="product_container">
               <div class="sliding_product">
-                <a href="{{ product.imagine }}" class="bigimgtovar" id="big0">
+                <a href="{{ product.imagine }}" class="bigimgtovar fancybox" id="big0">
                   <img src="{% imagine product.img '800x600' product.get_folder True %}" loading="lazy">
                 </a>
                 {% for photo in photos %}
-                  <a href="{{ photo.imagine }}" class="bigimgtovar" id="big{{ photo.id }}">
+                  <a href="{{ photo.imagine }}" class="bigimgtovar fancybox" id="big{{ photo.id }}" rel="gallery">
                     <img src="{% imagine photo.img '800x600' photo.get_folder True %}" loading="lazy">
                   </a>
                 {% endfor %}
@@ -72,7 +72,7 @@
                       <b>Каталог:</b> <a href="{{ cat.link }}">{{ cat.name }}</a>
                     </li>
                     <li>
-                      <span class="inshop">На складе</span>
+                      <span class="inshop">{% if product.count %}Кол-во:{{ product.count }}{% else %}Нет в наличии{% endif %}</span>
                     </li>
                   </ul>
                   {% if product.mini_info %}
@@ -121,8 +121,10 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/fancybox/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
   $(document).ready(function(){
+    $(".fancybox").fancybox();
     quantity_listener("{{ product.id }}",
                       $("#qbuttons_{{ product.id }} .prod-plus"),
                       $("#qbuttons_{{ product.id }} .prod-minus"),

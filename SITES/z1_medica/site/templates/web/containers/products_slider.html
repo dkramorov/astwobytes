@@ -1,0 +1,31 @@
+{% load mtags %}
+
+<div id="owl_products" style="position:relative; max-height: 300px; overflow:hidden;">
+  {% for product in products %}
+    <form class="formlotok adativecardtv pcstyle pconly mobileonly">
+      <div class="cardtv">
+        <div class="product_container">
+          <div class="sliding_product">
+            <!--<img src="misc/new.png" title="Новинка!" class="newimg png" />-->
+            <div class="imgc">
+              <a href="{{ product.link }}">
+                <img src="{{ product.thumb }}" alt="{{ product.name|textize }}" title="{{ product.name|textize }}" loading="lazy" />
+              </a>
+            </div>
+            <div class="notes">
+              <a href="{{ product.link }}">{{ product.name }}</a>
+              <div></div>
+            </div>
+          </div>
+        </div>
+        <span class="cena">
+          <div>{{ product.price|money_format }} ₽</div>
+        </span>
+        <div class="bascbut">
+          <a href="javascript:void(0);" class="bascbutton add_to_cart_btn" data-product_id="{{ product.id }}">В корзину</a>
+          <div class="kolvoround2" style="display:none; z-index:3"></div>
+        </div>
+      </div>
+    </form>
+  {% endfor %}
+</div>

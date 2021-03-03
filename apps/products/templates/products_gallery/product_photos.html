@@ -1,4 +1,5 @@
 {% load mtags %}
+{% if row %}
 {% comment %}<!--
 Можно заменить input на select
 Добавить модель, которая будет предоставлять значения select
@@ -66,3 +67,4 @@
     $("#product_gallery").append($(html));
   }
 </script>
+{% endif %}

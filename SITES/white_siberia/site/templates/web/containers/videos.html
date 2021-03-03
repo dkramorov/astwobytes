@@ -1,13 +1,13 @@
 {% load mtags %}
 <div class="container pr-0 pl-0 mb-5 videos">
-  <div class="owl-carousel-wrapper mt-5 mb-5">
-    {% if container.description %}
+  {% if container.description %}
+    <div class="mt-5 mb-5">
       <div class="col-lg-12">
         <h2 class="font-weight-bold text-9 mb-0">{{ container.description|safe }}</h2>
       </div>
-    {% endif %}
-  </div>
-  <div class="owl-carousel dots-inside dots-horizontal-center show-dots-hover nav-inside nav-inside-plus nav-dark nav-md nav-font-size-md mb-0" data-plugin-options="{'responsive': {'0': {'items': 1}, '479': {'items': 1}, '768': {'items': 2}, '979': {'items': 3}, '1199': {'items': 3}}, 'loop': true, 'autoHeight': true, 'margin': 0, 'dots': false, 'dotsVerticalOffset': '-75px', 'nav': true, 'mouseDrag': false, 'touchDrag': true, 'pullDrag': true, 'autoplay': false, 'autoplayTimeout': 9000, 'autoplayHoverPause': true, 'rewind': true}">
+    </div>
+  {% endif %}
+  <div class="owl-carousel dots-inside dots-horizontal-center show-dots-hover nav-inside nav-inside-plus nav-dark nav-md nav-font-size-md mb-0" data-plugin-options="{'responsive': {'0': {'items': 1}, '479': {'items': 1}, '768': {'items': 2}, '979': {'items': 3}, '1199': {'items': 3}}, 'loop': false, 'autoHeight': true, 'margin': 0, 'dots': false, 'dotsVerticalOffset': '-75px', 'nav': true, 'mouseDrag': false, 'touchDrag': true, 'pullDrag': true, 'autoplay': false, 'autoplayTimeout': 9000, 'autoplayHoverPause': true, 'rewind': true}">
     {% for block in blocks %}
       <div class="container position-relative z-index-3">
         <div class="flex-column special_bottom_left">
@@ -21,7 +21,7 @@
     {% endfor %}
   </div>
   {% with blocks.0 as block %}
-    {% if block %}
+    {% if block.link %}
       <div class="container pr-0 pl-0 mb-4">
         <div class="col-lg-12">
           <a href="{{ block.link }}"{% if block.blank %} target="_blank"{% endif %} class="btn btn-light rounded-0 font-weight-bold hover-animate-icon"><span class="fa fa-youtube-play"></span> {{ block.description }} <i class="fa fa-arrow-right"></i> </a>

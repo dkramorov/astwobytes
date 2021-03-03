@@ -35,9 +35,10 @@
 
 {% block content %}
 <div class="auth-wrap stylization">
-  <div class="auth-col">
+  <div class="row">
+  <div class="col-md-6">
     <h2>Вход</h2>
-
+{% comment %}<!--
     <div class="social">
       <p>
         <a class="btn btn-default" href="{{ vk_link }}">Войти через <i class="fa fa-vk"></i></a>
@@ -46,6 +47,7 @@
     </div>
 
     <p>или по паролю</p>
+-->{% endcomment %}
     <form action="/login/" method="post" id="login_form" class="login">
       {% csrf_token %}
       <p>
@@ -57,15 +59,18 @@
       <p class="feedback_alerts"></p>
       <p class="auth-submit">
         <input type="submit" value="Войти">
+<!--
         <input type="checkbox" id="rememberme" value="forever">
+
         <label for="rememberme">Запомнить меня</label>
+-->
       </p>
       <p class="auth-lost_password">
         <a href="#">Забыли пароль?</a>
       </p>
     </form>
   </div>
-  <div class="auth-col">
+  <div class="col-md-6">
     <h2>Регистрация</h2>
     <form action="/registration/" method="post" id="register_form" class="register">
       {% csrf_token %}
@@ -93,6 +98,7 @@
         <input type="submit" value="Регистрация">
       </p>
     </form>
+  </div>
   </div>
 </div>
 

@@ -1,0 +1,9 @@
+<div id="container" class="cover-bg video-container d-none d-lg-block">
+  <video autoplay="autoplay" loop="loop" muted="muted" width="640" height="360">
+    {% if blocks.0.link %}
+      <source src="{{ blocks.0.link }}" type="video/mp4">
+    {% else %}
+      <source src="/media/misc/loop-bg.mp4" type="video/mp4">
+    {% endif %}
+  </video>
+</div>

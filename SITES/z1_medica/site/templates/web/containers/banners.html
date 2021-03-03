@@ -1,0 +1,16 @@
+{% load mtags %}
+<div class="row banners">
+  {% if container.description %}
+    <div class="col-md-12">
+      <h2>{{ container.description|safe }}</h2>
+    </div>
+  {% endif %}
+  {% for block in blocks %}
+    <div class="col-lg-6 col-md-6">
+      <div class="card">
+        <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}"><img src="{% imagine block.img '800x600' block.get_folder True %}" loading="lazy" /></a>
+      </div>
+    </div>
+    {% cycle '' '<div class="clearfix"></div>' %}
+  {% endfor %}
+</div>

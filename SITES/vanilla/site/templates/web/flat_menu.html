@@ -1,0 +1,38 @@
+{% ifequal tag 'mainmenu' %}
+<div class="header-column w-100 pl-lg-5">
+  <div class="header-nav w-100 p-0">
+    <div class="header-nav header-nav-line header-nav-bottom-line header-nav-bottom-line-effect-1 justify-content-start w-100">
+      <div class="header-nav-main header-nav-main-arrows header-nav-main-effect-2 header-nav-main-sub-effect-1 w-100">
+        <nav class="collapse w-100">
+          <ul class="nav nav-pills flex-column flex-lg-row w-100" id="mainNav">
+            {% for menu in menus %}
+              <li class="dropdown">
+                <a class="dropdown-item{% ifequal request.META.PATH_INFO menu.link %} active{% endifequal %}" data-hash data-hash-offset="70" href="{{ menu.link }}">{{ menu.name }}</a>
+              </li>
+            {% endfor %}
+            <li class="dropdown no-line-effect ml-lg-auto">
+              <a href="#" class="dropdown-item dropdown-toggle">РУС</a>
+              <ul class="dropdown-menu">
+                <li><a href="#" class="dropdown-item"><img src="/static/img/empty.png" class="flag flag-us" alt="English" /> ENG</a></li>
+                <li><a href="#" class="dropdown-item"><img src="/static/img/empty.png" class="flag flag-ru" alt="Русский" /> РУС</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+{% endifequal %}
+{% ifequal tag 'bottommenu' %}
+<div class="col-lg-4 col-md-4 mb-4 mb-lg-0">
+  <h4 class="font-weight-bold text-color-dark text-4-5 mb-3">{{ menus.0.container.name }}</h4>
+    <ul class="list list-unstyled d-flex flex-column flex-sm-row justify-content-sm-center justify-content-lg-start mb-0">
+      {% for menu in menus %}
+        <li class="line-height-3 mb-0 pr-4">
+          <a href="{{ menu.link }}" class="text-color-dark">{{ menu.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endifequal %}

@@ -12,22 +12,22 @@
 <!--
 <link rel="stylesheet" href="/media/css/magnific-popup.min.css">
 -->
-<link rel="stylesheet" href="/media/css/theme.css">
-<link rel="stylesheet" href="/media/css/theme-elements.css">
+<link rel="stylesheet" href="/media/css/theme.css?v=2">
+<link rel="stylesheet" href="/media/css/theme-elements.css?v=2">
 <link rel="stylesheet" href="/media/css/theme-blog.css">
 <link rel="stylesheet" href="/media/css/theme-shop.css">
 <!--
 <link id="skinCSS" rel="stylesheet" href="/media/css/skin-landing.css">
 -->
 <link rel="stylesheet" href="/static/youtube_app/lazy_youtube.css">
-<link rel="stylesheet" href="/media/css/custom.css">
+<link rel="stylesheet" href="/media/css/custom.css?v=2">
 <script src="/media/js/modernizr.min.js"></script>
 {% block extrahead %}{% endblock %}
 </head>
 <body>
 <div class="body">
 {% block body %}
-<header id="header" class="header-transparent header-effect-shrink" data-plugin-options="{'stickyEnabled': true, 'stickyEffect': 'shrink', 'stickyEnableOnBoxed': true, 'stickyEnableOnMobile': true, 'stickyStartAt': 70, 'stickyChangeLogo': false, 'stickyHeaderContainerHeight': 70}">
+<header id="header" class="{% if not breadcrumbs %}header-transparent {% endif %}header-effect-shrink" data-plugin-options="{'stickyEnabled': true, 'stickyEffect': 'shrink', 'stickyEnableOnBoxed': true, 'stickyEnableOnMobile': true, 'stickyStartAt': 70, 'stickyChangeLogo': false, 'stickyHeaderContainerHeight': 70}">
   <div class="header-body border-top-0">
     <div class="header-container container pl-0 pr-0">
       <div class="header-row">
@@ -71,7 +71,7 @@
   </div>
 </header>
 <div role="main" class="main">
-  {% include "web/components/breadcrumbs.html" %}
+  {% include "web/components/breadcrumbs_white.html" %}
   {% block content %}{% endblock %}
 </div>
 
@@ -109,7 +109,7 @@
             <ul class="nav">
               {% for block in containers.main.tags.social_footer.sub %}
                 <li class="social-link social-icons-{{ block.tag }} pr-3">
-                  <a href="{{ block.link }}" target="_blank" title="{{ block.name }}"><i class="fa fa-{{ block.icon }} pr-1"></i> {{ block.name }}</a>
+                  <a href="{{ block.link }}" target="_blank" title="{{ block.name }}"><i class="fab fa-{{ block.icon }} pr-1"></i> {{ block.name }}</a>
                 </li>
               {% endfor %}
             </ul>
@@ -161,7 +161,7 @@
   var yandex_maps_api_key = "{% settings_value 'YANDEX_MAPS_API_KEY' %}";
 </script>
 <script src="/static/youtube_app/lazy_youtube.js"></script>
-<script src="/media/js/custom.js"></script>
+<script src="/media/js/custom.js?v=2"></script>
 {% block extrascripts %}{% endblock %}
 </body>
 </html>

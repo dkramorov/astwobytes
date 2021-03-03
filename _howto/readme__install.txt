@@ -20,8 +20,7 @@ sudo apt install uwsgi-plugin-python
 # sudo apt-get update
 # sudo apt-get install python3.6
 
-$ sudo apt install \
-python3.6 python3.6-dev uwsgi uwsgi-src uuid-dev libcap-dev libpcre3-dev libssl-dev
+$ sudo apt-get install python3.6 python3.6-dev uwsgi uwsgi-src uuid-dev libcap-dev libpcre3-dev libssl-dev
 $ cd ~
 $ export PYTHON=python3.6
 $ uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python36"

@@ -6,7 +6,7 @@
     {% endif %}
   </label>
   <div class="col-lg-10">
-    <textarea class="form-control" name="description" id="description_redactor">{% if row.description %}{{ row.description }}{% endif %}</textarea>
+    <textarea class="form-control" name="description"{% if not '<script' in row.description %} id="description_redactor"{% endif %}>{% if row.description %}{{ row.description }}{% endif %}</textarea>
   </div>
 </div>
 
@@ -15,7 +15,7 @@
   <div class="form-group translate_description hidden">
     <label class="col-lg-2 control-label">Описание {{ domain.name }} ({{ domain.domain }})</label>
     <div class="col-lg-10">
-      <textarea placeholder="Описание {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_description_{{ domain.pk }}" id="description_redactor_{{ domain.pk }}" autocomplete="off">{% if domain.translations.description %}{{ domain.translations.description }}{% endif %}</textarea>
+      <textarea placeholder="Описание {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_description_{{ domain.pk }}"{% if not '<script' in row.description %} id="description_redactor_{{ domain.pk }}"{% endif %} autocomplete="off">{% if domain.translations.description %}{{ domain.translations.description }}{% endif %}</textarea>
     </div>
   </div>
 {% endfor %}

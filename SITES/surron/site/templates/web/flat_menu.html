@@ -1,0 +1,44 @@
+{% ifequal tag 'mainmenu' %}
+<div class="navbar-collapse">
+  <ul class="navbar-nav nav-menu">
+    {% for menu in menus %}
+      <li class="nav-item fs-normal">
+        <a href="{{ menu.link }}">{{ menu.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endifequal %}
+
+{% ifequal tag 'slidermenu' %}
+<nav class="navbar navbar-sidebar ">
+  <div class="navbar-group">
+    <div class="navbar-collapse">
+      <ul id="sidebar-menu" class="navbar-nav nav-menu">
+        {% for menu in menus %}
+          <li class="nav-item{% ifequal request.META.PATH_INFO menu.link %} active{% endifequal %}" data-menuanchor="{{ menu.tag }}">
+            <a href="{{ menu.link }}">
+              <span class="fa fa-{{ menu.icon }}"></span>
+              <span class="text">{{ menu.name }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endifequal %}
+
+{% ifequal tag 'mobilemenu' %}
+<nav id="navfull-menu" class="navfull navfull-menu navigation menu-behavior">
+  <div class="navbar-group group-bg">
+    <ul class="navbar-nav nav-menu menu-close font-title fw-bold">
+      {% for menu in menus %}
+        <li class="nav-item{% ifequal request.META.PATH_INFO menu.link %} active{% endifequal %}">
+          <a href="{{ menu.link }}">{{ menu.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
+{% endifequal %}

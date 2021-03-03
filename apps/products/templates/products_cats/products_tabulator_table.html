@@ -1,6 +1,9 @@
-<!-- Используется для быстрого вывода товаров/услуг в Контент - Каталоги -->
+<!--
+Используется для быстрого вывода товаров/услуг в
+Контент - Каталоги
+-->
 <div class="panel panel-default">
-  <div class="panel-heading">Действия
+  <div class="panel-heading">Товары - Действия
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
       <em class="fa fa-times"></em>
     </a>
@@ -20,18 +23,21 @@
   </div>
 </div>
 <div class="panel panel-default main_panel">
-  <div class="panel-heading"><strong>Наименования</strong>
+  <div class="panel-heading">
+    <strong>Товары - Список</strong>
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
       <em class="fa fa-times"></em>
     </a>
     <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть" class="pull-right">
-      <em class="fa fa-minus"></em>
+      <em class="fa fa-plus"></em>
     </a>
   </div>
   <div class="clearfix"></div>
-  <div id="main-table"></div>
-  <div id="main-table-footer">
-    <span class="start"></span> - <span class="end"></span> из <span class="max"></span>
+  <div class="panel-wrapper collapse">
+    <div id="main-table"></div>
+    <div id="main-table-footer">
+      <span class="start"></span> - <span class="end"></span> из <span class="max"></span>
+    </div>
   </div>
 </div>
 <script type="text/javascript">

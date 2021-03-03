@@ -1,0 +1,83 @@
+{% load mtags %}
+<section data-id="pricing" class="section section-page fp-auto-height-responsive">
+  {% if container.name %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        <span class="text-stroke">{{ container.name }}</span>
+      </h3>
+    </div>
+  {% endif %}
+  <div class="section-margin anim">
+    {% if container.description %}
+      <div class="section-header align-x-center">
+        <div class="h-content width-medium">
+          <h2 class="h-title font-title anim-1">
+            {{ container.description|safe }}
+          </h2>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="section-content align-x-center">
+      <div class="c-wrapper width-medium text-wrapper mb-5 mb-lg-6">
+        <div class="row no-gutters">
+          {% for block in blocks %}
+            {% if not block.sub %}
+              {% if block.html %}
+                <div class="col col-12">
+                  <div class="content-text anim-2">
+                    <div class="mb-0">{{ block.html|safe }}</div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="c-wrapper width-medium">
+        <div class="row">
+          {% for block in blocks %}
+            {% if block.sub %}
+              <div class="col col-12 col-md-4 col-lg-4">
+                <div class="item-pricing-a anim-3{% if block.tag %} featured{% endif %}">
+                  <div class="item-header">
+                    <h3 class="title font-title">{{ block.name }}</h3>
+                  </div>
+                  <div class="item-body">
+                    <div class="item-price font-title">
+                      <h4>
+                        {% if block.title %}{{ block.title }}{% endif %}
+                        {% if block.html %}
+                          <span class="sub">{{ block.html|safe }}</span>
+                        {% endif %}
+                      </h4>
+                    </div>
+                    <ul class="item-features">
+                      {% for item in block.sub %}
+                        <li{% if item.class_name %} class="disabled"{% endif %}>
+                          <i class="fa fa-{{ item.icon }}"></i>
+                          {{ item.name }}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                  {% if block.link %}
+                    <div class="item-footer">
+                      <a class="btn btn-line-a my-2" href="{{ block.link }}">
+                        <span class="text text-uppercase">{{ block.description }}</span>
+                        <span class="icon icon-menu icon-arrow-a icon-anim">
+                          <span class="arrow-right"></span>
+                        </span>
+                      </a>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-footer"></div>
+</section>

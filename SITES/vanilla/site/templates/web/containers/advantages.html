@@ -1,0 +1,16 @@
+{% load mtags %}
+<div class="container pl-0 pr-0">
+  <div class="row justify-content-center py-5">
+    {% for block in blocks %}
+      <div class="col-sm-10 col-md-9 col-lg-4 text-center mb-5 mb-lg-0">
+        <i class="fa fa-{{ block.icon }} text-color-primary text-9"></i>
+        {% if block.name %}
+          <h2 class="text-color-dark font-weight-bold text-4 line-height-1 mt-4 mb-4">{{ block.name }}</h2>
+        {% endif %}
+        {% if block.html %}
+          <div class="font-weight-light px-lg-3 mb-0">{{ block.html|safe }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

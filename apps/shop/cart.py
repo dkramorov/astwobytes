@@ -4,7 +4,7 @@ from django.conf import settings
 
 from apps.personal.models import Shopper
 from apps.personal.utils import save_user_to_request
-from apps.products.models import Products
+from apps.products.models import Products, Costs, CostsTypes
 from apps.flatcontent.flatcat import get_costs_types
 from apps.main_functions.string_parser import get_request_ip, summa_format
 from apps.main_functions.catcher import check_email, check_phone
@@ -35,10 +35,10 @@ def get_purchase(pk: int,
             result = result.filter(cost_type=cost_type)
     return result.first()
 
-def calc_cart(shopper, min_info: bool = False):
-    """Корзинка пользователя
-       :param shopper: покупатель Shopper или json из сессии
-       :param min_info: с товарами или без
+def fill_purchases_from_products(purchases, absents):
+    """Заполнить данные по покупкам из товаров
+       :param purchase: покупка
+       :param absents: покупки без товара (такие игнорим)
     """
     PRODUCT_FIELDS = (
         'name',
@@ -48,7 +48,41 @@ def calc_cart(shopper, min_info: bool = False):
         'price',
         'code',
     )
+    ids_products = {purchase.product_id: None for purchase in purchases}
+    costs_types = CostsTypes.objects.all()
+    ids_costs_types = {cost_type.id: cost_type for cost_type in costs_types}
 
+    products = Products.objects.filter(pk__in=ids_products.keys())
+
+    for product in products:
+        ids_products[product.id] = product
+    for purchase in purchases:
+        product = ids_products.get(purchase.product_id)
+        if not product:
+            absents.append(purchase.id)
+            continue
+        if purchase.cost_type_id:
+            cost_type = ids_costs_types.get(purchase.cost_type_id)
+            if not cost_type:
+                absents.append(purchase.id)
+                continue
+
+            cur_cost = Costs.objects.filter(cost_type=cost_type, product=product).first()
+            purchase.cost = cur_cost.cost
+            purchase.cost_type = cost_type
+
+        purchase.thumb = product.thumb()
+        purchase.link = product.link()
+
+        for field in PRODUCT_FIELDS:
+            value = getattr(product, field)
+            setattr(purchase, 'product_%s' % field, value)
+
+def calc_cart(shopper, min_info: bool = False):
+    """Корзинка пользователя
+       :param shopper: покупатель Shopper или json из сессии
+       :param min_info: с товарами или без
+    """
     shopper_id = None
     promocode = None
     if isinstance(shopper, dict):
@@ -70,13 +104,16 @@ def calc_cart(shopper, min_info: bool = False):
     items = 0 # Количество наименований
     items_count = 0 # Количество товаров
     discount = 0 # Скидка
+    absents = [] # Отсутствующие товары
 
-    ids_products = {}
+    fill_purchases_from_products(purchases, absents)
+
     for purchase in purchases:
+        if purchase.id in absents:
+            continue
         total += purchase.cost * purchase.count
         items += 1
         items_count += purchase.count
-        ids_products[purchase.product_id] = None
 
     result = {
         'total': total,
@@ -105,26 +142,7 @@ def calc_cart(shopper, min_info: bool = False):
         result['discount'] = discount
         result['total_with_discount'] = total - discount
 
-    # Достаем товары,
-    # актуализируем информацию
-    # в базу обновление не производим, удаление тоже
-    # будем делать удаление/обновление в базе при оформлении заказа
-    absent = []
-    products = Products.objects.filter(pk__in=ids_products.keys())
-
-    for product in products:
-        ids_products[product.id] = product
-    for purchase in purchases:
-        product = ids_products.get(purchase.product_id)
-        if not product:
-            absent.append(purchase.id)
-            continue
-        purchase.thumb = product.thumb()
-        purchase.link = product.link()
-        for field in PRODUCT_FIELDS:
-            value = getattr(product, field)
-            setattr(purchase, 'product_%s' % field, value)
-    result['purchases'] = [purchase for purchase in purchases if not purchase.id in absent]
+    result['purchases'] = [purchase for purchase in purchases if not purchase.id in absents]
     return result
 
 def get_shopper(request, guest_enter: bool = False):
@@ -243,7 +261,7 @@ def create_new_order(request, shopper, cart, comments: str = None):
         )
         purchases = cart.get('purchases')
         for purchase in purchases:
-            Purchases.objects.filter(pk=purchase.id).update(order=new_order)
+            Purchases.objects.filter(pk=purchase.id).update(order=new_order, cost=purchase.cost)
         if 'promocode' in request.session:
             del request.session['promocode']
 

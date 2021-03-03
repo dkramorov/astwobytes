@@ -1,0 +1,86 @@
+/*-------------------
+[Table of contents]
+    1 Typography
+    2 Section design
+    3 Page cover scroll animation
+[Colors]
+    Yellow : #fade31
+[Typography]
+    Title : "Jost*" , "Montserrat", "Open Sans" ,sans-serif;
+    4 Navi
+*/
+/* 1 Typography */
+.font-title {
+  font-family: "Jost*" , "Montserrat", "Open Sans" ,sans-serif; }
+
+.font-title {
+  font-family: "PT Serif", "Times New Roman", serif; }
+
+.i-title, .item-title {
+  font-weight: bold; }
+
+.text-primary {
+  font-weight: bold;
+  color: currentColor !important; }
+
+/* 2 Section design
+/* Section background color */
+.bg-level-1 {
+  background: rgba(255, 255, 255, 0.0625); }
+
+.bg-level-2 {
+  background: rgba(0, 0, 0, 0.3); }
+
+/* section header */
+.section-header .h-title {
+  position: relative;
+  padding-bottom: 2rem; }
+  .section-header .h-title:after {
+    position: absolute;
+    content: "";
+    left: 0;
+    bottom: 0;
+    top: auto;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    opacity: 0.2; }
+
+/* 3 Page cover scroll animation */
+.page-cover::before {
+  position: absolute;
+  z-index: 1;
+  content: "";
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.25;
+  background: #0d0d0d;
+  transition: 0.6s; }
+
+.page-cover.scrolled::before {
+  opacity: 0.95; }
+
+/* 4 Navi */
+.navbar-sidebar .nav-menu .nav-item .text {
+  color: #fade31;
+  font-size: 0.9em;
+}
+.navbar-sidebar .nav-menu .active a span.fa {
+  color: #fade31;
+}
+.navbar-sidebar .nav-menu li:hover a::before,
+.navbar-sidebar .nav-menu li.active a::before,
+.navbar-sidebar .nav-menu .nav-item:hover a::before,
+.navbar-sidebar .nav-menu .nav-item.active a::before {
+  border-left: 1px solid #fade31;
+}
+.navbar-sidebar .nav-menu li,
+.navbar-sidebar .nav-menu .nav-item,
+.navbar-sidebar .nav-menu a {
+  outline: none;
+  border-color: inherit;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}

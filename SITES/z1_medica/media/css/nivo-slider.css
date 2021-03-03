@@ -159,10 +159,5 @@ z-index:50
     z-index:100;
 
     }
-.mobilestyle #allban {top:-20px; right:0}    
+.mobilestyle #allban {top:-20px; right:0}
 .nivo-thumbs-enabled {opacity:0}
-#slidepanel {position:relative;
- z-index:100;
-  display:block;
- clear:both;
-}

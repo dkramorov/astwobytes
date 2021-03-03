@@ -1,3 +1,4 @@
+{% if perms.shop.view_orders %}
 <li{% ifequal menu 'shop' %} class="active"{% endifequal %}>
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-shopping-cart"></em>
@@ -35,4 +36,4 @@
     {% endif %}
   </ul>
 </li>
-
+{% endif %}

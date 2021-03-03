@@ -4,17 +4,26 @@
 <link rel="stylesheet" href="/media/css/css.css"  media="screen" />
 <link rel="stylesheet" href="/media/css/outline.css" media="screen" />
 <link rel="stylesheet" href="/media/css/ddsmoothmenu.css" type="text/css" />
+<!--
 <link rel="stylesheet" href="/media/css/cusel.css" type="text/css" />
+-->
 <link rel="stylesheet" href="/media/css/adaptive.css" type="text/css" />
 <link rel="stylesheet" href="/media/css/prettyPhoto.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="/media/css/liMenuVertpw.css" type="text/css" />
 <link rel="stylesheet" href="/media/css/default.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="/media/css/nivo-slider.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="/media/css/owl.carousel.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="/media/css/owl.theme.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="/media/css/scrollpane.css" type="text/css" />
 <link rel="stylesheet" href="/media/css/custom.css" type="text/css" />
 
+<link rel="stylesheet" href="/static/admin/css/font-awesome.min.css">
+<link rel="stylesheet" href="/media/css/bootstrap.min.css" type="text/css" />
+
 <script type="text/javascript" src="/media/js/jquery.js"></script>
+<!--
 <script type="text/javascript" src="/media/js/cusel.js"></script>
+-->
 <script type="text/javascript" src="/media/js/jquery.jscrollpane.min.js"></script>
 <script type="text/javascript" src="/media/js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="/media/js/jquery.cookie.js"></script>
@@ -22,9 +31,10 @@
 <script type="text/javascript" src="/media/js/jquery.liMenuVertpw.js"></script>
 <script type="text/javascript" src="/media/js/jquery-func.js"></script>
 <script type="text/javascript" src="/media/js/jquery.nivo.slider.js"></script>
+<script type="text/javascript" src="/media/js/owl.carousel.min.js"></script>
 <script type="text/javascript" src="/media/js/jquery.jcarousel.js"></script>
 <script type="text/javascript" src="/media/js/ddsmoothmenu.js"></script>
-<script type="text/javascript" src="/media/js/custom.js"></script>
+<script type="text/javascript" src="/media/js/custom.js?v=1"></script>
 {% block extrahead %}{% endblock %}
 </head>
 <body>
@@ -43,92 +53,117 @@
     <div id="lefmobiletpanelcontent"></div >
   </div>
 </span>
-{% include "web/right_panel.html" %}
+{% include "web/components/right_panel.html" %}
+<a id="knof" href="/shop/cart/">
+  <div class="kolvoround2" style="display:none" id="knofkolvoround"></div>
+</a>
 <div id="overcover" style="display:none"></div>
 <div id="overcover2" style="display:none"></div>
 <div id="overcover3" style="display:none"></div>
 {% comment %}<!-- Иконка возле верхнего меню
 <a href="/" style="background:url('/media/misc/fav32.png') center no-repeat; width:45px; height:45px; position:fixed; display:block; margin-top:-55px; top:0; left:50%; margin-left:-500px; z-index:1000;" id="favicon"></a>
 -->{% endcomment %}
-<table width="100%" border="0" cellspacing="0" cellpadding="0" class="bgtable">
-  <tr>
-    <td align="center" valign="top">
-      <div id="toppanel">
-        <span class="mobileonly">
-          <div id="menucatalog" class="menucatalog"></div>
-          <div id="menuinfo" class="menuinfo"></div>
-        </span>
-        <a href="" id="userrg" class="auserinfo add"></a>
-        {% flatmenu request "topmenu" %}
-      </div>
-      {% include "web/top_panel.html" %}
 
-      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-          <td align="center">
-            <table border="0" cellspacing="0"  style="position:relative; max-width:1400px;" width="100%">
-              <tr>
-                <td width="260" align="left" valign="top" class="leftcol pconly">
-                  {% block left %}
-                    {% catalogue request %}
-{% comment %}<!--
-                    {% include "web/containers/sidebar_news.html" %}
-                    {% include "web/containers/sidebar_images.html" %}
--->{% endcomment %}
-                  {% endblock %}
-                </td>
-                <td align="left" valign="top" class="maincol pcctyle" id="mainblock">
-                  <div id="searchpanel" class="pcstyle jsonly">
-                    <div id="searchrun" rel="0" class="mobileonly searchrunopen"></div>
-                    <form action="/cat/" method="GET" name="searchform" id="searchform" class="pcstyle">
-                      <input type="text" name="searchword" placeholder="Поиск товаров"  id="search" class="pcstyle kdwn" autocomplete="off" tabindex="1" />
-                    </form>
-                    <div id="ajaxsearchbox" style="display:none" class="pcstyle">&nbsp;</div>
-                    <div class="pconly" style="margin-right:35px; display:inline-block; width:192px; vertical-align:middle; margin-left:5px; marin-bottom:-4px;margin-top:2px">
-                      <div class="cont" style="background-image:url('/media/misc/mail.png'); margin-left:10px">
-                        <a style="text-decoration:none; color:#333">info@aversonmed.ru</a>
-                        <span>круглосуточно</span>
-                      </div>
-                    </div>
-                  </div>
-                  {% block content %}
-                    {% include "web/containers/products_tabs.html" %}
-                  {% endblock %}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<div id="toppanel">
+  <span class="mobileonly">
+    <div id="menucatalog" class="menucatalog"></div>
+    <div id="menuinfo" class="menuinfo"></div>
+  </span>
   {% comment %}<!--
-  {% include "web/mobile_news.html" %}
+  <a href="/profile/" id="userrg" class="auserinfo add"></a>
   -->{% endcomment %}
-  <tr>
-    <td>
-      <div id="footer" class=blokc style="width:100%; min-width:550px; display:block; text-align:center ">
+  <a href="/profile/" id="userrg"></a>
+  {% flatmenu request "topmenu" %}
+</div>
+{% include "web/components/top_panel.html" %}
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-3 col-md-4 leftcol pconly">
+            {% block left %}
+              {% catalogue request %}
+{% comment %}<!--
+              {% include "web/containers/sidebar_news.html" %}
+              {% include "web/containers/sidebar_images.html" %}
+-->{% endcomment %}
+            {% endblock %}
+    </div>
+    <div class="maincol pcctyle col-lg-9 col-md-8" id="mainblock">
+            <div id="searchpanel" class="pcstyle jsonly">
+              <div id="searchrun" rel="0" class="mobileonly searchrunopen"></div>
+              <form action="/cat/" method="GET" id="searchform" class="pcstyle">
+                <input type="text" name="q" placeholder="Поиск товаров"  class="pcstyle kdwn" id="search" autocomplete="off" tabindex="1" value="{% if q_string.q.q %}{{ q_string.q.q }}{% endif %}" />
+              </form>
+              <div class="pconly">
+                <div class="cont" id="mini-cart">
+                  {% ajax_cart request %}
+                </div>
+              </div>
+            </div>
+            {% block content %}
+              {% include "web/containers/products_tabs.html" %}
+            {% endblock %}
+    </div>
+  </div>
+</div>
+
+
+<div id="footer" class="blokc">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-md-4">
         <div class="shell iblok">
-          {% flatmenu request "bottommenu" %}
           <div class="iblok pcstyle white">
             <a href="/">
               <img src="{{ containers.main.tags.logo.thumb }}" />
             </a>
             {% if containers.main.tags.requisites %}
-              <p>{{ containers.main.tags.requisites.html|safe }}</p>
+              {{ containers.main.tags.requisites.html|safe }}
             {% endif %}
           </div>
           <div class="cl">&nbsp;</div>
         </div>
-        <div class="copy" style="text-align:center; margin-bottom:-20px; position:relative">
+      </div>
+      {% flatmenu request "bottommenu" %}
+      <div class="clearfix"></div>
+      <div class="col-md-6">
+        <div class="iblok pcstyle white">
+          {% for block in containers.main.tags.social.sub %}
+            <a href="{{ block.link }}" target="_blank" class="social_link"><i class="fa fa-{{ block.icon }}"></i></a>
+          {% endfor %}
+        </div>
+        <div class="cl">&nbsp;</div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="iblok pcstyle white">
+          <img src="/media/misc/cards.png" />
+        </div>
+      </div>
+<!--
+            <div class="col-md-4">
+              <div class="iblok pcstyle white subscribe">
+                <div class="subscribe_name">Подпишитесь на нашу рассылку</div>
+                <small>и будьте вкурсе наших акций и новостей</small>
+                <div class="clearfix"></div>
+                <input type="text" value="" placeholder="Ваш email" />
+                <input type="button" class="btn btn-primary" value="Подписаться" />
+              </div>
+            </div>
+-->
+      <div class="clearfix"></div>
+      <div class="col-md-12">
+        <div class="copy">
           {% if containers.main.tags.copyright %}
             {{ containers.main.tags.copyright.html|safe }}
           {% endif %}
         </div>
       </div>
-    </td>
-  </tr>
-</table>
+    </div>
+  </div>
+</div>
+
 <a class="scrollTop" href="#header" style="display:none;"></a>
 {% include "shop_js.html" %}
 {% endblock %}

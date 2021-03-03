@@ -83,7 +83,7 @@ def get_products_cats(ids_products: dict):
     """Получение категорий по списку товаров (пока без хлебных крох)
        :param ids_products: словарь идентификаторов товаров
     """
-    cats = ProductsCats.objects.select_related('cat').filter(product__in=ids_products).values('product', 'cat__id', 'cat__link', 'cat__name')
+    cats = ProductsCats.objects.select_related('cat').filter(product__in=ids_products, cat__isnull=False).values('product', 'cat__id', 'cat__link', 'cat__name')
     for cat in cats:
         if not ids_products[cat['product']]:
             ids_products[cat['product']] = []
@@ -239,6 +239,18 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
     row = mh.get_row(row_id)
     context = mh.context
 
+    all_costs_types = CostsTypes.objects.all().order_by('position')
+    ids_costs_types = {
+        cost_type.id: cost_type for cost_type in all_costs_types
+    }
+
+    context['costs_types'] = [{
+            'id': cost_type.id,
+            'name': cost_type.name,
+            'tag': cost_type.tag,
+            'currency': cost_type.currency,
+        } for cost_type in all_costs_types]
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':
@@ -275,6 +287,13 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
             context['props'] = row.productsproperties_set.select_related('prop', 'prop__prop').all()
             context['photos'] = row.productsphotos_set.all().order_by('position')
             context['seo'] = row.get_seo()
+            costs = Costs.objects.filter(product=mh.row).values('cost_type', 'cost')
+            ids_costs = {
+                cost['cost_type']: cost['cost'] for cost in costs
+            }
+            for cost in context['costs_types']:
+                if cost['id'] in ids_costs:
+                    cost['price'] = ids_costs[cost['id']]
         elif action == 'drop' and row:
             if mh.permissions['drop']:
                 row.delete()
@@ -307,13 +326,33 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
+            # ------------------------------
             # Сохраняем категории для товара
+            # ------------------------------
             ids_cats = request.POST.getlist('cats')
-            mh.row.productscats_set.all().delete()
+            mh.row.productscats_set.filter(container__state=7).delete()
             if ids_cats:
                 cats = Blocks.objects.filter(pk__in=ids_cats)
                 for cat in cats:
                     ProductsCats.objects.create(product=mh.row, cat=cat)
+            # ------------------
+            # Сохраняем типы цен
+            # ------------------
+            product_costs = Costs.objects.filter(product=mh.row).values('id', 'cost_type')
+            ids_costs = {
+                cost['cost_type']: cost['id'] for cost in product_costs
+            }
+
+            for cost_type in all_costs_types:
+                cur_price = request.POST.get('price_%s' % cost_type.id)
+                if cost_type.id in ids_costs:
+                    if cur_price:
+                        Costs.objects.filter(pk=ids_costs[cost_type.id]).update(cost=cur_price)
+                    else:
+                        Costs.objects.filter(product=mh.row, cost_type=cost_type).delete()
+                elif cur_price:
+                    Costs.objects.create(product=mh.row, cost_type=cost_type, cost=cur_price)
+
             # ------------
             # SEO/articles
             # ------------
@@ -938,6 +977,7 @@ def show_cats_products(request, *args, **kwargs):
     if request.method == 'GET':
         cat_id = request.GET.get('cat_id')
         if cat_id:
+            cat = None
             try:
                 cat_id = int(cat_id)
             except ValueError:
@@ -947,6 +987,8 @@ def show_cats_products(request, *args, **kwargs):
                 cat = Blocks.objects.filter(pk=cat_id).first()
                 if cat:
                     mh.filter_add(Q(cat=cat))
+            if not cat:
+                mh.filter_add(Q(pk=0))
     special_model_vars(mh, mh_vars, context)
     # -----------------------------
     # Вся выборка только через аякс

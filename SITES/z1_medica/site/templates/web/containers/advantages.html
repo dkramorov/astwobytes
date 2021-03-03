@@ -1,0 +1,25 @@
+{% load mtags %}
+<div class="row advantages">
+  {% if container.description %}
+    <div class="col-md-12">
+      <h2>{{ container.description|safe }}</h2>
+    </div>
+  {% endif %}
+  {% for block in blocks %}
+    <div class="col-lg-4 col-md-4">
+      <div class="card">
+        <div class="title">
+          {{ block.name }}
+        </div>
+        {% if block.html %}
+          <div class="desc">{{ block.html|safe }}</div>
+        {% endif %}
+        <div class="link">
+          <div class="icon{% if block.class_name %} {{ block.class_name }}{% endif %}"><i class="fa fa-{{ block.icon }}"></i></div>
+          <div class="value">{{ block.title }}</div>
+        </div>
+      </div>
+    </div>
+    {% cycle '' '' '<div class="clearfix"></div>' %}
+  {% endfor %}
+</div>

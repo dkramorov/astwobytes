@@ -27,16 +27,18 @@
 {% if containers.main.tags.apple114.img %}
     <link rel="apple-touch-icon" sizes="57x57" href="{{ containers.main.tags.apple114.imagine }}" />
     <link rel="apple-touch-icon" sizes="114x114" href="{{ containers.main.tags.apple114.imagine }}" />
-{% else %}
+{% comment %}<!--
     <link rel="apple-touch-icon" sizes="57x57" href="/media/favicons/apple-touch-icon-114.png" />
     <link rel="apple-touch-icon" sizes="114x114" href="/media/favicons/apple-touch-icon-114.png" />
+-->{% endcomment %}
 {% endif %}
 
 {% if containers.main.tags.apple144.img %}
     <link rel="apple-touch-icon" sizes="72x72" href="{{ containers.main.tags.apple144.imagine }}" />
     <link rel="apple-touch-icon" sizes="144x144" href="{{ containers.main.tags.apple144.imagine }}" />
-{% else %}
+{% comment %}<!--
     <link rel="apple-touch-icon" sizes="72x72" href="/media/favicons/apple-touch-icon-144.png" />
     <link rel="apple-touch-icon" sizes="144x144" href="/media/favicons/apple-touch-icon-144.png" />
+-->{% endcomment %}
 {% endif %}
 <meta name="author" content="Kramorov Den (Jocker)" />

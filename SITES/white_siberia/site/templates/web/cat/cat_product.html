@@ -20,13 +20,39 @@ p.price_desc {
   -webkit-box-shadow: 0 0 2rem rgba(36,36,36,.28);
   box-shadow: 0 0 2rem rgba(36,36,36,.28);
 }
+.color_name {
+  display: none;
+}
+.photo_slider {
+  display: none;
+}
+.product_color_1 {
+  background-color: #f00 !important;
+}
+.product_color_2 {
+  background-color: #000 !important;
+}
+.product_color_4 {
+  background: linear-gradient(to right, #000 30%, #f00 30% 70%, #000 70% 100%) !important;
+}
+.product_color_5 {
+  background-color: #ffa500 !important;
+}
+.product_color_6 {
+  background-color: #577d4d !important;
+}
+.product_color_7 {
+  background-color: #555a5d !important;
+}
+.product_color_8 {
+  background-color: #a1a09b !important;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
   <div class="row">
-
     <div class="col-md-6 pt-5">
       <div class="summary entry-summary position-relative">
         <h1 class="mb-0 font-weight-bold text-12 mb-4">{{ product.name }}</h1>
@@ -116,43 +142,74 @@ p.price_desc {
         </div>
 -->{% endcomment %}
 
+        {% if photo_sections|length > 0 %}
+
+          <div{% if photo_main_section_id == "0" %} style="display:none;"{% endif %}>
+          Цвет - <span class="current_color"></span>
+          <div class="btn-group-toggle" data-toggle="buttons">
+            {% for section_id, section in photo_sections.items %}
+              {% if section_id != "3" %}
+                <label class="btn btn-outline btn-primary{% comment %} active{% endcomment %} mb-2 product_color_{{ section_id }}">
+                  <input type="radio" name="color" id="product_color_{{ section_id }}" autocomplete="off"{% comment %} checked{% endcomment %} class="product_color" data-section_id="{{ section_id }}">&nbsp;
+                  <div class="color_name">
+                    {% if section_id == "1" %}Красный{% endif %}
+                    {% if section_id == "2" %}Черный{% endif %}
+                    {% if section_id == "4" %}Черно-красный{% endif %}
+                    {% if section_id == "5" %}Оранжевый{% endif %}
+                    {% if section_id == "6" %}Зеленый{% endif %}
+                    {% if section_id == "7" %}Серый{% endif %}
+                    {% if section_id == "8" %}Серебристый{% endif %}
+                  </div>
+                </label>
+              {% endif %}
+            {% endfor %}
+          </div>
+          </div>
+        {% endif %}
+
         <div class="pt-5 pb-3">
           <a href="/dilery/" class="btn btn-dark rounded-0 font-weight-bold hover-animate-icon">Где купить? <i class="fa fa-arrow-right"></i> </a>
         </div>
 
-
       </div>
     </div>
 
-    <div class="col-md-6 mb-5 mb-md-0">
-      <div class="thumb-gallery-wrapper">
-        <div class="thumb-gallery-detail owl-carousel owl-theme manual nav-inside nav-style-1 nav-dark mb-3">
-          {% if product.img %}
-            <div>
-              <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine product.img '600x400' product.get_folder True %}" data-zoom-image="{{ product.imagine }}">
+    {% for section_id, section in photo_sections.items %}
+      {% if not section_id == "3" %}
+        <div class="col-md-6 mb-5 mb-md-0 photo_slider" id="photo_slider_{{ section_id }}">
+          <div class="thumb-gallery-wrapper">
+            <div class="thumb-gallery-detail owl-carousel owl-theme manual nav-inside nav-style-1 nav-dark mb-3">
+              {% if section_id == photo_main_section_id %}
+                {% if product.img %}
+                  <div>
+                    <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine product.img '600x400' product.get_folder True %}" data-zoom-image="{{ product.imagine }}">
+                  </div>
+                {% endif %}
+              {% endif %}
+              {% for photo in section %}
+                <div>
+                  <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine photo.img '600x400' photo.get_folder True %}" data-zoom-image="{{ photo.imagine }}">
+                </div>
+              {% endfor %}
             </div>
-          {% endif %}
-          {% for photo in photos %}
-            <div>
-              <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine photo.img '600x400' photo.get_folder True %}" data-zoom-image="{{ photo.imagine }}">
+            <div class="thumb-gallery-thumbs owl-carousel owl-theme manual thumb-gallery-thumbs">
+              {% if section_id == photo_main_section_id %}
+                {% if product.img %}
+                  <div class="cur-pointer">
+                    <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
+                  </div>
+                {% endif %}
+              {% endif %}
+              {% for photo in section %}
+                <div class="cur-pointer">
+                  <img src="{% imagine photo.img '150x150' photo.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
+                </div>
+              {% endfor %}
             </div>
-          {% endfor %}
+          </div>
         </div>
-        <div class="thumb-gallery-thumbs owl-carousel owl-theme manual thumb-gallery-thumbs">
-          {% if product.img %}
-            <div class="cur-pointer">
-              <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
-            </div>
-          {% endif %}
-          {% for photo in photos %}
-            <div class="cur-pointer">
-              <img src="{% imagine photo.img '150x150' photo.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-
+      {% endif %}
+    {% endfor %}
   </div>
 </div>
 
@@ -165,22 +222,22 @@ p.price_desc {
       <a id="product_props"></a>
       <div id="description" class="tabs tabs-simple tabs-simple-full-width-line tabs-product tabs-dark mb-2">
         <ul class="nav nav-tabs justify-content-start text-center">
-          <li class="nav-item active">
-            <a class="nav-link active font-weight-bold text-3 text-uppercase py-2 px-3" href="#productDescription" data-toggle="tab">Описание</a>
-          </li>
           {% if 'article2' in page.tags %}
+            <li class="nav-item active">
+              <a class="nav-link active font-weight-bold text-3 text-uppercase py-2 px-3" href="#productReview" data-toggle="tab">Обзор</a>
+            </li>
+          {% endif %}
+          <li class="nav-item{% if not 'article2' in page.tags %} active{% endif %}">
+            <a class="nav-link{% if not 'article2' in page.tags %} active{% endif %} font-weight-bold text-3 text-uppercase py-2 px-3" href="#productDescription" data-toggle="tab">Описание</a>
+          </li>
+          {% if product.props %}
             <li class="nav-item">
-              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productReview" data-toggle="tab">Обзор</a>
+              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productInfo" data-toggle="tab">Характеристики</a>
             </li>
           {% endif %}
           {% if 'videos' in page.tags %}
             <li class="nav-item">
               <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productVideos" data-toggle="tab">Видео</a>
-            </li>
-          {% endif %}
-          {% if product.props %}
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productInfo" data-toggle="tab">Характеристики</a>
             </li>
           {% endif %}
           {% if photo_sections.3 %}
@@ -190,23 +247,16 @@ p.price_desc {
           {% endif %}
         </ul>
         <div class="tab-content p-0">
-          <div class="tab-pane px-0 py-3 active" id="productDescription">
-            {{ product.info|safe }}
-          </div>
           {% if 'article2' in page.tags %}
-            <div class="tab-pane px-0 py-3" id="productReview">
+            <div class="tab-pane px-0 py-3 active" id="productReview">
               {% for container in page.containers %}
                 {% flatcontent request page 'article2' %}
               {% endfor %}
             </div>
           {% endif %}
-          {% if 'videos' in page.tags %}
-            <div class="tab-pane px-0 py-3" id="productVideos">
-              {% for container in page.containers %}
-                {% flatcontent request page 'videos' %}
-              {% endfor %}
-            </div>
-          {% endif %}
+          <div class="tab-pane px-0 py-3{% if not 'article2' in page.tags %} active{% endif %}" id="productDescription">
+            {{ product.info|safe }}
+          </div>
           <div class="tab-pane px-0 py-3" id="productInfo">
             <table class="table table-striped m-0">
               <tbody>
@@ -232,6 +282,13 @@ p.price_desc {
               </tbody>
             </table>
           </div>
+          {% if 'videos' in page.tags %}
+            <div class="tab-pane px-0 py-3" id="productVideos">
+              {% for container in page.containers %}
+                {% flatcontent request page 'videos' %}
+              {% endfor %}
+            </div>
+          {% endif %}
           {% if photo_sections.3 %}
             <div class="tab-pane px-0 py-3" id="live_photos">
               <div class="row">
@@ -256,9 +313,30 @@ p.price_desc {
 <script type="text/javascript" src="/media/js/plugin_gallery.js"></script>
 <script type="text/javascript" src="/static/fancybox/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
+  function pick_color(section_id){
+    $(".photo_slider").hide();
+    var color = $(".product_color_" + section_id + " .color_name");
+    $(".current_color").html(color.html());
+    $("#photo_slider_" + section_id).show();
+  }
   $(document).ready(function(){
-    $(".fancybox").fancybox({
-    });
+    $(".fancybox").fancybox();
+    var cur_color = null;
+    $(".product_color").each(function(){
+      if(cur_color == null){
+        $(this).parent().click();
+        cur_color = $(this).attr("data-section_id");
+        pick_color(cur_color);
+      }
+      if($(this).hasClass("touched")){
+        return;
+      }
+      $(this).addClass("touched");
+      $(this).click(function(){
+        cur_color = $(this).attr("data-section_id");
+        pick_color(cur_color);
+      });
+    })
   });
 </script>
 {% endblock %}

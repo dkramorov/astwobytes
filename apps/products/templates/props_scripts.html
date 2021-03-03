@@ -120,6 +120,7 @@ function change_prop(prop_id){
   var msg = "Ошибка при получении значений свойств";
   var status = "danger";
   var el_id = "#prop_" + prop_id;
+
   $(el_id + "_pvalues").html("");
   // Получаем значения свойства
   // Событие должно срабатывать на onchange выбора свойства,
@@ -130,7 +131,7 @@ function change_prop(prop_id){
     url: "{% url 'products:api' 'props' %}",
     data: {
       csrfmiddlewaretoken: getCookie('csrftoken'),
-      filter__id: prop_id,
+      filter__id: $(el_id).val(),
       only_fields: 'ptype',
     },
   }).done(function(r) {

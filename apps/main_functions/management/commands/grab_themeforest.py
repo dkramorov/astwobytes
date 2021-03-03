@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 import re
 import os
 import requests
@@ -415,7 +416,8 @@ class Parser:
         css_file = os.path.join(self.css_path, css_name)
         if not check_path(css_file):
             now = str(time.time()).replace('.', '_')
-            css_file = '%s-%s' % (now, css_file)
+            css_file = '%s-%s' % (css_file, now)
+
         with open_file(css_file, 'w+') as f:
             f.write(contents)
 

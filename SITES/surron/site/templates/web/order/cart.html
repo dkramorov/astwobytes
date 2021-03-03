@@ -1,0 +1,145 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container pr-lg-0 pl-lg-0">
+  <div class="row pb-4 mb-5">
+    <div class="col-lg-8 mb-5 mb-lg-0">
+      <div class="table-responsive">
+        <table class="shop_table cart quantity_styled">
+          <thead>
+            <tr class="text-color-dark">
+              <th class="product-thumbnail" width="15%">&nbsp;</th>
+              <th class="product-name text-uppercase" width="30%">Наименование</th>
+              <th class="product-price text-uppercase" width="15%">Цена</th>
+              <th class="product-quantity text-uppercase" width="20%">Кол-во</th>
+              <th class="product-subtotal text-uppercase text-right" width="20%">Итого</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for purchase in cart.purchases %}
+              <tr class="cart_table_item">
+                <td class="product-thumbnail">
+                  <div class="product-thumbnail-wrapper">
+                    <a href="javascript:void(0);" class="product-thumbnail-remove" title="Удалить из корзины" id="purchase_drop_{{ purchase.id }}">
+                      <i class="fa fa-times"></i>
+                    </a>
+                    <a href="{{ purchase.link }}" class="product-thumbnail-image" title="{{ purchase.product_name|textize }}">
+                      <img width="90" height="90" class="img-fluid" src="{{ purchase.thumb }}" loading="lazy">
+                    </a>
+                  </div>
+                </td>
+                <td class="product-name">
+                  <a href="{{ purchase.link }}" class="font-weight-semi-bold text-color-dark text-color-hover-primary text-decoration-none">{{ purchase.product_name }}</a>
+                  {% if purchase.cost_type_id %}
+                    <div class="text-color-dark">{{ purchase.cost_type.name }}</div>
+                  {% endif %}
+                </td>
+                <td class="product-price">
+                  <span class="amount font-weight-medium text-color-grey">{{ purchase.cost|money_format }} ₽</span>
+                </td>
+                <td class="product-quantity">
+                  <div class="quantity float-none m-0" id="qbuttons_{{ purchase.id }}">
+                    <input type="button" class="dec text-color-hover-light bg-color-hover-primary border-color-hover-primary" value="-">
+                    <input type="text" class="input-text qty text" value="{{ purchase.count }}" min="1" step="1" id="quantity_{{ purchase.id }}">
+                    <input type="button" class="inc text-color-hover-light bg-color-hover-primary border-color-hover-primary" value="+">
+                  </div>
+                </td>
+                <td class="product-subtotal text-right">
+                  <span class="amount text-color-dark font-weight-bold text-4">{{ purchase.total|money_format }} ₽</span>
+                </td>
+              </tr>
+            {% endfor %}
+            <tr>
+              <td colspan="5">
+                <div class="row justify-content-between mx-0">
+                  <div class="col-md-auto px-0 mb-3 mb-md-0">
+                    <div class="d-flex align-items-center">
+                      <input type="text" class="form-control h-auto border-radius-0 line-height-1 py-3" name="couponCode" placeholder="Промокод" />
+                      <button type="submit" class="btn btn-light btn-modern text-color-dark bg-color-light-scale-2 text-color-hover-light bg-color-hover-primary text-uppercase text-3 font-weight-bold border-0 border-radius-0 ws-nowrap btn-px-4 py-3 ml-2">Применить промокод</button>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-width-3 border-radius-0 border-color-hover-dark" data-plugin-sticky data-plugin-options="{'minWidth': 991, 'containerSelector': '.row', 'padding': {'top': 85}}">
+        <div class="card-body">
+          <h4 class="font-weight-bold text-uppercase text-4 mb-3">Итого</h4>
+          <table class="shop_table cart-totals mb-4">
+            <tbody>
+              <tr class="cart-subtotal">
+                <td class="border-top-0">
+                  <strong class="text-color-dark">Заказ на сумму</strong>
+                </td>
+                <td class="border-top-0 text-right">
+                  <strong><span class="amount font-weight-medium">{{ cart.total|money_format  }} ₽</span></strong>
+                </td>
+              </tr>
+              <tr class="shipping">
+                <td colspan="2">
+                  <strong class="d-block text-color-dark mb-2">Доставка</strong>
+                  <div class="d-flex flex-column">
+                    <label class="d-flex align-items-center text-color-grey mb-0" for="shipping_method1">
+                      <input id="shipping_method1" type="radio" class="mr-2" name="shipping_method" value="free" checked />Почта
+                    </label>
+                    <label class="d-flex align-items-center text-color-grey mb-0" for="shipping_method3">
+                      <input id="shipping_method3" type="radio" class="mr-2" name="shipping_method" value="flat-rate" />Транспортная компания
+                    </label>
+                  </div>
+                </td>
+              </tr>
+              <tr class="total">
+                <td>
+                  <strong class="text-color-dark text-3-5">Итого</strong>
+                </td>
+                <td class="text-right">
+                  <strong class="text-color-dark">
+                    <span class="amount text-color-dark text-5">{{ cart.total_with_discount|money_format }} ₽</span>
+                  </strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <a href="/shop/checkout/" class="btn btn-dark btn-modern btn-block text-uppercase bg-color-hover-primary border-color-hover-primary border-radius-0 text-3 py-3">Оформить заказ <i class="fa fa-arrow-right ml-2"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#goto_checkout_order").click(function(){
+      window.location.href = "/shop/checkout/";
+    });
+    {% for purchase in cart.purchases %}
+      quantity_listener("{{ purchase.id }}",
+                        $("#qbuttons_{{ purchase.id }} .inc"),
+                        $("#qbuttons_{{ purchase.id }} .dec"),
+                        true // сразу обновить
+      );
+      purchase_drop_listener("{{ purchase.id }}",
+                             $("#purchase_drop_{{ purchase.id }}")
+      );
+      promocode_activate_listener($("#activate_promocode"), $("#activate_promocode_btn"));
+    {% endfor %}
+  });
+</script>
+{% endblock %}

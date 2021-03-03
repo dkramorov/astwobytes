@@ -1,0 +1,24 @@
+<div class="row mt-4">
+  <div class="col">
+    {% if not paginator.onepage %}
+    <ul class="pagination float-right">
+      {% if paginator.prev_link %}
+        <li class="page-item"><a class="page-link" href="{{ paginator.prev_link }}"><i class="fa fa-angle-left"></i></a></li>
+      {% endif %}
+
+      {% for page in pages %}
+        {% if page.ellipsis %}
+          <li class="page-item active"><a href="javascript:void(0);" class="disabled">...</a></li>
+        {% else %}
+          <li class="page-item{% if page.active %} active{% endif %}"><a class="page-link"{% if page.active %} href="javascript:void(0);"{% else %} href="{{ page.link }}"{% endif %}>{{ page.content }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if paginator.next_link %}
+        <li><a class="page-link" href="{{ paginator.next_link }}"><i class="fa fa-angle-right"></i></a></li>
+      {% endif %}
+    </ul>
+    {% endif %}
+    <span class="float-right"><b>{{ paginator.total_records }} {{ ends }}</b></span>
+  </div>
+</div>

@@ -1,0 +1,131 @@
+{% extends "skeleton.html" %}
+{% load flatcontent_tags mtags %}
+
+{% block extrahead %}
+<script type="text/javascript">
+  window.cat_id = {{ page.id }};
+</script>
+{% endblock %}
+
+{% block extracontent %}
+{% endblock %}
+
+{% block content %}
+<div class="container pl-lg-0 pr-lg-0 pl-md-0 pr-md-0">
+  {% comment %}<!--
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="block-title text-center">
+        {{ page.name }}
+      </h1>
+    </div>
+  </div>
+  <div class="masonry-loader masonry-loader-showing">все товары</div>
+  -->{% endcomment %}
+  {% include "web/cat/plp.html" %}
+</div>
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/js/cat.js"></script>
+<script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+{% if search_terms %}
+<script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".product-title a").mark('{% for search_term in search_terms %}{% if not forloop.first %} {% endif %}{{ search_term }}{% endfor %}', {
+      'accuracy': 'complementary',
+    });
+  });
+</script>
+{% endif %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#facet_filters").ajaxForm({
+      beforeSubmit: showLoading,
+      success: showResponse,
+    });
+    function showLoading() {
+      $("#products_container").html("<div class='text-center'><div class='lds-dual-ring'></div></div>");
+    }
+    function showResponse(r, statusText, xhr, $form){
+      $("#products_container").html(r['plp']);
+      $("#my_paginator").html(r['my_paginator']['total_records'] + " " + r['my_paginator']['ends']);
+    }
+
+    $("#sort-by").change(function(){
+      var value = $(this).val();
+      var new_url = rebuild_query_path_with_param("sort", value);
+      if(decodeURIComponent(location.search.substr(1)) !== new_url){
+        window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
+      }
+    });
+
+    $("#show_facet_filters").click(function(){
+      if($("#facet_filters").hasClass("hidden")){
+        $("#facet_filters").removeClass("hidden");
+        $(this).html("Скрыть фильтры");
+      }else{
+        $("#facet_filters").addClass("hidden");
+        $(this).html("Показать фильтры");
+      }
+    });
+
+    $.ajax({
+      type: "GET",
+      url: '{% url "products:facet_filters" page.id %}',
+      data: 'search_facet=1',
+    }).done(function(r){
+      //console.log(r);
+      var html = "";
+      var name = "";
+      var values_length;
+      var container = $("#facet_filters");
+      container.html("");
+      for(var key in r){
+        if(typeof(r[key]) == "boolean"){
+          continue;
+        }
+        values_length = r[key]['values'].length;
+        if(values_length < 2){
+          continue;
+        }
+        html += '<div class="sidebar col-md-3">';
+        name = r[key]['name'];
+        if(r[key]['measure'].length > 0){
+          name += ", " + r[key]['measure'];
+        }
+        html += '<h3 class="sidebar-title">' + name + '</h3>';
+        html += '<div class="product-categories">';
+        for(var i=0; i<values_length; i++){
+          //html += '<li><a>' + r[key]['values'][i]['value'] + '</a></li>';
+          html += '<label><input id="prop_' + key + '_' + r[key]['values'][i]['id'] + '" type="checkbox" name="prop_' + key + '" value="' + r[key]['values'][i]['id'] + '" autocomplete="off" /> ' + r[key]['values'][i]['value'] + '</label><br>';
+        }
+        html += '</div>';
+        html += '</div>';
+      }
+      html += '<div class="text-center hidden"><button class="contact-form-btn mt-35" type="submit" value="1" name="ff"> Найти</button></div>';
+      container.html(html);
+
+      {% if q_string.q.ff %}
+        $("#show_facet_filters").click();
+        {% for key, value in facet_filters.items %}
+          {% for item in value %}
+            $("#prop_{{ key }}_{{ item }}").prop('checked', 'checked');
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+
+      $("#facet_filters input[type='checkbox']").change(function(){
+        $("#facet_filters button[type='submit']").click();
+      });
+
+    }).fail(function(){
+    });
+
+  });
+</script>
+{% endblock %}

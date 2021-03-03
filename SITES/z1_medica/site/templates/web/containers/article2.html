@@ -1,0 +1,17 @@
+{% load mtags %}
+<div class="iblock">
+  <div class="news">
+    {% for block in blocks %}
+      {% if block.html %}
+        <div class="col-md-{% if not block.img %}12{% else %}8{% endif %}">
+          {{ block.html|safe }}
+        </div>
+      {% endif %}
+      {% if block.img %}
+        <div class="col-md-4">
+          <img src="{% imagine block.img '800x600' block.get_folder True %}" loading="lazy" />
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>

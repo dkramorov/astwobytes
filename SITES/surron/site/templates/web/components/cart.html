@@ -1,0 +1,19 @@
+{% load tags %}
+<div class="header-column flex-row w-auto">
+  <div class="header-nav-features pl-0 ml-1">
+    <div class="header-nav-feature header-nav-features-cart header-nav-features-cart-big d-inline-flex top-2 ml-2">
+      <a href="/shop/cart/" class="header-nav-features-toggle">
+        <img src="/media/misc/icon-cart-big.svg" height="30" alt="Корзина" class="header-nav-top-icon-img">
+        <span class="cart-info">
+          <span class="cart-qty" id="minicart_quantity_info">0</span>
+        </span>
+      </a>
+      <div class="header-nav-features-dropdown" id="headerTopCartDropdown">
+        {% ajax_cart request %}
+      </div>
+    </div>
+  </div>
+  <button class="btn header-btn-collapse-nav ml-3" data-toggle="collapse" data-target=".header-nav-main nav">
+    <i class="fa fa-bars"></i>
+  </button>
+</div>

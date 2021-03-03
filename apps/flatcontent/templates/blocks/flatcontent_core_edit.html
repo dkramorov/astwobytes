@@ -36,7 +36,9 @@
 <script type="text/javascript">
 var main_table = null;
 function fill_cat_products_fordel(){
-  $("#cat_products_fordel").val(window.cat_products_fordel.join(","));
+  if(!window.cat_products_fordel == undefined){
+    $("#cat_products_fordel").val(window.cat_products_fordel.join(","));
+  }
 }
 function update_sorted_select2(container_id){
   // Обновление скрытого поля input по multiple select

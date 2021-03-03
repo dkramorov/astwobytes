@@ -82,14 +82,16 @@ $(function(){
   $("#searchrun").click(function(){show_search_panel_pw();});
 
   $(".jsonly").css("visibility","visible");
-  cuSel({  changedEl: ".cuSelclass",  scrollArrows: true});
+
+  //cuSel({  changedEl: ".cuSelclass",  scrollArrows: true});
+
 $(".styleds").change(function(){$("#filtrform").submit(); })
 cover ();
 
 $("a[rel^='prettyPhoto']").prettyPhoto({theme:'light_rounded'});
 $("#slogans").delay(500).fadeIn(1000);
 
-$('#slider').nivoSlider({ animSpeed: 500, pauseTime: 20000,controlNav:true});
+$('#slider').nivoSlider({ animSpeed: 500, pauseTime: 200000, controlNav:true});
 $("#sliderbank ul").jcarousel({auto:6,scroll:3,wrap: "last",visible:3,visible:3,size:6});
 $('.basc').click(function(){  //$(this).fadeOut(100);
   addToBasket($(this).attr('id'));
@@ -103,18 +105,18 @@ $(".notoper").click(function(){
   $("#ajaxclose").fadeOut();
 });
 $("#slidepanel span").click(function(){
-  $('#slidepanel span').css('background-color','#ebebeb');
-  $(this).css('background-color','#fff');
+  $("#slidepanel span").removeClass("active");
   $(".slpan").css('display','none');
+  $(this).addClass("active");
   $("#_"+$(this).attr('id')).fadeIn();
-  if ($(this).attr('id')=='actions') {
-    $('#slider').data('nivoslider').start();
-  }
 });
 
 });
 $(document).ready(function(){
-  $(".cuSelclass").fadeIn();
+  //$(".cuSelclass").fadeIn();
+  if($("#slidepanel span").length > 0){
+    $("#slidepanel span")[0].click();
+  }
 })
 function openloader( mid ){
   $(".usersender").slideUp();
@@ -166,4 +168,58 @@ $(function(){
     plusweb_adaptive();
     leftpanelclose()
   });
+
+
+
+
+
+
+    // Popular Products Tabs
+    $('.fr-pop-tabs li').on('click', 'a', function () {
+        if ($(this).hasClass('active') || $(this).attr('data-frpoptab') == '')
+            return false;
+        $(this).parents('.fr-pop-tabs').find('li a').removeClass('active');
+        $(this).addClass('active');
+
+        // mobile
+        $('.fr-pop-tab-mob[data-frpoptab-num=' + $(this).data('frpoptab-num') + ']').parents('.fr-pop-tab-cont').find('.fr-pop-tab-mob').removeClass('active');
+        $('.fr-pop-tab-mob[data-frpoptab-num=' + $(this).data('frpoptab-num') + ']').addClass('active');
+
+        $($(this).attr('data-frpoptab')).parents('.fr-pop-tab-cont').find('.fr-pop-tab').css('height', '0px');
+        $($(this).attr('data-frpoptab')).css('height', 'auto').hide().fadeIn();
+        return false;
+    });
+
+    // Popular Products Tabs (mobile)
+    $('.fr-pop-tab-cont').on('click', '.fr-pop-tab-mob', function () {
+        if ($(this).hasClass('active') || $(this).attr('data-frpoptab') == '')
+            return false;
+        $(this).parents('.fr-pop-tab-cont').find('.fr-pop-tab-mob').removeClass('active');
+        $(this).addClass('active');
+
+        // main
+        $('.fr-pop-tabs li a[data-frpoptab-num=' + $(this).data('frpoptab-num') + ']').parents('.fr-pop-tabs').find('li a').removeClass('active');
+        $('.fr-pop-tabs li a[data-frpoptab-num=' + $(this).data('frpoptab-num') + ']').addClass('active');
+
+        $($(this).attr('data-frpoptab')).parents('.fr-pop-tab-cont').find('.fr-pop-tab').animate({
+            'height': '0px'
+        }, 350);
+        $($(this).attr('data-frpoptab')).animate({
+            'height': $($(this).attr('data-frpoptab')).find('.flex-viewport').outerHeight()+'px'
+        }, 350);
+
+        return false;
+    });
+
+  $("#owl_products").owlCarousel({
+    //'navigation': true,
+    items : 4,
+    navigationText : ["след","пред"],
+    // Responsive
+    responsive: true,
+    responsiveRefreshRate : 200,
+    responsiveBaseWidth: window,
+
+  });
+
 });

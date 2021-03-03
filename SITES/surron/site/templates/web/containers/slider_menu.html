@@ -1,0 +1,18 @@
+<nav class="navbar navbar-sidebar ">
+  <div class="navbar-group">
+    <div class="navbar-collapse">
+      <ul id="sidebar-menu" class="navbar-nav nav-menu">
+        {% for block in blocks %}
+          <li class="nav-item{% ifequal request.META.PATH_INFO menu.link %} active{% endifequal %}" data-menuanchor="{{ block.tag }}">
+            <a href="{{ block.link }}">
+              {% if block.icon %}
+                <span class="fa fa-{{ block.icon }}"></span>
+              {% endif %}
+              <span class="text">{{ block.name }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</nav>

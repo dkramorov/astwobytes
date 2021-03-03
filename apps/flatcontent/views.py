@@ -21,18 +21,19 @@ from apps.main_functions.files import (check_path,
                                        file_size,
                                        make_folder,
                                        copy_file, )
-from .models import (Containers,
-                     Blocks,
-                     LinkContainer,
-                     get_ftype,
-                     update_containers_vars,
-                     update_blocks_vars,
-                     prepare_jstree,
-                     FAT_HIER, )
+from apps.flatcontent.models import (Containers,
+                                     Blocks,
+                                     LinkContainer,
+                                     get_ftype,
+                                     update_containers_vars,
+                                     update_blocks_vars,
+                                     prepare_jstree,
+                                     FAT_HIER, )
 
 is_products = False
 if 'apps.products' in settings.INSTALLED_APPS:
     is_products = True
+    from apps.flatcontent.flatcat import get_costs_types
     from apps.products.models import Products, ProductsCats
 
 is_domains = False
@@ -160,19 +161,8 @@ def fill_from_template(row, state: int = 99):
     # ----------------------------------------------
     if is_products:
         container_products = []
-        #disconts = Disconts.objects.filter(container=row)
-        #if not disconts:
-        #    template_disconts = Disconts.objects.filter(container=template)
-        #    if template_disconts:
-        #        for discont in template_disconts:
-        #            discont.id = 0
-        #            discont.container = row
-        #            discont.save()
-        # -----------------------------------------------
-        # Вытаскиваем все привязанные к контейнеру/блокам
-        # товары/услуги => в clone_block все заполним
-        # -----------------------------------------------
-        products = ProductsCats.objects.select_related('product').filter(container=template)
+        ids_blocks = [block.id for block in blocks]
+        products = ProductsCats.objects.select_related('product').filter(Q(container=template)|Q(cat__in=ids_blocks))
         for product in products:
             # ------------------------------
             # Те, что НЕ привязаны к блокам,
@@ -1232,7 +1222,7 @@ def SearchLink(q_string: dict = None,
     # Ищем привязки к менюшке
     ids_containers = {}
 
-    container_all_pages = Containers.objects.filter(tag__in=mcap.keys()).exclude(state__in=(99, 100))
+    container_all_pages = Containers.objects.filter(tag__in=mcap.keys(), is_active=True).exclude(state__in=(99, 100))
     blocks = []
     # Пересоздадим mcap по полученным данным
     # а то вдруг нету такого контейнера, который мы передали
@@ -1323,7 +1313,7 @@ def blocks_contains_prices(ids_containers: dict, blocks: dict):
     ids_products = {x.product.id: x.product for x in products}
 
     # Разные типы цен
-    #get_costs_types(ids_prices)
+    get_costs_types(ids_products.values())
 
     # Находим скидки для всех товаров
     #shopper = None

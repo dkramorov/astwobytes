@@ -1,0 +1,53 @@
+{% load mtags %}
+<section data-id="about" class="section section-page fp-auto-height-responsive">
+  <div class="section-cover"></div>
+  {% if container.description %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        {% comment %}<!--<span>ЗАКРАШЕННЫЙ</span>
+                         <span class="text-stroke">ОБВОД</span>
+        -->{% endcomment %}
+        <span>{{ container.description|safe }}</span>
+      </h3>
+    </div>
+  {% endif %}
+  <div class="section-margin anim">
+    {% for block in blocks %}
+      {% if block.name %}
+        <div class="section-header align-x-center">
+          <div class="h-content width-medium">
+            <h2 class="h-title font-title anim-1">
+              {{ block.name }}
+            </h2>
+          </div>
+        </div>
+      {% endif %}
+      <div class="section-content align-x-center">
+        <div class="c-wrapper width-medium text-wrapper">
+          {% if block.html %}
+            <div class="row gutters">
+              <div class="col-12 col-lg-6">
+                <div class="content-text anim-2">
+                  {{ block.html|safe }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if block.link %}
+            <div class="btns-group mt-5">
+              <a class="btn btn-line-a anim-4" href="{{ block.link }}">
+                <span class="text">{{ block.description|safe }}</span>
+                <span class="icon icon-menu icon-arrow-a icon-anim">
+                  <span class="arrow-right"></span>
+                </span>
+              </a>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="section-footer"></div>
+</section>

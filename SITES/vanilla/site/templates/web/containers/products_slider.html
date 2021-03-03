@@ -1,0 +1,17 @@
+{% load mtags %}
+<div class="container pr-0 pl-0 mb-5 videos">
+  {% if container.description %}
+    <div class="mt-5 mb-5">
+      <div class="col-lg-12">
+        <h2 class="font-weight-bold text-9 mb-0">{{ container.description|safe }}</h2>
+      </div>
+    </div>
+  {% endif %}
+  <div class="owl-carousel dots-inside dots-horizontal-center show-dots-hover nav-inside nav-inside-plus nav-dark nav-md nav-font-size-md mb-0" data-plugin-options="{'responsive': {'0': {'items': 1}, '479': {'items': 1}, '768': {'items': 2}, '979': {'items': 3}, '1199': {'items': 3}}, 'loop': false, 'autoHeight': true, 'margin': 0, 'dots': false, 'dotsVerticalOffset': '-75px', 'nav': true, 'mouseDrag': false, 'touchDrag': true, 'pullDrag': true, 'autoplay': false, 'autoplayTimeout': 9000, 'autoplayHoverPause': true, 'rewind': true}">
+    {% for product in products %}
+      <div class="container position-relative z-index-3">
+        {% include "web/cat/grid_product.html" %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

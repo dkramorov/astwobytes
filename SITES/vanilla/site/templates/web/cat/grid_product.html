@@ -1,0 +1,65 @@
+{% load mtags %}
+<div class="product_card mb-4">
+  <div class="product">
+    <div class="product-thumb-info border-0 mb-3">
+{% comment %}<!--
+      <div class="product-thumb-info-badges-wrapper">
+        <span class="badge badge-ecommerce badge-success">NEW</span>
+      </div>
+      <div class="addtocart-btn-wrapper">
+        <a href="" class="text-decoration-none addtocart-btn" data-tooltip data-original-title="">
+          <i class="icons icon-bag"></i>
+        </a>
+      </div>
+      <a href="" class="quick-view text-uppercase font-weight-semibold text-2">Быстрый просмотр</a>
+-->{% endcomment %}
+      <a href="{{ product.link }}">
+        <div class="product-thumb-info-image">
+          <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine product.img '600x400' product.get_folder True %}" loading="lazy">
+        </div>
+      </a>
+    </div>
+    <div class="pl-4 pr-4 pb-1">
+      <div class="d-flex justify-content-between">
+        <div>
+{% comment %}<!--
+          <a href="{{ page.link }}" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-1">{{ page.name }}</a>
+-->{% endcomment %}
+          <h3 class="text-3-5 font-weight-semi-bold font-alternative text-transform-none line-height-3 mb-0"><a href="{{ product.link }}" class="text-color-dark text-color-hover-primary">{{ product.name }}</a></h3>
+        </div>
+
+        <a data-product_id="{{ product.id }}" href="javascript:void(0);" class="text-decoration-none text-color-default text-color-hover-dark text-6 add_to_cart_btn"><i class="fa fa-shopping-cart text-dark"></i></a>
+
+        {% comment %}<!--
+        <a href="#" class="text-decoration-none text-color-default text-color-hover-dark text-4"><i class="fa fa-heart"></i></a>
+        -->{% endcomment %}
+      </div>
+{% comment %}<!--
+      <div title="Rated 5 out of 5">
+        <input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'default', 'size':'xs'}">
+      </div>
+-->{% endcomment %}
+      {% if product.costs %}
+        <p class="price text-5 mb-3 product_price_{{ product.id }}">
+          <span class="sale text-color-dark">{{ product.costs.0.cost|money_format }} ₽</span>
+        </p>
+      {% else %}
+        <p class="price text-5 mb-3">
+          <span class="sale text-color-dark">{{ product.price|money_format }} ₽</span>
+          {% if product.old_price %}
+            <span class="amount">{{ product.old_price|money_format }} ₽</span>
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <div class="btn-group-toggle" data-toggle="buttons">
+        {% for cost in product.costs %}
+          <label class="btn btn-outline btn-primary{% if forloop.first %} active{% endif %} mb-2">
+          <input type="radio" class="costs_types cost-type-radio_{{ product.id }}" name="cost_type_{{ product.id }}" id="option_{{ product.id }}_{{ cost.cost_type.id }}" autocomplete="off"{% if forloop.first %} checked{% endif %} data-cost="{{ cost.cost|money_format }} ₽" data-cost_type_id="{{ cost.cost_type.id }}" data-product_id="{{ product.id }}"> {{ cost.cost_type.name }}
+          </label>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</div>

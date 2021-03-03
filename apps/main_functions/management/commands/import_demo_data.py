@@ -65,6 +65,13 @@ def fill_flatmain():
             title='RGBA и COMPыта', name='Название компании',
             state=3,
         )
+    favicon = Blocks.objects.filter(container=container, tag='favicon').first()
+    if not favicon:
+        favicon = Blocks.objects.create(
+            container=container, tag='favicon',
+            name='Favicon',
+            state=3,
+        )
     social = Blocks.objects.filter(container=container, tag='social').first()
     if not social:
         social = Blocks.objects.create(
@@ -79,6 +86,20 @@ def fill_flatmain():
                 name=item, parents='_%s' % social.id,
                 blank=True, icon=item,
                 state=3,
+            )
+    for item in ({
+        'tag': 'yandex_metrika',
+        'name': 'Яндекс.Метрика счетчик',
+    }, {
+        'tag': 'google_analytics',
+        'name': 'Google.Analytics счетчик',
+    }):
+        counter = Blocks.objects.filter(container=container, tag=item['tag']).first()
+        if not counter:
+            counter = Blocks.objects.create(
+                container=container, tag=item['tag'],
+                name=item['name'], state=3,
+                html='<script type="text/javascript"></script>',
             )
 
 def fill_flatmenu():

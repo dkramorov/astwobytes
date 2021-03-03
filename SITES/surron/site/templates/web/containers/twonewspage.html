@@ -1,0 +1,97 @@
+{% load mtags %}
+<section data-id="services" class="section section-page  fp-auto-height-responsive">
+  {% if container.name %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        <span class="text-stroke">{{ container.name }}</span>
+      </h3>
+    </div>
+  {% endif %}
+  <div class="section-margin anim">
+    {% if container.description %}
+      <div class="section-header align-x-center">
+        <div class="h-content width-medium">
+          <h2 class="h-title font-title anim-1">
+            {{ container.description|safe }}
+          </h2>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="section-content align-x-center">
+      <div class="c-wrapper width-medium text-wrapper mb-6">
+        <div class="row no-gutters">
+          {% for block in blocks %}
+            {% if block.tag %}
+              <div class="col col-12">
+                {% if block.html %}
+                  <div class="content-text anim-2">
+                    <div class="mb-0">
+                      {{ block.html|safe }}
+                    </div>
+                  </div>
+                {% endif %}
+                {% if block.link %}
+                  <div class="btns-group mt-5">
+                    <a class="btn btn-line-a anim-3" href="{{ block.link }}">
+                      <span class="text">{{ block.description }}</span>
+                      <span class="icon icon-menu icon-arrow-a icon-anim">
+                        <span class="arrow-right"></span>
+                      </span>
+                    </a>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="c-wrapper width-medium anim-3">
+        <div class="row">
+          {% for block in blocks %}
+            {% if not block.tag %}
+              <div class="col-12 col-md-6">
+                <div class="item-service-a">
+                  {% if block.name %}
+                    <div class="item-header">
+                      <div class="icon">{{ forloop.counter }}</div>
+                      <h3 class="title">{{ block.name }}</h3>
+                    </div>
+                  {% endif %}
+                  <div class="item-content item-grid-c">
+                    <div class="item-img mt-4 rounded-border">
+                      <img class="img" src="{% imagine block.img '800x600' block.get_folder True %}" alt="{{ block.name|textize }}">
+                      <div class="img-header mask-gradient-black-inv">
+                        {% if block.icon %}
+                          <div class="item-icon">
+                            <i class="fa fa-{{ block.icon }}"></i>
+                          </div>
+                        {% endif %}
+                      </div>
+                      <div class="img-footer mask-gradient-black text-left">
+                        {% if block.html %}
+                          <div class="i-text">
+                            {{ block.html|safe }}
+                          </div>
+                        {% endif %}
+                        {% if block.link %}
+                          <a class="btn btn-line-a" href="{{ block.link }}">
+                            <span class="text">{{ block.description }}</span>
+                            <span class="icon icon-menu icon-arrow-a icon-anim">
+                              <span class="arrow-right"></span>
+                            </span>
+                          </a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-footer"></div>
+</section>

@@ -21,6 +21,7 @@ class SberPaymentProovider():
         self.api_url = 'https://securepayments.sberbank.ru/payment/rest/'
         if settings.SBRF_DEBUG:
             self.api_url = 'https://3dsec.sberbank.ru/payment/rest/'
+
         self.username = settings.SBRF_USERNAME_API
         self.password = settings.SBRF_PASSWORD_API
         self.ORDER_STATUSES = {

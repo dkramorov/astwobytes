@@ -204,6 +204,7 @@ def show_profile(request):
     q_string = {}
     containers = {}
     shopper = get_shopper(request)
+
     if not shopper:
         return redirect(reverse('%s:%s' % (CUR_APP, 'registration')))
 

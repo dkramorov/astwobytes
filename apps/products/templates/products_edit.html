@@ -98,6 +98,7 @@
               <input type="number" step="0.01" placeholder="Цена" class="form-control" name="price" value="{% if row.price %}{{ row.price }}{% endif %}" autocomplete="off">
             </div>
           </div>
+          {% include "products_prices/products_cost_types.html" %}
           <div class="form-group">
             <label class="col-lg-2 control-label">Кол-во (остаток)</label>
             <div class="col-lg-10">

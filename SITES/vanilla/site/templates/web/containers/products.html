@@ -1,0 +1,12 @@
+<div class="container mt-5">
+
+    {% if container.description %}
+      <div class="row">
+        <h1 class="block-title pl-md-0 pr-md-0">
+          {{ container.description|safe }}
+        </h1>
+      </div>
+    {% endif %}
+    {% include "web/cat/plp.html" %}
+
+</div>

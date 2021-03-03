@@ -47,22 +47,16 @@
 </ul>
 {% endifequal %}
 {% ifequal tag "bottommenu" %}
-<div class="iblokl">
-  <table cellpadding="10" border="0">
-    <tr>
-      {% for menu in menus %}
-        <td valign="top">
-          <h4>{{ menu.name }}</h4>
-          <span class="news" style="color:white">
-            <ul>
-              {% for item in menu.sub %}
-                <li><a href="{{ item.link }}">{{ item.name }}</a></li>
-              {% endfor %}
-            </ul>
-          </span>
-        </td>
-      {% endfor %}
-    </tr>
-  </table>
-</div>
+  {% for menu in menus %}
+    <div class="col-lg-2 col-md-4">
+      <h4>{{ menu.name }}</h4>
+      <span class="news" style="color:white">
+        <ul>
+          {% for item in menu.sub %}
+            <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </span>
+    </div>
+  {% endfor %}
 {% endifequal %}

@@ -95,16 +95,15 @@ font-weight:bolder;
 #lefmobiletpanelcontentmenu h3 a, #lefmobiletpanelcontentmenu h3* {background:#fff!important}
 
 #knof, #userrg,.userrg {
-display:block; 
-position:fixed;  
+display:block;
+position:fixed;
 top:10px;
-right:10px;  
-background:url(../img/basketredgray.png) center bottom  no-repeat;
-z-index:1000;  
+right:10px;
+background:url(../img/basketredgray.png) center bottom no-repeat;
+z-index:1000;
   width:30px;
  height:30px;
-
-cursor:pointer;  
+cursor:pointer;
 }
 #userrg, .userrg {background-image:url(../img/userredgray.png);
  right:46px;
@@ -115,32 +114,40 @@ cursor:pointer;
 #search  {border:none;
  font-weight:normal;
  display:block;
- font-size:14px;
+ font-size:24px;
+ line-height:38px;
  position:relative;
 z-index:515;
   width:90%;
  vertical-align:middle}
 
+#searchpanel .cont a{
+  color: #999;
+}
+#searchpanel .cont {
+  background-position: left bottom;
+  background-image: url('/media/img/basketredgray.png');
+  line-height: 30px;
+}
+#searchpanel .pconly {
+  display:inline-block;
+  /*width: 192px;*/
+  width: 250px;
+}
 
 #searchpanel.pcstyle {
 display:inline-block;
  padding:5px;
- 
 background:#fff ;
 text-align:left;
  position:relative;
-
-/*url(../img/eee.jpg) 0 -7px repeat-x; */
-border-radius:6px; 
+border-radius:6px;
 width:98%;
-/*border:1px  solid rgba(255,255,255,.8);
-box-shadow: 0  2px 4px rgba(0,0,0,0.2);*/
+}
 
- }
-#searchpanel.mobilestyle
-{ 
-background:transparent; 
-border:0; 
+#searchpanel.mobilestyle{
+background:transparent;
+border:0;
 width:300px;
 display:block;
 position:fixed;
@@ -158,34 +165,27 @@ z-index:5000;
  top:0;
  cursor:pointer;
  display:inline-block;
- 
 background:transparent; z-index:1000 }
 .searchrunopen {margin-left:300px;
  background: url(../img/x.png) center no-repeat !important;
  }
-#searchpanel.mobilestyle #searchform  { width:300px; overflow:hidden}
 .mobilestyle  .nobg {border-color:transparent !important;
  background-color:transparent !important;
 }
 /*#searchpanel.mobilestyle #searchform  #search {display:none}*/
- 
-#searchform {margin-left:2px; 
+
+#searchform {margin-left:2px;
 display:inline-block;
   width:400px;
- vertical-align:middle;
  margin-right:15px;
  border:1px solid #ccc;
- BORDER-RADIUS:6px;
-  
-padding:2px;
+ border-radius:6px;
  vertical-align:middle;
  position:relative;
 z-index:900;
- padding-left:35px;
-
-background:#fff url(../img/search.png) 5px 3px no-repeat ;
-  height:28px;
-
+ padding-left:15px;
+background:#fff url(../img/search.png) top 10px right 10px no-repeat ;
+  height:48px;
 }
 .bgwait {background-image:url(../img/loader.gif) !important;}
 #searchform.mobilestyle  {width:auto;
@@ -267,19 +267,9 @@ overflow:hidden;
 #ajaxsearchbox a:hover {background:#eee; text-shadow:1px 1px rgba(255,255,255,.5)}
 
 .hover {background:#eee}
-.mainblockfull, .mbfull {text-align:center;
- width:98% !important;
- max-width:1000px !important;
- min-width:500px !important;
- padding-left:10px !important;
- float:none !important}
+
 .mbfull img, .mbfull iframe {max-width:100% !important}
 #mainblock img, #mainblock iframe {max-width:100% !important}
-#mainblock {min-height:550px;}
-#mainblock.mbfull {min-height:400px;}
-#mainblock.mbfull *  {max-width:100%;
- overflow:hiden;
-}
 
 #menctype{display:block;
  position:relative;
@@ -319,6 +309,9 @@ text-shadow:1px 1px rgba(255,255,255,.3);
   border:1px solid #ccc; 
   border-bottom:1px solid #fff; 
   }
+#menctype .menctype {
+  display: inline-block !important;
+}
 .mobilestyle .menctype    {padding:8px;}
 
 #ctype{display:block;
@@ -446,12 +439,12 @@ font-weight:bolder;
 #lefmobiletpanelcontentmenu h3 a, #lefmobiletpanelcontentmenu h3* {background:#fff!important}
 
 #knof, #userrg {
-display:block; 
-position:fixed;  
+display:block;
+position:fixed;
 top:10px;
-right:10px;  
-background:url(../img/basketredgray.png) center bottom  no-repeat;
-z-index:1000;  
+right:10px;
+background:url(../img/basketredgray.png) center top no-repeat;
+z-index:1000;
   width:30px;
  height:30px;
 
@@ -487,7 +480,6 @@ li.lev00.activlev00, .activlev00  a {background:#eee !important;
 .shadow {box-shadow:1px 1px 10px rgba(0,0,0,.3)}
 
 .cardtv, .cardtv_new  {
-    
     /*float: left;*/
     /*border: 1px solid #B2E6FC;  d7f2e3 6bc491*/
   display:inline-block;
@@ -504,7 +496,7 @@ li.lev00.activlev00, .activlev00  a {background:#eee !important;
     -webkit-border-radius: 6px;
     -khtml-border-radius: 6px;
   text-align:left;
-  
+  box-sizing: content-box;
 
 }
 .cardtv_new {height:240px;}

@@ -26,38 +26,42 @@ def get_costs_types(products):
     """Разные типы цен
        :param products: Товары/услуги
     """
-    costs_types = CostsTypes.objects.filter(is_active=1)
+    costs_types = CostsTypes.objects.filter(is_active=1).order_by('position')
     if not costs_types:
         return
-    ids_costs_types = {}
-    for cost_type in costs_types:
-        ids_costs_types[cost_type.id] = cost_type
+    ids_costs_types = {cost_type.id: cost_type for cost_type in costs_types}
 
-    ids_products = {product.id: product for product in products}
-    costs_values = Costs.objects.filter(product__in=[product.id for product in products]).order_by('cost_type__position')
-
+    ids_products = [product.id for product in products]
+    costs_values = Costs.objects.filter(product__in=ids_products)
+    ids_costs_values = {}
     for cost_value in costs_values:
-        cost_type = ids_costs_types.get(cost_value.cost_type_id)
-
-        if not cost_type:
-            continue
-        if not cost_type.is_active:
+        if not cost_value.cost_type_id in ids_costs_types:
             continue
 
-        if not hasattr(ids_products[cost_value.product_id], 'costs'):
-            ids_products[cost_value.product_id].costs = []
+        cost_type = ids_costs_types[cost_value.cost_type_id]
+        product_id = cost_value.product_id
 
-        cost = {
-            'cost_type': cost_type,
-            'measure': cost_value.get_measure_display(),
-            'cost': cost_value.cost,
-        }
-
-        if cost_type.tag:
-            if not hasattr(ids_products[cost_value.product_id], 'costs_by_tag'):
-                ids_products[cost_value.product_id].costs_by_tag = {}
-            ids_products[cost_value.product_id].costs_by_tag[cost_type.tag] = cost
-        ids_products[cost_value.product_id].costs.append(cost)
+        if not product_id in ids_costs_values:
+            ids_costs_values[product_id] = {}
+        if not cost_type.id in ids_costs_values[product_id]:
+            ids_costs_values[product_id][cost_type.id] = {
+                'cost_type': cost_type,
+                #'measure': cost_value.get_measure_display(),
+                'cost': cost_value.cost,
+            }
+    for product in products:
+        if not product.id in ids_costs_values:
+            continue
+        product.costs = []
+        product.costs_by_tag = {}
+        for cost_type in costs_types:
+            if not cost_type.id in ids_costs_values[product.id]:
+                continue
+            cost = ids_costs_values[product.id][cost_type.id]
+            product.costs.append(cost)
+            if cost_type.tag:
+                if not cost_type.tag in product.costs_by_tag:
+                    product.costs_by_tag[cost_type.tag] = cost
 
 def get_breadcrumbs_for_product(product, breadcrumbs: list):
     """Хлебные крошки для товара с кэшем

@@ -1,0 +1,68 @@
+{% load mtags %}
+<section data-id="contact" class="section section-page section-contact fp-auto-height-responsive">
+  <div class="section-cover"></div>
+  {% if container.name %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        <span class="text-stroke">{{ container.name }}</span>
+      </h3>
+    </div>
+  {% endif %}
+  <div class="section-margin anim">
+    {% if container.description %}
+      <div class="section-header align-x-center">
+        <div class="h-content width-medium">
+          <h2 class="h-title font-title anim-1">
+            {{ container.description|safe }}
+          </h2>
+        </div>
+      </div>
+    {% endif %}
+    <div class="section-content align-x-center">
+      <div class="c-wrapper width-medium">
+        <div class="row">
+          <div class="col col-12 col-lg-6">
+            <div class="content-text anim-2 mb-5">
+              {% for block in blocks %}
+                {% if block.html %}{{ block.html|safe }}{% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <div class="col col-12 col-lg-6">
+            <div class="form-container form-container-contact anim-4">
+              <form class="send_message_form message form" method="post" action="/feedback/" id="message_form">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="form-group name">
+                      <input id="mes-name" name="name" type="text" placeholder="Ваше имя" class="form-control form-control-outline input-full thick form-success-clean">
+                    </div>
+                    <div class="form-group email">
+                      <input id="mes-email" type="email" placeholder="Email" name="email" class="form-control form-control-outline input-full thick form-success-clean">
+                    </div>
+                    <div class="form-group no-border">
+                      <textarea id="mes-text" placeholder="Ваше сообщение" name="message" class="form-control form-control-outline thick form-success-clean"></textarea>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <button id="submit-message" class="btn btn-line-b email_b" name="submit_message">
+                      <span class="text text-uppercase">Отправить</span>
+                      <span class="icon icon-menu icon-arrow-a icon-anim">
+                        <span class="arrow-right"></span>
+                      </span>
+                    </button>
+                  </div>
+<!--
+                  <div>
+                    <p class="form-text-feedback col-12 form-success-visible gone">Спасибо</p>
+                  </div>
+-->
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-footer"></div>
+</section>

@@ -1,6 +1,6 @@
 {% load mtags %}
-<div style="width:100%; text-align;center" class="notoper">
-  <div class="blok" style="margin-top:47px; width:100%; max-width:1350px; display:inline-block" id="toptop">
+<div class="container">
+  <div class="row" id="toptop">
     <table border="0" width="100%">
       <tr>
         <td align="left" valign="top">
@@ -26,12 +26,21 @@
           <div class="iblok pconly jsonly" style="padding-top:25px;  line-height:22px; width:210px; display:inline-block">
             <div class="cont" style="background:url('/media/misc/key.png')0 5px no-repeat; min-height:70px">
               <div class="usmenu">
+{% comment %}<!--
                 <a href="#" CLASS="auth">
                   <div class="add auserinfo usersend2" rel="authrisation" id="userrg2">Войти на сайт </div>
                 </a>
+-->{% endcomment %}
+                <a href="/profile/">
+                  <div class="add">Войти на сайт</div>
+                </a>
                 <span>
+{% comment %}<!--
                   <a href="#" CLASS="auth auserinfo usersend2" rel="register" style="background-position: 0 -20px">Зарегистрироваться</a>
                   <a href="#" CLASS="auth auserinfo usersend2" rel="passremember" style="background-position: 0 -40px">Забыли пароль?</a>
+-->{% endcomment %}
+                  <a href="/profile/">Зарегистрироваться</a>
+                  <a href="/profile/">Забыли пароль?</a>
                 </span>
               </div>
             </div>

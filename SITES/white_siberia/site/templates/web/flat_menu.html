@@ -2,7 +2,7 @@
 <ul class="nav nav-pills" id="mainNav">
   {% for menu in menus %}
     <li class="dropdown">
-      <a class="dropdown-item{% if menu.sub %} dropdown-toggle{% endif %}" href="{{ menu.link }}"> {{ menu.name }} </a>
+      <a class="{% if not forloop.last %}dot {% endif %}dropdown-item{% if menu.sub %} dropdown-toggle{% endif %}" href="{{ menu.link }}"> {{ menu.name }} </a>
       {% if menu.sub %}
         <ul class="dropdown-menu">
           {% for submenu in menu.sub %}

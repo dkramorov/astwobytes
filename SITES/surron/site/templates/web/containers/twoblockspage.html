@@ -1,0 +1,87 @@
+{% load mtags %}
+<section data-id="works" class="section section-page  fp-auto-height-responsive">
+  {% if container.name %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        <span class="text-stroke">{{ container.name }}</span>
+      </h3>
+    </div>
+  {% endif %}
+  <div class="section-margin anim">
+    {% if container.description %}
+      <div class="section-header align-x-center">
+        <div class="h-content width-medium">
+          <h2 class="h-title font-title anim-1">
+            {{ container.description|safe }}
+          </h2>
+        </div>
+      </div>
+    {% endif %}
+    <div class="section-content align-x-center">
+
+      {% for block in blocks %}
+        {% if block.tag %}
+          <div class="c-wrapper width-medium text-wrapper mb-6">
+            <div class="row no-gutters">
+              <div class="col col-12">
+                {% if block.html %}
+                  <div class="content-text anim-2">
+                    <div class="mb-0">{{ block.html|safe }}</div>
+                   </div>
+                {% endif %}
+                {% if block.link %}
+                  <div class="btns-group mt-5">
+                    <a class="btn btn-line-a anim-3" href="{{ block.link }}">
+                      <span class="text">{{ block.description }}</span>
+                      <span class="icon icon-menu icon-arrow-a icon-anim">
+                        <span class="arrow-right"></span>
+                      </span>
+                    </a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+      <div class="c-wrapper width-medium anim-3">
+        <div class="row">
+
+          {% for block in blocks %}
+            {% if not block.tag %}
+              <div class="col-12 col-md-6">
+                <div class="item-grid-a">
+                  <div class="item-header">
+                    <h3 class="title">{{ block.name }}</h3>
+                  </div>
+                  <div class="item-img mt-4 mb-4 rounded-border">
+                    <img class="img" src="{% imagine block.img '800x600' block.get_folder True %}" alt="{{ block.name|textize }}">
+                  </div>
+                  <div class="item-content">
+                    {% if block.title %}
+                      <h4 class="i-price font-title">{{ block.title }}</h4>
+                    {% endif %}
+                    {% if block.html %}
+                      <div class="i-text">
+                        {{ block.html|safe }}
+                      </div>
+                    {% endif %}
+                    {% if block.link %}
+                      <a class="btn btn-line-a" href="{{ block.link }}">
+                        <span class="text">{{ block.description }}</span>
+                        <span class="icon icon-menu icon-arrow-a icon-anim">
+                          <span class="arrow-right"></span>
+                        </span>
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-footer"></div>
+</section>

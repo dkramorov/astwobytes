@@ -1,7 +1,7 @@
 {% load mtags %}
 <div class="row products product-thumb-info-list mb-5" {% comment %}data-plugin-masonry data-plugin-options="{'layoutMode': 'fitRows'}"{% endcomment %}>
   {% for product in products %}
-    <div class="col-12 col-sm-6 col-lg-4">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-4 pl-lg-0">
       <div class="product_card mb-4">
         <div class="product">
           <div class="product-thumb-info border-0 mb-3">
@@ -27,7 +27,7 @@
             <div class="d-flex justify-content-between">
               <div>
                 <a href="{{ page.link }}" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-1">{{ page.name }}</a>
-                <h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="{{ product.link }}" class="text-color-dark text-color-hover-primary">{{ product.name }}</a></h3>
+                <h3 class="text-3-5 font-weight-semi-bold font-alternative text-transform-none line-height-3 mb-0"><a href="{{ product.link }}" class="text-color-dark text-color-hover-primary">{{ product.name }}</a></h3>
               </div>
               {% comment %}<!--
               <a href="#" class="text-decoration-none text-color-default text-color-hover-dark text-4"><i class="fa fa-heart"></i></a>
@@ -39,10 +39,10 @@
             </div>
 -->{% endcomment %}
             <p class="price text-5 mb-3">
+              <span class="sale text-color-dark">{{ product.price|money_format }} ₽</span>
               {% if product.old_price %}
-                <span class="sale text-color-dark font-weight-semi-bold">{{ product.old_price|money_format }} ₽</span>
+                <span class="amount">{{ product.old_price|money_format }} ₽</span>
               {% endif %}
-              <span class="amount">{{ product.price|money_format }} ₽</span>
             </p>
           </div>
         </div>

@@ -32,7 +32,7 @@ def flatmenu(request, tag: str = None, containers: list = []):
     all_blocks = [] # Для перевода
     if not tag:
         return result
-    cache_time = 60 # 60 секунд хватит
+    cache_time = 60 # 60 секунд
     cache_var = '%s_flatmenu_%s' % (settings.PROJECT_NAME, tag)
     if is_domains:
         domain = get_domain(request)
@@ -40,10 +40,11 @@ def flatmenu(request, tag: str = None, containers: list = []):
             cache_var += '_%s' % domain['pk']
 
     inCache = cache.get(cache_var)
-    if inCache:
+    ignore_cache = request.GET.get('ignore_cache') or request.GET.get('force_new')
+    if inCache and not ignore_cache:
         result = inCache
     else:
-        search_blocks = Blocks.objects.filter(container__tag=tag, state=4, is_active=True)
+        search_blocks = Blocks.objects.filter(container__tag=tag, state=4, is_active=True, container__is_active=True)
         for item in search_blocks:
             all_blocks.append(item)
         menu_queryset = []

@@ -15,6 +15,10 @@ register = template.Library()
 def test_tag():
     return 'test_tag'
 
+@register.filter(name = 'replace_quotes')
+def replace_quotes(text):
+    return text.replace('"', '\'')
+
 @register.filter(name = 'load_dealers')
 def load_dealers(request):
     cache_var = '%s_dealers' % (

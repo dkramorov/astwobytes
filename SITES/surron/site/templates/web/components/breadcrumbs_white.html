@@ -1,0 +1,23 @@
+{% if breadcrumbs %}
+<section class="page-header page-header-modern bg-color-white">
+  <div class="container pl-lg-0 pr-lg-0 pl-md-0 pr-md-0">
+    <div class="row">
+      <div class="col-md-12 align-self-center p-static">
+        <h1 class="font-weight-bold text-dark">{% block page_title %}{{ page.name }}{% endblock %}</h1>
+      </div>
+      <div class="col-md-12 align-self-center pt-3">
+        <ul class="breadcrumb d-block">
+          <li><a href="/">Главная</a></li>
+          {% for crumb in breadcrumbs %}
+            {% if forloop.last %}
+              <li class="active">{{ crumb.name }}</li>
+            {% else %}
+              <li><a href="{{ crumb.link }}">{{ crumb.name }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
