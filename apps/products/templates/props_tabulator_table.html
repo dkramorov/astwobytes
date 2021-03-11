@@ -45,16 +45,16 @@ var tickCrossEditor = function(cell, onRendered, success, cancel, editorParams){
   editor.style.marginRight = "auto";
   editor.style.display = "block";
   function successFunc(){
-      if(!cell.getData){
-        success(editor.checked);
-        return;
-      }
-      if(cell.getData().id){
-        success(editor.checked);
-        edit_on_fly(cell);
-      }else{
-        cancel();
-      }
+    if(!cell.getData){
+      success(editor.checked);
+      return;
+    }
+    if(cell.getData().id){
+      success(editor.checked);
+      edit_on_fly(cell);
+    }else{
+      cancel();
+    }
   }
   editor.addEventListener("change", successFunc);
   //editor.addEventListener("blur", successFunc);
@@ -68,7 +68,6 @@ var fieldEditor = function(cell, onRendered, success, cancel){
     //cancel - function to call to abort the edit and return to a normal cell
     var cellValue = cell.getValue() || '';
     var input = document.createElement("input");
-    //input.setAttribute("type", "date");
     input.style.padding = "4px";
     input.style.width = "100%";
     input.style.boxSizing = "border-box";
@@ -171,17 +170,22 @@ function edit_on_fly(cell){
 }
 
 $(document).ready(function(){
+
+  $(document).on("keypress", function(e) {
+    if(e.which == 13) {
+      if($("#ajax_drop_pvalue").hasClass("in")){
+        $("#ajax_drop_pvalue").modal('hide');
+        $("#ajax_drop_pvalue_button").click();
+      }
+    }
+  });
+
   //Add row on "Add Row" button click
   $("#add-prop").click(function(){
     for(var i=0; i<10; i++){
-      main_table.addRow({});
+      main_table.addRow({'is_active': true});
     }
   });
-  //Delete row on "Delete Row" button click
-  $("#del-row").click(function(){
-    main_table.deleteRow(1);
-  });
-
   //trigger download of data.csv file
   $("#download-csv").click(function(){
     main_table.download("csv", "{{ plural_obj }}.csv");

@@ -1,0 +1,100 @@
+{% load mtags %}
+<section data-id="videopage" class="section videopage">
+
+  <div class="section-content align-x-center anim text-black-2 pt-5">
+
+    <div class="video-container">
+      <video autoplay="autoplay" loop="loop" muted="muted">
+        {% if blocks.0.link %}
+          <source src="{{ blocks.0.link }}" type="video/mp4">
+        {% else %}
+          <source src="/media/misc/loop-bg.mp4" type="video/mp4">
+        {% endif %}
+      </video>
+    </div>
+
+{% comment %}<!--
+    {% for block in blocks %}
+      <div class="container">
+        <div class="row no-gutters">
+          {% for item in block.sub %}
+            <div class="col-12 col-lg-4">
+              <div class="content-text text-center text-white-0">
+
+                <div{% if not forloop.first %} class="advantage"{% endif %}>
+                  {% if item.name %}
+                    <h2 class="h-title font-title anim-3">
+                      {{ item.name }}
+                    </h2>
+                  {% endif %}
+                  {% if item.html %}
+                    <div class="text mb-lg-5 mb-md-3 anim-4">
+                      {{ item.html|safe }}
+                    </div>
+                  {% endif %}
+                </div>
+
+              </div>
+            </div>
+          {% endfor %}
+
+          <div class="col-12 col-lg-6 d-flex min-h-full"></div>
+        </div>
+      </div>
+    {% endfor %}
+    <div class="clearfix"></div>
+-->{% endcomment %}
+
+
+    <div class="px-5 pt-5 bg-white footer">
+      <div class="row no-gutters">
+        {% for block in blocks %}
+          <div class="col-12 col-lg-2">
+            {% if block.name %}
+              <div class="content-text">
+                <h2 class="h-title font-title anim-3">
+                  {{ block.name }}
+                </h2>
+              </div>
+            {% endif %}
+          </div>
+          <div class="col-12 col-lg-8">
+            {% if block.html %}
+              <div class="content-text pr-lg-4 pl-lg-4">
+                <div class="text mb-5 anim-4">
+                  {{ block.html|safe }}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          <div class="col-12 col-lg-2">
+            <div class="btns-group anim-5">
+{% comment %}<!-- Тут какие то характеристики видимо
+              {% if block.link %}
+                <a class="btn btn-line-a mb-4" href="{{ block.link }}">
+                  <span class="text">{{ block.description }}</span>
+                  <span class="icon icon-menu icon-arrow-a icon-anim">
+                    <span class="arrow-right"></span>
+                  </span>
+                </a>
+              {% endif %}
+-->{% endcomment %}
+              {% if block.products %}
+                <a class="btn btn-order btn-order-black" href="{{ block.products.0.link }}">
+                  <span class="text">Заказать</span>
+                  <span class="fa fa-shopping-cart">
+                    <span class="arrow-right"></span>
+                  </span>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+
+        <div class="col-12 col-lg-6 d-flex min-h-full"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+

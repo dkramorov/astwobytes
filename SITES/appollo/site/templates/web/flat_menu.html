@@ -1,0 +1,12 @@
+{% load mtags %}
+{% ifequal tag "mainmenu" %}
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      {% for menu in menus %}
+        <li{% ifequal request.META.PATH_INFO menu.link %} class="active"{% endifequal %}>
+          <a href="{{ menu.link }}">{{ menu.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endifequal %}

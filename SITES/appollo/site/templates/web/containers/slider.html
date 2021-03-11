@@ -1,0 +1,64 @@
+{% load mtags %}
+<header id="header-1">
+  <div class="background-img" style="background-image: url('/media/misc/background-img.jpg')"></div>
+  <div class="header-masc">
+    <div class="space-header">
+      <div class="stars"></div>
+    </div>
+    <div class="social-icons">
+      <ul>
+        {% for block in containers.main.tags.social.sub %}
+          <li>
+            <a href="{{ block.link }}" target="_blank">
+              <i class="fa fa-{{ block.icon }}" aria-hidden="true"></i>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="container header-container">
+      <div class="row">
+        <div class="col-md-8 col-sm-12 main-title">
+          <div class="type-js headline">
+            {% for block in blocks %}
+              {% ifequal block.tag 'animate' %}
+              <h1 class="white">{{ block.name }}</h1>
+              <h3 class="white">
+                <i>{{ block.description }} <span class="txt-rotate" data-period="2000" data-rotate='[ {% for item in block.sub %}"{{ item.name }}"{% if not forloop.last %},{% endif %}{% endfor %} ]'></span></i></h3>
+              <br>
+              {% endifequal %}
+            {% endfor %}
+            {% for block in blocks %}
+              {% ifequal block.tag 'buttons' %}
+                {% for item in block.sub %}
+                  <a href="{{ item.link }}"{% if item.blank %} target="_blank"{% endif %} class="btn dwnld-btn appstore"><i class="fa fa-{{ item.icon }}" aria-hidden="true"></i> {{ item.description }}</a>
+                {% endfor %}
+              {% endifequal %}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-0 header-phone wow fadeInUp team-main" data-wow-duration="1.3s">
+          <div class="ilustration">
+            <div class="front-phone wow fadeInUp" data-wow-duration="1.7s">
+              <div class="iphone-x single-phone">
+                <i></i>
+                <b></b>
+                <div class="header-slider">
+                  {% for block in blocks %}
+                    {% ifequal block.tag 'images' %}
+                      {% for item in block.sub %}
+                        <div class="slide">
+                          <img src="{% imagine item.img '800x800' item.get_folder True %}" alt="{{ item.name|textize }}">
+                        </div>
+                      {% endfor %}
+                    {% endifequal %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,8 +1,8 @@
-{% load mtags flatcontent_tags %}<!doctype html><html class="no-js smooth-scroll-off" lang="en">
+{% load mtags flatcontent_tags tags %}<!doctype html><html class="no-js smooth-scroll-off" lang="en">
 <head>
 {% include "skeleton_header.html" %}
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0">
-<link rel="stylesheet" href="/media/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/admin/css/font-awesome.min.css">
 
 <link rel="stylesheet" href="/media/css/pageloader.css">
 <link rel="stylesheet" href="/media/css/bootstrap.min.css">
@@ -26,11 +26,7 @@
 </div>
 
 <div class="page-cover">
-  <div class="cover-bg pos-abs size-full bg-img" data-image-src="/media/misc/bg-default.jpg"></div>
-  <!-- Прозрачность фона
-  <div class="cover-bg pos-abs size-full bg-cover-gradientradial opacity-9"></div>
-  -->
-
+  {% flatcontent request page 'img_bg' %}
   {% flatcontent request page 'video_bg' %}
 </div>
 
@@ -64,6 +60,18 @@
       </div>
 -->{% endcomment %}
       <div class="navbar-toggler">
+        <div class="mini-cart">
+          <a class="cart_icon" href="/shop/cart">
+            <i class="fa fa-shopping-cart"></i>
+            <span class="cart-info">
+              <span class="cart-qty" id="minicart_quantity_info">0</span>
+            </span>
+          </a>
+        </div>
+        <div id="mini-cart">
+          {% ajax_cart request %}
+        </div>
+
         <a id="menu-icon" class="menu-toggler btn- btn btn-line-b py-3 py-md-0" href="#">
           <span class="icon icon-menu icon-menu-a">
             <span class="bars">
@@ -86,18 +94,26 @@
   {% flatmenu request "mobilemenu" %}
 </header>
 
+{% block extracontent %}
 <main class="page-main fullpage-scroll anim-slide-scroll" id="mainpage">
 {% block content %}{% endblock %}
 </main>
 
+<div class="mobile_footer">
+  {% include "web/components/footer.html" %}
+</div>
+
+{% endblock %}
+
 {% endblock %}
 <script src="/media/js/jquery-1.12.4.min.js"></script>
+{% include "shop_js.html" %}
 <script src="/media/js/vegas.min.js"></script>
 <script src="/media/js/swiper.min.js"></script>
 <script src="/media/js/scrolloverflow.min.js"></script>
 <script src="/media/js/jquery.fullpage.min.js"></script>
-<script src="/media/js/jqueryvalidation.min.js"></script>
 <script src="/media/js/form_script.js"></script>
+<script src="/media/js/spritespin.js"></script>
 <script src="/media/js/main.js"></script>
 {% block extrascripts %}{% endblock %}
 {% if containers.main.tags.google_analytics.html %}

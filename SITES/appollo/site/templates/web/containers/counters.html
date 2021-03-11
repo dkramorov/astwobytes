@@ -1,0 +1,29 @@
+{% load mtags %}
+<section id="stats">
+  <div class="background-img" style="background-image: url('/media/misc/background-img-3.jpg')"></div>
+  <div class="masc">
+    <div class="space">
+      <div class="stars"></div>
+    </div>
+    <div class="container">
+      <div class="stat">
+        {% for block in blocks %}
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <div class="milestone-counter wow fadeIn" data-wow-duration="1.3s">
+              <i class="fa fa-cloud-download" aria-hidden="true"></i>
+              <div class="js-counter" data-counter-end="{{ block.title }}" data-counter-interval="200">
+                <span class="result">
+                  <span class="js-counter-value"></span>
+                  {% if block.description %}
+                    <b>{{ block.description }}</b>
+                  {% endif %}
+                </span>
+              </div>
+              <h4 class="white mb30">{{ block.name }}</h4>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

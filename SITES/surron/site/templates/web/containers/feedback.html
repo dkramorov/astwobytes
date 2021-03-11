@@ -1,0 +1,56 @@
+{% load mtags %}
+<div class="container pl-lg-0 pr-lg-0 pl-md-0 pr-md-0 feedback">
+  <div class="row py-4">
+    {% if container.description %}
+      <div class="col-lg-12">
+        <h2 class="font-weight-bold text-8 mt-2 mb-5">{{ container.description|safe }}</h2>
+      </div>
+    {% endif %}
+    <div class="col-lg-6">
+      <form class="contact-form" action="/feedback/" method="POST">
+        <div class="form-row">
+          <div class="form-group col">
+            <input type="text" value="" class="form-control text-3 h-auto py-2" name="name" placeholder="ФИО">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <input type="text" value="" class="form-control text-3 h-auto py-2" name="name" placeholder="Телефон">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <input type="text" value="" class="form-control text-3 h-auto py-2" name="name" placeholder="Email">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <input type="text" value="" class="form-control text-3 h-auto py-2" name="name" placeholder="Название компании">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <textarea rows="4" class="form-control text-3 h-auto py-2" name="msg"  placeholder="Дополнительные сведения о компании"></textarea>
+          </div>
+        </div>
+        <div class="form-group col">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" name="agree" id="tabContent9Checkbox" data-msg-required="You must agree before submiting." required="">
+            <label class="form-check-label" for="tabContent9Checkbox">Я согласен с условиями <a href="/privacy/" target="blank">политики конфиденциальности</a></label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <button type="submit" value="Отправить" class="btn btn-dark rounded-0 font-weight-bold hover-animate-icon">Отправить <i class="fa fa-arrow-right"></i></button>
+
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-lg-6">
+      {% for block in blocks %}
+        {% if block.html %}{{ block.html|safe }}{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

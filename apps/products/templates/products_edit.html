@@ -4,6 +4,13 @@
 <link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
 <link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
 <style type="text/css">
+  #product_properties .select2 {
+    margin-top: 10px;
+    padding: 0 5px;
+  }
+  #product_properties .select2-selection__arrow {
+    margin-right: 10px;
+  }
   table.gallery tr td.first,
   table.gallery tr td.last {
     padding: 0;
@@ -165,10 +172,11 @@
     <div class="panel panel-default">
       <div class="panel-heading">Свойства товара</div>
       <div class="panel-body" id="product_properties">
+        <div id="product-props-table"></div>
       </div>
       <div class="panel-footer">
         <div class="col-lg-6 col-sm-6 padding-tb5">
-          <button type="submit" class="btn btn-labeled btn-info" id="add_product_property">
+          <button type="button" class="btn btn-labeled btn-info" id="add_product_property">
             <span class="btn-label"><i class="fa fa-plus"></i></span>Добавить свойство
           </button>
         </div>
@@ -202,7 +210,10 @@
 <script src="/static/redactor/jquery.browser.js"></script>
 <script src="/static/redactor/redactor.js"></script>
 <script src="/static/admin/js/parsley.min.js"></script>
-{% include "props_scripts.html" %}
+{% if row %}
+  {% include "products_props/props_tabulator_table.html" %}
+  {% include "products_props/props_scripts.html" %}
+{% endif %}
 <script type="text/javascript">
   // ---------------
   // Обновление фото
@@ -346,7 +357,8 @@
       //air: true,
     });
     $("#html_info").redactor({
-      //air: true,
+      fixed: true,
+      fixedTop: 60,
     });
     $('#cats_select2').select2({
       placeholder: 'Какие категории привязать',

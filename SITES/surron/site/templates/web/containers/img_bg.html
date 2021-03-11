@@ -1,0 +1,11 @@
+{% load mtags %}
+{% if container %}
+  {% if container.img %}
+    <div class="cover-bg pos-abs size-full bg-img" data-image-src="{% imagine container.img '1920x1080' container.get_folder True %}"></div>
+  {% else %}
+    <div class="cover-bg pos-abs size-full bg-img" data-image-src="/media/misc/bg-default.jpg"></div>
+  {% endif %}
+  <!-- Прозрачность фона
+  <div class="cover-bg pos-abs size-full bg-cover-gradientradial opacity-9"></div>
+  -->
+{% endif %}

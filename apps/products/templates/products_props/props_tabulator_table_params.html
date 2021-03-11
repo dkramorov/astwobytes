@@ -1,0 +1,71 @@
+history:true, //record table history
+
+renderComplete:function(){
+  // Функция, выполняющаяся после загрузки данных в таблицу
+  if(window.tabulator_render_completed !== undefined){
+    window.tabulator_render_completed();
+  }
+},
+
+initialHeaderFilter: [
+],
+initialSort:[
+  {column: "position", dir:"asc"},
+],
+
+//movableRows: true,
+
+/*
+rowMoved:function(row){
+  var status = 'danger'; // success, warning, info, danger
+  var table = row.getTable();
+  // ---------------------------------
+  // Если есть фильтры или сортировка,
+  // тогда не надо менять позиции
+  // ---------------------------------
+  var sorters = table.getSorters();
+  if(table.getHeaderFilters().length > 0 || sorters.length != 1 || sorters[0]['field'] != 'position' || sorters[0]['dir'] != 'asc'){
+    main_table.undo();
+    $.notify({
+      message: 'Сортировать можно только когда таблица отсортирована по позиции',
+    },{
+      status: status,
+    });
+    return;
+  }
+
+  var rows = table.getRows().map(function(obj){
+    return obj.getData().id;
+  });
+  console.log(rows);
+
+  var msg = 'Произошла ошибка, обновите страничку';
+  $.ajax({
+    type: 'POST',
+    url: '{% url "products:pvalues_positions" %}',
+    data: {csrfmiddlewaretoken: getCookie('csrftoken'), positions: rows},
+  }).done(function(r) {
+    if(r.error){
+      main_table.undo();
+      msg = r.error;
+    }else if(r.success){
+      msg =  r.success;
+      status = 'success';
+    }
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  }).fail(function() {
+    main_table.undo();
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+  });
+},
+*/
+selectable: false,
+layout: "fitColumns",

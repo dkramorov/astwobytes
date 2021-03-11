@@ -80,7 +80,8 @@ def get_breadcrumbs_for_product(product, breadcrumbs: list):
         return inCache.get('rubric')
 
     rubric = None
-    pcat = product.productscats_set.all().values('cat', 'cat__parents', 'cat__container').first()
+    # Хлебные крошки по каталогу
+    pcat = product.productscats_set.filter(cat__container__state=7).values('cat', 'cat__parents', 'cat__container').first()
     if not pcat:
         return []
 

@@ -330,7 +330,7 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
             # Сохраняем категории для товара
             # ------------------------------
             ids_cats = request.POST.getlist('cats')
-            mh.row.productscats_set.filter(container__state=7).delete()
+            mh.row.productscats_set.filter(cat__container__state=7).delete()
             if ids_cats:
                 cats = Blocks.objects.filter(pk__in=ids_cats)
                 for cat in cats:
@@ -727,6 +727,16 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
 
+@login_required
+def props_positions(request, *args, **kwargs):
+    """Изменение позиций свойств"""
+    result = {}
+    mh_vars = props_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    mh.get_permissions(Products) # Права от товаров/услуг
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
 def search_props(request, *args, **kwargs):
     """Поиск свойств
        :param request: HttpRequest
@@ -836,6 +846,7 @@ def edit_product_pvalue(request, action: str, row_id: int = None, *args, **kwarg
     """
     result = {}
     mh_vars = products_pvalues_vars.copy()
+    mh_vars['select_related_list'] = ['prop', 'prop__prop']
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.get_permissions(Products) # Права от товаров/услуг
     context = mh.context
@@ -854,42 +865,74 @@ def edit_product_pvalue(request, action: str, row_id: int = None, *args, **kwarg
             else:
                 context['error'] = 'Недостаточно прав'
     elif request.method == 'POST':
-        # Нетрадиционное сохранение
-        # Принимаем prop, записываем линковку
+        # Обновляем линковку
         prop = None
-        prop_id = request.POST.get('prop')
+        prop_id = request.POST.get('prop_id')
         if prop_id:
-            prop = PropertiesValues.objects.filter(pk=prop_id).first()
+            prop = Property.objects.filter(pk=prop_id).first()
+
+        pvalue = None
+        pvalue_id = request.POST.get('pvalue_id')
+        if pvalue_id:
+            pvalue = PropertiesValues.objects.filter(pk=pvalue_id).first()
+
         product = None
         product_id = request.POST.get('product')
         if product_id:
             product = Products.objects.filter(pk=product_id).first()
 
+        new_tag = request.POST.get('new_tag', '')
+        new_tag = new_tag.strip()
+        if prop and new_tag and not pvalue:
+            pvalue = PropertiesValues.objects.filter(prop=prop, str_value=new_tag).first()
+            if not pvalue and mh.permissions['create']:
+                pvalue = PropertiesValues()
+                pvalue.prop = prop
+                pvalue.str_value = new_tag
+                pvalue.save()
+
         if action == 'create' or (action == 'edit' and row):
-            if action == 'create' and product and prop:
+
+            analog = ProductsProperties.objects.filter(
+                product = product,
+                prop = pvalue,
+            )
+            if row:
+                analog = analog.exclude(pk=row.id)
+            if analog:
+                if analog:
+                    context['error'] = 'Такое свойство уже присвоено этому товару'
+            elif action == 'create' and product and pvalue:
                 if mh.permissions['create'] and prop:
-                    analog = ProductsProperties.objects.filter(
+                    row = ProductsProperties.objects.create(
                         product = product,
-                        prop = prop
+                        prop = pvalue,
                     )
-                    if analog:
-                        context['error'] = 'Такое свойство уже присвоено этому товару'
-                    else:
-                        row = ProductsProperties.objects.create(
-                            product = product,
-                            prop = prop,
-                        )
-                        context['success'] = 'Данные успешно записаны'
-                        context['row'] = {'id': row.id}
+                    context['success'] = 'Данные успешно записаны'
+                    context['row'] = {'id': row.id}
                 else:
                     context['error'] = 'Недостаточно прав'
-            if action == 'edit' and row and prop and product and product.id == row.product_id:
+            elif action == 'edit' and row and product and product.id == row.product_id:
                 if mh.permissions['edit']:
-                    row.prop = prop
+                    if pvalue:
+                        row.prop = pvalue
                     row.save()
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
+            else:
+                context['error'] = 'Произошла ошибка'
+        if row:
+            context['row'] = {
+                'id': row.id,
+                'prop_id': row.prop.prop.id,
+                'pvalue_id': row.prop.id,
+
+                'name': row.prop.prop.name,
+                'is_active': row.prop.prop.is_active,
+                'position': row.prop.prop.position,
+                'value': row.prop.str_value,
+            }
     return JsonResponse(context, safe=False)
 
 costs_vars = {

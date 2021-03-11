@@ -1,0 +1,7 @@
+{% for c in page.containers %}
+  {% if forloop.last and container.container.id == c.id %}
+    <div class="desktop_footer">
+      {% include "web/components/footer.html" %}
+    </div>
+  {% endif %}
+{% endfor %}

@@ -1,0 +1,105 @@
+{% load mtags flatcontent_tags tags %}<!DOCTYPE html><html lang="en"><head>
+{% include "skeleton_header.html" %}
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#263238">
+<link href="/media/css/bootstrap.min.css" rel="stylesheet">
+<link href="/media/css/owl.carousel.css" rel="stylesheet">
+<link href="/media/css/owl.theme.default.css" rel="stylesheet">
+<link href="/media/css/animations.css" rel="stylesheet">
+<link href="/static/admin/css/font-awesome.min.css" rel="stylesheet">
+<link href="/media/css/animate.css" rel="stylesheet">
+<link href="/media/css/lity.css" rel="stylesheet">
+<link href="/media/css/style.css" rel="stylesheet">
+<link href="/media/css/media-queries.css" rel="stylesheet">
+<!--violet.css violet-2.css blue.css blue-2.css
+    green.css green-2.css cyan.css red.css red-2.css
+-->
+<link href="/media/css/cyan-2.css" rel="stylesheet">
+{% block extrahead %}{% endblock %}
+</head>
+<body id="top">
+{% block body %}
+  <div class="preloader">
+    <div class="waves">
+      <div class="circle-1"></div>
+      <div class="circle-2"></div>
+      <div class="circle" style="border-radius: 50%;">
+        <img src="{{ containers.main.tags.logo.thumb }}" alt="{{ containers.main.tags.logo.title|textize }}" loading="lazy">
+      </div>
+    </div>
+  </div>
+  <nav id="navigation" class="navbar no-scrolled">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="burger-menu">
+            <span class="burger"></span>
+          </span>
+        </button>
+        <a class="navbar-brand" href="#">
+          <h3><img src="{{ containers.main.tags.logo.thumb }}" alt="{{ containers.main.tags.logo.title|textize }}"> {{ containers.main.tags.logo.description }}</h3>
+        </a>
+      </div>
+      {% flatmenu request 'mainmenu' %}
+    </div>
+  </nav>
+  {% block content %}{% endblock %}
+
+
+  <div class="container subscribe">
+    <div class="row">
+      <div class="col-md-5 subscribe-text">
+        <div>
+          <h3>Подпишись на новости</h3>
+        </div>
+      </div>
+      <div class="col-md-7 subscribe-input">
+        <div class="input-group">
+          <input type="email" name="email" class="form-control" placeholder="Email" required>
+          <span class="input-group-btn">
+            <button class="btn" type="button">
+              <i class="fa fa-paper-plane" aria-hidden="true"></i>
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 footer-logo">
+          <a class="footer-brand" href="/">
+            <p>
+              <img src="{{ containers.main.tags.logo.thumb }}" alt="{{ containers.main.tags.logo.name|textize }}"> {{ containers.main.tags.logo.title }}
+            </p>
+          </a>
+        </div>
+        <div class="col-md-4 footer-social">
+          <div>
+            {% for block in containers.main.tags.social.sub %}
+              <a href="{{ block.link }}" target="_blank">
+                <i class="fa fa-{{ block.icon }}" aria-hidden="true"></i>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="col-md-4 copyright">
+          {{ containers.main.tags.copyright.html|safe }}
+        </div>
+      </div>
+    </div>
+  </footer>
+{% endblock %}
+<script src="/media/js/jquery.min.js"></script>
+<script src="/media/js/bootstrap.min.js"></script>
+<script src="/media/js/owl.carousel.min.js"></script>
+<script src="/media/js/wow.min.js"></script>
+<script src="/media/js/lity.min.js"></script>
+<script src="/media/js/smooth-scroll.js"></script>
+<script src="/media/js/main.js"></script>
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

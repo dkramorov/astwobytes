@@ -1,0 +1,20 @@
+{% load mtags %}
+<section id="screenshots">
+  <div class="padding-masc">
+    {% if container.name %}<h3>{{ container.name }}</h3>{% endif %}
+    {% if container.description %}
+      <h4>
+        <i class="color">{{ container.description|safe }}</i>
+      </h4>
+    {% endif %}
+    <div class="screenshots-slider">
+      {% for block in blocks %}
+        <div class="slide wow fadeInUp" data-wow-duration="1s">
+          <a href="{{ block.imagine }}" data-lity data-lity-desc="{{ block.name|textize }}">
+            <img src="{% imagine block.img '800x800' block.get_folder True %}" alt="{{ block.name|textize }}">
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

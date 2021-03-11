@@ -16,10 +16,36 @@ var isIE11=!(window.ActiveXObject)&&"ActiveXObject"in window;if(isIE11){$('html'
 if($('body').hasClass('dark')){$('html').addClass('dark');}
 if($('body').hasClass('boxed')){$('html').addClass('boxed');}}});$.browserSelector();theme.globalWindowWidth=$(window).width();var globalWindowWidth=$(window).width();window.onresize=function(){theme.globalWindowWidth=$(window).width();}
 if(/iPad|iPhone|iPod/.test(navigator.platform)){$(document).ready(function($){$('.thumb-info').attr('onclick','return true');});}
-$(window).on('load',function(){if($('[data-toggle="tooltip"]').length){$('[data-toggle="tooltip"]').tooltip();}
-if($('[data-toggle="popover"]').length){$('[data-toggle="popover"]').popover();}});if($('a[data-toggle="tab"]').length){$('a[data-toggle="tab"]').on('shown.bs.tab',function(e){$(this).parents('.nav-tabs').find('.active').removeClass('active');$(this).addClass('active').parent().addClass('active');});}
-if(window.location.hash){$(window).on('load',function(){if($(window.location.hash).get(0)){$('a.nav-link[href="'+window.location.hash+'"]:not([data-hash])').trigger('click');}});}
-if($('a[data-toggle="tab"]').length){$('a[data-toggle="tab"]').on('shown.bs.tab',function(e){var $tabPane=$($(e.target).attr('href'));if($tabPane.length){$tabPane.find('.owl-carousel').trigger('refresh.owl.carousel');}});}
+
+$(window).on('load',function(){
+  if($('[data-toggle="tooltip"]').length){
+    $('[data-toggle="tooltip"]').tooltip();
+  }
+  if($('[data-toggle="popover"]').length){
+    $('[data-toggle="popover"]').popover();
+  }
+});
+if($('a[data-toggle="tab"]').length){
+  $('a[data-toggle="tab"]').on('shown.bs.tab',function(e){
+    $(this).parents('.nav-tabs').find('.active').removeClass('active');
+    $(this).addClass('active').parent().addClass('active');
+  });
+}
+if(window.location.hash){
+  $(window).on('load',function(){
+    if($(window.location.hash).get(0)){
+      $('a.nav-link[href="'+window.location.hash+'"]:not([data-hash])').trigger('click');
+    }
+  });
+}
+if($('a[data-toggle="tab"]').length){
+  $('a[data-toggle="tab"]').on('shown.bs.tab',function(e){
+    var $tabPane=$($(e.target).attr('href'));
+    if($tabPane.length){
+      $tabPane.find('.owl-carousel').trigger('refresh.owl.carousel');
+    }
+  });
+}
 if(!$('html').hasClass('disable-onload-scroll')&&window.location.hash&&!['#*'].includes(window.location.hash)){window.scrollTo(0,0);$(window).on('load',function(){setTimeout(function(){var target=window.location.hash,offset=($(window).width()<768)?180:90;if(!$(target).length){return;}
 if($("a[href$='"+window.location.hash+"']").is('[data-hash-offset]')){offset=parseInt($("a[href$='"+window.location.hash+"']").first().attr('data-hash-offset'));}else if($("html").is('[data-hash-offset]')){offset=parseInt($("html").attr('data-hash-offset'));}
 if(isNaN(offset)){offset=0;}

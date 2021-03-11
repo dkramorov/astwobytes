@@ -1,0 +1,86 @@
+{% load flatcontent_tags mtags %}
+<div class="container">
+  <div class="row mb-4">
+    <div class="col">
+      <a id="product_props"></a>
+      <div id="description" class="tabs tabs-simple tabs-simple-full-width-line tabs-product tabs-dark mb-2">
+        <ul class="nav nav-tabs justify-content-start text-center">
+          {% if 'article2' in page.tags %}
+            <li class="nav-item active">
+              <a class="nav-link active font-weight-bold text-3 text-uppercase py-2 px-3" href="#productReview" data-toggle="tab">Обзор</a>
+            </li>
+          {% endif %}
+          <li class="nav-item{% if not 'article2' in page.tags %} active{% endif %}">
+            <a class="nav-link{% if not 'article2' in page.tags %} active{% endif %} font-weight-bold text-3 text-uppercase py-2 px-3" href="#productDescription" data-toggle="tab">Описание</a>
+          </li>
+          {% if product.props %}
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productInfo" data-toggle="tab">Характеристики</a>
+            </li>
+          {% endif %}
+          {% if 'videos' in page.tags %}
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productVideos" data-toggle="tab">Видео</a>
+            </li>
+          {% endif %}
+          {% if photo_sections.3 %}
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#live_photos" data-toggle="tab">Живые фото</a>
+            </li>
+          {% endif %}
+        </ul>
+        <div class="tab-content p-0">
+          {% if 'article2' in page.tags %}
+            <div class="tab-pane px-0 py-3 active" id="productReview">
+              {% for container in page.containers %}
+                {% flatcontent request page 'article2' %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="tab-pane px-0 py-3{% if not 'article2' in page.tags %} active{% endif %}" id="productDescription">
+            {{ product.info|safe }}
+          </div>
+          <div class="tab-pane px-0 py-3" id="productInfo">
+            <table class="table table-striped m-0">
+              <tbody>
+                {% for item in product.props %}
+                  <tr>
+                    <th>{{ item.prop.name }}</th>
+                    <td>
+                      {% for pvalue in item.values %}
+                        {{ pvalue.str_value }}
+                        {% if item.prop.measure %}
+                          {{ item.prop.measure }}
+                        {% endif %}
+                      {% endfor %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% if 'videos' in page.tags %}
+            <div class="tab-pane px-0 py-3" id="productVideos">
+              {% for container in page.containers %}
+                {% flatcontent request page 'videos' %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if photo_sections.3 %}
+            <div class="tab-pane px-0 py-3" id="live_photos">
+              <div class="row">
+                {% for photo in photo_sections.3 %}
+                  <div class="col-lg-3 col-md-6 mb-3">
+                    <a class="fancybox" href="{{ photo.imagine }}">
+                      <img class="img-fluid" src="{% imagine photo.img '300x300' photo.get_folder True %}" alt="Живые фото" loading="lazy">
+                    </a>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

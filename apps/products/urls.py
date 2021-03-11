@@ -32,6 +32,7 @@ urlpatterns = [
     path('admin/props/', views.show_props, name='show_props'),
     url('^admin/props/(?P<action>create)/$', views.edit_prop, name='create_prop'),
     url('^admin/props/(?P<action>edit|drop|img|pvalue)/(?P<row_id>[0-9]{1,11})/$', views.edit_prop, name='edit_prop'),
+    path('admin/props/positions/', views.props_positions, name='props_positions'),
     # аякс-поиск свойств
     path('props/search/', views.search_props, name='search_props'),
 

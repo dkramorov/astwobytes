@@ -8,6 +8,10 @@
 {% endblock %}
 
 {% block body %}
+  <div class="page-cover">
+    {% flatcontent request page 'img_bg' %}
+    {% flatcontent request page 'video_bg' %}
+  </div>
   <div id="page" class="page">
     {% for container in page.containers %}
       {% flatcontent request page container.container.tag %}

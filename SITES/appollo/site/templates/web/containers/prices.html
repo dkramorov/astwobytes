@@ -1,0 +1,45 @@
+{% load mtags %}
+<section id="price">
+  <div class="padding-masc">
+    <div class="container">
+      {% if container.name %}<h3>{{ container.name }}</h3>{% endif %}
+      {% if container.description %}
+        <h4 class="mb60">
+          <i class="color">{{ container.description|safe }}</i>
+        </h4>
+      {% endif %}
+      <div class="row">
+        {% for block in blocks %}
+          <div class="plan col-md-4 wow fadeInUp" data-wow-duration="1.5s">
+            <ul>
+              <li class="plan-title">
+                {% if block.tag %}
+                  <div class="optimal">
+                    <i class="fa fa-check"></i>
+                    <p>Реком</p>
+                  </div>
+                {% endif %}
+                <h3>{{ block.name }}</h3>
+              </li>
+              <li class="plan-price{% if block.tag %} color{% endif %}">{{ block.title }}</li>
+              <li>
+                <ul class="options">
+                  {% for item in block.sub %}
+                    <li>{{ item.name }} <span>{{ item.description }}</span></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              {% if block.link %}
+                <li class="btn price-button">
+                  <a href="{{ block.link }}" class="btn button order{% if block.tag %} color{% endif %}">
+                    <i class="fa fa-check"></i> {{ block.description }}
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

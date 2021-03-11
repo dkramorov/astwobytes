@@ -1,0 +1,33 @@
+{% load mtags %}
+<section id="team">
+  <div class="padding-masc">
+    <div class="container text-center">
+      {% if container.name %}<h3>{{ container.name }}</h3>{% endif %}
+      {% if container.description %}
+        <h4 class="mb50">
+          <i class="color">{{ container.description|safe }}</i>
+        </h4>
+      {% endif %}
+      <div class="row">
+        {% for block in blocks %}
+          <div class="col-xs-12 col-sm-6 col-md-3 wow fadeInUp team-main" data-wow-duration="1.3s">
+            <div class="team-item">
+              <img src="{% imagine block.img '600x600' block.get_folder True %}" alt="{{ block.name }}">
+              <span>
+                {% for item in block.sub %}
+                  <a href="{{ item.link }}" target="_blank">
+                    <i class="fa fa-{{ item.icon }}" aria-hidden="true"></i>
+                  </a>
+                {% endfor %}
+              </span>
+            </div>
+            <div class="name mb30">
+              {% if block.name %}<h4>{{ block.name }}</h4>{% endif %}
+              {% if block.html %}<p>{{ block.html|safe }}</p>{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

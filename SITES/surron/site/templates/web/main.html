@@ -1,13 +1,5 @@
 {% extends "skeleton.html" %}
-{% load flatcontent_tags tags %}
-
-{% block left %}
-  {% catalogue request %}
-{% endblock %}
-
-{% block right %}
-  {% flatcontent request page "slider" %}
-{% endblock %}
+{% load mtags flatcontent_tags %}
 
 {% block content %}
   {% for container in page.containers %}

@@ -5,9 +5,9 @@
       <div class="col-md-6 col-lg-4 mb-5 mb-lg-0">
         <div class="card rounded-0">
           <div class="card">
-            <a class="my-4" href="{{ menu.link }}" {% if menu.blank %} target="_blank"{% endif %}>
+            <a href="{{ menu.link }}" {% if menu.blank %} target="_blank"{% endif %}>
               <img src="{{ menu.imagine }}" loading="lazy" />
-              <h4 class="font-weight-bold text-6 pl-4 roboto">{{ menu.name }}{% if menu.icon %} <i class="fa fa-{{ menu.icon }}"></i>{% endif %}</h4>
+              <h4 class="font-weight-bold text-6 py-4 roboto px-4 text-black-2">{{ menu.name }}{% if menu.icon %} <i class="fa fa-{{ menu.icon }}"></i>{% endif %}</h4>
             </a>
           </div>
 {% comment %}<!--

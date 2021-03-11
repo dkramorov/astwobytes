@@ -1073,9 +1073,19 @@ var RLANG = {
       this.$editor.find('table').click($.proxy(this.tableObserver, this));
     },
     observeScroll: function(){
+
+      var sel = $(':focus');
+      if (sel.length == 0){
+          return;
+      }
+
       var scrolltop = $(this.document).scrollTop();
       var boxtop = this.$box.offset().top;
       var left = 0;
+
+      if (scrolltop > boxtop + this.$box.height()){
+        return;
+      }
 
       if (scrolltop > boxtop){
         var width = '100%';
@@ -1085,7 +1095,7 @@ var RLANG = {
         }
 
         this.fixed = true;
-        this.$toolbar.css({ position: 'fixed', width: width, zIndex: 1005, top: this.opts.fixedTop + 'px', left: left });
+        this.$toolbar.css({ position: 'fixed', width: width, zIndex: 1005, top: (scrolltop + this.opts.fixedTop) + 'px', left: left });
       }else{
         this.fixed = false;
         this.$toolbar.css({ position: 'relative', width: 'auto', zIndex: 1, top: 0, left: left });

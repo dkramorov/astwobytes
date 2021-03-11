@@ -714,14 +714,16 @@ class ModelHelper:
             return []
 
         if self.custom_order:
-            order_by = ["ordering", ]
+            order_by = ['ordering', ]
             # ----------
             # Сортировки
             # ----------
             if self.order_by:
                 for item in self.order_by:
                     order_by.append(item)
-            query = query.extra(select={"ordering":self.custom_order}, order_by=order_by)
+            query = query.extra(select={
+                'ordering': self.custom_order,
+            }, order_by=order_by)
         # ----------
         # Сортировки
         # ----------
@@ -817,6 +819,11 @@ def create_model_helper(mh_vars, request, CUR_APP: str,
             mh.filter_add(rfilter)
         for rsorter in filters_and_sorters['sorters']:
             mh.order_by_add(rsorter)
+        if not mh.order_by and mh.model and hasattr(mh.model, 'position'):
+            mh.order_by_add('position')
+            filters_and_sorters['params']['sorters']['position'] = 'asc'
+            filters_and_sorters['sorters'] = 'position'
+
         mh.context['fas'] = filters_and_sorters['params']
         # Чтобы получить возможность модифицировать фильтры и сортировщики
         mh.filters_and_sorters = filters_and_sorters

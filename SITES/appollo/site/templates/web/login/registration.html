@@ -1,0 +1,143 @@
+{% extends "skeleton.html" %}
+{% load flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+  .stylization .btn{
+    display: inline-block;
+    border: none;
+    transition: all 0.2s;
+    font-weight: 500;
+    background: #373d54;
+    padding: 10px 35px;
+    color: #ffffff;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  .social i{
+    font-size:18px;
+  }
+  .auth-wrap .auth-col label.error{
+    float:right;
+    width: auto;
+  }
+  .stylization button.close {
+    padding: 5px;
+  }
+</style>
+{% if request.session.shopper %}
+<script type="text/javascript">
+  window.location.href = '/profile/';
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap stylization">
+  <div class="auth-col">
+    <h2>Вход</h2>
+
+    <div class="social">
+      <p>
+        <a class="btn btn-default" href="{{ vk_link }}">Войти через <i class="fa fa-vk"></i></a>
+        <a class="btn btn-default" href="{{ yandex_link }}">Войти через Yandex</a>
+      </p>
+    </div>
+
+    <p>или по паролю</p>
+    <form action="/login/" method="post" id="login_form" class="login">
+      {% csrf_token %}
+      <p>
+        <label>Логин <span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Ваш логин" name="login" data-msg="Введите логин">
+      </p>
+      <p>
+        <label for="password">Пароль <span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
+      </p>
+      <p class="feedback_alerts"></p>
+      <p class="auth-submit">
+        <input type="submit" value="Войти">
+        <input type="checkbox" id="rememberme" value="forever">
+        <label for="rememberme">Запомнить меня</label>
+      </p>
+      <p class="auth-lost_password">
+        <a href="#">Забыли пароль?</a>
+      </p>
+    </form>
+  </div>
+  <div class="auth-col">
+    <h2>Регистрация</h2>
+    <form action="/registration/" method="post" id="register_form" class="register">
+      {% csrf_token %}
+      <p>
+        <label>Ваше имя<span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Ваше имя" name="name" data-msg="Введите ваше имя">
+      </p>
+      <p>
+        <label>Ваш Email</label><input class="mb-0 email" type="text" placeholder="Ваш Email" name="email" data-msg="Введите ваш Email">
+      </p>
+      <p>
+        <label>Логин<span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Логин" name="login" data-msg="Введите логин">
+      </p>
+      <p>
+        <label>Телефон<span class="required">*</span></label><input class="mb-0 required phone" type="text" placeholder="Ваш телефон" name="phone" data-msg="Введите ваш телефон">
+      </p>
+      <p>
+        <label>Пароль<span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
+      </p>
+      <p>
+        <label>Повторите пароль<span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Повторите пароль" name="passwd2" data-msg="Повторите пароль">
+      </p>
+
+      <p class="feedback_alerts"></p>
+      <p class="auth-submit">
+        <input type="submit" value="Регистрация">
+      </p>
+    </form>
+  </div>
+</div>
+
+  {% for container in page.containers %}
+    {% flatcontent request page container.container.tag %}
+  {% endfor %}
+{% endblock %}
+
+
+{% block extrascripts %}
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/static/js/feedback.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    function redirect_to_profile(result){
+      setTimeout(function(){
+          window.location.href = result['redirect'];
+      }, 800);
+    }
+    var reg = new FeedBack("register_form", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Пользователь создан",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": redirect_to_profile,
+      "callback_error": "",
+      "dont_reset_on_submit": 1, // or 1
+      //"errorClass": "invalid",
+    });
+    var auth = new FeedBack("login_form", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Вы вошли",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": redirect_to_profile,
+      "callback_error": "",
+      "dont_reset_on_submit": 1, // or 1
+      //"errorClass": "invalid",
+    });
+  });
+</script>
+{% endblock %}

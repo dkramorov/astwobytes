@@ -1,0 +1,71 @@
+{% load mtags %}
+<section data-id="spinner360" class="section section-page fp-auto-height-responsive spinner360">
+  <div class="section-cover"></div>
+  {% if container.description %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        {% comment %}<!--<span>ЗАКРАШЕННЫЙ</span>
+                         <span class="text-stroke">ОБВОД</span>
+
+        http://spritespin.ginie.eu/samples/#/api-fullscreen
+        http://spritespin.ginie.eu/howto/
+        -->{% endcomment %}
+        <span>{{ container.description|safe }}</span>
+      </h3>
+    </div>
+  {% endif %}
+
+    <div class="section-content align-x-center">
+      <div class="c-wrapper text-wrapper">
+        <div class="row gutters">
+          {% for block in blocks %}
+          <div class="col-12 col-lg-6 offset-lg-1 bg-white mt-5 mb-5">
+            <div class="spritespin" data-folder="{{ block.tag }}" id="spinner_{{ block.id }}"></div>
+            <div class="pagination">
+              <a class="rotation_left"><i class="fa fa-angle-left"></i></a>
+              <a class="rotation_right"><i class="fa fa-angle-right"></i></a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="icon360"><img src="/media/misc/360.png" /></div>
+          </div>
+          <div class="col-12 col-lg-5 pt-5 pb-5 px-lg-5">
+            {% if block.name %}
+              <h2 class="h-title font-title anim-1 pb-5">
+                {{ block.name }}
+              </h2>
+            {% endif %}
+            {% if block.html %}
+              <div class="content-text anim-2">
+                {{ block.html|safe }}
+              </div>
+            {% endif %}
+
+
+            <div class="btns-group anim-5 mt-5">
+<!-- Должно быть окно перекрывающее все с характеристиками
+              <a class="btn btn-line-a" href="{{ block.link }}">
+                <span class="text">{{ block.description }}</span>
+                <span class="icon icon-menu icon-arrow-a icon-anim">
+                  <span class="arrow-right"></span>
+                </span>
+              </a>
+-->
+              {% if block.products %}
+                <a class="btn btn-order" href="{{ block.products.0.link }}">
+                  <span class="text">Заказать</span>
+                  <span class="fa fa-shopping-cart">
+                    <span class="arrow-right"></span>
+                  </span>
+                </a>
+              {% endif %}
+            </div>
+
+
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  <div class="section-footer"></div>
+</section>

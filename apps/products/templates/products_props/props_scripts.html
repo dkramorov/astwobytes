@@ -1,0 +1,136 @@
+<div id="ajax_drop_prop" tabindex="-1" role="dialog" aria-labelledby="myModalLabelProp" aria-hidden="true" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
+        <h4 id="myModalLabelProp" class="modal-title">Удалить свойство товара</h4>
+      </div>
+      <div class="modal-body">Вы уверены, что хотите удалить свойство товара id=<span id="ajax_drop_prop_id"></span><span class="hidden" id="ajax_drop_prop_ind"></span>?</div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
+        <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_prop_button">Да</button>
+      </div>
+    </div>
+  </div>
+</div>
+<form class="hidden" method="get" action="{{ root_url }}" id="current_drop_prop_form">{% csrf_token %}</form>
+
+<script type="text/javascript">
+var new_prop_counter = 0;
+var product_props_table;
+
+function fix_props_table_height_after_drop_row(){
+  // Чтобы экран не скакал, задаем высоту
+  var new_height = $("#product-props-table").height() - $("#product-props-table .tabulator-row").height();
+  product_props_table.setHeight(new_height);
+}
+
+function prepare_for_drop_prop(pk, row_index){
+  $("#ajax_drop_prop_id").html(pk);
+  $("#drop_prop_id").val(pk);
+  $("#ajax_drop_prop_ind").html(row_index);
+  $("#current_drop_prop_form").attr("action", "{{ root_url }}product_pvalues/drop/" + pk + "/");
+}
+
+function add_product_property(pk){
+  // Добавление нового свойства для товара в список свойств
+  // product_properties - контейнер свойств
+  // prop_1 - select2 для выбора свойства
+  // prop_1_pvalues - контейнер для выбора значения
+  // pvalues_1 - select2 для выбора значения свойства
+  new_prop_counter += 1;
+  var prop_id = "prop_" + new_prop_counter;
+  // Чтобы экран не скакал, задаем высоту
+  var new_height = $("#product-props-table").height() + $("#product-props-table .tabulator-row").height() + 3;
+  product_props_table.setHeight(new_height);
+  product_props_table.addRow({'is_active': false});
+
+  return new_prop_counter;
+}
+
+$(document).ready(function(){
+
+  product_props_table = new Tabulator("#product-props-table", {
+    data: [{% for item in props %}
+      {
+        'id': '{{ item.id }}',
+        'name': '{{ item.prop.prop.name }}',
+        'value': '{{ item.prop.str_value }}',
+        'is_active': {% if item.prop.prop.is_active %}true{% else %}false{% endif %},
+        'position': '{{ item.prop.prop.position }}',
+        'prop_id': '{{ item.prop.prop.id }}',
+        'actions': '{{ item.id }}',
+
+        'prop_id': '{{ item.prop.prop.id }}',
+        'pvalue_id': '{{ item.prop.id }}',
+      },
+    {% endfor %}],
+    {% include "products_props/props_tabulator_table_params.html" %}
+    columns:[
+{% comment %}/*
+      {% include "core/tabulator_cell/drag.html" %}
+*/{% endcomment %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Свойство",
+        field: "name",
+        headerFilterPlaceholder: "Свойство",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        editor: propPropEditor,
+        minWidth: 150,
+      },
+      {
+        title: "Значение свойства",
+        field: "value",
+        headerFilterPlaceholder: "Значение свойства",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        editor: propValueEditor,
+        minWidth: 150,
+      },
+
+      {
+        title: "Включен",
+        field: "is_active",
+        headerFilterPlaceholder: "Включен",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: {"": "Без фильтра", true: "Да", false: "Нет"},
+        },
+        formatter: booleanFormatter,
+        width: 90,
+      },
+
+      {% include "core/tabulator_cell/position.html" %}
+      {
+        title: "Действия",
+        field: "actions",
+        formatter: dropActionFormatter,
+        width: 70,
+        align:"center",
+        download: false,
+        cellClick:function(e, cell){
+          if (!cell.getRow().getData()['id']){
+            cell.getRow().delete();
+            fix_props_table_height_after_drop_row();
+          }
+        }
+      },
+    ],
+  });
+  // Добавление свойств товару
+  // Нужны перетаскиваемые вложенные панели,
+  // чтобы следить за сортировкой свойств
+  // ---
+  // Когда добавляется свойство, узнаем его тип
+  // Когда выбирается свойство, получаем список значений
+  // Когда изменяются значения - сохраняем свойство
+  // ---
+  // Нужна возможность удалять свойства
+  $("#add_product_property").click(function(){
+    add_product_property(0);
+  });
+});
+</script>

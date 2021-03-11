@@ -2,7 +2,7 @@
 {% load mtags flatcontent_tags %}
 
 {% block extrahead %}
-<link rel="stylesheet" type="text/css" href="/media/css/checkout.css" />
+<link rel="stylesheet" href="/media/css/white_page.css">
 <style type="text/css">
   label.error{
     color: #d20000 !important;
@@ -10,8 +10,11 @@
 </style>
 {% endblock %}
 
-{% block content %}
-<div class="container pr-lg-0 pl-lg-0 mb-5 pb-5">
+{% block extracontent %}
+<div class="simple_page">
+  {% include "web/components/breadcrumbs.html" %}
+
+<div class="container mb-5 pb-5">
   {% if not cart %}
     <h2>Ваша корзина пуста, сначала выберите, что хотите купить</h2>
   {% else %}
@@ -144,9 +147,9 @@
   {% endif %}
 </div>
 
-{% for container in page.containers %}
-  {% flatcontent request page container.container.tag %}
-{% endfor %}
+  {% include "web/components/footer.html" %}
+</div>
+
 {% endblock %}
 
 {% block extrascripts %}

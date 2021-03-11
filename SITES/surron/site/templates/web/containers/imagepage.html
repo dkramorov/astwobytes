@@ -1,0 +1,53 @@
+{% load mtags %}
+<section data-id="imagepage" class="section section-slide fullsize-slide section-page fp-auto-height-responsive">
+  <div class="slide-size">
+    <div class="section-slides slider-b swiper-container anim">
+      <div class="swiper-wrapper slider-wrapper">
+        {% for block in blocks %}
+          <div class="swiper-slide slide-item">
+            <div class="slide-b slide-anim fullscreen-slide content-top">
+              <a class="slide-bg fade-1" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+                <img class="img-block" alt="{{ block.name|textize }}" src="{% imagine block.img '1920x1080' block.get_folder True %}" loading="lazy">
+              </a>
+{% comment %}<!--
+              <div class="slide-content">
+                <div class="c-wrapper width-medium flex-col flex-full">
+                  <div class="row no-gutters flex-full">
+                    <div class="col col-12 col-lg-6 content-center">
+                      <div class="slide-text">
+                        {% if block.name %}
+                          <div class="s-header anim-1">
+                            <h2 class="s-title font-title">
+                              {{ block.name }}
+                            </h2>
+                          </div>
+                        {% endif %}
+                        <div class="s-text anim-2">
+                          {% if block.html %}
+                            <div>{{ block.html|safe }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+-->{% endcomment %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="section-footer section-footer-a  d-none d-lg-block ">
+    <div class="footer-right mr-4">
+      <a class="btn btn-line-b scroll down px-0 py-0" href="#">
+        <span class="text">Дальше</span>
+        <span class="icon icon-menu icon-arrow-a icon-anim">
+          <span class="arrow-down"></span>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>

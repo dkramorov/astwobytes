@@ -349,6 +349,7 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
             # ---------------------
             new_container = row
             new_container.id = None
+            new_container.position = None
             new_container.save()
             fill_from_template(new_container, row.state)
             urla = reverse_edit(mh_vars, ftype, 'edit', new_container.id)
@@ -1238,6 +1239,7 @@ def SearchLink(q_string: dict = None,
     # это предпросмотр, выбираем только main + pk
     # ------------------------------------------------------
     intas = [digit for digit in mcap.keys() if isinstance(digit, int)] # long?
+
     if intas:
         container_all_pages = Containers.objects.filter(Q(tag='main')|Q(pk__in=intas))
     else:
@@ -1253,21 +1255,24 @@ def SearchLink(q_string: dict = None,
         }
         all_containers.append(cap) # Для перевода
 
+    containers = []
     # Найдем менюшку -
     # найдем привязанные контейнеры
-    if blocks:
-        for block in blocks:
-            if block.title or block.description:
-                block_with_content = block
-        if not block_with_content:
+    blocks_with_content = [block for block in blocks]
+    if blocks_with_content:
+        containers = LinkContainer.objects.select_related('container').filter(block__in=blocks_with_content)
+        if containers:
+            blocks_dict = {block.id: block for block in blocks_with_content}
+            for container in containers:
+                if container.block_id in blocks_dict:
+                    block_with_content = blocks_dict[container.block_id]
+                    all_blocks.append(block_with_content)
+                    break
+        if not block_with_content and blocks:
             block_with_content = blocks[0]
-
-        all_blocks.append(block_with_content) # Для перевода
-
-    containers = []
-    if block_with_content:
-        containers = LinkContainer.objects.select_related('container').filter(block=block_with_content)
+            all_blocks.append(block_with_content) # Для перевода
         block_with_content.tags = []
+
     if containers:
         for container in containers:
             all_containers.append(container.container) # Для перевода

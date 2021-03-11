@@ -1,0 +1,47 @@
+{% load mtags %}
+<section id="blog">
+  <div class="padding-masc">
+    <div class="container text-center">
+      {% if container.name %}<h3>{{ container.name }}</h3>{% endif %}
+      {% if container.description %}
+        <h4 class="mb50">
+          <i class="color">{{ container.description|safe }}</i>
+        </h4>
+      {% endif %}
+      <div class="row">
+        {% for block in blocks %}
+          <div class="col-xs-12 col-sm-12 col-md-4 wow fadeInUp" data-wow-duration="1.3s">
+            <a href="{{ block.link }}" target="_blank" class="blog-post-link">
+              <div class="blog-item">
+                <div class="category">События</div>
+                <img src="{% imagine block.img '600x600' block.get_folder True %}" alt="{{ block.name|textize }}" loading="lazy">
+                <span>
+                  <i class="fa fa-link" aria-hidden="true"></i>
+                </span>
+              </div>
+              <div class="post-text">
+                {% if block.name %}<h4>{{ block.name }}</h4>{% endif %}
+                <div class="section-description">{{ block.html|safe }}</div>
+                <p class="date">
+                  <i class="fa fa-calendar" aria-hidden="true"></i>
+                  {{ block.created|date:'d.m.Y' }}
+                  <i class="fa fa-clock-o" aria-hidden="true"></i>
+                  {{ block.created|date:'H:i' }}
+                </p>
+<!--
+                <p class="interactive">
+                  <i class="fa fa-heart-o" aria-hidden="true"></i>
+                  45
+                  <i class="fa fa-comment-o" aria-hidden="true"></i>
+                  14
+                </p>
+-->
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+      </div>
+     </div>
+   </div>
+</section>

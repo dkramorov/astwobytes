@@ -1,24 +1,22 @@
 {% if breadcrumbs %}
-  <section class="page-header page-header-modern page-header-background page-header-background-md overlay overlay-color-dark overlay-show overlay-op-7" style="background-image: url('/media/misc/about.jpg');">
-    <div class="container">
-      <div class="row mt-5">
-        <div class="col-md-12 align-self-center p-static order-2 text-center">
-          <h1 class="text-9 font-weight-bold pt-3">{% block page_title %}{{ page.name }}{% endblock %}</h1>
-          {% comment %}<!--<span class="sub-title">subtitle</span>-->{% endcomment %}
-        </div>
-        <div class="col-md-12 align-self-center order-1">
-          <ul class="breadcrumb breadcrumb-light d-block text-center">
-            <li><a href="/">Главная</a></li>
-            {% for crumb in breadcrumbs %}
-              {% if forloop.last %}
-                <li class="active">{{ crumb.name }}</li>
-              {% else %}
-                <li><a href="{{ crumb.link }}">{{ crumb.name }}</a></li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% block page_title %}<h1>{{ page.name }}</h1>{% endblock %}
+      <ul class="breadcrumb mb-4">
+        <li>
+          <a href="/" class="text-black-2 fs-1">Главная</a>
+          <i class="fa fa-caret-right fs-1"></i>
+        </li>
+        {% for crumb in breadcrumbs %}
+          {% if forloop.last %}
+            <li class="px-1"><a class="text-black-2 fs-1">{{ crumb.name }}</a></li>
+          {% else %}
+            <li class="px-1"><a href="{{ crumb.link }}" class="text-black-2 fs-1">{{ crumb.name }}</a> <i class="fa fa-caret-right fs-1"></i></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
     </div>
-  </section>
+  </div>
+</div>
 {% endif %}

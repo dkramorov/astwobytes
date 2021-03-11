@@ -1,0 +1,27 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="stylization">
+  <div class="woocommerce">
+    <h2>Спасибо, ваш заказ оформлен, скоро мы свяжемся с вами</h2>
+
+    <h3>Заказ № {% if order.number %}{{ order.number }}{% else %}{{ order.id }}{% endif %} на сумму {{ order.total|money_format }} ₽ от {{ order.created|date:'d-m-Y H:i:s' }}</h3>
+  </div>
+</article>
+<br><br>
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+
+{% endblock %}
+
+{% block subscribe %}{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}

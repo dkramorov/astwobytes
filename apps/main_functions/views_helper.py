@@ -304,6 +304,9 @@ def search_view(request,
     for useless in useless_sr:
         mh.select_related.remove(useless)
 
+    if not mh.order_by and hasattr(mh.model, 'position'):
+        mh.order_by_add('position')
+
     rows = mh.standard_show(only_fields=exists_fields)
 
     for row in rows:

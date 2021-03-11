@@ -1,7 +1,7 @@
 {% load mtags %}
 <div class="row products product-thumb-info-list mb-5" {% comment %}data-plugin-masonry data-plugin-options="{'layoutMode': 'fitRows'}"{% endcomment %}>
   {% for product in products %}
-    <div class="col-12 col-sm-6 col-md-4 col-lg-4 pl-lg-0">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
       <div class="product_card mb-4">
         <div class="product">
           <div class="product-thumb-info border-0 mb-3">
@@ -26,22 +26,14 @@
           <div class="pl-4 pr-4 pb-1">
             <div class="d-flex justify-content-between">
               <div>
-                <a href="{{ page.link }}" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-1">{{ page.name }}</a>
-                <h3 class="text-3-5 font-weight-semi-bold font-alternative text-transform-none line-height-3 mb-0"><a href="{{ product.link }}" class="text-color-dark text-color-hover-primary">{{ product.name }}</a></h3>
+                <a href="{{ page.link }}" class="d-block text-uppercase text-decoration-none text-black-0 fs-09 mb-1">{{ page.name }}</a>
+                <h3 class="text-3-5 font-weight-semi-bold font-alternative text-transform-none line-height-3 mb-0"><a href="{{ product.link }}" class="text-black-9 fs-1-2">{{ product.name }}</a></h3>
               </div>
-
-              <div style="display:none;">
-                {% if product.costs %}
-                  {% for cost in product.costs %}
-                    <input type="radio" class="costs_types_{{ product.id }} cost-type-radio_{{ product.id }}" name="cost_type" id="option_{{ cost.cost_type.id }}" autocomplete="off"{% if forloop.first %} checked{% endif %} data-cost="{{ cost.cost|money_format }} ₽" data-cost_type_id="{{ cost.cost_type.id }}"> {{ cost.cost_type.name }}
-                  {% endfor %}
-                {% endif %}
-              </div>
-              <a data-product_id="{{ product.id }}" href="javascript:void(0);" class="text-decoration-none text-color-default text-color-hover-dark text-6 add_to_cart_btn"><i class="fa fa-shopping-cart text-dark"></i></a>
               {% comment %}<!--
               <a href="#" class="text-decoration-none text-color-default text-color-hover-dark text-4"><i class="fa fa-heart"></i></a>
               -->{% endcomment %}
             </div>
+
 {% comment %}<!--
             <div title="Rated 5 out of 5">
               <input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'default', 'size':'xs'}">
@@ -52,6 +44,8 @@
               {% if product.old_price %}
                 <span class="amount">{{ product.old_price|money_format }} ₽</span>
               {% endif %}
+
+              <a data-product_id="{{ product.id }}" href="javascript:void(0);" class="text-decoration-none text-color-default text-color-hover-dark add_to_cart_btn"><i class="fa fa-shopping-cart"></i></a>
             </p>
           </div>
         </div>

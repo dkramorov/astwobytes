@@ -1,0 +1,264 @@
+<script type="text/javascript">
+// Редктор для значений свойств с выпадающим списком
+var propValueEditor = function(cell, onRendered, success, cancel){
+  var cellValue = cell.getValue() || '';
+  var data = cell.getRow().getData();
+  var input = $('<select id="select2_pvalue_' + data['id'] + '"></select>');
+
+  onRendered(function(){
+    //var urla = "{% url 'products:search_props' %}";
+    //var placeholder = "Свойство товара";
+    //var pid = "";
+    //var order_by = "";
+
+    var urla = "{% url 'products:search_pvalues' %}";
+    var placeholder = "Значение свойства";
+    var pid = data['prop_id']; // id свойства
+    var order_by = "digit_value,str_value";
+    if(!pid){
+      success('Сначала выберите свойство');
+      return;
+    }
+
+    input.select2({
+      placeholder: placeholder,
+      width: '100%',
+      tags: true,
+      selectOnClose: true,
+      createTag: function (params) {
+        cell.getRow().update({
+          'new_tag': params.term,
+          'plvaue_id': null,
+        });
+        return {
+          id: 0,
+          text: params.term,
+        }
+      },
+
+      ajax: {
+        delay: 150,
+        url: urla,
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+            prop_id: pid,
+            order_by: order_by,
+          }
+          return query;
+        },
+         cache: false,
+         dataType: 'json',
+      }
+    });
+    input.on('change', function (e) {
+      success('');
+      cell.getRow().update({
+          'pvalue_id': input.val(),
+      });
+      save_prop_pvalue(cell);
+    });
+    input.on('blur', function (e) {
+      cancel();
+    });
+  });
+  return input.get(0);
+};
+// Редктор для свойств с выпадающим списком
+var propPropEditor = function(cell, onRendered, success, cancel){
+  var cellValue = cell.getValue() || '';
+  var data = cell.getRow().getData();
+  var input = $('<select id="select2_prop_' + data['id'] + '"></select>');
+
+  onRendered(function(){
+    var urla = "{% url 'products:search_props' %}";
+    var placeholder = "Свойство товара";
+    var pid = "";
+    var order_by = "";
+
+    input.select2({
+      placeholder: placeholder,
+      width: '100%',
+      ajax: {
+        delay: 150,
+        url: urla,
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+            prop_id: pid,
+            order_by: order_by,
+          }
+          return query;
+        },
+         cache: false,
+         dataType: 'json',
+      }
+    });
+    input.on('change', function (e) {
+      success(input.text());
+
+      cell.getRow().update({
+        'id': !data['id'] ? 0 : data['id'],
+        'name': input.text(),
+        'value': null,
+        'prop_id': input.val(),
+        'pvalue_id': null,
+        'position': null,
+        'is_active': false,
+        'actions': null,
+      });
+
+    });
+    input.on('blur', function (e) {
+      cancel();
+    });
+  });
+  return input.get(0);
+};
+var dropActionFormatter = function(cell, formatterParams, onRendered){
+  var row = cell.getRow();
+  var rowIndex = row.getIndex();
+  var pk = cell.getValue();
+
+  var actions = "<div class='padding-rl5 text-center'>";
+
+  if (!pk){
+    actions += " <a class='btn-xs btn btn-danger' href='javascript:void(0);'><i class='fa fa-trash'></i></a>";
+  } else {
+    actions += " <a class='btn-xs btn btn-danger' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_prop' onclick='prepare_for_drop_prop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+  }
+  actions += "</div>";
+  return actions;
+};
+var booleanFormatter = function(cell, formatterParams, onRendered){
+  var value = cell.getValue();
+  var result = "<div class='padding-rl5 text-center'>";
+  if(value){
+    result += " <a class='btn text-success' href='javascript:void(0);'><i class='fa fa-check-square-o'></i></a> ";
+  }else{
+    result += " <a class='btn text-danger' href='javascript:void(0);'><i class='fa fa-square-o'></i></a> ";
+  }
+  result += "</div>";
+  return result;
+};
+var imgFormatter = function(cell, formatterParams, onRendered){
+  var value = cell.getValue();
+  var data = cell.getData();
+  var result = "";
+  if(value){
+    result += "<div style='height:150px;'>";
+    result += "<img src='" + data.thumb + "' />";
+    result += "</div>";
+  }
+  return result;
+};
+
+function save_prop_pvalue(cell){
+  // Редактируем значение для свойства товара
+  // Редактируется линковка по id,
+  // мы присваиваем другое значение в нее
+  var data = cell.getData();
+  var pk = data['id'];
+  var urla = "{{ root_url }}product_pvalues/edit/" + pk + "/";
+  if(parseInt(pk) === 0){
+    urla = "{{ root_url }}product_pvalues/create/";
+  }
+  $.ajax({
+    type: 'POST',
+    url: urla,
+    data: {
+      csrfmiddlewaretoken: getCookie('csrftoken'),
+      new_tag: data['new_tag'],
+      product: {{ row.id }},
+      // ид идет в ссылке если есть
+      prop_id: data['prop_id'],
+      pvalue_id: data['pvalue_id'],
+    }
+  }).done(function(r) {
+    var status = 'danger';
+    if(r.error){
+      msg = r.error;
+    }else if(r.success){
+      msg =  r.success;
+      status = 'success';
+
+      cell.getRow().update({
+        'id': r['row']['id'],
+        'name': r['row']['name'],
+        'value': r['row']['value'],
+        'prop_id': r['row']['prop_id'],
+        'position': r['row']['position'],
+        'is_active': r['row']['is_active'],
+        'actions': r['row']['id'],
+      });
+
+    }
+    $.notify({
+      message: msg,
+    },{
+     status: status,
+    });
+    //$(el_id).prop('disabled', false);
+  }).fail(function() {
+    $.notify({
+      message: msg,
+    },{
+      status: status,
+    });
+    $(el_id).prop('disabled', false);
+  });
+}
+
+$(document).ready(function(){
+
+  $(document).on("keypress", function(e) {
+    if(e.which == 13) {
+      if($("#ajax_drop_prop").hasClass("in")){
+        $("#ajax_drop_prop").modal('hide');
+        $("#ajax_drop_prop_button").click();
+      }
+    }
+  });
+
+  // -----------------
+  // Удаление свойства
+  // -----------------
+  $('#ajax_drop_prop_button').click(function(){
+    var pk = $('#ajax_drop_prop_id').html();
+    var row_index = parseInt($('#ajax_drop_prop_ind').html());
+    var $form = $('#current_drop_prop_form');
+    var msg = 'Произошла ошибка, сообщите администратору';
+    var status = 'danger';
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: $form.serialize()
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+
+        fix_props_table_height_after_drop_row();
+
+        // Удаляем строчку из таблицы
+        product_props_table.deleteRow(row_index);
+      }
+      $.notify({
+        message: msg,
+      },{
+       status: status,
+      });
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    });
+  });
+});
+</script>

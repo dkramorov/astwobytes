@@ -1,0 +1,40 @@
+{% load mtags %}
+<section id="about">
+  <div class="padding-masc">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-6 col-md-push-6 about-text">
+          <div>
+            {% if container.name %}<h3>{{ container.name }}</h3>{% endif %}
+            {% if container.description %}
+              <h4 class="mb30">
+                <i class="color">{{ container.description|safe }}</i>
+              </h4>
+            {% endif %}
+            <div class="section-description">
+              {% for block in blocks %}
+                {% if block.html %}{{ block.html|safe }}{% endif %}
+                <br>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 col-md-pull-6 text-center">
+          <div class="ilustration">
+            {% for block in blocks %}
+              {% if block.img %}
+                <div class="{% cycle 'back' 'front' %}-phone wow slideInUp" data-wow-duration="1.3s" data-wow-delay=".2s">
+                  <div class="iphone-x">
+                    <i></i>
+                    <b></b>
+                    <img src="{% imagine block.img '800x800' block.get_folder True %}" alt="{{ block.name|textize }}">
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

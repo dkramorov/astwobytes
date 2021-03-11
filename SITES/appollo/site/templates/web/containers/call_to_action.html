@@ -1,0 +1,32 @@
+{% load mtags %}
+<section id="video">
+  <div class="background-img" style="background-image: url('/media/misc/background-img-3.jpg')"></div>
+  <div class="masc">
+    <div class="space">
+      <div class="stars"></div>
+    </div>
+    <div class="container">
+      <div class="row">
+        {% for block in blocks %}
+          <div class="col-md-6 video-text">
+            <div>
+              {% if block.name %}<h3 class="white">{{ block.name }}</h3>{% endif %}
+              {% if block.html %}<h4><i>{{ block.html|safe }}</i></h4>{% endif %}
+            </div>
+          </div>
+          <div class="col-md-6 text-center video-button">
+            <div class="waves">
+              <div class="circle-1"></div>
+              <div class="circle-2"></div>
+              <a href="{{ block.link }}" data-lity>
+                <div class="circle wow bounceIn" data-toggle="modal" data-target="#myModal">
+                  <i class="fa fa-play-circle" aria-hidden="true"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

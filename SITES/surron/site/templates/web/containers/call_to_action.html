@@ -1,0 +1,24 @@
+{% load mtags %}
+<section class="parallax section section-text-light section-parallax call_to_action" data-plugin-parallax data-plugin-options="{'speed': 1.5, 'parallaxHeight': '210%'}" {% if container.img %}data-image-src="{{ container.imagine }}"{% endif %}>
+    <div class="container">
+      <div class="row">
+        {% for block in blocks %}
+          <div class="col-sm-9 col-lg-9">
+            {% if block.img %}
+              <div class="imga pb-4 mb-4">
+                <img src="{{ block.imagine }}" loading="lazy" />
+              </div>
+            {% endif %}
+            <div class="call-to-action-content pb-4 mb-4">
+              <div class="desc">{{ block.html|safe }}</div>
+            </div>
+            {% if block.link %}
+              <div class="call-to-action-btn">
+                <a href="{{ block.link }}"{% if block.blank %} target="_blank"{% endif %} class="btn btn-dark rounded-0 font-weight-bold">{{ block.description }} <i class="fa fa-{% if block.icon %}{{ block.icon }}{% else %}external-link{% endif %}"></i> </a>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+</section>

@@ -1,0 +1,67 @@
+{% load mtags %}
+<section data-id="advantagespage" class="section section-home header-home advantagespage">
+  {% if container.description %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        {% comment %}<!--<span>ЗАКРАШЕННЫЙ</span>
+                         <span class="text-stroke">ОБВОД</span>
+        -->{% endcomment %}
+        <span class="text-stroke">{{ container.description|safe }}</span>
+      </h3>
+    </div>
+  {% endif %}
+
+  <div class="section-content align-x-center align-y-center anim">
+    <div class="width-medium">
+      <div class="row no-gutters">
+        {% for block in blocks %}
+          <div class="col-12 col-lg-3">
+            {% if not block.tag %}
+              <div class="home-left content-text text-center">
+                {% if not block.products %}
+                  <div{% if not forloop.first %} class="advantage"{% endif %}>
+                  {% if block.name %}
+                    <h2 class="h-title font-title anim-3">
+                      {{ block.name }}
+                    </h2>
+                  {% endif %}
+                  {% if block.html %}
+                    <div class="text mb-lg-5 mb-md-3 anim-4">
+                      {{ block.html|safe }}
+                    </div>
+                  {% endif %}
+                  </div>
+                {% else %}
+                  <div class="btns-group anim-5">
+                    <a class="btn btn-order mt-5" href="{{ block.products.0.link }}">
+                      <span class="text">Заказать</span>
+                      <span class="fa fa-shopping-cart">
+                        <span class="arrow-right"></span>
+                      </span>
+                    </a>
+                  </div>
+                {% endif %}
+
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <div class="col-12 col-lg-6 d-flex min-h-full"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-footer section-footer-a anim">
+
+    <div class="footer-right mr-4">
+      <a class="btn btn-line-b scroll down px-0 py-0" href="#">
+        <span class="text">Дальше</span>
+        <span class="icon icon-menu icon-arrow-a icon-anim">
+          <span class="arrow-down"></span>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+

@@ -1,5 +1,23 @@
 'use strict';
-
+function bootSpriteSpin(selector, options) {
+  if ("IntersectionObserver" in window) {
+    // Browser supports IntersectionObserver so use that to defer the boot
+    let observer = new IntersectionObserver(function(entries, observer) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          observer.unobserve(entry.target);
+          $(entry.target).spritespin(options);
+          console.log("booted", selector, options);
+        }
+      });
+    });
+    observer.observe($(selector)[0]);
+  } else {
+    // Browser does not support IntersectionObserver so boot instantly
+    $(selector).spritespin(options);
+    console.log("booted", selector, options);
+  }
+}
 $(document).on('ready', function () {
 	// variables
 	var contextWindow = $(window);
@@ -253,4 +271,48 @@ $(document).on('ready', function () {
 		}
 
 	});
+
+  /* Spinner360 */
+  $('.spritespin').each(function(){
+
+    var tag = $(this).attr('data-folder');
+    if(!tag){
+      return;
+    }
+    var selector = $(this).attr('id');
+
+    var folder = tag.split('/')[0];
+    var max_frame = tag.split('/')[1];
+
+    bootSpriteSpin("#" + selector, {
+    //$(this).spritespin({
+      source: SpriteSpin.sourceArray('/media/spinner360/' + folder + '/frame_{frame}.jpg', { frame: [1,max_frame], digits: 3 }),
+      width: 480,
+      height: 327,
+      sense: -1,
+      responsive: true,
+      plugins: [
+        'progress',
+        '360',
+        'drag',
+      ],
+      animate: false,
+      //preloadCount: 12,
+    });
+
+    $("#" + selector).parent().find(".rotation_left").click(function(){
+      $("#" + selector).spritespin({
+        reverse: false,
+        animate: true,
+      })
+    });
+    $("#" + selector).parent().find(".rotation_right").click(function(){
+      $("#" + selector).spritespin({
+        reverse: true,
+        animate: true,
+      })
+    });
+
+  });
+
 });

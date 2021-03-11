@@ -2,7 +2,13 @@
 {% load tags mtags flatcontent_tags %}
 
 {% block extrahead %}
+<link rel="stylesheet" href="/media/css/owl.carousel.min.css">
+<link rel="stylesheet" href="/media/css/owl.theme.default.min.css">
+
 <link rel="stylesheet" href="/static/fancybox/jquery.fancybox.min.css">
+
+<link rel="stylesheet" href="/media/css/white_page.css">
+
 <style type="text/css">
 table.table-borderless {
   max-width: 300px;
@@ -20,263 +26,231 @@ p.price_desc {
   -webkit-box-shadow: 0 0 2rem rgba(36,36,36,.28);
   box-shadow: 0 0 2rem rgba(36,36,36,.28);
 }
+.color_name {
+  display: none;
+}
+.photo_slider {
+  display: none;
+}
+.product_color_1 {
+  background-color: #f00 !important;
+}
+.product_color_2 {
+  background-color: #000 !important;
+}
+.product_color_4 {
+  background: linear-gradient(to right, #000 30%, #f00 30% 70%, #000 70% 100%) !important;
+}
+.product_color_5 {
+  background-color: #ffa500 !important;
+}
+.product_color_6 {
+  background-color: #577d4d !important;
+}
+.product_color_7 {
+  background-color: #555a5d !important;
+}
+.product_color_8 {
+  background-color: #a1a09b !important;
+}
 </style>
 {% endblock %}
 
-{% block content %}
-<div class="container pr-lg-0 pl-lg-0">
-  <div class="row">
-    <div class="col-md-6 pt-5">
-      <div class="summary quantity_styled position-relative">
-        <h1 class="mb-0 font-weight-bold text-12 mb-4">{{ product.name }}</h1>
-        <div class="text-3-5 mb-3 text-5">{{ product.mini_info|safe }}</div>
+{% block extracontent %}
+<div class="simple_page">
+  {% include "web/components/breadcrumbs.html" %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 pt-5">
+        <div class="summary entry-summary position-relative">
+          <div class="text-3-5 mb-3 text-5">{{ product.mini_info|safe }}</div>
 {% comment %}<!--
-        <div class="pb-0 clearfix d-flex align-items-center">
-          <div class="review-num">
-            <a href="#description" class="text-decoration-none text-color-default text-color-hover-primary" data-hash data-hash-offset="75" data-hash-trigger-click=".nav-link-reviews" data-hash-trigger-click-delay="1000">
-              <span class="count text-color-inherit" itemprop="ratingCount">Отзывы (0)</span>
-            </a>
+          <div class="pb-0 clearfix d-flex align-items-center">
+            <div class="review-num">
+              <a href="#description" class="text-decoration-none text-color-default text-color-hover-primary" data-hash data-hash-offset="75" data-hash-trigger-click=".nav-link-reviews" data-hash-trigger-click-delay="1000">
+                <span class="count text-color-inherit" itemprop="ratingCount">Отзывы (0)</span>
+              </a>
+            </div>
           </div>
-        </div>
 -->{% endcomment %}
-        <div class="divider divider-small"><hr class="bg-color-grey-scale-4"></div>
-        <p class="price mb-3 current_product_price">
-          {% if product.costs %}
-            <span class="sale text-color-dark">{{ product.costs.0.cost|money_format }} ₽</span>
-          {% else %}
+          <div class="divider divider-small"><hr class="bg-color-grey-scale-4"></div>
+          <p class="price_desc">Минимальная розничная цена</p>
+          <p class="price mb-3">
             <span class="sale text-color-dark">{{ product.price|money_format }} ₽</span>
             {% if product.old_price %}
               <span class="amount">{{ product.old_price|money_format }} ₽</span>
             {% endif %}
-          {% endif %}
-        </p>
-
-        <div class="btn-group-toggle" data-toggle="buttons">
-          {% for cost in product.costs %}
-            <label class="btn btn-outline btn-primary{% if forloop.first %} active{% endif %} mb-2">
-            <input type="radio" class="costs_types cost-type-radio_{{ product.id }}" name="cost_type" id="option_{{ cost.cost_type.id }}" autocomplete="off"{% if forloop.first %} checked{% endif %} data-cost="{{ cost.cost|money_format }} ₽" data-cost_type_id="{{ cost.cost_type.id }}"> {{ cost.cost_type.name }}
-            </label>
-          {% endfor %}
-        </div>
-
-        <ul class="list list-unstyled text-2">
-          <li class="mb-0">Доступность: <strong class="text-color-dark">на складе</strong></li>
-        </ul>
-
-{% comment %}<!--
-        <table class="table table-borderless">
-          <tbody>
-            <tr>
-              <td class="align-middle text-2 px-0 py-2">SIZE:</td>
-              <td class="px-0 py-2">
-                <div class="custom-select-1">
-                  <select name="size" class="form-control text-1 h-auto py-2">
-                    <option value="">PLEASE CHOOSE</option>
-                    <option value="blue">Small</option>
-                  </select>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="align-middle text-2 px-0 py-2">COLOR:</td>
-              <td class="px-0 py-2">
-                <div class="custom-select-1">
-                  <select name="color" class="form-control text-1 h-auto py-2">
-                    <option value="">PLEASE CHOOSE</option>
-                    <option value="blue">Blue</option>
-                  </select>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
--->{% endcomment %}
-        <hr>
-        <div class="quantity quantity-lg" id="qbuttons_{{ product.id }}">
-          <input type="button" class="dec text-color-hover-light bg-color-hover-primary border-color-hover-primary" value="-">
-          <input type="text" class="input-text qty text" id="quantity_{{ product.id }}" value="1" min="1" step="1">
-          <input type="button" class="inc text-color-hover-light bg-color-hover-primary border-color-hover-primary" value="+">
-        </div>
-        <button class="add_to_cart_btn btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}">Добавить в корзину</button>
-        <hr>
-
-{% comment %}<!--
-        <div class="d-flex align-items-center">
-          <ul class="social-icons social-icons-medium social-icons-clean-with-border social-icons-clean-with-border-border-grey social-icons-clean-with-border-icon-dark mr-3 mb-0">
-            <li class="social-icons-facebook">
-              <a href="" target="_blank" data-toggle="tooltip" data-placement="top" title="Share On Facebook">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-            </li>
-            <li class="social-icons-googleplus">
-              <a href="" target="_blank" data-toggle="tooltip" data-placement="top" title="Share On Google+">
-                <i class="fab fa-google-plus-g"></i>
-              </a>
-            </li>
-            <li class="social-icons-twitter">
-              <a href="" target="_blank" data-toggle="tooltip" data-placement="top" title="Share On Twitter">
-                <i class="fab fa-twitter"></i>
-              </a>
-            </li>
-            <li class="social-icons-email">
-              <a href="" data-toggle="tooltip" data-placement="top" title="Share By Email">
-                <i class="far fa-envelope"></i>
-              </a>
-            </li>
+          </p>
+          <ul class="list list-unstyled text-2">
+            <li class="mb-0">Доступность: <strong class="text-color-dark">на складе</strong></li>
           </ul>
-          <a href="#" class="d-flex align-items-center text-decoration-none text-color-dark text-color-hover-primary font-weight-semibold text-2">
-            <i class="far fa-heart mr-1"></i> SAVE TO WISHLIST
-          </a>
-        </div>
--->{% endcomment %}
-
-      </div>
-    </div>
-
-    <div class="col-md-6 mb-5 mb-md-0 photo_slider" id="photo_slider_{{ section_id }}">
-      <div class="thumb-gallery-wrapper">
-        <div class="thumb-gallery-detail owl-carousel owl-theme manual nav-inside nav-style-1 nav-dark mb-3">
-          {% if product.img %}
-            <div>
-              <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine product.img '600x400' product.get_folder True %}" data-zoom-image="{{ product.imagine }}">
-            </div>
-          {% endif %}
-
-          {% for photo in photos %}
-            <div>
-              <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine photo.img '600x400' photo.get_folder True %}" data-zoom-image="{{ photo.imagine }}">
-            </div>
-          {% endfor %}
-        </div>
-        <div class="thumb-gallery-thumbs owl-carousel owl-theme manual thumb-gallery-thumbs">
-          {% if product.img %}
-            <div class="cur-pointer">
-              <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
-            </div>
-          {% endif %}
-
-          {% for photo in photos %}
-            <div class="cur-pointer">
-              <img src="{% imagine photo.img '150x150' photo.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="divider divider-solid divider-style-4 taller">
-</div>
-
-<div class="container">
-  <div class="row mb-4">
-    <div class="col">
-      <a id="product_props"></a>
-      <div id="description" class="tabs tabs-simple tabs-simple-full-width-line tabs-product tabs-dark mb-2">
-        <ul class="nav nav-tabs justify-content-start text-center">
-          {% if 'article2' in page.tags %}
-            <li class="nav-item active">
-              <a class="nav-link active font-weight-bold text-3 text-uppercase py-2 px-3" href="#productReview" data-toggle="tab">Обзор</a>
-            </li>
-          {% endif %}
-          <li class="nav-item{% if not 'article2' in page.tags %} active{% endif %}">
-            <a class="nav-link{% if not 'article2' in page.tags %} active{% endif %} font-weight-bold text-3 text-uppercase py-2 px-3" href="#productDescription" data-toggle="tab">Описание</a>
-          </li>
-          {% if product.props %}
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productInfo" data-toggle="tab">Характеристики</a>
-            </li>
-          {% endif %}
-          {% if 'videos' in page.tags %}
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productVideos" data-toggle="tab">Видео</a>
-            </li>
-          {% endif %}
-          {% if photo_sections.3 %}
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#live_photos" data-toggle="tab">Живые фото</a>
-            </li>
-          {% endif %}
-        </ul>
-        <div class="tab-content p-0">
-          {% if 'article2' in page.tags %}
-            <div class="tab-pane px-0 py-3 active" id="productReview">
-              {% for container in page.containers %}
-                {% flatcontent request page 'article2' %}
-              {% endfor %}
-            </div>
-          {% endif %}
-          <div class="tab-pane px-0 py-3{% if not 'article2' in page.tags %} active{% endif %}" id="productDescription">
-            {{ product.info|safe }}
-          </div>
-          <div class="tab-pane px-0 py-3" id="productInfo">
-            <table class="table table-striped m-0">
-              <tbody>
-<!--
-                <tr>
-                  <th class="border-top-0">Наименование</th>
-                  <td class="border-top-0">Значение</td>
-                </tr>
--->
-                {% for item in product.props %}
-                  <tr>
-                    <th>{{ item.prop.name }}</th>
-                    <td>
-                      {% for pvalue in item.values %}
-                        {{ pvalue.str_value }}
-                        {% if item.prop.measure %}
-                          {{ item.prop.measure }}
-                        {% endif %}
-                      {% endfor %}
-                    </td>
-                  </tr>
+          {% if photo_sections|length > 0 %}
+            <div{% if photo_main_section_id == "0" %} style="display:none;"{% endif %}>
+              Цвет - <span class="current_color"></span>
+              <div class="btn-group-toggle" data-toggle="buttons">
+                {% for section_id, section in photo_sections.items %}
+                  {% if section_id != "3" %}
+                    <label class="btn btn-outline btn-primary{% comment %} active{% endcomment %} mb-2 product_color_{{ section_id }}">
+                      <input type="radio" name="color" id="product_color_{{ section_id }}" autocomplete="off"{% comment %} checked{% endcomment %} class="product_color" data-section_id="{{ section_id }}">&nbsp;
+                      <div class="color_name">
+                        {% if section_id == "1" %}Красный{% endif %}
+                        {% if section_id == "2" %}Черный{% endif %}
+                        {% if section_id == "4" %}Черно-красный{% endif %}
+                        {% if section_id == "5" %}Оранжевый{% endif %}
+                        {% if section_id == "6" %}Зеленый{% endif %}
+                        {% if section_id == "7" %}Серый{% endif %}
+                        {% if section_id == "8" %}Серебристый{% endif %}
+                      </div>
+                    </label>
+                  {% endif %}
                 {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          {% if 'videos' in page.tags %}
-            <div class="tab-pane px-0 py-3" id="productVideos">
-              {% for container in page.containers %}
-                {% flatcontent request page 'videos' %}
-              {% endfor %}
-            </div>
-          {% endif %}
-          {% if photo_sections.3 %}
-            <div class="tab-pane px-0 py-3" id="live_photos">
-              <div class="row">
-              {% for photo in photo_sections.3 %}
-                <div class="col-lg-3 col-md-6 mb-3">
-                  <a class="fancybox" href="{{ photo.imagine }}">
-                    <img class="img-fluid" src="{% imagine photo.img '300x300' photo.get_folder True %}" alt="Живые фото" loading="lazy">
-                  </a>
-                </div>
-              {% endfor %}
               </div>
             </div>
           {% endif %}
+          <div class="pt-5 pb-3">
+            <button class="add_to_cart_btn btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}">Добавить в корзину</button>
+          </div>
         </div>
       </div>
+      {% for section_id, section in photo_sections.items %}
+        {% if not section_id == "3" %}
+          <div class="col-md-6 mb-5 mb-md-0 photo_slider" id="photo_slider_{{ section_id }}">
+            <div class="thumb-gallery-wrapper">
+              <div class="thumb-gallery-detail owl-carousel owl-theme manual nav-inside nav-style-1 nav-dark mb-3">
+                {% if section_id == photo_main_section_id %}
+                  {% if product.img %}
+                    <div>
+                      <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine product.img '600x400' product.get_folder True %}" data-zoom-image="{{ product.imagine }}">
+                    </div>
+                  {% endif %}
+                {% endif %}
+                {% for photo in section %}
+                  <div>
+                    <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine photo.img '600x400' photo.get_folder True %}" data-zoom-image="{{ photo.imagine }}">
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="thumb-gallery-thumbs owl-carousel owl-theme manual thumb-gallery-thumbs">
+                {% if section_id == photo_main_section_id %}
+                  {% if product.img %}
+                    <div class="cur-pointer">
+                      <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
+                    </div>
+                  {% endif %}
+                {% endif %}
+                {% for photo in section %}
+                  <div class="cur-pointer">
+                    <img src="{% imagine photo.img '150x150' photo.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
     </div>
   </div>
+  <div class="divider divider-solid divider-style-4 taller"> </div>
+  {% include "web/cat/product_tabs.html" %}
+  {% include "web/components/footer.html" %}
 </div>
 {% endblock %}
 
 {% block extrascripts %}
-<script type="text/javascript" src="/media/js/plugin_gallery.js"></script>
 <script type="text/javascript" src="/static/fancybox/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/media/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/media/js/owl.carousel.min.js"></script>
+
 <script type="text/javascript">
+  function pick_color(section_id){
+    $(".photo_slider").hide();
+    var color = $(".product_color_" + section_id + " .color_name");
+    $(".current_color").html(color.html());
+    $("#photo_slider_" + section_id).show();
+  }
   $(document).ready(function(){
-    $(".fancybox").fancybox();
-    quantity_listener("{{ product.id }}",
-                      $("#qbuttons_{{ product.id }} .inc"),
-                      $("#qbuttons_{{ product.id }} .dec"),
-    );
-    $(".costs_types").change(function(){
-      var current_price = $(this).attr("data-cost");
-      var current_cost_type = $(this).attr("data-cost_type_id");
-      $(".current_product_price").html('<span class="sale text-color-dark">' + current_price + '</span>');
+    var $thumbGalleryDetail=$(this).find('.thumb-gallery-detail'),
+        $thumbGalleryThumbs=$(this).find('.thumb-gallery-thumbs'),
+        flag=false,
+        duration=300;
+    $thumbGalleryDetail.owlCarousel({
+      items:1,
+      margin:10,
+      nav:true,
+      dots:false,
+      loop:false,
+      autoHeight:true,
+      navText:[],
+      rtl:($('html').attr('dir')=='rtl')?true:false
+    }).on('changed.owl.carousel',function(e){
+      if(!flag){
+        flag=true;
+        $thumbGalleryThumbs.trigger('to.owl.carousel',[e.item.index-1,duration,true]);
+        $thumbGalleryThumbs.find('.owl-item').removeClass('selected');
+        $thumbGalleryThumbs.find('.owl-item').eq(e.item.index).addClass('selected');
+        flag=false;
+      }
     });
+    $thumbGalleryThumbs.owlCarousel({
+      margin:15,
+      items:$(this).data('thumbs-items')?$(this).data('thumbs-items'):4,
+      nav:false,
+      center:$(this).data('thumbs-center')?true:false,
+      dots:false,
+      rtl:($('html').attr('dir')=='rtl')?true:false
+    }).on('click','.owl-item',function(){
+      $thumbGalleryDetail.trigger('to.owl.carousel',[$(this).index(),duration,true]);
+    }).on('changed.owl.carousel',function(e){
+      if(!flag){
+        flag=true;
+        $thumbGalleryDetail.trigger('to.owl.carousel',[e.item.index,duration,true]);
+        flag=false;
+      }
+    });
+    $thumbGalleryThumbs.find('.owl-item').eq(0).addClass('selected');
+
+
+if($('a[data-toggle="tab"]').length){
+  $('a[data-toggle="tab"]').on('shown.bs.tab',function(e){
+    $(this).parents('.nav-tabs').find('.active').removeClass('active');
+    $(this).addClass('active').parent().addClass('active');
+  });
+}
+if(window.location.hash){
+  $(window).on('load',function(){
+    if($(window.location.hash).get(0)){
+      $('a.nav-link[href="'+window.location.hash+'"]:not([data-hash])').trigger('click');
+    }
+  });
+}
+if($('a[data-toggle="tab"]').length){
+  $('a[data-toggle="tab"]').on('shown.bs.tab',function(e){
+    var $tabPane=$($(e.target).attr('href'));
+    if($tabPane.length){
+      $tabPane.find('.owl-carousel').trigger('refresh.owl.carousel');
+    }
+  });
+}
+
+
+
+    $(".fancybox").fancybox();
+    var cur_color = null;
+    $(".product_color").each(function(){
+      if(cur_color == null){
+        $(this).parent().click();
+        cur_color = $(this).attr("data-section_id");
+        pick_color(cur_color);
+      }
+      if($(this).hasClass("touched")){
+        return;
+      }
+      $(this).addClass("touched");
+      $(this).click(function(){
+        cur_color = $(this).attr("data-section_id");
+        pick_color(cur_color);
+      });
+    })
   });
 </script>
 {% endblock %}

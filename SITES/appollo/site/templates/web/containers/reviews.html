@@ -1,0 +1,23 @@
+{% load mtags %}
+<section id="reviews">
+  <div class="padding-masc">
+    {% if container.name %}<h3>{{ container.name }}</h3>{% endif %}
+    {% if container.description %}
+      <h4><i class="color">{{ container.description|safe }}</i></h4>
+    {% endif %}
+    <div class="reviews-slider">
+      {% for block in blocks %}
+        <div class="slide wow fadeInUp" data-wow-duration="1s">
+          <div class="avatar" style="background-image: url('{{ block.thumb }}');"></div>
+          <i class="fa fa-star" aria-hidden="true"></i>
+          <i class="fa fa-star" aria-hidden="true"></i>
+          <i class="fa fa-star" aria-hidden="true"></i>
+          <i class="fa fa-star" aria-hidden="true"></i>
+          <i class="fa fa-star empty" aria-hidden="true"></i>
+          {% if block.name %}<h4 class="mt15">{{ block.name }}</h4>{% endif %}
+          {% if block.html %}<div class="section-description">{{ block.html|safe }}</div>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
