@@ -80,6 +80,7 @@ $(document).on('ready', function () {
 		return false;
 	});
 
+	// 4. Sliders
 	var swiperSliderThumbsA = new Swiper('.slider-thumbs-a.swiper-container', {
 		spaceBetween: 16,
 		slidesPerView: 3,
@@ -93,7 +94,7 @@ $(document).on('ready', function () {
 			clickable: true,
 		},
 	});
-	// 4. Sliders
+
 	var swiperSliderA = new Swiper('.slider-a.swiper-container', {
 		navigation: {
 			nextEl: '.swiper-container.slider-a .slider-next',
@@ -142,7 +143,21 @@ $(document).on('ready', function () {
 		virtualTranslate: false,
 		// init: false, // set true to call it later
 	});
-	
+
+  var swiperSliderC = new Swiper('.slider-c .swiper-container', {
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    pagination: {
+      el: '.swiper-pagination',
+    },
+    slidesPerView: 1,
+    grabCursor: true,
+    autoplay: 5000,
+    virtualTranslate: false,
+  });
+
 	// 5. Init video background
 	var videoBg = $('.video-container video, .video-container object');
 	// Fix video background
@@ -159,30 +174,6 @@ $(document).on('ready', function () {
 		else {
 			siteHeaderFooter.removeClass("scrolled");
 		}
-	});
-	
-
-	// 7. Subscription to newsletter form
-	// Default server url
-	var newsletterServerUrl = './ajaxserver/serverfile.php';
-	var sendEmailForm = $('.send_email_form');
-	// check if server url is defined by an 'action' attribute
-	if (sendEmailForm.attr('action') && (sendEmailForm.attr('action')) != '') {
-		newsletterServerUrl = sendEmailForm.attr('action');
-	}
-	sendEmailForm.initForm({
-		serverUrl: newsletterServerUrl,
-	});
-
-	// Contact form
-	var messageServerUrl = './ajaxserver/serverfile.php';
-	var sendMessageForm = $('.send_message_form');
-	// check if server url is defined by an 'action' attribute
-	if (sendMessageForm.attr('action') && (sendMessageForm.attr('action') != '')) {
-		messageServerUrl = sendMessageForm.attr('action');
-	}
-	sendMessageForm.initForm({
-		serverUrl: messageServerUrl,
 	});
 
 	// 8. Page Loader : hide loader when all are loaded
@@ -287,8 +278,8 @@ $(document).on('ready', function () {
     bootSpriteSpin("#" + selector, {
     //$(this).spritespin({
       source: SpriteSpin.sourceArray('/media/spinner360/' + folder + '/frame_{frame}.jpg', { frame: [1,max_frame], digits: 3 }),
-      width: 480,
-      height: 327,
+      width: 1300,
+      height: 900,
       sense: -1,
       responsive: true,
       plugins: [

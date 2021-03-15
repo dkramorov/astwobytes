@@ -1,5 +1,5 @@
 {% load mtags %}
-<section data-id="article2" class="section article2 section-page fp-section bg-black-8">
+<section data-id="article3" class="section article3 section-page fp-section">
   {% if container.description %}
     <div class="section-title title-right">
       <h3 class="title">
@@ -17,7 +17,7 @@
 
         {% for block in blocks %}
           <div class="row">
-            {% if forloop.counter|divisibleby:"2" %}
+            {% if not forloop.counter|divisibleby:"2" %}
               <div class="col-md-6 order-md-2 mb-4 mb-lg-0">
                 <img src="{% imagine block.img '800x600' block.get_folder True %}" class="img-fluid" alt="{{ block.name|textize }}" loading="lazy">
               </div>
@@ -28,15 +28,13 @@
                 <div class="fs-1">{{ block.html|safe }}</div>
               {% endif %}
               {% if block.link %}
-                <a class="btn btn-order mt-5" href="{{ block.link }}">
-                  <span class="text">Заказать</span>
-                  <span class="fa fa-shopping-cart">
-                    <span class="arrow-right"></span>
-                  </span>
-                </a>
+                <hr class="solid my-4">
+                <div class="col-lg-6">
+                  <a href="{{ block.link }}" class="btn btn-modern btn-primary mt-3"{% if block.blank %} target="_blank"{% endif %}>{{ block.description }}</a>
+                </div>
               {% endif %}
             </div>
-            {% if not forloop.counter|divisibleby:"2" %}
+            {% if forloop.counter|divisibleby:"2" %}
               <div class="col-md-6 order-md-2 mb-4 mb-lg-0">
                 <img src="{% imagine block.img '800x600' block.get_folder True %}" class="img-fluid" alt="{{ block.name|textize }}" loading="lazy">
               </div>

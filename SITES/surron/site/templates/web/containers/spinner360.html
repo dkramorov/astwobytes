@@ -15,11 +15,11 @@
     </div>
   {% endif %}
 
-    <div class="section-content align-x-center">
+    <div class="section-content">
       <div class="c-wrapper text-wrapper">
-        <div class="row gutters">
+        <div class="row gutters bg-white">
           {% for block in blocks %}
-          <div class="col-12 col-lg-6 offset-lg-1 bg-white mt-5 mb-5">
+          <div class="col-12 col-lg-7 bg-white">
             <div class="spritespin" data-folder="{{ block.tag }}" id="spinner_{{ block.id }}"></div>
             <div class="pagination">
               <a class="rotation_left"><i class="fa fa-angle-left"></i></a>
@@ -28,7 +28,7 @@
             <div class="clearfix"></div>
             <div class="icon360"><img src="/media/misc/360.png" /></div>
           </div>
-          <div class="col-12 col-lg-5 pt-5 pb-5 px-lg-5">
+          <div class="col-12 col-lg-5 pt-5 pb-5 px-lg-5 bg-black">
             {% if block.name %}
               <h2 class="h-title font-title anim-1 pb-5">
                 {{ block.name }}

@@ -1,0 +1,59 @@
+{% load mtags %}
+<section data-id="article5" class="section section-page fp-auto-height-responsive article5">
+  <div class="section-cover"></div>
+  {% if container.description %}
+    <div class="section-title title-right">
+      <h3 class="title">
+        {% comment %}<!--<span>ЗАКРАШЕННЫЙ</span>
+                         <span class="text-stroke">ОБВОД</span>
+        -->{% endcomment %}
+        <span class="text-stroke">{{ container.description|safe }}</span>
+      </h3>
+    </div>
+  {% endif %}
+  <div class="section-margin align-x-center align-y-center anim">
+    <div class="width-large">
+    <div class="row gutters">
+      {% for block in blocks %}
+        <div class="col-lg-6 mb-6">
+          {% if block.name %}
+            <div class="section-header align-x-center px-3">
+              <div class="h-content">
+                <h2 class="h-title font-title anim-1">
+                  {{ block.name }}
+                </h2>
+              </div>
+            </div>
+          {% endif %}
+          <div class="section-content px-3">
+            {% if block.html %}
+              <div class="content-text anim-2 fs-1">
+                {{ block.html|safe }}
+              </div>
+            {% endif %}
+
+            <div class="btns-group mt-5">
+              {% if block.link %}
+                <a class="btn btn-line-a anim-4" href="{{ block.link }}">
+                  <span class="text">{{ block.description|safe }}</span>
+                  <span class="icon icon-menu icon-arrow-a icon-anim">
+                    <span class="arrow-right"></span>
+                  </span>
+                </a>
+              {% endif %}
+              {% if block.products %}
+                <a class="btn btn-order float-right" href="{{ block.products.0.link }}">
+                  <span class="text">Заказать</span>
+                  <span class="fa fa-shopping-cart">
+                    <span class="arrow-right"></span>
+                  </span>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    </div>
+  </div>
+</section>

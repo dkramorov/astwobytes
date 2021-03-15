@@ -106,6 +106,7 @@ def edit_file(request, action:str, row_id:int = None, *args, **kwargs):
         # -------------------------------------------
         elif action == 'img' and request.FILES:
             mh.uploads()
+            mh.row.update_mimetype()
 
     if mh.row:
         context['row'] = object_fields(mh.row, pass_fields=('password', ))

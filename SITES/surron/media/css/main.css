@@ -21,6 +21,7 @@
     1.5 Sliders
       1.5.1 Slider a / .slider-a , .slide-a
       1.5.2 Slider b / .slider-b , .slide-b
+      1.5.3 Slider c / .slider-c , .slide-c
   2 Navigation
     2.1 Navbar Top / .navbar-top
     2.2 Sidebar navigation / .navbar-sidebar
@@ -72,7 +73,7 @@ video {
   padding: 0.2em 0; }
 
 body {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   background-color: #1d1d1d;
   color: #ffffff;
   margin: 0;
@@ -1452,7 +1453,61 @@ input[type=text], input[type=password], input[type=email] {
   -webkit-clip-path: polygon(0% 0%, calc(100% - 2rem) 0%, 100% 2rem, 100% 100%, 2rem 100%, 0% calc(100% - 2rem));
           clip-path: polygon(0% 0%, calc(100% - 2rem) 0%, 100% 2rem, 100% 100%, 2rem 100%, 0% calc(100% - 2rem)); }
 
-/* 1.5.3 Fullpage slider / #fp-nav , .fp-... */
+/* 1.5.3 Slider c / .slider-c , .slide-c */
+.slider-c {
+  position: relative;
+  color: #ffffff; }
+.slide-c {
+  position: relative;
+  display: flex;
+  flex-direction: column; }
+  @media screen and (min-width: 768px) {
+    .slide-c {
+      padding-left: 32px;
+      padding-right: 32px; }
+ }
+  @media screen and (min-width: 992px) {
+    .slide-c {
+      padding: 8rem 0; }
+ }
+
+  .slide-c.fullscreen-slide {
+    min-height: 100vh; }
+  .slide-c .slide-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; }
+    .slide-c .slide-bg img {
+      width: 100%; }
+    .slide-c .slide-bg .img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0; }
+
+  .slide-c .flex-col {
+    display: flex;
+    flex-direction: column; }
+  @media screen and (min-width: 992px) {
+    .slide-c .flex-full {
+      flex: 1; }
+ }
+.slide-c.slide-anim .slide-bg {
+  overflow: hidden; }
+  .slide-c.slide-anim .slide-bg img, .slide-c.slide-anim .slide-bg .img {
+    transition: 0.6s;
+    -webkit-transform: scale(1.5);
+            transform: scale(1.5); }
+
+.swiper-slide-active .slide-c.slide-anim .slide-bg img,
+.swiper-slide-active .slide-c.slide-anim .slide-bg .img {
+  -webkit-transform: none;
+          transform: none; }
+
+/* 1.5.4 Fullpage slider / #fp-nav , .fp-... */
 #fp-nav.right {
   margin-top: 0 !important;
   right: 10px;
@@ -2143,9 +2198,6 @@ input[type=text], input[type=password], input[type=email] {
   .section-slide.fullsize-slide {
     padding: 0;
     overflow: hidden; }
-  .section-slide .slide-size {
-    width: 100vw;
-    height: 100vh; }
 
 .viewport-height {
   height: 100vh !important; }

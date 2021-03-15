@@ -1,0 +1,51 @@
+{% load mtags %}
+<section data-id="featurespage" class="section section-page featurespage fp-auto-height-responsive bg-black-8">
+  <div class="section-cover"></div>
+
+  <div class="section-margin anim">
+
+    <div class="section-content align-x-center">
+      <div class="c-wrapper large-width">
+        <div class="row">
+          {% for block in blocks %}
+            {% ifequal block.tag 'by6' %}
+              {% for item in block.sub %}
+                <div class="col-lg-2 col-md-2 col-sm-4 col-6 pl-0 pr-0">
+                  {% if item.img %}
+                    <div class="img">
+                      <img src="{{ item.thumb }}" loading="lazy" />
+                    </div>
+                  {% endif %}
+                  <div class="content-text anim-2 mt-3 text-center">
+                    {% if item.html %}{{ item.html|safe }}{% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            {% endifequal %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="c-wrapper medium-width mt-5">
+        <div class="row">
+          {% for block in blocks %}
+            {% ifequal block.tag 'by4' %}
+              {% for item in block.sub %}
+                <div class="col-lg-3 col-md-3 col-sm-6 col-12 pl-0 pr-0">
+                  {% if item.img %}
+                    <div class="img">
+                      <img src="{{ item.thumb }}" loading="lazy" />
+                    </div>
+                  {% endif %}
+                  <div class="content-text anim-2 mt-3 text-center">
+                    {% if item.html %}{{ item.html|safe }}{% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            {% endifequal %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-footer"></div>
+</section>

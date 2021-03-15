@@ -16,6 +16,7 @@
     green.css green-2.css cyan.css red.css red-2.css
 -->
 <link href="/media/css/cyan-2.css" rel="stylesheet">
+<link href="/media/css/phone.css" rel="stylesheet">
 {% block extrahead %}{% endblock %}
 </head>
 <body id="top">
@@ -24,9 +25,9 @@
     <div class="waves">
       <div class="circle-1"></div>
       <div class="circle-2"></div>
-      <div class="circle" style="border-radius: 50%;">
+      <a class="circle" href="/">
         <img src="{{ containers.main.tags.logo.thumb }}" alt="{{ containers.main.tags.logo.title|textize }}" loading="lazy">
-      </div>
+      </a>
     </div>
   </div>
   <nav id="navigation" class="navbar no-scrolled">
@@ -37,13 +38,36 @@
             <span class="burger"></span>
           </span>
         </button>
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/">
           <h3><img src="{{ containers.main.tags.logo.thumb }}" alt="{{ containers.main.tags.logo.title|textize }}"> {{ containers.main.tags.logo.description }}</h3>
         </a>
       </div>
       {% flatmenu request 'mainmenu' %}
     </div>
   </nav>
+
+  {% if breadcrumbs %}
+    <header id="header-2" class="header-2">
+      <div class="header-masc">
+        <div class="container text-center">
+          <h1 class="white">{% block page_title %}{{ page.name }}{% endblock %}</h1>
+          <h3 class="white">
+            <i>
+              <a href="/">Главная</a> /
+              {% for crumb in breadcrumbs %}
+                {% if forloop.last %}
+                  {{ crumb.name }}
+                {% else %}
+                  <a href="{{ crumb.link }}">{{ crumb.name }}</a> /
+                {% endif %}
+              {% endfor %}
+            </i>
+          </h3>
+        </div>
+      </div>
+    </header>
+  {% endif %}
+
   {% block content %}{% endblock %}
 
 
@@ -99,7 +123,17 @@
 <script src="/media/js/wow.min.js"></script>
 <script src="/media/js/lity.min.js"></script>
 <script src="/media/js/smooth-scroll.js"></script>
+<script src="/media/js/phone.js"></script>
 <script src="/media/js/main.js"></script>
 {% block extrascripts %}{% endblock %}
+
+<div class="hidden">
+{% if containers.main.tags.google_analytics.html %}
+  {{ containers.main.tags.google_analytics.html|safe }}
+{% endif %}
+{% if containers.main.tags.yandex_metrika.html %}
+  {{ containers.main.tags.yandex_metrika.html|safe }}
+{% endif %}
+</div>
 </body>
 </html>

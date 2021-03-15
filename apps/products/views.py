@@ -83,7 +83,7 @@ def get_products_cats(ids_products: dict):
     """Получение категорий по списку товаров (пока без хлебных крох)
        :param ids_products: словарь идентификаторов товаров
     """
-    cats = ProductsCats.objects.select_related('cat').filter(product__in=ids_products, cat__isnull=False).values('product', 'cat__id', 'cat__link', 'cat__name')
+    cats = ProductsCats.objects.select_related('cat').filter(product__in=ids_products, cat__isnull=False, cat__container__state=7).values('product', 'cat__id', 'cat__link', 'cat__name')
     for cat in cats:
         if not ids_products[cat['product']]:
             ids_products[cat['product']] = []

@@ -1,0 +1,48 @@
+{% load mtags %}
+<section id="modern_phone">
+  <div class="padding-masc">
+    <div class="container text-center">
+
+      <div class="row">
+        <div class="call-container">
+          {% for block in blocks %}
+            <div class="col-lg-12 col-md-12">
+              <h2>{{ block.name }}</h2>
+            </div>
+
+            <div class="col-lg-6 col-md-6 text-left">
+              {{ block.html|safe }}
+            </div>
+          {% endfor %}
+          <div class="col-lg-6 col-md-6">
+            <div class="keypad">
+              <input type="text" value="88000000000" id="phone_number" class="phone" autocomplete="off" />
+              {% include "web/phone_utils/keypad.html" %}
+            </div>
+            {% include "web/phone_utils/call_buttons.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div style="display:none;">
+  <form id="config-form" action="">
+    <input type="text" name="displayName" value="user8800" />
+    <input type="text" name="uri" value="user8800@calls.223-223.ru" />
+    <input type="text" name="authorizationUser" value="user8800" />
+    <input type="password" name="password" value="cnfylfhnysq" />
+    <input type="text" name="wsServers" value="wss://calls.223-223.ru:7443" />
+  </form>
+  <div id="ua">
+    <div id="ua-status">Disconnected</div>
+  </div>
+  <ul id="session-list"></ul>
+  <ul id="templates">
+    <li id="session-template" class="template session">
+      <video autoplay>Video Disabled or Unavailable</video>
+    </li>
+  </ul>
+</div>
+<audio id="ringtone" loop src="/static/call_from_site/sounds/ringtone2.wav"></audio>
+<audio id="ringbacktone" loop src="/static/call_from_site/sounds/ringbacktone.wav"></audio>

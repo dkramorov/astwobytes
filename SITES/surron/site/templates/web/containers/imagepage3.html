@@ -1,0 +1,73 @@
+{% load mtags %}
+<section data-id="imagepage3" class="section section-page newspage">
+
+  <div class="anim">
+
+    <div class="section-content align-x-center">
+      <div class="c-wrapper anim-3">
+        <div class="row">
+          {% for block in blocks %}
+            <div class="col-12 col-md-4 pl-0 pr-0 pb-0 pt-0">
+              <div class="item-service-a">
+                <div class="item-content item-grid-c">
+                  <div class="item-img mt-4 rounded-border">
+                    <img class="img" src="{% imagine block.img '800x600' block.get_folder True %}" alt="{{ block.name|textize }}" loading="lazy">
+{% comment %}<!--
+                    <div class="img-footer mask-gradient-black text-left">
+                      <h3 class="title">{{ block.name }}</h3>
+                      {% if block.html %}
+                        <div class="i-text">
+                          {{ block.html|safe }}
+                        </div>
+                      {% endif %}
+                      {% if block.link %}
+                        <a class="btn btn-line-a" href="{{ block.link }}">
+                          <span class="text">{{ block.description }}</span>
+                          <span class="icon icon-menu icon-arrow-a icon-anim">
+                            <span class="arrow-right"></span>
+                          </span>
+                        </a>
+                      {% endif %}
+                    </div>
+-->{% endcomment %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+          <div class="col-12 pt-5 pb-5 bg-white align-x-center text-center">
+            {% for block in blocks %}
+              {% if block.html %}
+                <div class="text-black-2 col-md-6">
+                  <div class="content-text">
+                    <h2 class="h-title font-title anim-3">
+                      {{ block.name }}
+                    </h2>
+                  </div>
+                  <div class="content-text">
+                    <div class="text mb-5 anim-4">
+                      {{ block.html|safe }}
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              {% if block.products %}
+                <div class="col-md-6 md-offset-3">
+                  <div class="btns-group anim-5">
+                    <a class="btn btn-order btn-order-black mb-5" href="{{ block.products.0.link }}">
+                      <span class="text">{{ block.description }}</span>
+                      <span class="fa fa-shopping-cart">
+                        <span class="arrow-right"></span>
+                      </span>
+                    </a>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

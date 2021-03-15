@@ -1,0 +1,24 @@
+{% load mtags %}
+<section data-id="imagepage4" class="section imagepage4 section-page pl-0 pr-0 pt-5 pb-5">
+
+  {% if container.img %}
+    <div class="slide-bg pos-abs">
+      <img class="img-block" alt="{{ container.name|textize }}" src="{% imagine container.img '1920x1080' container.get_folder True %}" loading="lazy">
+    </div>
+  {% endif %}
+  <div class="section-content anim align-x-center align-y-center">
+    {% for block in blocks %}
+      <div class="width-medium">
+        <div class="row no-gutters">
+          <h2 class="mb-3 pt-3 pb-3 mt-3">{{ block.name }}</h2>
+          {% if block.html %}
+            <div class="text mb-lg-5 mb-md-3 anim-4">
+              {{ block.html|safe }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+

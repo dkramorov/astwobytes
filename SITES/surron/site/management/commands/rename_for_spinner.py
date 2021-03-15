@@ -33,7 +33,8 @@ class Command(BaseCommand):
             help = 'Set folder with spinner files')
     def handle(self, *args, **options):
         #source_folder = 'spinner360/light_bee'
-        source_folder = 'spinner360/test360'
+        source_folder = 'spinner360/light_bee_s'
+        #source_folder = 'spinner360/test360'
         #drop_half_files(source_folder)
         items = ListDir(source_folder)
         z = 0

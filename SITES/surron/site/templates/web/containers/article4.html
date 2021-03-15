@@ -1,5 +1,5 @@
 {% load mtags %}
-<section data-id="article2" class="section article2 section-page fp-section bg-black-8">
+<section data-id="article4" class="section article4 section-page fp-section bg-black-8">
   {% if container.description %}
     <div class="section-title title-right">
       <h3 class="title">
@@ -17,7 +17,7 @@
 
         {% for block in blocks %}
           <div class="row">
-            {% if forloop.counter|divisibleby:"2" %}
+            {% if not forloop.counter|divisibleby:"2" %}
               <div class="col-md-6 order-md-2 mb-4 mb-lg-0">
                 <img src="{% imagine block.img '800x600' block.get_folder True %}" class="img-fluid" alt="{{ block.name|textize }}" loading="lazy">
               </div>
@@ -36,7 +36,7 @@
                 </a>
               {% endif %}
             </div>
-            {% if not forloop.counter|divisibleby:"2" %}
+            {% if forloop.counter|divisibleby:"2" %}
               <div class="col-md-6 order-md-2 mb-4 mb-lg-0">
                 <img src="{% imagine block.img '800x600' block.get_folder True %}" class="img-fluid" alt="{{ block.name|textize }}" loading="lazy">
               </div>

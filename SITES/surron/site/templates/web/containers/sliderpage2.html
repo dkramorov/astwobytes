@@ -1,0 +1,70 @@
+{% load mtags %}
+<section data-id="sliderpage2" class="section section-slide fullsize-slide section-page fp-auto-height-responsive">
+  <div class="slide-size">
+    <div class="row slider-c">
+      <div class="col-lg-8">
+        <div class="swiper-container anim">
+          <div class="swiper-wrapper">
+            {% for block in blocks %}
+              {% if block.img %}
+                <div class="swiper-slide slide-item">
+                  <div class="slide-c slide-anim fullscreen-slide content-top">
+                    <div class="slide-bg fade-1">
+                      <img class="img-block" alt="{{ block.name|textize }}" src="{% imagine block.img '1920x1080' block.get_folder True %}" loading="lazy">
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+
+          <div class="swiper-pagination"></div>
+
+        </div>
+      </div>
+      <div class="col-lg-4 pt-5 pl-5 pr-5 anim">
+        {% for block in blocks %}
+          {% if block.name and block.html %}
+            {% if block.name %}
+              <h2 class="h-title font-title anim-1 pb-5 pt-5">
+                {{ block.name }}
+              </h2>
+            {% endif %}
+            {% if block.html %}
+              <div class="content-text anim-2">
+                {{ block.html|safe }}
+              </div>
+            {% endif %}
+
+
+            <div class="btns-group anim-5 mt-5">
+<!-- Должно быть окно перекрывающее все с характеристиками
+              <a class="btn btn-line-a" href="{{ block.link }}">
+                <span class="text">{{ block.description }}</span>
+                <span class="icon icon-menu icon-arrow-a icon-anim">
+                  <span class="arrow-right"></span>
+                </span>
+              </a>
+-->
+              {% if block.products %}
+                <a class="btn btn-order mb-5" href="{{ block.products.0.link }}">
+                  <span class="text">Заказать</span>
+                  <span class="fa fa-shopping-cart">
+                    <span class="arrow-right"></span>
+                  </span>
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- pagination -->
+      <div class="slider-pagination swiper-pagination"></div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</section>

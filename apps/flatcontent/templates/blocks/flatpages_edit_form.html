@@ -10,7 +10,7 @@
       <div class="form-group">
         <label class="col-lg-2 control-label">Стат. страничка</label>
         <div class="col-lg-10">
-          <input type="text" placeholder="Стат. страничка" class="form-control" name="container_name" value="{% if row.container %}{{ row.container.name }}{% else %}{{ container.name }}{% endif %}" autocomplete="off" readonly>
+          <input type="text" placeholder="Стат. страничка" class="form-control" name="container_name" value="{% if row.container %}{{ row.container.name }} ({{ row.container.tag }}){% else %}{{ container.name }} ({{ container.tag }}){% endif %}" autocomplete="off" readonly>
         </div>
       </div>
 

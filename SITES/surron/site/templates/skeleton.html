@@ -95,13 +95,10 @@
 </header>
 
 {% block extracontent %}
-<main class="page-main fullpage-scroll anim-slide-scroll" id="mainpage">
+<main class="page-main fullpage-scroll{% if True %} normal-scroll{% else %} anim-slide-scroll{% endif %}" id="mainpage">
 {% block content %}{% endblock %}
+{% include "web/components/footer.html" %}
 </main>
-
-<div class="mobile_footer">
-  {% include "web/components/footer.html" %}
-</div>
 
 {% endblock %}
 
@@ -116,6 +113,7 @@
 <script src="/media/js/spritespin.js"></script>
 <script src="/media/js/main.js"></script>
 {% block extrascripts %}{% endblock %}
+
 {% if containers.main.tags.google_analytics.html %}
   {{ containers.main.tags.google_analytics.html|safe }}
 {% endif %}

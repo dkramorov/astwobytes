@@ -1,9 +1,9 @@
 {% load mtags %}
-<section data-id="newspage" class="section section-page  fp-auto-height-responsive">
+<section data-id="newspage" class="section section-page newspage">
 
-  <div class="section-margin anim">
+  <div class="anim">
     {% if container.description %}
-      <div class="section-header align-x-center">
+      <div class="section-header align-x-center mt-5 pt-5">
         <div class="h-content w-full text-center">
           <h2 class="h-title font-title anim-1 news pb-0 text-gray-3">
             {{ container.description|safe }}
@@ -12,7 +12,7 @@
       </div>
     {% endif %}
 
-    <div class="section-content align-x-center">
+    <div class="section-content align-x-center pb-4">
       <div class="c-wrapper anim-3">
         <div class="row">
           {% for block in blocks %}
@@ -45,8 +45,5 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="section-footer page-footer">
-    {% include "web/components/landing_footer.html" %}
   </div>
 </section>

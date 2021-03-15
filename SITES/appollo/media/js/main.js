@@ -44,25 +44,6 @@ $(document).ready(function () {
     });
 });
 
-(function ($j) {
-    switch_style = {
-        onReady: function () {
-            this.switch_style_click();
-        },
-        switch_style_click: function () {
-            $(".box").click(function () {
-                var id = $(this).attr("id");
-
-                $("#switch_style").attr("href", "css/color/" + id + ".css");
-            });
-        },
-    };
-    $j().ready(function () {
-        switch_style.onReady();
-    });
-
-})(jQuery);
-
 //burger menu
 $(".burger-menu").click(function () {
     $(this).toggleClass("menu-on");
@@ -72,7 +53,7 @@ $(".burger-menu").click(function () {
 var lastId,
     topMenu = $("#navigation"),
     topMenuHeight = topMenu.outerHeight() - 60,
-    menuItems = topMenu.find("a"),
+    menuItems = topMenu.find("a[href*='#']"),
     scrollItems = menuItems.map(function () {
         var item = $($(this).attr("href"));
         if (item.length) {
@@ -116,25 +97,6 @@ $(function () {
         }
     });
 });
-
-(function ($j) {
-    switch_style = {
-        onReady: function () {
-            this.switch_style_click();
-        },
-        switch_style_click: function () {
-            $(".box").click(function () {
-                var id = $(this).attr("id");
-
-                $("#switch_style").attr("href", "css/color/" + id + ".css");
-            });
-        },
-    };
-    $j().ready(function () {
-        switch_style.onReady();
-    });
-
-})(jQuery);
 
 // wow
 new WOW().init();

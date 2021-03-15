@@ -1,18 +1,12 @@
 {% load mtags %}
-<section data-id="videopage3" class="section videopage">
+<section data-id="imagepage2" class="section imagepage2 section-page pl-0 pr-0">
 
-  <div class="section-content align-x-center anim text-black-2">
-
-    <div class="video-container">
-      <video autoplay="autoplay" loop="loop" muted="muted">
-        {% if blocks.0.link %}
-          <source src="{{ blocks.0.link }}" type="video/mp4">
-        {% else %}
-          <source src="/media/misc/loop-bg.mp4" type="video/mp4">
-        {% endif %}
-      </video>
+  {% if container.img %}
+    <div class="slide-bg pos-abs">
+      <img class="img-block" alt="{{ container.name|textize }}" src="{% imagine container.img '1920x1080' container.get_folder True %}" loading="lazy">
     </div>
-
+  {% endif %}
+  <div class="section-content anim text-black-2">
     {% for block in blocks %}
       <div class="container">
         <div class="row no-gutters">
