@@ -307,6 +307,24 @@ input[type=email] {
 .shop_table .product-name{
   padding-left:1.4rem;
 }
+.product_card .infoblock {
+  padding-top: 5px;
+  height: 145px;
+  background-color: #f8f8f8;
+}
+  @media(min-width:1024px){
+    .product .product-thumb-info {
+      background-color: #fff;
+      height: 320px;
+      overflow:hidden;
+    }
+    .product .infoblock h3 {
+      height: 67px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -o-text-overflow: ellipsis;
+    }
+  }
 @media(max-width:991px){
   .shop .actions-continue{float:none}
   .shop table.cart .product-thumbnail{width:12%}
@@ -365,4 +383,39 @@ input[type=email] {
   width: 125px;
   font-size: 1em;
   border-radius: .25rem;
+}
+/* Product */
+.tabs .nav-tabs {
+  border: 0;
+}
+.tabs.tabs-simple.tabs-simple-full-width-line .nav-tabs > li {
+  display: inline-block;
+}
+.tabs.tabs-simple .nav-tabs > li {
+  margin-left: 0;
+  flex: 1;
+  display: flex;
+  margin-bottom: 20px;
+}
+.tabs.tabs-simple .nav-tabs > li .nav-link,
+.tabs.tabs-simple .nav-tabs > li .nav-link:hover,
+.tabs.tabs-simple .nav-tabs > li .nav-link:focus {
+  padding: 15px 30px;
+  border: 0;
+  border-bottom: 3px solid #eee;
+  border-radius: 0;
+  color: #777;
+  font-size: 16px;
+  outline: 0;
+}
+.tabs.tabs-simple .nav-tabs > li.active .nav-link {
+    border-bottom: 1px solid #000;
+}
+@media(max-width:767px){
+  .tabs .nav.nav-tabs {
+    display: block;
+  }
+  .tabs .nav.nav-tabs > li {
+    display: block !important;
+  }
 }

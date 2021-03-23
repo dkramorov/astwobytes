@@ -7,7 +7,6 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from apps.main_functions.catcher import json_pretty_print
-from apps.addresses.utils import ask_yandex_address_by_point, parse_yandex_address
 from apps.addresses.models import Address
 
 from apps.site.dealers.models import Dealer

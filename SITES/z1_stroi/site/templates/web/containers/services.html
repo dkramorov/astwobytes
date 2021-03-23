@@ -1,0 +1,17 @@
+{% load mtags %}
+<section class="page-section services">
+  <div class="container">
+    <div class="row blocks">
+      {% for block in blocks %}
+        <div class="col-md-3">
+          <a class="block" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+            <div class="media text-center">
+              <img src="{{ block.thumb }}" />
+              <div class="media-heading">{{ block.name }}</div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

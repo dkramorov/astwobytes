@@ -34,71 +34,74 @@
 {% endblock %}
 
 {% block content %}
-<div class="auth-wrap stylization">
-  <div class="auth-col">
-    <h2>Вход</h2>
+<section class="comments">
+  <div class="padding-masc">
+    <div class="container">
 
-    <div class="social">
-      <p>
-        <a class="btn btn-default" href="{{ vk_link }}">Войти через <i class="fa fa-vk"></i></a>
-        <a class="btn btn-default" href="{{ yandex_link }}">Войти через Yandex</a>
-      </p>
+      <div class="col-md-12">
+        <div class="leave-comment">
+          <h3>Регистрация</h3>
+          <h4 class="mb50"><i class="color">Заведите новый аккаунт</i></h4>
+          <form action="/registration/" method="post" id="register_form" class="register">
+            {% csrf_token %}
+            <div class="row wow fadeInUp" data-wow-duration="1.3s">
+              <div class="col-sm-6 mb-20 text-center">
+                <label>Ваше имя<span class="required">*</span></label>
+                <input class="mb-0 required" type="text" placeholder="Ваше имя" name="name" data-msg="Введите ваше имя">
+              </div>
+              <div class="col-sm-6 mb-20 text-center">
+                <label>Ваш Email</label>
+                <input class="mb-0 email" type="text" placeholder="Ваш Email" name="email" data-msg="Введите ваш Email">
+              </div>
+              <div class="col-sm-6 mb-20 text-center">
+                <label>Логин<span class="required">*</span></label>
+                <input class="mb-0 required" type="text" placeholder="Логин" name="login" data-msg="Введите логин">
+              </div>
+              <div class="col-sm-6 mb-20 text-center">
+                <label>Телефон<span class="required">*</span></label>
+                <input class="mb-0 required phone" type="text" placeholder="Ваш телефон" name="phone" data-msg="Введите ваш телефон">
+              </div>
+              <div class="col-sm-6 mb-20 text-center">
+                <label>Пароль<span class="required">*</span></label>
+                <input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
+              </div>
+              <div class="col-sm-6 mb-20 text-center">
+                <label>Повторите пароль<span class="required">*</span></label>
+                <input class="mb-0 required" type="password" placeholder="Повторите пароль" name="passwd2" data-msg="Повторите пароль">
+              </div>
+              <div class="col-sm-12">
+                <p class="feedback_alerts"></p>
+              </div>
+
+              <div class="col-sm-6">
+                <button type="submit" class="btn dwnld-btn playmarket">
+                  <i class="fa fa-user" aria-hidden="true"></i>
+                  Регистрация
+                </button>
+              </div>
+
+              <div class="col-sm-6 text-right">
+                <a class="btn dwnld-btn" href="/login/">
+                  <h4>
+                    <i class="color">У меня уже есть аккаунт</i>
+                  </h4>
+                </a>
+              </div>
+
+            </div>
+            <br>
+
+          </form>
+        </div>
+      </div>
+
     </div>
-
-    <p>или по паролю</p>
-    <form action="/login/" method="post" id="login_form" class="login">
-      {% csrf_token %}
-      <p>
-        <label>Логин <span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Ваш логин" name="login" data-msg="Введите логин">
-      </p>
-      <p>
-        <label for="password">Пароль <span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
-      </p>
-      <p class="feedback_alerts"></p>
-      <p class="auth-submit">
-        <input type="submit" value="Войти">
-        <input type="checkbox" id="rememberme" value="forever">
-        <label for="rememberme">Запомнить меня</label>
-      </p>
-      <p class="auth-lost_password">
-        <a href="#">Забыли пароль?</a>
-      </p>
-    </form>
   </div>
-  <div class="auth-col">
-    <h2>Регистрация</h2>
-    <form action="/registration/" method="post" id="register_form" class="register">
-      {% csrf_token %}
-      <p>
-        <label>Ваше имя<span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Ваше имя" name="name" data-msg="Введите ваше имя">
-      </p>
-      <p>
-        <label>Ваш Email</label><input class="mb-0 email" type="text" placeholder="Ваш Email" name="email" data-msg="Введите ваш Email">
-      </p>
-      <p>
-        <label>Логин<span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Логин" name="login" data-msg="Введите логин">
-      </p>
-      <p>
-        <label>Телефон<span class="required">*</span></label><input class="mb-0 required phone" type="text" placeholder="Ваш телефон" name="phone" data-msg="Введите ваш телефон">
-      </p>
-      <p>
-        <label>Пароль<span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
-      </p>
-      <p>
-        <label>Повторите пароль<span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Повторите пароль" name="passwd2" data-msg="Повторите пароль">
-      </p>
+</section>
 
-      <p class="feedback_alerts"></p>
-      <p class="auth-submit">
-        <input type="submit" value="Регистрация">
-      </p>
-    </form>
-  </div>
-</div>
-
-  {% for container in page.containers %}
-    {% flatcontent request page container.container.tag %}
-  {% endfor %}
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
 {% endblock %}
 
 

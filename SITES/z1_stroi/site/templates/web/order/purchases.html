@@ -1,0 +1,54 @@
+{% load mtags %}
+<div class="cart-items-wrap">
+  <table class="cart-items">
+    <thead>
+      <tr>
+        <td class="cart-image">Фото</td>
+        <td class="cart-ttl">Наименование</td>
+        <td class="cart-price">Цена, ₽</td>
+        <td class="cart-quantity">Кол-во</td>
+        <td class="cart-summ">Сумма, ₽</td>
+        <td class="cart-del">&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for purchase in cart.purchases %}
+        <tr>
+          <td class="cart-image">
+            <a href="{{ purchase.link }}" target="_blank">
+              <img src="{{ purchase.thumb }}" alt="{{ purchase.product_name|textize }}">
+            </a>
+          </td>
+          <td class="cart-ttl">
+            <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
+{% comment %}<!--
+            <p>Color: Red</p>
+            <p>Size: XS</p>
+-->{% endcomment %}
+            <p>Артикул: {{ purchase.product_code }}</p>
+          </td>
+          <td class="cart-price">
+            <b>{{ purchase.cost|money_format }} ₽</b>
+          </td>
+          <td class="cart-quantity">
+            <p class="cart-qnt" id="qbuttons_{{ purchase.id }}">
+              <input value="{{ purchase.count }}" type="text" id="quantity_{{ purchase.id }}" autocomplete="off">
+              <a href="javascript:void(0);" class="cart-plus"><i class="fa fa-angle-up"></i></a>
+              <a href="javascript:void(0);" class="cart-minus"><i class="fa fa-angle-down"></i></a>
+            </p>
+          </td>
+          <td class="cart-summ">
+            <b>{{ purchase.total|money_format }} ₽</b>
+            <p class="cart-forone">{{ purchase.measure }} <b>{{ purchase.cost|money_format }}</b></p>
+          </td>
+          <td class="cart-del">
+            <a href="javascript:void(0);" class="cart-remove remove_from_cart_btn" id="purchase_drop_{{ purchase.id }}"></a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<ul class="cart-total">
+  <li class="cart-summ">Итого: <b>{{ cart.total|money_format }} ₽</b></li>
+</ul>

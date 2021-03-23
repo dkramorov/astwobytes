@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from apps.main_functions.string_parser import kill_quotes
+from apps.main_functions.string_parser import kill_quotes, get_request_ip
 from apps.main_functions.models import Standard
 from apps.main_functions.functions import object_fields
-
-from .utils import get_user_name
+from apps.personal.utils import get_user_name
 
 class Shopper(Standard):
     """Модель пользователя сайта"""
@@ -20,6 +19,9 @@ class Shopper(Standard):
     middle_name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     email = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     phone = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    phone_confirmed = models.BooleanField(db_index=True,
+        default=False,
+        verbose_name='Телефон подтвержден')
     address = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     login = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     passwd = models.CharField(max_length=255, blank=True, null=True, db_index=True)
@@ -40,6 +42,7 @@ class Shopper(Standard):
             'middle_name',
             'email',
             'phone',
+            'phone_confirmed',
             'address',
             'login',
             'discount',
@@ -63,3 +66,35 @@ class Shopper(Standard):
             self.phone = phone
         super(Shopper, self).save(*args, **kwargs)
 
+def get_personal_user(request, guest_enter: bool = False):
+    """Пользователь из сессии
+       :param request: HttpRequest
+       :param guest_enter: гостевой вход (завести виртуального юзера)
+       :return: Shopper, не надо возвращать dict
+    """
+    shopper = request.session.get('shopper')
+    promocode = request.session.get('promocode')
+    if not guest_enter:
+        if isinstance(shopper, dict):
+            user = Shopper()
+            for k, v in shopper.items():
+                setattr(user, k, v)
+            if promocode:
+                user.promocode = promocode
+            return user
+        if shopper:
+            shopper.promocode = promocode
+        return shopper
+
+    # Создаем виртуального пользователя
+    ip = get_request_ip(request)
+    if not shopper:
+        shopper = Shopper(name='Гость', ip=ip)
+        request.session['shopper'] = shopper.to_dict()
+    else:
+        shopper = Shopper.objects.filter(pk=shopper.id).first()
+        if not shopper:
+            shopper = Shopper(name='Гость', ip=ip)
+            request.session['shopper'] = shopper.to_dict()
+    shopper.promocode = promocode
+    return shopper

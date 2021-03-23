@@ -1,0 +1,177 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          {% include "core/forms/row_name.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Адрес</label>
+            <div class="col-lg-10">
+              <select id="address_select2" name="address" autocomplete="off">
+                {% if address %}
+                  <option value="{{ address.id }}" selected>{{ address.address_str }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Режим работы</label>
+            <div class="col-lg-10">
+              <textarea placeholder="Режим работы" class="form-control" name="worktime" autocomplete="off" id="worktime_redactor">{% if row.worktime %}{{ row.worktime }}{% endif %}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Сайт</label>
+            <div class="col-lg-10">
+              <textarea type="text" placeholder="Сайт" class="form-control" name="site" autocomplete="off" id="site_redactor">{% if row.site %}{{ row.site }}{% endif %}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Телефон</label>
+            <div class="col-lg-10">
+              <textarea type="text" placeholder="Описание" class="form-control" name="phone" autocomplete="off" id="phone_redactor">{% if row.phone %}{{ row.phone }}{% endif %}</textarea>
+            </div>
+          </div>
+          {% include "core/forms/row_image.html" %}
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/redactor/jquery.browser.js"></script>
+  <script src="/static/redactor/redactor.js"></script>
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+          // Обновление ссылок
+          update_links(r);
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+      $("#worktime_redactor").redactor({
+        //air: true,
+      });
+      $("#site_redactor").redactor({
+        //air: true,
+      });
+      $("#phone_redactor").redactor({
+        //air: true,
+      });
+
+      $('#address_select2').select2({
+        placeholder: 'Выберите адрес',
+        width: '100%',
+        allowClear: true,
+        ajax: {
+          url: "{% url 'addresses:search_addresses' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
+      $('#city_select2').select2({
+        placeholder: 'Выберите город',
+        allowClear: true,
+        width: '100%',
+        //tags: true,
+      });
+
+      function update_links(r){
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      {% if row %}
+        var progressbar = $('#progressbar-files'),
+          bar         = progressbar.find('.progress-bar-files'),
+          settings    = {
+            action: '{% url "dealers:edit_dealer" "img" row.id %}', // upload url
+            allow : '*.*',
+            param: 'img',
+            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+            loadstart: function() {
+              bar.css('width', '0%').text('0%');
+              progressbar.removeClass('hidden');
+            },
+            progress: function(percent) {
+              percent = Math.ceil(percent);
+              bar.css('width', percent+'%').text(percent+'%');
+            },
+            allcomplete: function(response) {
+              bar.css('width', '100%').text('100%');
+              setTimeout(function(){
+                progressbar.addClass('hidden');
+              }, 750);
+              // Upload Completed
+              //alert(response);
+
+              // Обновление ссылок
+              var r = JSON.parse(response);
+              update_links(r);
+            }
+          };
+        var select = new $.upload.select($('#upload-select-files'), settings),
+        drop   = new $.upload.drop($('#upload-drop-files'), settings);
+      {% endif %}
+    });
+  </script>
+{% endblock %}

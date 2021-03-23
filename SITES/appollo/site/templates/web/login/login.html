@@ -1,0 +1,133 @@
+{% extends "skeleton.html" %}
+{% load flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+  .stylization .btn{
+    display: inline-block;
+    border: none;
+    transition: all 0.2s;
+    font-weight: 500;
+    background: #373d54;
+    padding: 10px 35px;
+    color: #ffffff;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  .social i{
+    font-size:18px;
+  }
+  .auth-wrap .auth-col label.error{
+    float:right;
+    width: auto;
+  }
+  .stylization button.close {
+    padding: 5px;
+  }
+</style>
+{% if request.session.shopper %}
+<script type="text/javascript">
+  window.location.href = '/profile/';
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="comments">
+  <div class="padding-masc">
+    <div class="container">
+      <div class="col-md-12">
+        <div class="leave-comment">
+          <h3>Вход</h3>
+          <h4 class="mb50"><i class="color">Уже зарегистрированы?</i></h4>
+          <form action="/login/" method="post" id="login_form" class="login">
+            {% csrf_token %}
+            <div class="row wow fadeInUp" data-wow-duration="1.3s">
+              <div class="col-sm-6 mb-20 text-center">
+                <label>Логин <span class="required">*</span></label>
+                <input class="mb-0 required" type="text" placeholder="Ваш логин" name="login" data-msg="Введите логин">
+              </div>
+              <div class="col-sm-6 mb-20 text-center">
+                <label for="password">Пароль <span class="required">*</span></label>
+                <input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
+              </div>
+              <div class="col-sm-12">
+                <p class="feedback_alerts"></p>
+              </div>
+
+              <div class="col-sm-6">
+                <button type="submit" class="btn dwnld-btn playmarket">
+                  <i class="fa fa-paper-plane" aria-hidden="true"></i>Вход
+                </button>
+
+                <a class="btn dwnld-btn playmarket" href="{{ vk_link }}">Вход через <i class="fa fa-vk"></i></a>
+                <a class="btn dwnld-btn playmarket" href="{{ yandex_link }}">Вход через <i class="fa fa-renren fa-rotate-180"></i></a>
+
+              </div>
+
+              <div class="col-sm-6 text-right">
+                <a class="btn dwnld-btn" href="/registration/">
+                  <h4>
+                    <i class="color">Зарегистрироваться, если нет аккаунта</i>
+                  </h4>
+                </a>
+              </div>
+
+
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+
+{% block extrascripts %}
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/static/js/feedback.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    function redirect_to_profile(result){
+      setTimeout(function(){
+          window.location.href = result['redirect'];
+      }, 800);
+    }
+    var reg = new FeedBack("register_form", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Пользователь создан",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": redirect_to_profile,
+      "callback_error": "",
+      "dont_reset_on_submit": 1, // or 1
+      //"errorClass": "invalid",
+    });
+    var auth = new FeedBack("login_form", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Вы вошли",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": redirect_to_profile,
+      "callback_error": "",
+      "dont_reset_on_submit": 1, // or 1
+      //"errorClass": "invalid",
+    });
+  });
+</script>
+{% endblock %}

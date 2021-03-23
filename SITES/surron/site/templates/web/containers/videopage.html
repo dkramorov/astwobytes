@@ -1,12 +1,12 @@
-{% load mtags %}
+{% load mtags tags %}
 <section data-id="videopage" class="section videopage">
 
   <div class="section-content align-x-center anim text-black-2">
 
     <div class="video-container">
-      <video autoplay="autoplay" loop="loop" muted="muted">
+      <video autoplay="autoplay" loop="loop" muted="muted" preload="metadata">
         {% if blocks.0.link %}
-          <source src="{{ blocks.0.link }}" type="video/mp4">
+          <source src="{% video_link blocks.0.link %}" type="video/mp4">
         {% else %}
           <source src="/media/misc/loop-bg.mp4" type="video/mp4">
         {% endif %}
@@ -47,8 +47,11 @@
 
 
     <div class="px-5 pt-5 bg-white footer">
+
       <div class="row no-gutters">
         {% for block in blocks %}
+          <div class="col-12 col-lg-2">
+          </div>
           <div class="col-12 col-lg-2">
             {% if block.name %}
               <div class="content-text">
@@ -58,7 +61,7 @@
               </div>
             {% endif %}
           </div>
-          <div class="col-12 col-lg-8">
+          <div class="col-12 col-lg-6">
             {% if block.html %}
               <div class="content-text pr-lg-4 pl-lg-4">
                 <div class="text mb-5 anim-4">
@@ -91,6 +94,8 @@
           </div>
         {% endfor %}
       </div>
+
+    </div>
 
     </div>
   </div>

@@ -1,0 +1,50 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block content %}
+{% if not cart %}
+  <article class="stylization">
+    <div class="woocommerce">
+      <h2 class="text-center pt-100 pb-100">Ваша корзина пуста, сначала выберите, что хотите купить</h2>
+    </div>
+  </article>
+{% else %}
+  {% include "web/order/purchases.html" %}
+  <div class="cart-submit">
+    <div class="cart-coupon">
+      <input placeholder="Купон" type="text">
+      <a class="cart-coupon-btn" href="javascript:void(0);"><img src="/media/misc/ok.png" alt="купон"></a>
+    </div>
+    <a href="/shop/checkout/" class="cart-submit-btn">Оформить заказ</a>
+    <!--<a href="#" class="cart-clear">Очистить корзину</a>-->
+  </div>
+{% endif %}
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block subscribe %}{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    {% for purchase in cart.purchases %}
+      quantity_listener("{{ purchase.id }}",
+                        $("#qbuttons_{{ purchase.id }} .cart-plus"),
+                        $("#qbuttons_{{ purchase.id }} .cart-minus"),
+                        true // сразу обновить
+      );
+      purchase_drop_listener("{{ purchase.id }}",
+                             $("#purchase_drop_{{ purchase.id }}")
+      );
+    {% endfor %}
+  });
+</script>
+{% endblock %}

@@ -2,7 +2,7 @@
 import logging
 from django.conf import settings
 
-from apps.personal.models import Shopper
+from apps.personal.models import Shopper, get_personal_user
 from apps.personal.utils import save_user_to_request
 from apps.products.models import Products, Costs, CostsTypes
 from apps.flatcontent.flatcat import get_costs_types
@@ -151,32 +151,7 @@ def get_shopper(request, guest_enter: bool = False):
        :param guest_enter: гостевой вход (завести виртуального юзера)
        :return: Shopper, не надо возвращать dict
     """
-    shopper = request.session.get('shopper')
-    promocode = request.session.get('promocode')
-    if not guest_enter:
-        if isinstance(shopper, dict):
-            user = Shopper()
-            for k, v in shopper.items():
-                setattr(user, k, v)
-            if promocode:
-                user.promocode = promocode
-            return user
-        if shopper:
-            shopper.promocode = promocode
-        return shopper
-
-    # Создаем виртуального пользователя
-    ip = get_request_ip(request)
-    if not shopper:
-        shopper = Shopper(name='Гость', ip=ip)
-        request.session['shopper'] = shopper.to_dict()
-    else:
-        shopper = Shopper.objects.filter(pk=shopper.id).first()
-        if not shopper:
-            shopper = Shopper(name='Гость', ip=ip)
-            request.session['shopper'] = shopper.to_dict()
-    shopper.promocode = promocode
-    return shopper
+    return get_personal_user(request, guest_enter);
 
 def create_shopper(request):
     """Создание пользователя

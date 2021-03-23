@@ -1,0 +1,60 @@
+{% ifequal tag "mainmenu" %}
+<div class="navigation-wrapper">
+  <div class="container">
+    <nav class="navigation closed clearfix">
+      <a href="#" class="menu-toggle-close btn">
+        <i class="fa fa-times"></i>
+      </a>
+      <ul class="nav sf-menu">
+        {% for menu in menus %}
+          <li{% ifequal request.META.PATH_INFO menu.link %} class="active"{% endifequal %}>
+            <a href="{{ menu.link }}">{{ menu.name }}</a>
+            {% if menu.sub %}
+              <ul>
+                {% for item in menu.sub %}
+                  <li>
+                    <a href="{{ item.link }}">{{ item.name }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+        {% comment %}<!-- li_megamenu.html -->{% endcomment %}
+      </ul>
+    </nav>
+  </div>
+</div>
+{% endifequal %}
+{% ifequal tag "topmenu" %}
+  {% for menu in menus %}
+    <li class="hidden-xs">
+      <a href="{{ menu.link }}">{{ menu.name }}</a>
+    </li>
+  {% endfor %}
+{% endifequal %}
+{% ifequal tag "bottommenu" %}
+{% for menu in menus %}
+  <div class="col-md-3">
+    <div class="widget widget-categories">
+      <h4 class="widget-title">{{ menu.name }}</h4>
+      <ul>
+        {% for item in menu.sub %}
+          <li><a href="{{ item.link }}">{{ item.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endfor %}
+{% comment %}<!--
+<div class="col-md-3">
+  <div class="widget widget-tag-cloud">
+  <h4 class="widget-title">Теги</h4>
+  <ul>
+    <li><a href="#">раз</a></li>
+    <li><a href="#">два</a></li>
+    </ul>
+  </div>
+</div>
+-->{% endcomment %}
+{% endifequal %}

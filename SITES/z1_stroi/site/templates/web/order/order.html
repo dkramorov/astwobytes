@@ -1,0 +1,28 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+  .remove_from_cart_btn {
+    display: none !important;
+  }
+</style>
+{% endblock %}
+
+{% block page_title %}Заказ № {% if order.number %}{{ order.number }}{% else %}{{ order.id }}{% endif %} на сумму {{ order.total|money_format }} ₽ от {{ order.created|date:'H:i:s d/m/Y' }}{% endblock %}
+
+{% block content %}
+{% include "web/order/purchases.html" %}
+<div class="cart-submit">
+  <a href="javascript:void(0);" class="cart-submit-btn" onclick="window.print();">Печать</a>
+</div>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block subscribe %}{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}

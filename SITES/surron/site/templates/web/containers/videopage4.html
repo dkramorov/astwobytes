@@ -1,10 +1,10 @@
-{% load mtags %}
+{% load mtags tags %}
 <section data-id="videopage4" class="section videopage videopage4">
 
   <div class="anim text-black-2">
 
 
-    <video{% if blocks.0.img %} poster="{% imagine blocks.0.img '1920x1080' blocks.0.get_folder True %}" {% endif %} controls="controls" preload="metadata" src="{{ blocks.0.link }}" type="video/mp4" class="w-full">
+    <video{% if blocks.0.img %} poster="{% imagine blocks.0.img '1920x1080' blocks.0.get_folder True %}" {% endif %} controls="controls" preload="metadata" src="{% video_link blocks.0.link %}" type="video/mp4" class="w-full">
     </video>
 
 
@@ -45,6 +45,8 @@
       <div class="row no-gutters">
         {% for block in blocks %}
           <div class="col-12 col-lg-2">
+          </div>
+          <div class="col-12 col-lg-2">
             {% if block.name %}
               <div class="content-text">
                 <h2 class="h-title font-title anim-3">
@@ -53,7 +55,7 @@
               </div>
             {% endif %}
           </div>
-          <div class="col-12 col-lg-8">
+          <div class="col-12 col-lg-6">
             {% if block.html %}
               <div class="content-text pr-lg-4 pl-lg-4">
                 <div class="text mb-5 anim-4">

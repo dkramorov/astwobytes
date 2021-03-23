@@ -1,0 +1,22 @@
+<div class="header-cart">
+  <div class="cart-wrapper">
+    <a href="{{ containers.main.tags.phone.link }}" class="phone hidden-xs">
+      <i class="fa fa-{{ containers.main.tags.phone.icon }}"></i>
+      {{ containers.main.tags.phone.html|safe }}
+    </a>
+    <a href="/products/wishlist/" class="btn btn-theme-transparent hidden-xs hidden-sm">
+      <i class="fa fa-heart"></i>
+    </a>
+    <a href="/products/compare/" class="btn btn-theme-transparent hidden-xs hidden-sm">
+      <i class="fa fa-exchange"></i>
+    </a>
+    <a href="#" class="btn btn-theme-transparent" data-toggle="modal" data-target="#popup-cart">
+      <i class="fa fa-shopping-cart"></i>
+      <span class="hidden-xs"> 0 шт - 0.00₽</span>
+      <i class="fa fa-angle-down"></i>
+    </a>
+    <a href="#" class="menu-toggle btn btn-theme-transparent">
+      <i class="fa fa-bars"></i>
+    </a>
+  </div>
+</div>

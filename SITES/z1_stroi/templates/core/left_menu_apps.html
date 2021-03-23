@@ -1,0 +1,30 @@
+{% load mtags %}
+{% with ''|installed_apps as apps %}
+<ul class="nav">
+  <li class="nav-heading">&nbsp;</li>
+
+  {% if 'flatcontent' in apps %}
+    {% include "flatcontent_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'shop' in apps %}
+    {% include "shop_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'products' in apps %}
+    {% include "products_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'personal' in apps %}
+    {% include "personal_admin_menu.html" %}
+  {% endif %}
+
+  {% if 'files' in apps %}
+    {% include "files_admin_menu.html" %}
+  {% endif %}
+
+  {% include "users_admin_menu.html" %}
+  {% include "main_functions_admin_menu.html" %}
+</ul>
+{% endwith %}
+<br><br><br><br><br>

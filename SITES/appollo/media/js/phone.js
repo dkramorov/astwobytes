@@ -33,7 +33,7 @@ function load_sipjs(callback){
     sip_script.onload = function(){
       var sipua_script = document.createElement("script");
       sipua_script.type = "text/javascript";
-      sipua_script.src = "/static/call_from_site/js/ua-0.7.3.js";
+      sipua_script.src = "/static/call_from_site/js/ua-0.7.3.js?v=2";
       sipua_script.onload = function(){
         connect_to_server(connected_to_server);
         set_call_controls($(".make_call"), $(".hangup"), $(".call_timer"));

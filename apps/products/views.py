@@ -264,7 +264,7 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
                 'link': mh.url_edit,
                 'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
             })
-            context['cats'] = row.productscats_set.select_related('cat', 'cat__container').filter(cat__isnull=False)
+            context['cats'] = row.productscats_set.select_related('cat', 'cat__container').filter(cat__isnull=False, cat__container__state=7)
 
             # Вывод родительских рубрик
             all_ids_parents = []
@@ -800,6 +800,8 @@ def search_pvalues(request, *args, **kwargs):
     if order_by:
         for item in order_by.split(','):
             mh.order_by_add(item.strip())
+    else:
+        mh.order_by_add('position')
 
     rows = mh.standard_show()
     for row in rows:

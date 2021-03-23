@@ -82,7 +82,7 @@ CREATE TABLE `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,7 +91,7 @@ CREATE TABLE `auth_permission` (
 
 LOCK TABLES `auth_permission` WRITE;
 /*!40000 ALTER TABLE `auth_permission` DISABLE KEYS */;
-INSERT INTO `auth_permission` VALUES (1,'Can add permission',1,'add_permission'),(2,'Can change permission',1,'change_permission'),(3,'Can delete permission',1,'delete_permission'),(4,'Can view permission',1,'view_permission'),(5,'Can add group',2,'add_group'),(6,'Can change group',2,'change_group'),(7,'Can delete group',2,'delete_group'),(8,'Can view group',2,'view_group'),(9,'Can add user',3,'add_user'),(10,'Can change user',3,'change_user'),(11,'Can delete user',3,'delete_user'),(12,'Can view user',3,'view_user'),(13,'Can add content type',4,'add_contenttype'),(14,'Can change content type',4,'change_contenttype'),(15,'Can delete content type',4,'delete_contenttype'),(16,'Can view content type',4,'view_contenttype'),(17,'Can add session',5,'add_session'),(18,'Can change session',5,'change_session'),(19,'Can delete session',5,'delete_session'),(20,'Can view session',5,'view_session'),(21,'Can add Админка - Настрока',6,'add_config'),(22,'Can change Админка - Настрока',6,'change_config'),(23,'Can delete Админка - Настрока',6,'delete_config'),(24,'Can view Админка - Настрока',6,'view_config'),(25,'Can add Админка - Задача',7,'add_tasks'),(26,'Can change Админка - Задача',7,'change_tasks'),(27,'Can delete Админка - Задача',7,'delete_tasks'),(28,'Can view Админка - Задача',7,'view_tasks'),(29,'Can add custom user',11,'add_customuser'),(30,'Can change custom user',11,'change_customuser'),(31,'Can delete custom user',11,'delete_customuser'),(32,'Can view custom user',11,'view_customuser'),(33,'Can add Стат.контет - Файл',12,'add_files'),(34,'Can change Стат.контет - Файл',12,'change_files'),(35,'Can delete Стат.контет - Файл',12,'delete_files'),(36,'Can view Стат.контет - Файл',12,'view_files'),(37,'Can add Стат.контент - Блоки',13,'add_blocks'),(38,'Can change Стат.контент - Блоки',13,'change_blocks'),(39,'Can delete Стат.контент - Блоки',13,'delete_blocks'),(40,'Can view Стат.контент - Блоки',13,'view_blocks'),(41,'Can add Стат.контент - Контейнеры',14,'add_containers'),(42,'Can change Стат.контент - Контейнеры',14,'change_containers'),(43,'Can delete Стат.контент - Контейнеры',14,'delete_containers'),(44,'Can view Стат.контент - Контейнеры',14,'view_containers'),(45,'Can add Стат.контент - Линковка меню к контейнерам',15,'add_linkcontainer'),(46,'Can change Стат.контент - Линковка меню к контейнерам',15,'change_linkcontainer'),(47,'Can delete Стат.контент - Линковка меню к контейнерам',15,'delete_linkcontainer'),(48,'Can view Стат.контент - Линковка меню к контейнерам',15,'view_linkcontainer');
+INSERT INTO `auth_permission` VALUES (1,'Can add permission',1,'add_permission'),(2,'Can change permission',1,'change_permission'),(3,'Can delete permission',1,'delete_permission'),(4,'Can view permission',1,'view_permission'),(5,'Can add group',2,'add_group'),(6,'Can change group',2,'change_group'),(7,'Can delete group',2,'delete_group'),(8,'Can view group',2,'view_group'),(9,'Can add user',3,'add_user'),(10,'Can change user',3,'change_user'),(11,'Can delete user',3,'delete_user'),(12,'Can view user',3,'view_user'),(13,'Can add content type',4,'add_contenttype'),(14,'Can change content type',4,'change_contenttype'),(15,'Can delete content type',4,'delete_contenttype'),(16,'Can view content type',4,'view_contenttype'),(17,'Can add session',5,'add_session'),(18,'Can change session',5,'change_session'),(19,'Can delete session',5,'delete_session'),(20,'Can view session',5,'view_session'),(21,'Can add Админка - Настрока',6,'add_config'),(22,'Can change Админка - Настрока',6,'change_config'),(23,'Can delete Админка - Настрока',6,'delete_config'),(24,'Can view Админка - Настрока',6,'view_config'),(25,'Can add Админка - Задача',7,'add_tasks'),(26,'Can change Админка - Задача',7,'change_tasks'),(27,'Can delete Админка - Задача',7,'delete_tasks'),(28,'Can view Админка - Задача',7,'view_tasks'),(29,'Can add custom user',11,'add_customuser'),(30,'Can change custom user',11,'change_customuser'),(31,'Can delete custom user',11,'delete_customuser'),(32,'Can view custom user',11,'view_customuser'),(33,'Can add Стат.контет - Файл',12,'add_files'),(34,'Can change Стат.контет - Файл',12,'change_files'),(35,'Can delete Стат.контет - Файл',12,'delete_files'),(36,'Can view Стат.контет - Файл',12,'view_files'),(37,'Can add Стат.контент - Блоки',13,'add_blocks'),(38,'Can change Стат.контент - Блоки',13,'change_blocks'),(39,'Can delete Стат.контент - Блоки',13,'delete_blocks'),(40,'Can view Стат.контент - Блоки',13,'view_blocks'),(41,'Can add Стат.контент - Контейнеры',14,'add_containers'),(42,'Can change Стат.контент - Контейнеры',14,'change_containers'),(43,'Can delete Стат.контент - Контейнеры',14,'delete_containers'),(44,'Can view Стат.контент - Контейнеры',14,'view_containers'),(45,'Can add Стат.контент - Линковка меню к контейнерам',15,'add_linkcontainer'),(46,'Can change Стат.контент - Линковка меню к контейнерам',15,'change_linkcontainer'),(47,'Can delete Стат.контент - Линковка меню к контейнерам',15,'delete_linkcontainer'),(48,'Can view Стат.контент - Линковка меню к контейнерам',15,'view_linkcontainer'),(49,'Can add Пользователи - пользователь',16,'add_shopper'),(50,'Can change Пользователи - пользователь',16,'change_shopper'),(51,'Can delete Пользователи - пользователь',16,'delete_shopper'),(52,'Can view Пользователи - пользователь',16,'view_shopper');
 /*!40000 ALTER TABLE `auth_permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -125,7 +125,7 @@ CREATE TABLE `auth_user` (
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$150000$PGH4RfFve7FD$l3hOxDq8BWI5yhsnZAw06qVS4lfySTNXT3C3wQprpn0=','2021-03-12 11:59:32.126886',1,'jocker','','','dkramorov@mail.ru',1,1,'2021-03-09 21:45:30.765576'),(2,'pbkdf2_sha256$150000$TUnnQiQEOxE0$YtkuADtErbtuhkCledas9SgLFwaBF0Vo5RAePamYFMk=','2021-03-12 13:23:31.743099',1,'ap','','','',1,1,'2021-03-12 13:23:16.000884');
+INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$150000$PGH4RfFve7FD$l3hOxDq8BWI5yhsnZAw06qVS4lfySTNXT3C3wQprpn0=','2021-03-16 16:59:12.820822',1,'jocker','','','dkramorov@mail.ru',1,1,'2021-03-09 21:45:30.765576'),(2,'pbkdf2_sha256$150000$TUnnQiQEOxE0$YtkuADtErbtuhkCledas9SgLFwaBF0Vo5RAePamYFMk=','2021-03-12 13:23:31.743099',1,'ap','','','',1,1,'2021-03-12 13:23:16.000884');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -198,7 +198,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -207,7 +207,7 @@ CREATE TABLE `django_content_type` (
 
 LOCK TABLES `django_content_type` WRITE;
 /*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
-INSERT INTO `django_content_type` VALUES (2,'auth','group'),(1,'auth','permission'),(3,'auth','user'),(4,'contenttypes','contenttype'),(12,'files','files'),(13,'flatcontent','blocks'),(14,'flatcontent','containers'),(15,'flatcontent','linkcontainer'),(11,'login','customuser'),(8,'login','extrafields'),(10,'login','extrainfo'),(9,'login','extravalues'),(6,'main_functions','config'),(7,'main_functions','tasks'),(5,'sessions','session');
+INSERT INTO `django_content_type` VALUES (2,'auth','group'),(1,'auth','permission'),(3,'auth','user'),(4,'contenttypes','contenttype'),(12,'files','files'),(13,'flatcontent','blocks'),(14,'flatcontent','containers'),(15,'flatcontent','linkcontainer'),(11,'login','customuser'),(8,'login','extrafields'),(10,'login','extrainfo'),(9,'login','extravalues'),(6,'main_functions','config'),(7,'main_functions','tasks'),(16,'personal','shopper'),(5,'sessions','session');
 /*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -224,7 +224,7 @@ CREATE TABLE `django_migrations` (
   `name` varchar(255) NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -233,7 +233,7 @@ CREATE TABLE `django_migrations` (
 
 LOCK TABLES `django_migrations` WRITE;
 /*!40000 ALTER TABLE `django_migrations` DISABLE KEYS */;
-INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2021-03-09 21:45:28.562878'),(2,'contenttypes','0002_remove_content_type_name','2021-03-09 21:45:28.661036'),(3,'auth','0001_initial','2021-03-09 21:45:28.917391'),(4,'auth','0002_alter_permission_name_max_length','2021-03-09 21:45:29.322976'),(5,'auth','0003_alter_user_email_max_length','2021-03-09 21:45:29.346957'),(6,'auth','0004_alter_user_username_opts','2021-03-09 21:45:29.355292'),(7,'auth','0005_alter_user_last_login_null','2021-03-09 21:45:29.382287'),(8,'auth','0006_require_contenttypes_0002','2021-03-09 21:45:29.384122'),(9,'auth','0007_alter_validators_add_error_messages','2021-03-09 21:45:29.390837'),(10,'auth','0008_alter_user_username_max_length','2021-03-09 21:45:29.412373'),(11,'auth','0009_alter_user_last_name_max_length','2021-03-09 21:45:29.430480'),(12,'auth','0010_alter_group_name_max_length','2021-03-09 21:45:29.454111'),(13,'auth','0011_update_proxy_permissions','2021-03-09 21:45:29.461368'),(14,'files','0001_initial','2021-03-09 21:45:29.488849'),(15,'files','0002_auto_20191203_2054','2021-03-09 21:45:29.560390'),(16,'files','0003_auto_20200112_1717','2021-03-09 21:45:29.570602'),(17,'files','0004_auto_20200402_2127','2021-03-09 21:45:29.606744'),(18,'files','0005_auto_20200809_1025','2021-03-09 21:45:29.609999'),(19,'flatcontent','0001_initial','2021-03-09 21:45:29.732034'),(20,'flatcontent','0002_auto_20190825_1730','2021-03-09 21:45:30.236694'),(21,'flatcontent','0003_auto_20191203_2054','2021-03-09 21:45:30.279256'),(22,'flatcontent','0004_blocks_html','2021-03-09 21:45:30.308297'),(23,'flatcontent','0005_auto_20200112_1717','2021-03-09 21:45:30.392810'),(24,'flatcontent','0006_auto_20200314_1638','2021-03-09 21:45:30.399921'),(25,'flatcontent','0007_auto_20200402_2127','2021-03-09 21:45:30.546401'),(26,'flatcontent','0008_containers_class_name','2021-03-09 21:45:30.572595'),(27,'flatcontent','0009_blocks_class_name','2021-03-09 21:45:30.606505'),(28,'login','0001_initial','2021-03-09 21:45:30.885122'),(29,'login','0002_auto_20200925_1007','2021-03-09 21:45:31.714542'),(30,'main_functions','0001_initial','2021-03-09 21:45:31.782410'),(31,'main_functions','0002_auto_20191203_2052','2021-03-09 21:45:31.804171'),(32,'main_functions','0003_auto_20200407_1845','2021-03-09 21:45:32.383550'),(33,'main_functions','0004_config_user','2021-03-09 21:45:32.527595'),(34,'sessions','0001_initial','2021-03-09 21:45:32.591120');
+INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2021-03-09 21:45:28.562878'),(2,'contenttypes','0002_remove_content_type_name','2021-03-09 21:45:28.661036'),(3,'auth','0001_initial','2021-03-09 21:45:28.917391'),(4,'auth','0002_alter_permission_name_max_length','2021-03-09 21:45:29.322976'),(5,'auth','0003_alter_user_email_max_length','2021-03-09 21:45:29.346957'),(6,'auth','0004_alter_user_username_opts','2021-03-09 21:45:29.355292'),(7,'auth','0005_alter_user_last_login_null','2021-03-09 21:45:29.382287'),(8,'auth','0006_require_contenttypes_0002','2021-03-09 21:45:29.384122'),(9,'auth','0007_alter_validators_add_error_messages','2021-03-09 21:45:29.390837'),(10,'auth','0008_alter_user_username_max_length','2021-03-09 21:45:29.412373'),(11,'auth','0009_alter_user_last_name_max_length','2021-03-09 21:45:29.430480'),(12,'auth','0010_alter_group_name_max_length','2021-03-09 21:45:29.454111'),(13,'auth','0011_update_proxy_permissions','2021-03-09 21:45:29.461368'),(14,'files','0001_initial','2021-03-09 21:45:29.488849'),(15,'files','0002_auto_20191203_2054','2021-03-09 21:45:29.560390'),(16,'files','0003_auto_20200112_1717','2021-03-09 21:45:29.570602'),(17,'files','0004_auto_20200402_2127','2021-03-09 21:45:29.606744'),(18,'files','0005_auto_20200809_1025','2021-03-09 21:45:29.609999'),(19,'flatcontent','0001_initial','2021-03-09 21:45:29.732034'),(20,'flatcontent','0002_auto_20190825_1730','2021-03-09 21:45:30.236694'),(21,'flatcontent','0003_auto_20191203_2054','2021-03-09 21:45:30.279256'),(22,'flatcontent','0004_blocks_html','2021-03-09 21:45:30.308297'),(23,'flatcontent','0005_auto_20200112_1717','2021-03-09 21:45:30.392810'),(24,'flatcontent','0006_auto_20200314_1638','2021-03-09 21:45:30.399921'),(25,'flatcontent','0007_auto_20200402_2127','2021-03-09 21:45:30.546401'),(26,'flatcontent','0008_containers_class_name','2021-03-09 21:45:30.572595'),(27,'flatcontent','0009_blocks_class_name','2021-03-09 21:45:30.606505'),(28,'login','0001_initial','2021-03-09 21:45:30.885122'),(29,'login','0002_auto_20200925_1007','2021-03-09 21:45:31.714542'),(30,'main_functions','0001_initial','2021-03-09 21:45:31.782410'),(31,'main_functions','0002_auto_20191203_2052','2021-03-09 21:45:31.804171'),(32,'main_functions','0003_auto_20200407_1845','2021-03-09 21:45:32.383550'),(33,'main_functions','0004_config_user','2021-03-09 21:45:32.527595'),(34,'sessions','0001_initial','2021-03-09 21:45:32.591120'),(35,'personal','0001_initial','2021-03-16 16:19:25.551135'),(36,'personal','0002_auto_20200528_1642','2021-03-16 16:19:25.794102'),(37,'personal','0003_auto_20200616_1707','2021-03-16 16:19:25.806112'),(38,'personal','0004_shopper_ip','2021-03-16 16:19:25.832913');
 /*!40000 ALTER TABLE `django_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -259,7 +259,7 @@ CREATE TABLE `django_session` (
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
-INSERT INTO `django_session` VALUES ('tbf3sxmuq50x762v9nxacye0ujrk65bt','OGE1OThmODYxNDVjYWRhZWFkZTEwNDgyODllMGNlZDQzODk1ZTI1Mzp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiYXBwcy5sb2dpbi5iYWNrZW5kLk15QmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjNlYTE1NDZlMjJmNzY2Yzk0MjQxMGUzZjEyZWYzNWI5NGI1YTExN2UifQ==','2021-03-23 21:57:25.686541');
+INSERT INTO `django_session` VALUES ('9u65zvsb7sxptw9c35wf4ygi6a90f6qq','M2JmMmRhZmI5ZjUxOTEzMWE5NjdiMjM2MTZiMWM1Y2U0ODRhYjU4Nzp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiYXBwcy5sb2dpbi5iYWNrZW5kLk15QmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjNlYTE1NDZlMjJmNzY2Yzk0MjQxMGUzZjEyZWYzNWI5NGI1YTExN2UiLCJzaG9wcGVyIjp7ImlkIjoyLCJuYW1lIjoiS3JhbW9yb3YgRGVuaXMiLCJmaXJzdF9uYW1lIjoiRGVuaXMiLCJsYXN0X25hbWUiOiJLcmFtb3JvdiIsIm1pZGRsZV9uYW1lIjpudWxsLCJlbWFpbCI6ImRrQDIyMy0yMjMucnUiLCJwaG9uZSI6Ijg5MTQ4OTU5MjIzIiwiYWRkcmVzcyI6bnVsbCwibG9naW4iOiJqb2NrZXIiLCJkaXNjb3VudCI6bnVsbCwiYmFsYW5jZSI6bnVsbCwiaXAiOm51bGx9fQ==','2021-03-30 17:13:42.855236'),('tbf3sxmuq50x762v9nxacye0ujrk65bt','OGE1OThmODYxNDVjYWRhZWFkZTEwNDgyODllMGNlZDQzODk1ZTI1Mzp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiYXBwcy5sb2dpbi5iYWNrZW5kLk15QmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjNlYTE1NDZlMjJmNzY2Yzk0MjQxMGUzZjEyZWYzNWI5NGI1YTExN2UifQ==','2021-03-23 21:57:25.686541');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -496,7 +496,7 @@ CREATE TABLE `login_customuser` (
 
 LOCK TABLES `login_customuser` WRITE;
 /*!40000 ALTER TABLE `login_customuser` DISABLE KEYS */;
-INSERT INTO `login_customuser` VALUES (1,NULL,'2021-03-09 21:45:30.863149','2021-03-12 11:59:32.135405',1,1,NULL,NULL,NULL,NULL,1),(2,NULL,'2021-03-12 13:23:16.005951','2021-03-12 13:23:31.745194',2,1,NULL,NULL,'','',2);
+INSERT INTO `login_customuser` VALUES (1,NULL,'2021-03-09 21:45:30.863149','2021-03-16 16:59:12.823043',1,1,NULL,NULL,NULL,NULL,1),(2,NULL,'2021-03-12 13:23:16.005951','2021-03-12 13:23:31.745194',2,1,NULL,NULL,'','',2);
 /*!40000 ALTER TABLE `login_customuser` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -700,6 +700,69 @@ LOCK TABLES `main_functions_tasks` WRITE;
 /*!40000 ALTER TABLE `main_functions_tasks` DISABLE KEYS */;
 /*!40000 ALTER TABLE `main_functions_tasks` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `personal_shopper`
+--
+
+DROP TABLE IF EXISTS `personal_shopper`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `personal_shopper` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `img` varchar(255) DEFAULT NULL,
+  `created` datetime(6) NOT NULL,
+  `updated` datetime(6) NOT NULL,
+  `position` int(11) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `state` int(11) DEFAULT NULL,
+  `parents` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
+  `middle_name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `passwd` varchar(255) DEFAULT NULL,
+  `oauth` int(11) DEFAULT NULL,
+  `discount` int(11) DEFAULT NULL,
+  `balance` decimal(13,2) DEFAULT NULL,
+  `login` varchar(255) DEFAULT NULL,
+  `ip` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `personal_shopper_img_27adcfca` (`img`),
+  KEY `personal_shopper_created_8714f2f0` (`created`),
+  KEY `personal_shopper_updated_5bb722b7` (`updated`),
+  KEY `personal_shopper_position_b36dded1` (`position`),
+  KEY `personal_shopper_is_active_3c7f8d97` (`is_active`),
+  KEY `personal_shopper_state_6cf650eb` (`state`),
+  KEY `personal_shopper_parents_f8aa5f1d` (`parents`),
+  KEY `personal_shopper_name_dcee2987` (`name`),
+  KEY `personal_shopper_first_name_17b48468` (`first_name`),
+  KEY `personal_shopper_last_name_9839cd34` (`last_name`),
+  KEY `personal_shopper_middle_name_4c97334b` (`middle_name`),
+  KEY `personal_shopper_email_ec60fc6e` (`email`),
+  KEY `personal_shopper_phone_8fc7729b` (`phone`),
+  KEY `personal_shopper_address_7a53bfcf` (`address`),
+  KEY `personal_shopper_passwd_a3de9219` (`passwd`),
+  KEY `personal_shopper_oauth_8c254e92` (`oauth`),
+  KEY `personal_shopper_discont_c1ad0dbd` (`discount`),
+  KEY `personal_shopper_balance_73b360f3` (`balance`),
+  KEY `personal_shopper_login_f66d2194` (`login`),
+  KEY `personal_shopper_ip_86d54b2b` (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `personal_shopper`
+--
+
+LOCK TABLES `personal_shopper` WRITE;
+/*!40000 ALTER TABLE `personal_shopper` DISABLE KEYS */;
+INSERT INTO `personal_shopper` VALUES (1,'d_0a07a41a.jpg','2021-03-16 16:40:39.558886','2021-03-16 16:40:39.558916',1,1,1,NULL,NULL,'Денис','Ярославцев',NULL,'dkramorov@mail.ru',NULL,NULL,'',2,NULL,NULL,'vk_2303313',NULL),(2,NULL,'2021-03-16 17:11:14.688189','2021-03-16 17:13:42.853129',2,1,NULL,NULL,'Den','Denis','Kramorov','','dk@223-223.ru','89148959223',NULL,'123',1,NULL,NULL,'jocker',NULL);
+/*!40000 ALTER TABLE `personal_shopper` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -710,4 +773,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-03-12 13:23:42
+-- Dump completed on 2021-03-16 17:18:33

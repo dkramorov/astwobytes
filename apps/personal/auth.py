@@ -5,6 +5,29 @@ from apps.personal.models import Shopper
 
 logger = logging.getLogger('main')
 
+def phone_confirmed(request):
+    """Выставить флаг,
+       что телефон пользователя подтвержден
+    """
+    shopper = request.session.get('shopper')
+    if not shopper:
+        return False
+    elif isinstance(shopper, dict):
+        sid = shopper.get('id')
+    elif isinstance(shopper, Shopper):
+        sid = shopper.id
+    else:
+        return False
+    Shopper.objects.filter(pk=sid).update(phone_confirmed=True)
+    try:
+        del request.session['confirm_phone']
+    except Exception as e:
+        logger.info(e)
+    user = Shopper.objects.get(pk=sid)
+    request.session['shopper'] = user.to_dict()
+    request.session.save()
+    return True
+
 def login_from_site(request):
     """Авторизация пользователя через форму на сайте
        :param request: HttpRequest
@@ -132,6 +155,10 @@ def update_profile_from_site_helper(shopper, params: dict):
     if not user:
         errors.append('Пользователь не найден')
         return errors
+    # Подтвержден телефон?
+    if user.phone_confirmed:
+        if user.phone != params.get('phone'):
+            user.phone_confirmed = False
 
     passwd = params.get('passwd')
     passwd1 = params.get('passwd1')

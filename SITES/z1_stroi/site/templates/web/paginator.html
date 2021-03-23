@@ -1,0 +1,24 @@
+<ul class="pagi">
+  {% if not paginator.onepage %}
+    {% if paginator.prev_link %}
+      <li class="pagi-prev"><a href="{{ paginator.prev_link }}"><i class="fa fa-angle-double-left"></i></a></li>
+    {% endif %}
+    {% for page in pages %}
+      {% if page.ellipsis %}
+        <li><span>...</span></li>
+      {% else %}
+        <li{% if page.active %} class="active"{% endif %}>
+          <a href="{{ page.link }}">{{ page.content }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+    {% if paginator.next_link %}
+      <li class="pagi-next"><a href="{{ paginator.next_link }}"><i class="fa fa-angle-double-right"></i></a></li>
+    {% endif %}
+  {% endif %}
+
+  <li><span>{{ paginator.total_records }} {{ ends }}</span></li>
+</ul>
+
+
+

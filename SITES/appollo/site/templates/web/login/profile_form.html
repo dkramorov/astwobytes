@@ -1,0 +1,63 @@
+<form action="{% url 'main:show_profile' %}" method="post" id="profile_form">
+  {% csrf_token %}
+  <div class="col-md-6">
+    <div class="leave-comment">
+      <div class="row wow fadeInUp" data-wow-duration="1.3s">
+        <h4 class="text-center">Контактные данные</h4>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Как к вам обращаться? *</label>
+          <input placeholder="Как к вам обращаться?" type="text" name="name" data-msg="Как к вам обращаться?" class="required" value="{% if shopper.name %}{{ shopper.name }}{% endif %}">
+        </div>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Ваше имя *</label>
+          <input placeholder="Ваше имя" type="text" name="first_name" data-msg="Ваше имя" class="required" value="{% if shopper.first_name %}{{ shopper.first_name }}{% endif %}">
+        </div>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Ваша фамилия *</label>
+          <input placeholder="Ваша фамилия" type="text" name="last_name" data-msg="Ваша фамилия" class="required" value="{% if shopper.last_name %}{{ shopper.last_name }}{% endif %}">
+        </div>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Ваше отчество</label>
+          <input placeholder="Ваше отчество" type="text" name="middle_name" data-msg="Ваше отчество" value="{% if shopper.middle_name %}{{ shopper.middle_name }}{% endif %}">
+        </div>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Ваш Email</label>
+          <input placeholder="Ваш Email" type="text" name="email" data-msg="Ваш Email" class="email" value="{% if shopper.email %}{{ shopper.email }}{% endif %}">
+        </div>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Ваш телефон *<br> (при изменении телефона вы должны будете подтвердить его)</label>
+          <input placeholder="Ваш телефон" type="text" name="phone" data-msg="Ваш телефон" class="required phone" value="{% if shopper.phone %}{{ shopper.phone }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="leave-comment">
+      <div class="row wow fadeInUp" data-wow-duration="1.3s">
+        <h4 class="text-center">Сменить пароль</h4>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Текущий пароль</label>
+          <input placeholder="Текущий пароль" type="password" name="passwd" autocomplete="off">
+        </div>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Новый пароль</label>
+          <input placeholder="Новый пароль" type="password" name="passwd1" autocomplete="off">
+        </div>
+        <div class="col-sm-12 mb-20 text-center">
+          <label>Повторите новый пароль</label>
+          <input placeholder="Повторите новый пароль" type="password" name="passwd2" autocomplete="off">
+        </div>
+        <div class="col-sm-12">
+          <p class="feedback_alerts"></p>
+        </div>
+      </div>
+      <button type="submit" class="btn dwnld-btn playmarket">
+        <i class="fa fa-save" aria-hidden="true"></i>
+        Сохранить
+      </button>
+      <div class="pull-right">
+        <a class="btn dwnld-btn playmarket" href="{% url 'main:logout' %}"><i class="fa fa-sign-out"></i> Выход</a>
+      </div>
+    </div>
+  </div>
+</form>

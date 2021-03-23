@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import json
+import requests
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
@@ -11,8 +12,14 @@ from django.views.decorators.csrf import csrf_exempt
 from apps.flatcontent.models import Blocks
 from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
+from apps.main_functions.string_parser import kill_quotes, GenPasswd
 from apps.main_functions.views import DefaultFeedback
 from apps.main_functions.catcher import json_pretty_print
+
+from apps.personal.models import get_personal_user as get_shopper
+from apps.personal.oauth import VK, Yandex
+from apps.personal.utils import save_user_to_request, remove_user_from_request
+from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site, phone_confirmed
 
 CUR_APP = 'main'
 main_vars = {
@@ -202,7 +209,7 @@ def show_profile(request):
     containers = {}
     shopper = get_shopper(request)
     if not shopper:
-        return redirect(reverse('%s:%s' % (CUR_APP, 'registration')))
+        return redirect(reverse('%s:%s' % (CUR_APP, 'login')))
 
     if request.method == 'POST':
         result = update_profile_from_site(request)
@@ -228,7 +235,7 @@ def show_profile(request):
     context['page'] = page
     context['containers'] = containers
     context['shopper'] = shopper
-    context['orders'] = Orders.objects.filter(shopper=shopper).order_by('-created')[:50]
+    #context['orders'] = Orders.objects.filter(shopper=shopper).order_by('-created')[:50]
     return render(request, template, context)
 
 def login(request):
@@ -246,14 +253,14 @@ def login(request):
 
     if request.is_ajax():
         return JsonResponse(context, safe=False)
-    template = 'web/login/registration.html'
+    template = 'web/login/login.html'
 
     page = SearchLink(q_string, request, containers)
     if not page:
         page = Blocks(name=reg_vars['singular_obj'])
     context['breadcrumbs'] = [{
         'name': 'Регистрация',
-        'link': reverse('%s:%s' % (CUR_APP, 'registration')),
+        'link': reverse('%s:%s' % (CUR_APP, 'login')),
     }]
     context['page'] = page
     context['containers'] = containers
@@ -265,7 +272,7 @@ def login(request):
 def logout(request):
     """Деавторизация пользователя"""
     remove_user_from_request(request)
-    return redirect(reverse('%s:%s' % (CUR_APP, 'registration')))
+    return redirect(reverse('%s:%s' % (CUR_APP, 'login')))
 
 cart_vars = {
     'singular_obj': 'Корзина',
@@ -361,3 +368,60 @@ def test(request):
         }
         return JsonResponse(result, safe=False, status=400)
     return JsonResponse(result, safe=False)
+
+def confirm_phone(request):
+    """Запрос на подтверждение телефона,
+       проверка кода подтверждения телефона
+    """
+    result = {}
+    shopper = get_shopper(request)
+    if not shopper:
+        return JsonResponse(result, safe=False)
+    if request.GET.get('digits'):
+        if request.session.get('confirm_phone') and request.GET['digits'] == request.session['confirm_phone']:
+            if phone_confirmed(request): # Тел подтвержден
+                result['success'] = 1
+        return JsonResponse(result, safe=False)
+    result = prepare_session(request)
+    return JsonResponse(result, safe=False)
+
+def prepare_session(request):
+    """Подготовить сессию для регистрации/обновления
+       профиля с подтверждением по обратному звонку"""
+    result = {}
+    shopper = get_shopper(request)
+    if request.method == 'GET' and shopper:
+        phone = shopper.phone
+        phone = kill_quotes(phone, 'int')
+        request.session['confirm_phone'] = GenPasswd(4, '1234567890')
+        request.session.save()
+        # Скрипт отправляет на свич телефон
+        # и код и свич звонит и диктует
+        params = {
+            'phone': phone,
+            'digit': request.session['confirm_phone'],
+        }
+        r = requests.get('%s/freeswitch/sms_service/say_code/' % settings.FREESWITCH_DOMAIN, params=params)
+
+        result = r.json()
+    return result
+
+def fs_shopper(request):
+    """После регистрации и/или подтверждения номера,
+       надо на свиче синхануть пользователя
+       Пользователи сайта /freeswitch/admin/personal_users/
+       :param request: HttpRequest
+    """
+    shopper = request.session.get('shopper')
+    token = '0_o'
+    endpoint = '/freeswitch/personal_users/sync/'
+    params = {
+        'userid': shopper['id'],
+        'username': shopper['login'],
+        'phone': shopper['phone'],
+        'phone_confirmed': shopper['phone_confirmed'],
+    }
+    headers = {
+        'token': token,
+    }
+    r = requests.post('%s%s' % (settings.FREESWITCH_DOMAIN, endpoint), data=params, headers=headers)

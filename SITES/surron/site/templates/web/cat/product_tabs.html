@@ -23,11 +23,13 @@
               <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productVideos" data-toggle="tab">Видео</a>
             </li>
           {% endif %}
-          {% if photo_sections.3 %}
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#live_photos" data-toggle="tab">Живые фото</a>
-            </li>
-          {% endif %}
+          {% for section in photo_sections %}
+            {% if section.section_id == "3" %}
+              <li class="nav-item">
+                <a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#live_photos" data-toggle="tab">Живые фото</a>
+              </li>
+            {% endif %}
+          {% endfor %}
         </ul>
         <div class="tab-content p-0">
           {% if 'article2' in page.tags %}
@@ -66,10 +68,11 @@
               {% endfor %}
             </div>
           {% endif %}
-          {% if photo_sections.3 %}
+          {% for section in photo_sections %}
+            {% if section.section_id == "3" %}
             <div class="tab-pane px-0 py-3" id="live_photos">
               <div class="row">
-                {% for photo in photo_sections.3 %}
+                {% for photo in section.photos %}
                   <div class="col-lg-3 col-md-6 mb-3">
                     <a class="fancybox" href="{{ photo.imagine }}">
                       <img class="img-fluid" src="{% imagine photo.img '300x300' photo.get_folder True %}" alt="Живые фото" loading="lazy">
@@ -78,7 +81,8 @@
                 {% endfor %}
               </div>
             </div>
-          {% endif %}
+            {% endif %}
+          {% endfor %}
         </div>
       </div>
     </div>

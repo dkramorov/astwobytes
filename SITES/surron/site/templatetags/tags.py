@@ -6,12 +6,27 @@ from django.core.cache import cache
 from apps.flatcontent.flatcat import get_catalogue, search_alt_catalogue
 from apps.products.models import Products, ProductsCats
 from apps.shop.cart import calc_cart, get_shopper
+from apps.files.models import Files
+
+from apps.site.dealers.models import Dealer
 
 register = template.Library()
 
 @register.simple_tag
 def test_tag():
     return 'test_tag'
+
+@register.simple_tag
+def video_link(link):
+    """Для ибучего сафари надо абсолютные ссылки
+       :param link: ссылка
+    """
+    if 'http' in link and '/media/' in link:
+        return link
+    analog = Files.objects.filter(link=link).first()
+    if analog:
+        return '//%s/media/%s%s' % (settings.MAIN_DOMAIN, analog.get_folder(), analog.path)
+    return link
 
 @register.filter(name = 'replace_quotes')
 def replace_quotes(text):
@@ -124,4 +139,47 @@ def products_sidebar_slider(product, limit: int = 12):
         'container': {'name': 'Похожие товары'},
         'products': [product.product for product in products],
     }
+    return result
+
+
+@register.filter(name = 'load_dealers')
+def load_dealers(request):
+    cache_var = '%s_dealers' % (
+        settings.PROJECT_NAME,
+    )
+    inCache = cache.get(cache_var)
+    if inCache and not request.GET.get('ignore_cache'):
+        return inCache
+    cache_time = 300
+
+    dealers = Dealer.objects.select_related('address').all().order_by('position')
+    countries = {dealer.address.country: [] for dealer in dealers if dealer.address}
+
+    for dealer in dealers:
+        if not dealer.address or not dealer.address.country:
+            continue
+        coords = []
+        if dealer.address:
+            if dealer.address.latitude and dealer.address.longitude:
+                coords = [dealer.address.latitude, dealer.address.longitude]
+        obj = {
+            'id': dealer.id,
+            'name': dealer.name,
+            'address': dealer.address.addressLines if dealer.address else '',
+            'coords': coords,
+            'worktime': dealer.worktime,
+            'site': dealer.site,
+            'phone': dealer.phone,
+        }
+        countries[dealer.address.country].append(obj)
+    result = []
+    z = 0
+    for country_name, data in countries.items():
+        z += 1
+        result.append({
+            'id': z,
+            'name': country_name,
+            'dealers': data,
+        })
+    cache.set(cache_var, result, cache_time)
     return result

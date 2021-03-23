@@ -19,128 +19,114 @@
   .form-field {
     margin: 0 0 15px;
   }
+  #profile h5.panel-title {
+    color: #fff;
+    font-size: 20px;
+  }
+  .faq .panel-default .no-transform .fa {
+    -webkit-transform: none;
+    transform: none;
+    float: none;
+  }
+  #confirm_phone_button {
+    margin: 0;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="tabs-wrap">
-  <ul class="fr-pop-tabs sections-show col-md-3">
-    <li><a data-frpoptab-num="1" data-frpoptab="#frpoptab-tab-1" href="#dashboad" class="active">Ваш аккаунт</a></li>
-    <li><a data-frpoptab-num="2" data-frpoptab="#frpoptab-tab-2" href="#orders">Заказы</a></li>
-    <li><a data-frpoptab-num="3" data-frpoptab="#frpoptab-tab-3" href="#account-info">Профиль</a></li>
-  </ul>
-  <div class="fr-pop-tab-cont col-md-9">
-    <p data-frpoptab-num="1" class="fr-pop-tab-mob active" data-frpoptab="#frpoptab-tab-1">Ваш аккаунт</p>
-    <div class="fr-pop-tab" id="frpoptab-tab-1">
-      <div class="flex-viewport">
-        <div class="welcome">
-          <p class="title">Добро пожаловать, <strong>{{ shopper.name }}</strong> в ваш личный кабинет</p>
-        </div>
-        <p class="mb-0">Здесь можно посмотреть ваши заказы, получить документы по заказам, увидеть личную скидку, изменить информацию о себе, способах оплаты и доставки</p>
-        <br><br>
-        <p class="text-right">
-          <a class="btn btn-default" href="{% url 'main:logout' %}">Выход</a>
-        </p>
-        <span class="tabs-margin"></span>
-      </div>
-    </div>
-    <p data-frpoptab-num="2" class="fr-pop-tab-mob" data-frpoptab="#frpoptab-tab-2">Заказы</p>
-    <div class="fr-pop-tab" id="frpoptab-tab-2">
-      <div class="flex-viewport">
-        <div class="myaccount-table table-responsive text-center">
-          <table class="table table-bordered">
-            <thead class="thead-light">
-              <tr>
-                <th>№</th>
-                <th>Наименование</th>
-                <th>Дата</th>
-                <th>Статус</th>
-                <th>Итого</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for order in orders %}
-                <tr>
-                  <td>{{ order.id }}</td>
-                  <td>{{ order.shopper_name }}</td>
-                  <td>{{ order.created|date:'d-m-Y H:i:s' }}</td>
-                  <td>Оформлен</td>
-                  <td>{{ order.total|money_format }} ₽</td>
-                  <td><a href="javascript:void(0);" class="btn">Посмотреть</a></td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <span class="tabs-margin"></span>
-      </div>
-    </div>
-    <p data-frpoptab-num="3" class="fr-pop-tab-mob" data-frpoptab="#frpoptab-tab-3">Профиль</p>
-    <div class="fr-pop-tab" id="frpoptab-tab-3">
-      <div class="flex-viewport">
+<section id="profile">
+  <div class="padding-masc">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-12 faq-text">
+          <h3>Добро пожаловать, {{ shopper.name }} в ваш личный кабинет</h3>
+          <div class="faq">
+            <div class="panel-group" id="accordion">
+              <!-- Профиль -->
+              <div class="panel panel-default text-left">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_profile">
+                  <div class="panel-heading">
+                    <h5 class="panel-title">Ваш профиль
+                      <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+                    </h5>
+                  </div>
+                </a>
+                <div id="collapse_profile" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    {% include "web/login/profile_form.html" %}
+                  </div>
+                </div>
+              </div>
 
-        <form action="{% url 'main:show_profile' %}" method="post" id="profile_form">
-          {% csrf_token %}
-          <div class="row stylization">
-            <div class="col-md-12 form-field">
-              <label>Как к вам обращаться? *</label>
-              <input placeholder="Как к вам обращаться?" type="text" name="name" data-msg="Как к вам обращаться?" class="required" value="{% if shopper.name %}{{ shopper.name }}{% endif %}">
-            </div>
-            <div class="col-md-6 form-field">
-              <label>Ваше имя *</label>
-              <input placeholder="Ваше имя" type="text" name="first_name" data-msg="Ваше имя" class="required" value="{% if shopper.first_name %}{{ shopper.first_name }}{% endif %}">
-            </div>
-            <div class="col-md-6 form-field">
-              <label>Ваша фамилия *</label>
-              <input placeholder="Ваша фамилия" type="text" name="last_name" data-msg="Ваша фамилия" class="required" value="{% if shopper.last_name %}{{ shopper.last_name }}{% endif %}">
-            </div>
-            <div class="col-md-6 form-field">
-              <label>Ваше отчество</label>
-              <input placeholder="Ваше отчество" type="text" name="middle_name" data-msg="Ваше отчество" value="{% if shopper.middle_name %}{{ shopper.middle_name }}{% endif %}">
-            </div>
-            <div class="col-md-6 form-field">
-              <label>Ваш Email</label>
-              <input placeholder="Ваш Email" type="text" name="email" data-msg="Ваш Email" class="email" value="{% if shopper.email %}{{ shopper.email }}{% endif %}">
-            </div>
-            <div class="col-md-6 form-field">
-              <label>Ваш телефон *</label>
-              <input placeholder="Ваш телефон" type="text" name="phone" data-msg="Ваш телефон" class="required phone" value="{% if shopper.phone %}{{ shopper.phone }}{% endif %}">
-            </div>
-            <div class="col-md-12 form-field">
-              <label>Адрес доставки</label>
-              <input placeholder="Адрес для доставки" type="text" name="address" data-msg="Адрес для доставки" value="{% if shopper.address %}{{ shopper.address }}{% endif %}">
-            </div>
-            <div class="col-md-12"><h4>Изменение пароля</h4></div>
-            <div class="col-md-4 form-field">
-              <label>Текущий пароль</label>
-              <input placeholder="Текущий пароль" type="password" name="passwd">
-            </div>
-            <div class="col-md-4 form-field">
-              <label>Новый пароль</label>
-              <input placeholder="Новый пароль" type="password" name="passwd1">
-            </div>
-            <div class="col-md-4 form-field">
-              <label>Повторите новый пароль</label>
-              <input placeholder="Повторите новый пароль" type="password" name="passwd2">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 feedback_alerts form-field"></div>
-          </div>
-          <div class="row stylization">
-            <div class="col-md-12 form-field">
-              <button class="save-change-btn">Сохранить</button>
+              <!-- История звонков -->
+              <div class="panel panel-default text-left">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_call_history">
+                  <div class="panel-heading">
+                    <h5 class="panel-title">История звонков
+                      <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+                    </h5>
+                  </div>
+                </a>
+                <div id="collapse_call_history" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    ---
+                  </div>
+                </div>
+              </div>
+
+              <!-- Подтверждение телефона -->
+              <div class="panel panel-default text-left">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_confirm_phone">
+                  <div class="panel-heading">
+                    <h5 class="panel-title">Подтвердить телефон
+                      <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+                    </h5>
+                  </div>
+                </a>
+                <div id="collapse_confirm_phone" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <h3>Ваш телефон: {{ shopper.phone }}</h3>
+                    {% if shopper.phone_confirmed %}
+                      <div class="col-sm-6 mb-20 text-center no-transform">
+                        <label id="confirm_phone_label">Телефон подтвержден</label><br>
+                      </div>
+                    {% else %}
+                      <div class="col-sm-6 mb-20 text-center no-transform">
+                        <label id="confirm_phone_label">Телефон не подтвержден</label><br>
+                        <button class="btn dwnld-btn playmarket" id="confirm_phone_button"><i class="fa fa-shield"></i> Подтвердить</button>
+                      </div>
+                      <div class="col-sm-6 mb-20 text-center">
+                        <label>Проверочный код</label>
+                        <input placeholder="Проверочный код" type="text" id="confirm_phone_field">
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
-        </form>
-        <span class="tabs-margin"></span>
+        </div>
+        <div class="col-xs-12 col-md-6 col-md-pull-6 text-center">
+          <div class="ilustration">
+            {% for block in blocks %}
+              {% if block.img %}
+                <div class="{% cycle 'back' 'front' %}-phone wow slideInUp" data-wow-duration="1.3s" data-wow-delay=".2s">
+                  <div class="iphone-x">
+                    <i></i>
+                    <b></b>
+                    <img src="{% imagine block.img '800x800' block.get_folder True %}" alt="{{ block.name|textize }}" loading="lazy">
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div class="clearfix clear"></div>
-
+</section>
 
 {% for container in page.containers %}
   {% flatcontent request page container.container.tag %}
@@ -168,6 +154,50 @@
       "dont_reset_on_submit": 1, // or 1
       //"errorClass": "invalid",
     });
+
+    $("#confirm_phone_field").keyup(function(){
+      var value = $(this).val();
+      if(value.length == 4){
+        jQuery.ajax({
+          async : true,
+          type: "GET",
+          url: "/confirm_phone/",
+          data : "digits=" + value,
+          success: function (r){
+            if(r['success']){
+              $("#confirm_phone_label").html("Телефон подтвержден");
+              $("#confirm_phone_button").prop('disabled', true);
+              $("#confirm_phone_button").hide();
+              $("#confirm_phone_field").prop('disabled', true);
+            }
+          }
+        });
+      }
+    });
+
+    $("#confirm_phone_button").click(function(){
+      var phone = parseInt($("#profile_form .phone").val().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
+      if(phone.isNaN){
+        alert("Телефон введен неправильно");
+        return;
+      }
+      var phone_str = phone + "";
+      if(phone_str.length !== 11 || phone_str[0] !== '8' || phone_str[1] !== '9'){
+        alert("Телефон введен неправильно");
+        return;
+      }
+      $("#confirm_phone_button").prop('disabled', true);
+      jQuery.ajax({
+        async : true,
+        type: "GET",
+        url: "/confirm_phone/",
+        data : "phone=" + phone,
+        success: function (r){
+          console.log(r);
+        }
+      });
+    });
+
   });
 </script>
 {% endblock %}

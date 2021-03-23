@@ -10,6 +10,9 @@
 <link rel="stylesheet" href="/media/css/white_page.css">
 
 <style type="text/css">
+.tab-content h4 {
+  padding: 20px 0 10px;
+}
 table.table-borderless {
   max-width: 300px;
 }
@@ -39,10 +42,10 @@ p.price_desc {
   background-color: #000 !important;
 }
 .product_color_4 {
-  background: linear-gradient(to right, #000 30%, #f00 30% 70%, #000 70% 100%) !important;
+  background: #fff233 !important;
 }
 .product_color_5 {
-  background-color: #ffa500 !important;
+  background-color: #5270c5 !important;
 }
 .product_color_6 {
   background-color: #577d4d !important;
@@ -59,9 +62,13 @@ p.price_desc {
 {% block extracontent %}
 <div class="simple_page">
   {% include "web/components/breadcrumbs.html" %}
-  <div class="container">
+  <div class="container pt-5">
     <div class="row">
-      <div class="col-md-6 pt-5">
+      <div class="col-md-6">
+
+        <h2 class="h-title font-title anim-1 w-full">
+          {{ product.name }}
+        </h2>
         <div class="summary entry-summary position-relative">
           <div class="text-3-5 mb-3 text-5">{{ product.mini_info|safe }}</div>
 {% comment %}<!--
@@ -88,18 +95,18 @@ p.price_desc {
             <div{% if photo_main_section_id == "0" %} style="display:none;"{% endif %}>
               Цвет - <span class="current_color"></span>
               <div class="btn-group-toggle" data-toggle="buttons">
-                {% for section_id, section in photo_sections.items %}
-                  {% if section_id != "3" %}
-                    <label class="btn btn-outline btn-primary{% comment %} active{% endcomment %} mb-2 product_color_{{ section_id }}">
-                      <input type="radio" name="color" id="product_color_{{ section_id }}" autocomplete="off"{% comment %} checked{% endcomment %} class="product_color" data-section_id="{{ section_id }}">&nbsp;
+                {% for section in photo_sections %}
+                  {% if section.section_id != "3" %}
+                    <label class="btn btn-outline btn-primary{% comment %} active{% endcomment %} mb-2 product_color_{{ section.section_id }}">
+                      <input type="radio" name="color" id="product_color_{{ section.section_id }}" autocomplete="off"{% comment %} checked{% endcomment %} class="product_color" data-section_id="{{ section.section_id }}">&nbsp;
                       <div class="color_name">
-                        {% if section_id == "1" %}Красный{% endif %}
-                        {% if section_id == "2" %}Черный{% endif %}
-                        {% if section_id == "4" %}Черно-красный{% endif %}
-                        {% if section_id == "5" %}Оранжевый{% endif %}
-                        {% if section_id == "6" %}Зеленый{% endif %}
-                        {% if section_id == "7" %}Серый{% endif %}
-                        {% if section_id == "8" %}Серебристый{% endif %}
+                        {% if section.section_id == "1" %}Красный{% endif %}
+                        {% if section.section_id == "2" %}Черный{% endif %}
+                        {% if section.section_id == "4" %}Желтый{% endif %}
+                        {% if section.section_id == "5" %}Синий{% endif %}
+                        {% if section.section_id == "6" %}Зеленый{% endif %}
+                        {% if section.section_id == "7" %}Серый{% endif %}
+                        {% if section.section_id == "8" %}Серебристый{% endif %}
                       </div>
                     </label>
                   {% endif %}
@@ -107,38 +114,38 @@ p.price_desc {
               </div>
             </div>
           {% endif %}
-          <div class="pt-5 pb-3">
+          <div class="pt-5 pb-5">
             <button class="add_to_cart_btn btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}">Добавить в корзину</button>
           </div>
         </div>
       </div>
-      {% for section_id, section in photo_sections.items %}
-        {% if not section_id == "3" %}
-          <div class="col-md-6 mb-5 mb-md-0 photo_slider" id="photo_slider_{{ section_id }}">
+      {% for section in photo_sections %}
+        {% if not section.section_id == "3" %}
+          <div class="col-md-6 mb-5 mb-md-0 photo_slider" id="photo_slider_{{ section.section_id }}">
             <div class="thumb-gallery-wrapper">
               <div class="thumb-gallery-detail owl-carousel owl-theme manual nav-inside nav-style-1 nav-dark mb-3">
-                {% if section_id == photo_main_section_id %}
+                {% if section.section_id == photo_main_section_id %}
                   {% if product.img %}
                     <div>
                       <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine product.img '600x400' product.get_folder True %}" data-zoom-image="{{ product.imagine }}">
                     </div>
                   {% endif %}
                 {% endif %}
-                {% for photo in section %}
+                {% for photo in section.photos %}
                   <div>
                     <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine photo.img '600x400' photo.get_folder True %}" data-zoom-image="{{ photo.imagine }}">
                   </div>
                 {% endfor %}
               </div>
               <div class="thumb-gallery-thumbs owl-carousel owl-theme manual thumb-gallery-thumbs">
-                {% if section_id == photo_main_section_id %}
+                {% if section.section_id == photo_main_section_id %}
                   {% if product.img %}
                     <div class="cur-pointer">
                       <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                     </div>
                   {% endif %}
                 {% endif %}
-                {% for photo in section %}
+                {% for photo in section.photos %}
                   <div class="cur-pointer">
                     <img src="{% imagine photo.img '150x150' photo.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                   </div>
@@ -148,6 +155,26 @@ p.price_desc {
           </div>
         {% endif %}
       {% endfor %}
+      {% if not photo_sections %}
+        <div class="col-md-6 mb-5 mb-md-0">
+          <div class="thumb-gallery-wrapper">
+            <div class="thumb-gallery-detail owl-carousel owl-theme manual nav-inside nav-style-1 nav-dark mb-3">
+              {% if product.img %}
+                <div>
+                  <img alt="{{ product.name|textize }}" class="img-fluid" src="{% imagine product.img '600x400' product.get_folder True %}" data-zoom-image="{{ product.imagine }}">
+                </div>
+              {% endif %}
+            </div>
+            <div class="thumb-gallery-thumbs owl-carousel owl-theme manual thumb-gallery-thumbs">
+              {% if product.img %}
+                <div class="cur-pointer">
+                  <img src="{% imagine product.img '150x150' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
   <div class="divider divider-solid divider-style-4 taller"> </div>
@@ -209,7 +236,6 @@ p.price_desc {
     });
     $thumbGalleryThumbs.find('.owl-item').eq(0).addClass('selected');
 
-
 if($('a[data-toggle="tab"]').length){
   $('a[data-toggle="tab"]').on('shown.bs.tab',function(e){
     $(this).parents('.nav-tabs').find('.active').removeClass('active');
@@ -232,10 +258,10 @@ if($('a[data-toggle="tab"]').length){
   });
 }
 
-
-
     $(".fancybox").fancybox();
     var cur_color = null;
+    if($(".product_color").length == 0){
+    }
     $(".product_color").each(function(){
       if(cur_color == null){
         $(this).parent().click();

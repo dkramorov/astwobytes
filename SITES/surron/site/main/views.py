@@ -152,6 +152,17 @@ def product_on_site(request, product_id: int):
     """Страничка товара/услуги
        :param product_id: ид товара/услуги
     """
+    colors = (
+        '6', #'Зеленый',
+        '1', #'Красный',
+        '2', #'Черный',
+        '3', #'Живые фото',
+        '8', #'Серебристый',
+        '7', #'Серый',
+        '5', #'Синий',
+        '4', #'Желтый',
+    )
+
     mh_vars = cat_vars.copy()
     context = get_product_for_site(request, product_id)
     if not context.get('product'):
@@ -160,17 +171,32 @@ def product_on_site(request, product_id: int):
     containers = {}
 
     photos = {}
+    sorted_photos = []
+    main_section = None
+    z = 0
     # Разбивка фоток
     for photo in context.get('photos', []):
         if not photo.name:
-            photo.name = "0"
+            photo.name = '0'
         if not photo.name in photos:
             photos[photo.name] = []
         photos[photo.name].append(photo)
-    context['photo_sections'] = photos
 
-    if photos:
-        context['photo_main_section_id'] = list(photos.keys())[0]
+        if photo.name in colors:
+            ind = colors.index(photo.name)
+            if not main_section == 0 or main_section > ind:
+                main_section = z
+        z += 1
+
+    sorted_photos = [{
+        'section_id': color,
+        'photos': photos[color],
+    } for color in colors if color in photos]
+
+    context['photo_sections'] = sorted_photos
+
+    if sorted_photos:
+        context['photo_main_section_id'] = sorted_photos[0]['section_id']
 
     if request.is_ajax():
         return JsonResponse(context, safe=False)

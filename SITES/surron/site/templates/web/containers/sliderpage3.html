@@ -1,8 +1,9 @@
 {% load mtags %}
-<section data-id="sliderpage3" class="section section-slide fullsize-slide section-page fp-auto-height-responsive">
+<section data-id="sliderpage3" class="section section-slide fullsize-slide section-page fp-auto-height-responsive sliderpage3">
   <div class="slide-size">
     <div class="row slider-c">
-
+      <div class="col-lg-1">
+      </div>
       <div class="col-lg-4 pt-5 pl-5 pr-5 anim">
         {% for block in blocks %}
           {% if block.name and block.html %}
@@ -40,7 +41,7 @@
         {% endfor %}
       </div>
 
-      <div class="col-lg-8">
+      <div class="col-lg-7">
         <div class="swiper-container anim">
           <div class="swiper-wrapper">
             {% for block in blocks %}

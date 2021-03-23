@@ -1,0 +1,180 @@
+{% load mtags tags flatcontent_tags %}﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+{% include "skeleton_header.html" %}
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="/media/css/bootstrap.min.css" rel="stylesheet">
+<link href="/media/css/bootstrap-select.min.css" rel="stylesheet">
+<link href="/static/admin/css/font-awesome.min.css" rel="stylesheet">
+<link href="/media/css/prettyPhoto.css" rel="stylesheet">
+<link href="/media/css/owl.carousel.min.css" rel="stylesheet">
+<link href="/media/css/owl.theme.default.min.css" rel="stylesheet">
+<link href="/media/css/animate.min.css" rel="stylesheet">
+
+<link href="/media/css/theme.css" rel="stylesheet">
+<link href="/media/css/custom.css" rel="stylesheet">
+<script src="/media/js/modernizr.custom.js"></script>
+<!--[if lt IE 9]><script src="/media/js/html5shiv.js"></script><script src="/media/js/respond.min.js"></script><![endif]-->
+{% block extrahead %}{% endblock %}
+</head>
+<body id="home" class="wide">
+{% block body %}
+<div id="preloader">
+  <div id="preloader-status">
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+    <div id="preloader-title">Загрузка</div>
+  </div>
+</div>
+
+<div class="wrapper">
+  {% ajax_cart request %}
+  <div class="top-bar">
+    <div class="container">
+      {% include "web/components/left_top_bar.html" %}
+      {% include "web/components/right_top_bar.html" %}
+    </div>
+  </div>
+
+  <header class="header{% comment %} fixed{% endcomment %}">
+    <div class="header-wrapper">
+      <div class="container">
+        <div class="logo">
+          <a href="/">
+            <img src="{{ containers.main.tags.logo.thumb }}" alt="{{ containers.main.tags.logo.title }}"/>
+          </a>
+        </div>
+
+        <div class="header-search visible-xs">
+          <form action="/cat/" method="get">
+            <input class="form-control" type="text" placeholder="Поиск"/>
+            <button>
+              <i class="fa fa-search"></i>
+            </button>
+          </form>
+        </div>
+
+        <div class="header-search hidden-xs">
+          <a class="btn btn-catalogue btn-theme-lg" href="/cat/">
+            <i class="fa fa-bars"></i>
+            Каталог товаров
+          </a>
+        </div>
+
+        {% include "web/components/cart_icons.html" %}
+      </div>
+    </div>
+    {% flatmenu request "mainmenu" %}
+
+    <div class="header-search2 hidden-xs">
+      <div class="header-wrapper">
+        <form action="/cat/" method="get">
+          <div class="container">
+            <div class="flex">
+              <input class="form-control search_field" type="text" placeholder="Поиск"/>
+              <button type="submit" class="btn btn-theme">
+                Найти <i class="fa fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </header>
+
+  <div class="content-area">
+    {% block content %}{% endblock %}
+  </div>
+  <footer class="footer">
+    <div class="footer-widgets">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="widget">
+              <h4 class="widget-title">Контакты</h4>
+              <p><i class="fa fa-phone"></i> {{ containers.main.tags.phone.html|safe }}</p>
+              <p><i class="fa fa-map-marker"></i> {{ containers.main.tags.address.html|safe }}</p>
+              <p><i class="fa fa-envelope"></i> {{ containers.main.tags.email.html|safe }}</p>
+              <ul class="social-icons">
+                {% for block in containers.main.tags.social.sub %}
+                  <li>
+                    <a href="{{ block.link }}" target="_blank" class="{{ block.tag }}">
+                      <i class="fa fa-{{ block.tag }}"></i>
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="widget">
+              <h4 class="widget-title">Новости</h4>
+              <p>Подпишитесь на новости</p>
+              <form action="#">
+                <div class="form-group">
+                  <input class="form-control" type="text" placeholder="Введите email и получите купон в подарок"/>
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-theme btn-theme-transparent">Подписаться</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          {% flatmenu request "bottommenu" %}
+        </div>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="copyright">{{ containers.main.tags.copyright.html|safe }}</div>
+            </div>
+            <div class="col-sm-6">
+              <div class="payments">
+                <ul>
+                  <li><img src="/media/misc/visa.jpg" /></li>
+                  <li><img src="/media/misc/mastercard.jpg" /></li>
+                  <li><img src="/media/misc/paypal.jpg" /></li>
+                  <li><img src="/media/misc/american-express.jpg" /></li>
+                  <li><img src="/media/misc/visa-electron.jpg" /></li>
+                  <li><img src="/media/misc/maestro.jpg" /></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <div id="to-top" class="to-top">
+      <i class="fa fa-angle-up"></i>
+    </div>
+  </div>
+{% endblock %}
+
+
+<script src="/media/js/jquery-1.11.1.min.js"></script>
+{% include "shop_js.html" %}
+<script src="/media/js/bootstrap.min.js"></script>
+<script src="/media/js/bootstrap-select.min.js"></script>
+<script src="/media/js/superfish.min.js"></script>
+<script src="/media/js/jquery.prettyPhoto.js"></script>
+<script src="/media/js/owl.carousel.min.js"></script>
+<script src="/media/js/jquery.sticky.min.js"></script>
+<script src="/media/js/jquery.easing.min.js"></script>
+<script src="/media/js/jquery.smoothscroll.min.js"></script>
+<script src="/media/js/smooth-scrollbar.min.js"></script>
+
+<script src="/media/js/theme.js"></script>
+
+<script src="/media/js/jquery.cookie.js"></script>
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

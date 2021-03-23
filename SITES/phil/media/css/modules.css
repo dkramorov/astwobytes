@@ -5795,3 +5795,15 @@ Main Components
       .order .cheque .logos .btn {
         padding: 25px 30px; }
  }
+
+@media (max-width: 799px) {
+  .sticky_container {
+    display: grid;
+  }
+  .sticky_container .images {
+    order: 1;
+  }
+  .sticky_container .col-lg-4 {
+    order: 2;
+  }
+}

@@ -53,8 +53,9 @@ $(".burger-menu").click(function () {
 var lastId,
     topMenu = $("#navigation"),
     topMenuHeight = topMenu.outerHeight() - 60,
-    menuItems = topMenu.find("a[href*='#']"),
+    menuItems = topMenu.find("a[href*='#']").not("[href*='/']"),
     scrollItems = menuItems.map(function () {
+
         var item = $($(this).attr("href"));
         if (item.length) {
             return item;

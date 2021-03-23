@@ -43,6 +43,9 @@ function add_product_property(pk){
   // Чтобы экран не скакал, задаем высоту
   var new_height = $("#product-props-table").height() + $("#product-props-table .tabulator-row").height() + 3;
   product_props_table.setHeight(new_height);
+  if(product_props_table.getRows().length == 0){
+    product_props_table.setHeight(128);
+  }
   product_props_table.addRow({'is_active': false});
 
   return new_prop_counter;

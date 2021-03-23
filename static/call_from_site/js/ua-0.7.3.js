@@ -7,8 +7,9 @@ var elements = {
 
 var config = window.sip_config !== undefined ? window.sip_config : {
   traceSip: false,
-  register: true,
+  register: false,
   userAgentString: 'sipjs',
+  stunServers: ['stun:91.185.46.56:3478'],
 };
 console.log('---', config, '---');
 

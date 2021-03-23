@@ -4,7 +4,9 @@
     2 Section design
     3 Page cover scroll animation
 [Colors]
-    Yellow : #fade31
+    Yellow : #fade31;
+    Brown : #8d784e;
+    Gray: #b2b2b2
 [Typography]
 [Navi]
 [Cart]
@@ -16,7 +18,9 @@
 [Imagepages]
 [Newspage]
 [Articles]
-[Featurespage]
+[Featurespages]
+[ContactsPages]
+[Map]
 */
 /* 1 Typography */
 @font-face {
@@ -109,6 +113,13 @@
 .text-center {
   text-align: center;
 }
+.page-loader img {
+  max-width: 200px;
+}
+.page-loader div .icon {
+  display: none;
+}
+
 /* 2 Section design
 /* Section background color */
 .bg-level-1 {
@@ -175,7 +186,7 @@
 /* 4 Navi */
 .navbar-sidebar .nav-menu .nav-item .text {
   color: #fade31;
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 .navbar-sidebar .nav-menu .active a span.fa {
   color: #fade31;
@@ -259,6 +270,8 @@
   padding:0;
   position:relative;
   clear:both;
+  padding-left: 1rem;
+  padding-rigth: 1rem;
 }
 #footer .footer_menu a {
   position: relative;
@@ -452,6 +465,13 @@
 .swiper-container-rtl .swiper-button-next {
   outline: none;
 }
+@media screen and (max-width: 991px) {
+  .sliderpage2,
+  .sliderpage3 {
+    justify-content: unset;
+    height: auto !important;
+  }
+}
 @media screen and (max-width: 499px) {
   .slide-c.fullscreen-slide {
     min-height: 50vh;
@@ -533,6 +553,34 @@
   font-size: 2rem;
   padding-bottom: 1rem;
 }
+.article6 {
+  justify-content: unset;
+  height: auto !important;
+}
+.article6 h2.h-title {
+  color: #8d784e;
+  padding: 20px 0;
+  border-top: 2px solid #8d784e;
+  border-bottom: 2px solid #8d784e;
+}
+.article6 .title {
+  position: relative;
+  padding-right: 140px;
+  color: #b2b2b2;
+  border-bottom: 2px solid #8d784e;
+}
+.article6 .counter {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: #8d784e;
+  font-size: 6rem;
+}
+.article6 .content-text {
+  color: #b2b2b2;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
+}
 @media screen and (max-width: 991px) {
   .article2,
   .article3,
@@ -540,14 +588,67 @@
     height: auto !important;
   }
 }
-/* Featurespage */
-.featurespage .c-wrapper img {
+/* Featurespages */
+.featurespage .c-wrapper img,
+.featurespage2 .c-wrapper img {
   display: block;
   margin: 0 auto;
   max-width: 150px;
 }
+.featurespage2 h2.h-title {
+  color: #8d784e;
+  padding: 20px 0;
+  border-top: 2px solid #8d784e;
+  border-bottom: 2px solid #8d784e;
+}
 @media screen and (max-width: 991px) {
-  .featurespage .content-text {
+  .featurespage .content-text,
+  .featurespage2 .content-text {
     font-size: 0.9rem;
   }
+}
+/* Contactspages */
+.contactspage2 {
+  justify-content: unset;
+  height: auto !important;
+}
+.contactspage2 h2.h-title {
+  color: #8d784e;
+  padding: 20px 0;
+  border-top: 2px solid #8d784e;
+  border-bottom: 2px solid #8d784e;
+}
+.contactspage2 .title {
+  color: #8d784e;
+}
+/* Map */
+section.dealers {
+  padding-top: 100px;
+  justify-content: unset;
+  height: auto !important;
+}
+section.dealers-end {
+  justify-content: unset;
+  height: auto !important;
+
+}
+.dealers .city_row {
+  color: #8d784e;
+  padding: 10px 0;
+  border-top: 2px solid #8d784e;
+  border-bottom: 2px solid #8d784e;
+}
+.dealers .dealer_row {
+  border-bottom: 1px solid #2b2d31;
+}
+.dealers .dealer_row.even {
+  background-color: #2b2d31;
+}
+.dealers .dcenters {
+  height: 600px;
+  overflow-y: scroll;
+}
+#mapContainer {
+  height: 600px;
+  width: 100%;
 }

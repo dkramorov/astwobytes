@@ -22,6 +22,7 @@ urlpatterns = [
     path('profile/', views.show_profile, name='show_profile'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
+    path('confirm_phone/', views.confirm_phone, name='confirm_phone'),
 
     # Оформление заказа
     path('shop/cart/', views.show_cart, name='show_cart'),

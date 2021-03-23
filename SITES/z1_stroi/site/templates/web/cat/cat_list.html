@@ -1,0 +1,327 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extracontent %}{% endblock %}
+
+{% block content %}
+<div class="section-sb">
+  {% sidebar_cats request %}
+  <div class="section-filter">
+    <button id="section-filter-toggle" class="section-filter-toggle" data-close="Скрыть фильтры" data-open="Открыть фильтры">
+      <span>Открыть фильтры</span> <i class="fa fa-angle-down"></i>
+    </button>
+    <div class="section-filter-cont">
+
+      {% if cost_filter %}
+        <div class="section-filter-price">
+          <div class="range-slider section-filter-price" data-min="0" data-max="{{ cost_filter.max }}" data-from="{{ cost_filter.min }}" data-to="{{ cost_filter.max }}" data-postfix=" ₽" data-grid="false"></div>
+        </div>
+      {% endif %}
+{% comment %}<!--
+      <div class="section-filter-item">
+        <p class="section-filter-ttl">Style <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox2-1" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox2-1">Work</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox2-2" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox2-2">Vintage</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox2-3" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox2-3">Cute</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox2-4" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox2-4">Novelty</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox2-5" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox2-5">Brief</label>
+          </p>
+        </div>
+      </div>
+      <div class="section-filter-item opened">
+        <p class="section-filter-ttl">Material <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox3-1" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox3-1">Cotton</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox3-2" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox3-2">Spandex</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox3-3" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox3-3">Polyester</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox3-4" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox3-4">Acetate</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox3-5" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox3-5">Microfiber</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox3-6" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox3-6">Silk</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox3-7" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox3-7">Fur</label>
+          </p>
+        </div>
+      </div>
+      <div class="section-filter-item opened">
+        <p class="section-filter-ttl">Color <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <ul class="section-filter-color">
+            <li class="active"><img src="/media/misc/red.jpg" alt="Red"></li>
+            <li><img src="/media/misc/blue.jpg" alt="Blue"></li>
+            <li><img src="/media/misc/green.jpg" alt="Green"></li>
+            <li><img src="/media/misc/yellow.jpg" alt="Yellow"></li>
+            <li><img src="/media/misc/purple.jpg" alt="Purple"></li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-filter-item opened">
+        <p class="section-filter-ttl">Decoration <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <div class="section-filter-select">
+            <select data-placeholder="Decoration" class="chosen-select">
+              <option>Pattern</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="section-filter-item opened">
+        <p class="section-filter-ttl">Manufacturer country <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <div class="section-filter-select">
+            <select data-placeholder="Manufacturer country" class="chosen-select" multiple>
+              <optgroup label="EUROPE">
+                <option>Albania</option>
+              </optgroup>
+              <optgroup label="ASIA">
+                <option>Afghanistan</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="section-filter-item">
+        <p class="section-filter-ttl">Pattern Type <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox4-1" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox4-1">Solid</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox4-2" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox4-2">Patchwork</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox4-3" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox4-3">Dot</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox4-4" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox4-4">Print</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox4-5" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox4-5">Character</label>
+          </p>
+        </div>
+      </div>
+      <div class="section-filter-item">
+        <p class="section-filter-ttl">Fit Type <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox5-1" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox5-1">Loose</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox5-2" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox5-2">Skinny</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox5-3" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox5-3">Regular</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox5-4" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox5-4">Straight</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox5-5" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox5-5">Boot Cut</label>
+          </p>
+        </div>
+      </div>
+      <div class="section-filter-item opened">
+        <p class="section-filter-ttl">Fabric Type <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <p class="section-filter-field">
+            <input id="section-filter-radio1-1" value="on" type="radio" name="section-filter-radio1">
+            <label class="section-filter-radio" for="section-filter-radio1-1">Velour</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-radio1-2" value="on" type="radio" name="section-filter-radio1">
+            <label class="section-filter-radio" for="section-filter-radio1-2">Batik</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-radio1-3" value="on" type="radio" name="section-filter-radio1">
+            <label class="section-filter-radio" for="section-filter-radio1-3">Chiffon</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-radio1-4" value="on" type="radio" name="section-filter-radio1">
+            <label class="section-filter-radio" for="section-filter-radio1-4">Broadcloth</label>
+          </p>
+        </div>
+      </div>
+      <div class="section-filter-item">
+        <p class="section-filter-ttl">Wash <i class="fa fa-angle-down"></i></p>
+        <div class="section-filter-fields">
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox6-1" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox6-1">Colored</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox6-2" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox6-2">Light</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox6-3" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox6-3">Medium</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox6-4" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox6-4">Stonewashed</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox6-5" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox6-5">White</label>
+          </p>
+          <p class="section-filter-field">
+            <input id="section-filter-checkbox6-6" value="on" type="checkbox">
+            <label class="section-filter-checkbox" for="section-filter-checkbox6-6">Distrressed</label>
+          </p>
+        </div>
+      </div>
+      <div class="section-filter-buttons">
+        <input class="btn btn-themes" id="set_filter" name="set_filter" value="Apply filter" type="button">
+        <input class="btn btn-link" id="del_filter" name="del_filter" value="Reset" type="button">
+      </div>
+-->{% endcomment %}
+    </div>
+  </div>
+</div>
+
+
+<div class="section-cont">
+  <div class="section-top">
+    <ul class="section-mode">
+      <li class="section-mode-gallery" id="gridview"><a title="Вид: Сетка" href="javascript:void(0);"></a></li>
+      <li class="section-mode-list active" id="listview"><a title="Вид: Список" href="javascript:void(0);"></a></li>
+      <li class="section-mode-table" id="tableview"><a title="Вид: Таблица" href="javascript:void(0);"></a></li>
+    </ul>
+    <div class="section-sortby">
+      <p>{% if q_string.sort_name_filter %} {{ q_string.sort_name_filter }}{% else %}Сортировка{% endif %}</p>
+      <ul id="set_sort_by">
+        <li><a href="javascript:void(0);" data-value="">По умолчанию</a></li>
+        <li><a href="javascript:void(0);" data-value="price">Цена по возрастанию</a></li>
+        <li><a href="javascript:void(0);" data-value="-price">Цена по убыванию</a></li>
+      </ul>
+    </div>
+    <div class="section-count">
+      <p>{{ q_string.by }}</p>
+      <ul id="set_count_by">
+        <li><a href="javascript:void(0);" data-value="5">5</a></li>
+        <li><a href="javascript:void(0);" data-value="10">10</a></li>
+        <li><a href="javascript:void(0);" data-value="20">20</a></li>
+        <li><a href="javascript:void(0);" data-value="50">50</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="prod-items section-items listview">
+    {% for product in products %}
+      {% include "web/cat/list_item.html" %}
+    {% endfor %}
+  </div>
+  <div class="prod-items section-items gridview hidden">
+    {% for product in products %}
+      {% include "web/cat/grid_item.html" %}
+    {% endfor %}
+  </div>
+  <div class="prod-items section-items prod-tb tableview hidden">
+    {% for product in products %}
+      {% include "web/cat/table_item.html" %}
+    {% endfor %}
+  </div>
+  {% if paginator %}{{ paginator|safe }}{% endif %}
+</div>
+<div class="clearfix"></div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/js/cat.js"></script>
+{% if search_terms %}
+<script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".product-title a").mark('{% for search_term in search_terms %}{% if not forloop.first %} {% endif %}{{ search_term }}{% endfor %}', {
+      'accuracy': 'complementary',
+    });
+  });
+</script>
+{% endif %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    //console.log(rebuild_query_path_with_param("sort", "default"));
+
+    $("#set_sort_by li a").click(function(){
+      var type = $(this).attr("data-value");
+      var new_url = rebuild_query_path_with_param("sort", type);
+      if(decodeURIComponent(location.search.substr(1)) !== new_url){
+        window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
+      }
+    });
+
+    $("#set_count_by li a").click(function(){
+      var count = $(this).attr("data-value");
+      var new_url = rebuild_query_path_with_param("by", count);
+      if(decodeURIComponent(location.search.substr(1)) !== new_url){
+        window.location.href = "{{ request.META.PATH_INFO }}?" + new_url;
+      }
+    });
+
+    $("#gridview").click(function(){
+      $("ul.section-mode li").removeClass("active");
+      $(".prod-items.listview").addClass("hidden");
+      $(".prod-items.tableview").addClass("hidden");
+      $(".prod-items.gridview").removeClass("hidden");
+      $("#gridview").addClass("active");
+    });
+    $("#listview").click(function(){
+      $("ul.section-mode li").removeClass("active");
+      $(".prod-items.gridview").addClass("hidden");
+      $(".prod-items.tableview").addClass("hidden");
+      $(".prod-items.listview").removeClass("hidden");
+      $("#listview").addClass("active");
+    });
+    $("#tableview").click(function(){
+      $("ul.section-mode li").removeClass("active");
+      $(".prod-items.gridview").addClass("hidden");
+      $(".prod-items.listview").addClass("hidden");
+      $(".prod-items.tableview").removeClass("hidden");
+      $("#tableview").addClass("active");
+    });
+  });
+</script>
+{% endblock %}

@@ -1064,6 +1064,8 @@ h6, .h6 {
 .simple_contacts .copyright p{
   color: #582371;
   font-size: 15px;
+  padding: 0;
+  margin: 0;
 }
 .contact_row {
   margin-top: 40px;
