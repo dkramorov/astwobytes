@@ -1,0 +1,57 @@
+{% load mtags %}
+<section class="page-section">
+  <div class="container">
+    <div class="tabs">
+      <ul id="tabs" class="nav nav-justified-off">
+        {% for block in blocks %}
+          <li{% if forloop.first %} class="active"{% endif %}>
+            <a href="#tab-{{ block.id }}" data-toggle="tab">{{ block.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="tab-content">
+      {% for block in blocks %}
+      <div class="tab-pane fade{% if forloop.first %} active in{% endif %}" id="tab-{{ block.id }}">
+        <div class="row">
+          {% for product in block.products %}
+            <div class="col-md-3 col-sm-6">
+              <div class="thumbnail no-border no-padding">
+                <div class="media">
+                  <a class="media-link" data-gal="prettyPhoto" href="{{ product.imagine }}">
+                    <img src="{% imagine product.img '600x600' product.get_folder True %}" alt="{{ product.name|textize }}"/>
+                    <span class="icon-view">
+                      <strong><i class="fa fa-eye"></i></strong>
+                    </span>
+                  </a>
+                </div>
+                <div class="caption text-center">
+                  <h4 class="caption-title">
+                    <a href="{{ product.link }}">{{ product.name }}</a>
+                  </h4>
+                  <div class="rating">
+                    <span class="star"></span>
+                    <span class="star active"></span>
+                    <span class="star active"></span>
+                    <span class="star active"></span>
+                    <span class="star active"></span>
+                  </div>
+                  <div class="price">
+                    <ins>{{ product.price|money_format }} ₽</ins>
+                    <del>{{ product.old_price|money_format }} ₽</del>
+                  </div>
+                  <div class="buttons">
+                    <a class="btn btn-theme btn-theme-transparent btn-wish-list" href="#"><i class="fa fa-heart"></i></a>
+                    <a class="btn btn-theme btn-theme-transparent btn-icon-left" href="#"><i class="fa fa-shopping-cart"></i>В корзину</a>
+                    <a class="btn btn-theme btn-theme-transparent btn-compare" href="#"><i class="fa fa-exchange"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

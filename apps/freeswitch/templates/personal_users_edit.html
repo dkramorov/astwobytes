@@ -21,9 +21,15 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-lg-2 control-label">Ид (устаревший)</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Ид (устаревший)" class="form-control" name="userid" value="{% if row.userid %}{{ row.userid }}{% endif %}" autocomplete="off" id="form-field-userid" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-2 control-label">Ид пользователя</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Ид пользователя" class="form-control" name="userid" value="{% if row.userid %}{{ row.userid }}{% endif %}" autocomplete="off" id="form-field-userid" data-parsley-required>
+              <input type="text" placeholder="Ид пользователя" class="form-control" name="userkey" value="{% if row.userkey %}{{ row.userkey }}{% endif %}" autocomplete="off" id="form-field-userkey" data-parsley-required>
             </div>
           </div>
           <div class="form-group">

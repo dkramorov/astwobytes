@@ -45,12 +45,18 @@ def ApiHelper(request,
     # Параметры фильтрации через filter__field = ''
     # filter__ означает, что мы хотим отфильтровать по какому то полю,
     # например, ?filter__id=1&filter__is_active=1
-    filters = {k.replace('filter__', ''): v for k, v in params.items() if 'filter__' in k}
+    filters = {k.replace('filter__', ''): v for k, v in params.items() if k.startswith('filter__')}
     if filters:
         mh.filter_add(Q(**filters))
     if restrictions:
         for restriction in restrictions:
             mh.filter_add(restriction)
+    orders_by = {k.replace('order__', ''): v for k, v in params.items() if k.startswith('order__')}
+    for order_by, direction in orders_by.items():
+        if direction == 'asc':
+            mh.order_by_add(order_by)
+        elif direction == 'desc':
+            mh.order_by_add('-%s' % order_by)
 
     context = mh.context
     rows = mh.standard_show(only_fields=only_fields)

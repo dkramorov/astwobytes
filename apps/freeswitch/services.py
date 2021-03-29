@@ -47,10 +47,15 @@ def parse_log_line(line: list, redirects: list):
         if key == 'user_agent':
             if value and '@' in value:
                 value = value.split('@')[0]
-                if value.isdigit():
+                if value.isdigit(): # Depricated
                     puser = PersonalUsers.objects.filter(userid=value).first()
                     if puser:
                         cur_cdr['personal_user_id'] = puser.userid
+                        cur_cdr['personal_user_name'] = puser.username
+                else:
+                    puser = PersonalUsers.objects.filter(userkey=value).first()
+                    if puser:
+                        cur_cdr['personal_user_id'] = puser.userkey
                         cur_cdr['personal_user_name'] = puser.username
             else:
                 value = None

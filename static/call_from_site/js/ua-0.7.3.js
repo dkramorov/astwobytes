@@ -9,7 +9,8 @@ var config = window.sip_config !== undefined ? window.sip_config : {
   traceSip: false,
   register: false,
   userAgentString: 'sipjs',
-  stunServers: ['stun:91.185.46.56:3478'],
+  // без stun будет INCOMPATIBLE DESTINATION (candidates)
+  stunServers: [],
 };
 console.log('---', config, '---');
 

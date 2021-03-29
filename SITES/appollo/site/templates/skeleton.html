@@ -17,6 +17,9 @@
 -->
 <link href="/media/css/cyan-2.css" rel="stylesheet">
 <link href="/media/css/phone.css" rel="stylesheet">
+{% if request.session.shopper %}
+<!-- SITE_ID --><script type="text/javascript">window.personal_user_id = 'user8800-{{ request.session.shopper.id }}@8800';</script>
+{% endif %}
 {% block extrahead %}{% endblock %}
 </head>
 <body id="top">

@@ -324,6 +324,30 @@ function scroll_to(section, offset){
   console.log("scrolling to " + section + " " + $(section).offset().top);
 }
 
+function filter_dealers_listener(search_arr){
+//search_dealer_select
+  var search_field = $("#search_dealer_select");
+  search_field.change(function(){
+    var country_id = $(this).val();
+    var countries = Array();
+    var item;
+    for(var i=0; i<search_arr.length; i++){
+      item = search_arr[i];
+      if(item['country_id'] == country_id || country_id == ""){
+        countries.push(item['country_id']);
+        $("#dealer_row_" + item['id']).show();
+      }else{
+        $("#dealer_row_" + item['id']).hide();
+      }
+    }
+
+    $(".country_row").hide();
+    for(var i=0; i<countries.length; i++){
+      $("#country_row_" + countries[i]).show();
+    }
+  })
+}
+
 function search_dealers_listener(search_arr){
   var search_field = $("#search_dealer_field");
   search_field.keyup(function(){
@@ -386,7 +410,7 @@ function create_dealers_map(){
         search_arr.push({
           'id': point['id'],
           'terms': point['terms'],
-          'city_id': point['city_id'],
+          'country_id': point['country_id'],
         });
 
         $("#dealer_address_" + point['id']).click(function(){
@@ -411,6 +435,7 @@ function create_dealers_map(){
       set_map_bounds(myMapContainer)
 
       search_dealers_listener(search_arr);
+      filter_dealers_listener(search_arr);
     }else{
       console.log("[ERROR]: mapContainer_points undefined");
     }
@@ -427,4 +452,21 @@ $(document).ready(function(){
       scroll_to("#product_props", -100);
     }
   });
+  $(".fancybox").fancybox();
+  $(".fancybox_form").fancybox();
+
+  if($("#confirm_any_order").length > 0){
+    var order_any = new FeedBack("confirm_any_order", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Спасибо, сообщение отправлено",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": "",
+      "callback_error": "",
+      "dont_reset_on_submit": 0, // or 1
+      //"errorClass": "invalid",
+    });
+  }
 });

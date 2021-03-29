@@ -6,11 +6,11 @@
 
 <link rel="stylesheet" href="/media/css/pageloader.css?v=2">
 <link rel="stylesheet" href="/media/css/bootstrap.min.css?v=2">
-
+<link rel="stylesheet" href="/static/fancybox/jquery.fancybox.min.css">
 <link rel="stylesheet" href="/media/css/swiper.min.css?v=2">
 <link rel="stylesheet" href="/media/css/vegas.min.css?v=2">
 <link rel="stylesheet" href="/media/css/jquery.fullpage.min.css?v=2">
-
+<link rel="stylesheet" href="/static/youtube_app/lazy_youtube.css">
 <link rel="stylesheet" href="/media/css/main.css?v=2">
 <link rel="stylesheet" href="/media/css/custom.css?v=2">
 {% block extrahead %}{% endblock %}
@@ -106,6 +106,13 @@
 {% endblock %}
 <script src="/media/js/jquery-1.12.4.min.js"></script>
 {% include "shop_js.html" %}
+
+<script type="text/javascript" src="/static/fancybox/jquery.fancybox.min.js"></script>
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/static/js/feedback.js"></script>
+
 <script src="/media/js/vegas.min.js"></script>
 <script src="/media/js/swiper.min.js"></script>
 <script src="/media/js/scrolloverflow.min.js"></script>
@@ -117,7 +124,7 @@
 <script type="text/javascript">
   var yandex_maps_api_key = "{% settings_value 'YANDEX_MAPS_API_KEY' %}";
 </script>
-
+<script src="/static/youtube_app/lazy_youtube.js"></script>
 <script src="/media/js/main.js"></script>
 {% block extrascripts %}{% endblock %}
 

@@ -280,7 +280,7 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
     # Подливаем линковку к менюшке
     # ----------------------------
     elif ftype == 'flatpages':
-        links = LinkContainer.objects.select_related('block').filter(container=mh.row)
+        links = LinkContainer.objects.select_related('block', 'block__container').filter(container=mh.row)
         edit_link = '%s:%s' % (CUR_APP, mh_vars['edit_urla'])
         fmenu = 'flatmenu'
         context['links'] = [{
@@ -289,6 +289,7 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
             'name': link.block.name,
             'tag': link.block.tag,
             'link': link.block.link,
+            'container': link.block.container,
             'blocks': reverse('%s:%s' % (CUR_APP, blocks_vars['show_urla']),
                               kwargs={'ftype': fmenu, 'container_id': link.block.container_id}),
             'edit': reverse_edit(mh_vars, fmenu, 'edit', link.block.container_id),
@@ -667,7 +668,7 @@ def update_linkcontainer(request, container, row):
     if not container.state == 1:
         return
     LinkContainer.objects.filter(block=row).delete()
-    linkcontainer = [int(pk) for pk in request.POST.getlist('linkcontainer')]
+    linkcontainer = [int(pk) for pk in request.POST.getlist('linkcontainer') if pk.isdigit()]
     if linkcontainer:
         containers = Containers.objects.filter(pk__in=linkcontainer)
         ids_containers = {cont.id: cont for cont in containers}

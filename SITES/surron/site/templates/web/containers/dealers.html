@@ -22,16 +22,26 @@
         </div>
 
         <div class="col-lg-4 pl-lg-3 pr-lg-3">
-          <div class="form-group col-md-12">
+          <div class="form-group col-md-12 pr-lg-0 pl-lg-0">
+            <div class="custom_select">
+              <select id="search_dealer_select" autocomplete="off">
+                <option value="">Все</option>
+                {% for country in countries %}
+                  <option value="{{ country.id }}">{{ country.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+{% comment %}<!--
             <input type="text" value="" class="form-control form-control-lg py-2" placeholder="Поиск по дилеру" id="search_dealer_field">
+-->{% endcomment %}
           </div>
           <div class="dcenters">
           {% for country in countries %}
-            <div class="city_row mb-4" id="city_row_{{ country.id }}">
+            <div class="country_row mb-4" id="country_row_{{ country.id }}">
               <div class="title fs-1-2">{{ country.name }}</div>
             </div>
             {% for dealer in country.dealers %}
-              <div class="px-3 py-3 dealer_row {% cycle 'even' 'odd' %}" id="dealer_row_{{ dealer.id }}">
+              <div class="px-3 py-3 dealer_row {% cycle 'even' 'odd' %}{% if dealer.class_name %} {{ dealer.class_name }}{% endif %}" id="dealer_row_{{ dealer.id }}">
                 <div class="name mb-2 pr-3">{{ dealer.name }}</div>
                 {% if dealer.address %}
                   <div class="address mb-2 pr-3">

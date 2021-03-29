@@ -7,8 +7,23 @@ from django.db.models import Count
 from apps.main_functions.functions import recursive_fill, sort_voca
 from apps.main_functions.models import Config
 from apps.flatcontent.models import Containers, Blocks, LinkContainer
+from apps.personal.models import get_personal_user as get_shopper
 
 register = template.Library()
+
+@register.filter(name = 'check_user_can_call')
+def check_user_can_call(request):
+    """Проверить, что есть регистрация и телефон подтвержден
+    """
+    result = {}
+    shopper = get_shopper(request)
+    if not shopper:
+        result['not_registered'] = True
+    elif not shopper.phone_confirmed:
+        result['not_confirmed'] = True
+    if not 'error' in result:
+        result['success'] = True
+    return result
 
 @register.filter(name = 'dynamic_portfolio')
 def dynamic_portfolio(request):

@@ -52,6 +52,25 @@
     </div>
   </div>
 </div>
+
+<!-- Основной цвет -->
+<div class="form-group">
+  <label class="col-lg-2 control-label">Основной цвет</label>
+  <div class="col-lg-10">
+    <select id="color_select2" name="color" autocomplete="off">
+      <option value=""></option>
+      <option value="1">Красный</option>
+      <option value="2">Черный</option>
+      <!--<option value="3">Живые фото</option>-->
+      <option value="8">Серебристый</option>
+      <option value="7">Серый</option>
+      <option value="6">Зеленый</option>
+      <option value="5">Синий</option>
+      <option value="4">Желтый</option>
+    </select>
+  </div>
+</div>
+
 <script type="text/javascript">
   function update_gallery_links(r){
     // Добавление фотки в галерею
@@ -78,7 +97,7 @@
     html += '</td><td>';
 
     html += '<select class="photo_name_select" id="photo_name_' + photo['id'] + '" autocomplete="off">';
-    html += '<option value=""></option>';
+    html += '<option value="0"></option>';
     html += '<option value="1"' + sel1 + '>Красный</option>';
     html += '<option value="2"' + sel2 + '>Черный</option>';
     html += '<option value="3"' + sel3 + '>Живые фото</option>';
@@ -111,6 +130,55 @@
       //width: '100%',
       //tags: true,
     });
+    $('#color_select2').select2({
+      placeholder: 'Выберите основной цвет',
+      allowClear: true,
+      //width: '100%',
+      //tags: true,
+    });
+    $('#color_select2').change(function(){
+      var color = $("#color_select2").val();
+      $.ajax({
+        type: "GET",
+        url: "{% url 'product_colors:set_color' %}",
+        data: {
+          product_id: '{{ row.id }}',
+          color: color,
+        }
+      }).done(function(r) {
+        var status = 'danger';
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+        }
+        $.notify({
+          message: msg,
+        },{
+         status: status,
+        });
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+    });
+
+
+    $.ajax({
+      type: "GET",
+      url: "{% url 'product_colors:get_color' %}",
+      data: {
+        product_id: '{{ row.id }}',
+      }
+    }).done(function(r) {
+      $("#color_select2").val('' + r['color']);
+      $("#color_select2").trigger('change');
+    });
+
   });
 </script>
 {% endif %}

@@ -31,8 +31,16 @@ $(document).ready(function(){
         width: 150,
       },
       {
-        title: "Ид пользователя",
+        title: "Ид (устаревший)",
         field: "userid",
+        headerFilterPlaceholder: "Ид (устаревший)",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 60,
+      },
+      {
+        title: "Ид пользователя",
+        field: "userkey",
         headerFilterPlaceholder: "Ид пользователя",
         headerFilter: "input",
         headerFilterFunc: "=",

@@ -767,11 +767,23 @@ class ModelHelper:
             ids_items[pk].position = i + 1
             bulk_update.append(ids_items[pk])
         if bulk_update:
-            self.model.objects.bulk_update(bulk_update, ['position'])
+            bulk_update_position(self.model, bulk_update)
             result['success'] = 'Сортировка выполнена'
         else:
             result['error'] = 'Ошибка при сортировке'
         return result
+
+def bulk_update_position(model, bulk_update: list):
+    """Операция
+       model.objects.bulk_update(bulk_update, ['position'])
+       :param model: Модель
+       :param bulk_update: массив для обновления
+    """
+    if hasattr(model.objects, 'bulk_update'):
+        model.objects.bulk_update(bulk_update, ['position'])
+    else:
+        for item in bulk_update:
+            model.objects.filter(pk=item.id).update(position=item.position)
 
 def create_model_helper(mh_vars, request, CUR_APP: str,
                         action: str = None,

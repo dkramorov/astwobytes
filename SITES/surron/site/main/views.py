@@ -19,6 +19,8 @@ from apps.personal.auth import register_from_site, login_from_site, update_profi
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
 from apps.shop.models import Orders
 
+from apps.site.product_colors.models import ProductColor
+
 CUR_APP = 'main'
 main_vars = {
     'singular_obj': 'Главная',
@@ -162,6 +164,7 @@ def product_on_site(request, product_id: int):
         '5', #'Синий',
         '4', #'Желтый',
     )
+    live_photos_id = '3'
 
     mh_vars = cat_vars.copy()
     context = get_product_for_site(request, product_id)
@@ -174,6 +177,12 @@ def product_on_site(request, product_id: int):
     sorted_photos = []
     main_section = None
     z = 0
+
+    main_color = '0'
+    product_color = ProductColor.objects.filter(product=product_id).first()
+    if product_color:
+        main_color = product_color.color
+
     # Разбивка фоток
     for photo in context.get('photos', []):
         if not photo.name:
@@ -191,12 +200,13 @@ def product_on_site(request, product_id: int):
     sorted_photos = [{
         'section_id': color,
         'photos': photos[color],
-    } for color in colors if color in photos]
+    } for color in colors if color in photos and color != live_photos_id]
 
+    context['live_photos'] = photos.get(live_photos_id)
     context['photo_sections'] = sorted_photos
 
     if sorted_photos:
-        context['photo_main_section_id'] = sorted_photos[0]['section_id']
+        context['photo_main_section_id'] = main_color or sorted_photos[0]['section_id']
 
     if request.is_ajax():
         return JsonResponse(context, safe=False)

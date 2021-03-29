@@ -23,6 +23,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('confirm_phone/', views.confirm_phone, name='confirm_phone'),
+    path('calls_history/', views.calls_history, name='calls_history'),
 
     # Оформление заказа
     path('shop/cart/', views.show_cart, name='show_cart'),

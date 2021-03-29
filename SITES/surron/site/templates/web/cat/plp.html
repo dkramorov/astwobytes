@@ -40,12 +40,15 @@
             </div>
 -->{% endcomment %}
             <p class="price text-5 mb-3">
-              <span class="sale text-color-dark">{{ product.price|money_format }} ₽</span>
+              {% if product.price %}
+                <span class="sale text-color-dark">{{ product.price|money_format }} ₽</span>
+              {% endif %}
               {% if product.old_price %}
                 <span class="amount">{{ product.old_price|money_format }} ₽</span>
               {% endif %}
-
-              <a data-product_id="{{ product.id }}" href="javascript:void(0);" class="text-decoration-none text-color-default text-color-hover-dark add_to_cart_btn"><i class="fa fa-shopping-cart"></i></a>
+              {% if product.price and product.count %}
+                <a data-product_id="{{ product.id }}" href="javascript:void(0);" class="text-decoration-none text-color-default text-color-hover-dark add_to_cart_btn"><i class="fa fa-shopping-cart"></i></a>
+              {% endif %}
             </p>
           </div>
         </div>

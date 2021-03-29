@@ -1,3 +1,10 @@
+window.sip_config = {
+  traceSip: false,
+  register: false,
+  userAgentString: window.personal_user_id ? window.personal_user_id : 'sipjs',
+  stunServers: ['stun:91.185.46.56:3478'],
+};
+
 function load_free_calls(){
   if(typeof(DetectRTC) == "undefined"){
     var head_el = document.getElementsByTagName("head")[0];
@@ -31,6 +38,9 @@ function load_sipjs(callback){
     sip_script.type = "text/javascript";
     sip_script.src = "/static/call_from_site/js/sip-0.7.8.js";
     sip_script.onload = function(){
+      var not_registered_error = $("#not_registered_error").length;
+      var not_confirmed_phone_error = $("#not_confirmed_phone_error").length;
+
       var sipua_script = document.createElement("script");
       sipua_script.type = "text/javascript";
       sipua_script.src = "/static/call_from_site/js/ua-0.7.3.js?v=2";
@@ -53,16 +63,38 @@ function load_sipjs(callback){
           */
           $("#ext_dial").val("");
           var phone_value = $("#phone_number").val();
-
           var digits = "";
           for(var i=0; i<phone_value.length; i++){
             if("0123456789".indexOf(phone_value[i]) > -1){
               digits += phone_value[i];
             }
           }
-          var new_call = make_call(digits);
-          if(new_call !== 1){
-            show_error(new_call);
+
+          if(not_registered_error == 0){
+            if(not_confirmed_phone_error == 0){
+              var new_call = make_call(digits);
+              if(new_call !== 1){
+                show_error(new_call);
+              }
+            }else{
+              if(digits === "88000000000"){
+                var new_call = make_call(phone_value);
+                if(new_call !== 1){
+                  show_error(new_call);
+                }
+              }else{
+                $("#not_confirmed_phone_error").removeClass("hidden");
+              }
+            }
+          }else {
+            if(digits === "88000000000"){
+              var new_call = make_call(phone_value);
+              if(new_call !== 1){
+                show_error(new_call);
+              }
+            }else{
+              $("#not_registered_error").removeClass("hidden");
+            }
           }
 
         });
@@ -105,6 +137,7 @@ function load_sipjs(callback){
     console.log("SIP already loaded");
   }
 }
+
 function set_phone_mask(){
   var head_el = document.getElementsByTagName("head")[0];
   var phone_mask_script = document.createElement("script");
@@ -112,6 +145,7 @@ function set_phone_mask(){
   phone_mask_script.src = "/static/js/jquery.maskedinput.min.js";
   phone_mask_script.onload = function(){
     $("input[type='text'].phone").mask("8(800) 999-9999");
+    //$("input[type='text'].phone").mask("8(9999) 999-999");
   };
   head_el.appendChild(phone_mask_script);
 }
@@ -139,12 +173,12 @@ $(document).ready(function(){
 	const wheelElm = document.querySelector('#wheel');
 	const numberElm = document.querySelector('#number');
 
-	let isDragging = false;
-	let isRewinding = false;
+	var isDragging = false;
+	var isRewinding = false;
 
-	let wheelAngle = 0;
-	let wheelCenter = null;
-	let dragStartAngle = null;
+	var wheelAngle = 0;
+	var wheelCenter = null;
+	var dragStartAngle = null;
 
 	// -----------------------------------------------
 	// Dragging
@@ -171,7 +205,7 @@ $(document).ready(function(){
 
 	function drag(e) {
 		const angle = getAngle({ x: e.clientX, y: e.clientY }, wheelCenter);
-		let angleDiff = angle - dragStartAngle;
+		var angleDiff = angle - dragStartAngle;
 
 		// Convert the angle range from (-180 to 180) to (0 to 360).
 		angleDiff = angleDiff < 0 ? 360 - (-angleDiff) : angleDiff;
@@ -222,7 +256,7 @@ $(document).ready(function(){
 	}
 
 	function getNumberFromAngle(angle) {
-		let number = Math.floor((angle + 6) / 24) - 2;
+		var number = Math.floor((angle + 6) / 24) - 2;
 		if (number < 1) {
 			return null;
 		} else if (number > 9) {

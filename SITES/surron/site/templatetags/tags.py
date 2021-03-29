@@ -170,6 +170,7 @@ def load_dealers(request):
             'worktime': dealer.worktime,
             'site': dealer.site,
             'phone': dealer.phone,
+            'class_name': dealer.class_name,
         }
         countries[dealer.address.country].append(obj)
     result = []

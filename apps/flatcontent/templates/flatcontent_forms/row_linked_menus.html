@@ -18,14 +18,22 @@
             {% for item in links %}
               <tr>
                 <td>
-                  <a target="_blank" href="{{ item.blocks }}">{{ item.name }}</a>
+                  {% if item.container.state == 4 %}
+                    Товар
+                  {% else %}
+                    <a target="_blank" href="{{ item.blocks }}">{{ item.name }}</a>
+                  {% endif %}
                 </td>
                 <td>{{ item.id }}</td>
                 <td>{{ item.tag }}</td>
-                <td>{{ item.link }}</td>
+                <td><a href="{{ item.link }}" target="_blank">{{ item.link }}</a></td>
                 <td>
-                  <a target="_blank" class="btn-xs btn btn-primary pull-left" href="{{ item.edit }}"><i class="fa fa-edit"></i></a>
-                  <a target="_blank" class="btn-xs btn btn-info pull-left ml" href="{{ item.tree }}"><i class="fa fa-sitemap"></i></a>
+                  {% if item.container.state == 4 %}
+<!-- На товары не выводим редактирование - служебное меню -->
+                  {% else %}
+                    <a target="_blank" class="btn-xs btn btn-primary pull-left" href="{{ item.edit }}"><i class="fa fa-edit"></i></a>
+                    <a target="_blank" class="btn-xs btn btn-info pull-left ml" href="{{ item.tree }}"><i class="fa fa-sitemap"></i></a>
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}

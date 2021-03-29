@@ -48,7 +48,7 @@ def api(request, action: str = 'redirects'):
         app_label = cdrcsv_vars['model']._meta.app_label
         model_name = cdrcsv_vars['model']._meta.model_name
         if not request.user.has_perm('%s.view_%s' % (app_label, model_name)):
-            personal_user_id = int(request.headers.get('token', 0))
+            personal_user_id = request.headers.get('token', 0)
             restrictions.append(Q(personal_user_id=personal_user_id))
         result = ApiHelper(request, cdrcsv_vars, CUR_APP, restrictions=restrictions)
     else:
@@ -514,7 +514,7 @@ def search_personal_users(request, *args, **kwargs):
     return search_view(request,
                        model_vars = personal_users_vars,
                        cur_app = CUR_APP,
-                       sfields = ('username', 'userid'), )
+                       sfields = ('username', 'userid', 'userkey'), )
 
 def is_phone_in_white_list(request):
     """Апи-метод, чтобы узнать,
@@ -528,8 +528,24 @@ def is_phone_in_white_list(request):
     if phone.startswith('83952') or phone.startswith('8800'):
         result['success'] = True
 
+    user_key = request.GET.get('user_key')
+    if user_key:
+        analog = PersonalUsers.objects.select_related('personal_fs_user').filter(userkey=user_key).first()
+        if analog:
+            cid = None
+            if hasattr(analog, 'personal_fs_user') and analog.personal_fs_user.is_active:
+                result['success'] = True
+                cid = analog.personal_fs_user.cid
+            elif analog.phone_confirmed and analog.phone:
+                cid = analog.phone
+            if cid:
+                if len(cid) == 11 and cid.startswith('8'):
+                    result['cid'] = '7%s' % (cid[1:], )
+    # ---------------------
+    # user_id is DEPRICATED
+    # ---------------------
     user_id = request.GET.get('user_id')
-    if user_id:
+    if user_id and not user_key:
         try:
             user_id = int(user_id)
         except ValueError:
@@ -588,11 +604,24 @@ def sync_personal_users(request):
         return JsonResponse(result, safe=False)
 
     if request.method == 'POST':
-        userid = request.POST.get('userid')
+        userkey = request.POST.get('userkey')
         username = request.POST.get('username')
         phone = request.POST.get('phone')
         phone_confirmed = request.POST.get('phone_confirmed')
-        if userid:
+
+        userkey = request.POST.get('userkey')
+        if userkey:
+            analog = PersonalUsers.objects.filter(userkey=userkey).first()
+            if not analog:
+                analog = PersonalUsers(userkey=userkey)
+            analog.username = username
+            analog.phone = phone
+            analog.phone_confirmed = phone_confirmed
+            analog.save()
+
+        # user_id is DEPRICATED
+        userid = request.POST.get('userid')
+        if userid and not userkey:
             analog = PersonalUsers.objects.filter(userid=userid).first()
             if not analog:
                 analog = PersonalUsers(userid=userid)

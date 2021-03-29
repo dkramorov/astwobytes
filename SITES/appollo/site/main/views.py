@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import json
+import datetime
 import requests
 
 from django.shortcuts import render
@@ -15,6 +16,7 @@ from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
 from apps.main_functions.string_parser import kill_quotes, GenPasswd
 from apps.main_functions.views import DefaultFeedback
 from apps.main_functions.catcher import json_pretty_print
+from apps.main_functions.date_time import str_to_date
 
 from apps.personal.models import get_personal_user as get_shopper
 from apps.personal.oauth import VK, Yandex
@@ -27,6 +29,8 @@ main_vars = {
     'template_prefix': 'main_',
     'show_urla': 'home',
 }
+
+SITE_ID = 'user8800'
 
 def home(request):
     """Главная страничка сайта"""
@@ -204,7 +208,10 @@ profile_vars = {
 def show_profile(request):
     """Личный кабинет пользователя"""
     mh_vars = profile_vars.copy()
-    context = {}
+    context = {
+      'fs_server': settings.FREESWITCH_DOMAIN,
+      'tab': request.GET.get('tab'),
+    }
     q_string = {}
     containers = {}
     shopper = get_shopper(request)
@@ -381,6 +388,7 @@ def confirm_phone(request):
         if request.session.get('confirm_phone') and request.GET['digits'] == request.session['confirm_phone']:
             if phone_confirmed(request): # Тел подтвержден
                 result['success'] = 1
+                fs_shopper(request)
         return JsonResponse(result, safe=False)
     result = prepare_session(request)
     return JsonResponse(result, safe=False)
@@ -406,20 +414,44 @@ def prepare_session(request):
         result = r.json()
     return result
 
+def calls_history(request):
+    """Загрузить историю звонков по пользователю"""
+    result = {}
+    shopper = get_shopper(request)
+    if request.method == 'GET' and shopper:
+        date = str_to_date(request.GET.get('date'))
+        if not date:
+            date = datetime.date.today()
+        start_date = '%s-%s-%s 00:00:00' % (date.year, date.month, date.day)
+        end_date = '%s-%s-%s 23:59:59' % (date.year, date.month, date.day)
+        params = {
+            'page': request.GET.get('page', 0),
+            'filter__created__lte': end_date,
+            'filter__created__gte': start_date,
+            'order__created': 'desc',
+        }
+        headers = {
+            'token': '%s-%s' % (SITE_ID, shopper.id),
+        }
+        r = requests.get('%s/freeswitch/cdr_csv/api/' % settings.FREESWITCH_DOMAIN, params=params, headers=headers)
+        result = r.json()
+
+    return JsonResponse(result, safe=False)
+
 def fs_shopper(request):
     """После регистрации и/или подтверждения номера,
        надо на свиче синхануть пользователя
        Пользователи сайта /freeswitch/admin/personal_users/
        :param request: HttpRequest
     """
-    shopper = request.session.get('shopper')
+    shopper = get_shopper(request)
     token = '0_o'
     endpoint = '/freeswitch/personal_users/sync/'
     params = {
-        'userid': shopper['id'],
-        'username': shopper['login'],
-        'phone': shopper['phone'],
-        'phone_confirmed': shopper['phone_confirmed'],
+        'userkey': '%s-%s' % (SITE_ID, shopper.id),
+        'username': shopper.login,
+        'phone': shopper.phone,
+        'phone_confirmed': 1 if shopper.phone_confirmed else 0,
     }
     headers = {
         'token': token,

@@ -27,6 +27,10 @@ class PersonalUsers(Standard):
     """
     username = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     userid = models.IntegerField(blank=True, null=True, db_index=True)
+    # Главное не писать туда isdigit() - смотреть в services.py
+    userkey = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Уникальный ид пользователя (замена userid)')
     phone_confirmed = models.IntegerField(blank=True, null=True, db_index=True, verbose_name='Телефон подтвержден')
     phone = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
@@ -239,10 +243,20 @@ class CdrCsv(models.Model):
         verbose_name='Ид компании, телефон которой в dest')
     client_name = models.CharField(max_length=255, blank=True, null=True,
         verbose_name='Название компании, телефон которой в dest')
-    personal_user_id = models.IntegerField(blank=True, null=True, db_index=True,
-        verbose_name='Ид пользователя на сайте')
+    personal_user_id = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Ид пользователя на сайте (сайты разыне - с префиксом)')
     personal_user_name = models.CharField(max_length=255, blank=True, null=True,
         verbose_name='Имя пользователя на сайте')
+
+    def get_folder(self):
+        """Метод для api, т/к у нас не Standard модель"""
+        return '/media/%s/%s/%s_%s.wav' % (
+            self.context,
+            self.created.strftime('%Y-%m-%d'),
+            self.dest,
+            self.uuid,
+        )
 
     def get_record_path(self):
         """Получить путь до записи"""

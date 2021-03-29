@@ -440,6 +440,15 @@
         dataType: 'json',
       }
     });
+
+    $(".menus_toggle").click(function(){
+      if($(".linked_menus").hasClass("hidden")){
+        $(".linked_menus").removeClass("hidden");
+      }else{
+        $(".linked_menus").addClass("hidden");
+      }
+    });
+
   });
 </script>
 {% endblock %}

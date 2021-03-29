@@ -1,0 +1,13 @@
+{% load mtags %}
+{% if product.costs %}
+  <div class="preorder_price hidden">
+    <p class="price_desc">{{ product.costs.0.cost_type.name }}</p>
+    <p class="price mb-3">
+      {% for cost in product.costs %}
+        {% if forloop.first %}
+          <span class="sale text-color-dark">{{ cost.cost|money_format }} ₽</span>
+        {% endif %}
+      {% endfor %}
+    </p>
+  </div>
+{% endif %}

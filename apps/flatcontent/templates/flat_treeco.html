@@ -306,7 +306,7 @@ $(document).ready(function(){
         var flink = "/flatcontent/admin/flatpages/";
         var tr;
         var menus_tbody = $(".linked_menus table tbody");
-        $("#linkcontainer_select2").empty().trigger('changed');
+        $("#linkcontainer_select2").empty().trigger('change');
         menus_tbody.html("");
         if(row['linkcontainer'] !== undefined){
           for(var i=0; i<row['linkcontainer'].length; i++){
@@ -329,7 +329,7 @@ $(document).ready(function(){
             menus_tbody.append($(tr));
           }
         }
-        $("#linkcontainer_select2").trigger('changed');
+        $("#linkcontainer_select2").trigger('change');
       }
 
       {% if is_products %}
@@ -339,7 +339,7 @@ $(document).ready(function(){
           window.tabulatorAjaxURL = "{% url 'products:show_cats_products' %}";
           window.tabulatorAjaxParams = {'cat_id': node_id};
           {% include "products_cats/products_tabulator_params.html" %}
-          $("#products_select2").empty().trigger('changed');
+          $("#products_select2").empty().trigger('change');
           $("#products_select2").parent().parent().find("label").html("Привязанные товары: " + row['products_count']);
         }
       {% endif %}

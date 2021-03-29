@@ -2,6 +2,7 @@
 {% load flatcontent_tags mtags %}
 
 {% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
 <style type="text/css">
   .fr-pop-tabs {
     height: auto;
@@ -31,6 +32,55 @@
   #confirm_phone_button {
     margin: 0;
   }
+
+  table {
+    width: 100%;
+  }
+
+  @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px)  {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+
+    tr {
+      margin: 0 0 1rem 0;
+      padding: 10px;
+    }
+
+    tr:nth-child(odd) {
+      background: #f0f0f0;
+    }
+
+    td {
+      border: none;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      padding-left: 50%;
+    }
+
+    td:before {
+      position: absolute;
+      top: 0;
+      left: 6px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+    td:nth-of-type(1):before { content: "Время"; }
+    td:nth-of-type(2):before { content: "Номер"; }
+    td:nth-of-type(3):before {
+      content: "Запись";
+      width: auto;
+    }
+    td:nth-of-type(3) {
+      padding-left: 0;
+    }
+  }
 </style>
 {% endblock %}
 
@@ -52,7 +102,7 @@
                     </h5>
                   </div>
                 </a>
-                <div id="collapse_profile" class="panel-collapse collapse in">
+                <div id="collapse_profile" class="panel-collapse collapse{% if not tab or tab == 'profile' %} in{% endif %}">
                   <div class="panel-body">
                     {% include "web/login/profile_form.html" %}
                   </div>
@@ -68,9 +118,30 @@
                     </h5>
                   </div>
                 </a>
-                <div id="collapse_call_history" class="panel-collapse collapse">
+                <div id="collapse_call_history" class="panel-collapse collapse{% if tab == 'calls_history' %} in{% endif %}">
                   <div class="panel-body">
-                    ---
+
+                    <div class="col-md-6">
+                      <div class="leave-comment">
+                        <div class="row">
+                          <div class="col-sm-12 mb-20 text-center">
+                            <label>Выберите дату</label>
+                            <input placeholder="Выберите дату" type="text" value="{{ today }}" id="user_datepicker">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-12">
+                      <div class="leave-comment">
+                        <div class="row">
+                          <div class="col-sm-12 mb-20 calls_history_container">
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -84,7 +155,7 @@
                     </h5>
                   </div>
                 </a>
-                <div id="collapse_confirm_phone" class="panel-collapse collapse">
+                <div id="collapse_confirm_phone" class="panel-collapse collapse{% if tab == 'confirm_phone' %} in{% endif %}">
                   <div class="panel-body">
                     <h3>Ваш телефон: {{ shopper.phone }}</h3>
                     {% if shopper.phone_confirmed %}
@@ -136,6 +207,8 @@
 {% block subscribe %}{% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+
 <script src="/static/js/jquery.form.min.js"></script>
 <script src="/static/js/jquery.validate.min.js"></script>
 <script src="/static/js/jquery.maskedinput.min.js"></script>
@@ -198,6 +271,61 @@
       });
     });
 
+    function get_calls_history(){
+      jQuery.ajax({
+        async : true,
+        type: "GET",
+        url: "/calls_history/",
+        data : "page=0&date=" + $("#user_datepicker").val(),
+        success: function (r){
+          if(!r['data']){
+            $(".calls_history_container").html("Ничего не найдено");
+          }
+          var html = '<table>';
+          html += '<thead>';
+          html += '<tr>';
+          html += '<th>Время</th>';
+          html += '<th>Номер</th>';
+          html += '<th>Запись</th>';
+          html += '</tr>';
+          html += '</thead>';
+          html += '<tbody>';
+          for(var i=0; i<r['data']['length']; i++){
+            var row = r['data'][i];
+            html += '<tr>';
+            html += '<td>' + row['created'] + '</td>';
+            html += '<td>' + row['dest'] + '</td>';
+            html += '<td>';
+            html += '<audio controls>';
+            html += '<source src="{{ fs_server }}' + row['folder'] + '" type="audio/wav">Нет поддержки аудио';
+            html += '</audio>';
+            html += '</td>';
+            html += '</tr>';
+          }
+          html += '</tbody>';
+          html += '</table>';
+          $(".calls_history_container").html(html);
+        }
+      });
+    }
+
+    $("#user_datepicker").datepicker({
+      onSelect: function (fd, d, calendar) {
+        if(d.length > 1){
+          calendar.hide();
+        }
+        get_calls_history();
+        calendar.hide();
+        //console.log(fd, d, calendar);
+      },
+      //position: "left top",
+      todayButton: new Date(),
+      //timepicker: true,
+      range: false,
+      multipleDatesSeparator: ' - ',
+    });
+
+    get_calls_history();
   });
 </script>
 {% endblock %}

@@ -1674,7 +1674,7 @@ input[type=text], input[type=password], input[type=email] {
         .navbar-top .nav-item a,
         .navbar-top .nav-menu li a {
           position: relative;
-          padding: 0 32px; }
+          padding: 0 20px; }
  }
 
       .navbar-top .nav-item a:before,

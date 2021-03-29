@@ -1,5 +1,13 @@
-<div id="not_registered_error" class="hidden" style="color:brown; font-weight: bold;">Вы должны <a href="/login/" target="_blank" class="action">зарегистрироваться на сайте или войти, если уже зарегистрированы</a>, чтобы делать бесплатные звонки</div>
-<div id="not_confirmed_phone_error" class="hidden" style="color:brown; font-weight: bold;">Вы должны <a href="/profile/" target="_blank" class="action">подтвердить ваш телефон</a>, чтобы делать бесплатные звонки</div>
+{% load tags %}
+{% with request|check_user_can_call as user_can_call %}
+  {% if user_can_call.not_registered %}
+    <div id="not_registered_error" class="hidden" style="color:brown; font-weight: bold;">Вы должны <a href="/registration/">зарегистрироваться</a> или <a href="/login/" class="action">войти</a>, чтобы делать бесплатные звонки</div>
+  {% endif %}
+  {% if user_can_call.not_confirmed %}
+    <div id="not_confirmed_phone_error" class="hidden" style="color:brown; font-weight: bold;">Вы должны <a href="/profile/?tab=confirm_phone">подтвердить ваш телефон</a>, чтобы делать бесплатные звонки</div>
+  {% endif %}
+{% endwith %}
+
 <div class="call_buttons">
   <button class="action primary btn make_call">
     <i class="fa fa-phone"></i> Позвонить

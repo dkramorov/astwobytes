@@ -4,9 +4,6 @@
 {% block extrahead %}
 <link rel="stylesheet" href="/media/css/owl.carousel.min.css">
 <link rel="stylesheet" href="/media/css/owl.theme.default.min.css">
-
-<link rel="stylesheet" href="/static/fancybox/jquery.fancybox.min.css">
-
 <link rel="stylesheet" href="/media/css/white_page.css">
 
 <style type="text/css">
@@ -56,6 +53,9 @@ p.price_desc {
 .product_color_8 {
   background-color: #a1a09b !important;
 }
+.hidden {
+  display: none;
+}
 </style>
 {% endblock %}
 
@@ -81,22 +81,24 @@ p.price_desc {
           </div>
 -->{% endcomment %}
           <div class="divider divider-small"><hr class="bg-color-grey-scale-4"></div>
-          <p class="price_desc">Минимальная розничная цена</p>
-          <p class="price mb-3">
-            <span class="sale text-color-dark">{{ product.price|money_format }} ₽</span>
-            {% if product.old_price %}
-              <span class="amount">{{ product.old_price|money_format }} ₽</span>
-            {% endif %}
-          </p>
+          <div class="order_price">
+            <p class="price_desc">Минимальная розничная цена</p>
+            <p class="price mb-3">
+              <span class="sale text-color-dark">{{ product.price|money_format }} ₽</span>
+              {% if product.old_price %}
+                <span class="amount">{{ product.old_price|money_format }} ₽</span>
+              {% endif %}
+            </p>
+          </div>
+          {% include "web/cat/costs_types.html" %}
           <ul class="list list-unstyled text-2">
-            <li class="mb-0">Доступность: <strong class="text-color-dark">на складе</strong></li>
+            <li class="mb-0">Доступность: <strong class="text-color-dark">{% if product.price and product.count %}на складе{% else %}под заказ{% endif %}</strong></li>
           </ul>
           {% if photo_sections|length > 0 %}
             <div{% if photo_main_section_id == "0" %} style="display:none;"{% endif %}>
               Цвет - <span class="current_color"></span>
               <div class="btn-group-toggle" data-toggle="buttons">
                 {% for section in photo_sections %}
-                  {% if section.section_id != "3" %}
                     <label class="btn btn-outline btn-primary{% comment %} active{% endcomment %} mb-2 product_color_{{ section.section_id }}">
                       <input type="radio" name="color" id="product_color_{{ section.section_id }}" autocomplete="off"{% comment %} checked{% endcomment %} class="product_color" data-section_id="{{ section.section_id }}">&nbsp;
                       <div class="color_name">
@@ -109,18 +111,31 @@ p.price_desc {
                         {% if section.section_id == "8" %}Серебристый{% endif %}
                       </div>
                     </label>
-                  {% endif %}
                 {% endfor %}
               </div>
             </div>
           {% endif %}
-          <div class="pt-5 pb-5">
-            <button class="add_to_cart_btn btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}">Добавить в корзину</button>
+
+          <div class="pt-4 pb-5">
+            {% if product.costs %}
+              <div class="custom_select mb-4">
+                <select id="product_order_type">
+                  <option disabled>Выберите вариант покупки</option>
+                  {% if product.price and product.count %}<option value="1">В наличии</option>{% endif %}
+                  <option value="2">Под заказ</option>
+                </select>
+              </div>
+            {% endif %}
+
+            {% if product.price and product.count %}
+              <button class="add_to_cart_btn btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}">Добавить в корзину</button>
+            {% endif %}
+
+            <a class="hidden fancybox_form order_product btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}" href="#product_order_form">Заказать</a>
           </div>
         </div>
       </div>
       {% for section in photo_sections %}
-        {% if not section.section_id == "3" %}
           <div class="col-md-6 mb-5 mb-md-0 photo_slider" id="photo_slider_{{ section.section_id }}">
             <div class="thumb-gallery-wrapper">
               <div class="thumb-gallery-detail owl-carousel owl-theme manual nav-inside nav-style-1 nav-dark mb-3">
@@ -153,8 +168,8 @@ p.price_desc {
               </div>
             </div>
           </div>
-        {% endif %}
       {% endfor %}
+
       {% if not photo_sections %}
         <div class="col-md-6 mb-5 mb-md-0">
           <div class="thumb-gallery-wrapper">
@@ -181,10 +196,56 @@ p.price_desc {
   {% include "web/cat/product_tabs.html" %}
   {% include "web/components/footer.html" %}
 </div>
+<div class="hidden">
+  <div id="product_order_form">
+    <form action="/feedback/" method="POST" id="confirm_order" class="checkout-form">
+      <input type="hidden" name="product_id" value="{{ product.id }}" />
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <img src="{{ product.thumb }}" />
+        </div>
+        <div class="form-group colo-md-6">
+          {% include "web/cat/costs_types.html" %}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label class="mb-1 text-2">Ваше имя</label>
+          <input type="text" value="" class="form-control text-3 h-auto py-2 required" name="name" data-msg="Ваше имя">
+        </div>
+        <div class="form-group col-md-6">
+          <label class="mb-1 text-2">Телефон</label>
+          <input type="text" value="" class="form-control text-3 h-auto py-2 required" name="phone" data-msg="Ваш телефон">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12 mb-4">
+          <label class="mb-1 text-2">Сообщение</label>
+          <textarea rows="6" class="form-control text-3 h-auto py-2" name="msg">Хочу заказать "{{ product.name }}"</textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <hr>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12 feedback_alerts">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12 mb-5">
+          <input type="submit" id="contactFormSubmit" value="Заказать" class="btn btn-primary btn-modern pull-right">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
 
 {% block extrascripts %}
-<script type="text/javascript" src="/static/fancybox/jquery.fancybox.min.js"></script>
 <script type="text/javascript" src="/media/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/media/js/owl.carousel.min.js"></script>
 
@@ -196,10 +257,25 @@ p.price_desc {
     $("#photo_slider_" + section_id).show();
   }
   $(document).ready(function(){
+
+    var order_product = new FeedBack("confirm_order", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Спасибо, сообщение отправлено",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": "",
+      "callback_error": "",
+      "dont_reset_on_submit": 0, // or 1
+      //"errorClass": "invalid",
+    });
+
     var $thumbGalleryDetail=$(this).find('.thumb-gallery-detail'),
         $thumbGalleryThumbs=$(this).find('.thumb-gallery-thumbs'),
         flag=false,
         duration=300;
+
     $thumbGalleryDetail.owlCarousel({
       items:1,
       margin:10,
@@ -258,7 +334,6 @@ if($('a[data-toggle="tab"]').length){
   });
 }
 
-    $(".fancybox").fancybox();
     var cur_color = null;
     if($(".product_color").length == 0){
     }
@@ -276,7 +351,35 @@ if($('a[data-toggle="tab"]').length){
         cur_color = $(this).attr("data-section_id");
         pick_color(cur_color);
       });
-    })
+    });
+
+    function check_order_type(){
+      var preorder_price = "";
+      var order_price = "";
+      var value = $("#product_order_type").val();
+      if(value == "1"){
+        $(".order_product").addClass("hidden");
+        $(".add_to_cart_btn").removeClass("hidden");
+        $(".order_price").removeClass("hidden");
+        $(".preorder_price").addClass("hidden");
+      }else{
+        $(".order_product").removeClass("hidden");
+        $(".add_to_cart_btn").addClass("hidden");
+        $(".order_price").addClass("hidden");
+        $(".preorder_price").removeClass("hidden");
+      }
+
+      {% if product.price and product.count %}
+      {% else %}
+        $("#product_order_type").parent().addClass("hidden");
+      {% endif %}
+    }
+    $("#product_order_type").change(function(){
+      check_order_type();
+    });
+    {% if product.costs %}
+      check_order_type();
+    {% endif %}
   });
 </script>
 {% endblock %}

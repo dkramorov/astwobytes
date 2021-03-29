@@ -21,6 +21,8 @@
 [Featurespages]
 [ContactsPages]
 [Map]
+[Select]
+[CallToActions]
 */
 /* 1 Typography */
 @font-face {
@@ -632,7 +634,7 @@ section.dealers-end {
   height: auto !important;
 
 }
-.dealers .city_row {
+.dealers .country_row {
   color: #8d784e;
   padding: 10px 0;
   border-top: 2px solid #8d784e;
@@ -640,6 +642,14 @@ section.dealers-end {
 }
 .dealers .dealer_row {
   border-bottom: 1px solid #2b2d31;
+}
+.dealers .dealer_row.yellow {
+  border: 1px solid #fff;
+  background-color: #f5dc5a !important;
+  background-image: url('/media/img/sicon.png');
+  background-position: right bottom;
+  background-repeat: no-repeat;
+  color: #000;
 }
 .dealers .dealer_row.even {
   background-color: #2b2d31;
@@ -651,4 +661,81 @@ section.dealers-end {
 #mapContainer {
   height: 600px;
   width: 100%;
+}
+/* Select */
+/* Reset Select */
+.custom_select select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  outline: 0;
+  box-shadow: none;
+  border: 0 !important;
+  background: #2c3e50;
+  background-image: none;
+}
+/* Remove IE arrow */
+.custom_select select::-ms-expand {
+  display: none;
+}
+/* Custom Select */
+.custom_select {
+  position: relative;
+  display: flex;
+  width: 20em;
+  height: 3em;
+  line-height: 3;
+  background: #343a40;
+  overflow: hidden;
+  border-radius: .25em;
+}
+.custom_select select {
+  flex: 1;
+  padding: 0 .5em;
+  color: #fff;
+  cursor: pointer;
+}
+.custom_select option {
+  padding: 5px;
+}
+/* Arrow */
+.custom_select::after {
+  content: '\25BC';
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  background: #343a40;
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: .25s all ease;
+  -o-transition: .25s all ease;
+  transition: .25s all ease;
+  color: #fade31;
+}
+/* Transition */
+.custom_select:hover::after {
+  color: #f39c12;
+}
+/* CallToActions */
+.call_to_action2 {
+  justify-content: unset;
+  height: auto !important;
+}
+.call_to_action2 .content-text img {
+  max-width: 300px;
+}
+.call_to_action2 .hidden {
+  display: none;
+}
+.fancybox-inner label,
+.fancybox-button svg {
+  color: #000;
+}
+.fancybox-inner input[type="text"],
+.fancybox-inner input[type="password"],
+.fancybox-inner input[type="email"] {
+  color: #000;
+  border: 1px solid #ccc;
 }
