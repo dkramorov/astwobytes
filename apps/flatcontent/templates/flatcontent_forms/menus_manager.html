@@ -1,0 +1,42 @@
+<!-- Привязанные странички -->
+<div class="form-group">
+  <label class="col-lg-2 control-label">
+    Наполнение, привязанные странички
+    <a title="Ссылки на пункты меню" href="javascript:void(0);" class="menus_toggle"><i class="fa fa-link"></i></a>
+  </label>
+  <div class="col-lg-10">
+    <select id="linkcontainer_select2" name="linkcontainer" autocomplete="off" multiple>
+      {% for item in containers %}
+        <option value="{{ item.container.id }}" selected>{{ item.container.name }} #{{ item.container.id }} ({{ item.container.tag }})</option>
+      {% endfor %}
+    </select>
+    <div class="linked_menus hidden">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Ид</th>
+            <th>Тег</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in containers %}
+            <tr>
+              <td>
+                <a href="{% url 'flatcontent:show_blocks' 'flatpages' item.container.id %}" target="_blank">{{ item.container.name }}</a>
+              </td>
+              <td>{{ item.container.id }}</td>
+              <td>{{ item.container.tag }}</td>
+              <td>
+                <a target="_blank" class="btn-xs btn btn-primary pull-left" href="{% url 'flatcontent:edit_container' 'flatpages' 'edit' item.container.id %}"><i class="fa fa-edit"></i></a>
+                <a target="_blank" class="btn-xs btn btn-info pull-left ml" target="_blank" href="{% url 'flatcontent:edit_container' 'flatpages' 'show' item.container.id %}"><i class="fa fa-eye"></i></a>
+                <a target="_blank" class="btn-xs btn btn-info pull-left ml" href="{% url 'flatcontent:edit_container' 'flatpages' 'tree' item.container.id %}"><i class="fa fa-sitemap"></i></a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-{% ifequal ftype "flatmenu" %}
+{% if ftype == "flatmenu" or ftype == "flatcat" %}
 <script type="text/javascript">
 $(document).ready(function(){
   $(".menus_toggle").click(function(){
@@ -10,4 +10,4 @@ $(document).ready(function(){
   });
 });
 </script>
-{% endifequal %}
+{% endif %}

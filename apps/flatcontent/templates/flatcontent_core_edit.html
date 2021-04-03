@@ -186,7 +186,7 @@
     $('#linkcontainer_select2').select2({
       placeholder: 'Какие странички привязать',
       width: '100%',
-      tags: true,
+      tags: false,
       ajax: {
         url: "{% url 'flatcontent:search_containers' %}",
         data: function (params) {

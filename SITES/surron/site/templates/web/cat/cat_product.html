@@ -32,6 +32,9 @@ p.price_desc {
 .photo_slider {
   display: none;
 }
+.noborder {
+  border-color: transparent !important;
+}
 .product_color_1 {
   background-color: #f00 !important;
 }
@@ -42,16 +45,16 @@ p.price_desc {
   background: #fff233 !important;
 }
 .product_color_5 {
-  background-color: #5270c5 !important;
+  background-color: #0000FF !important;
 }
 .product_color_6 {
-  background-color: #577d4d !important;
+  background-color: #7CFC00 !important;
 }
 .product_color_7 {
   background-color: #555a5d !important;
 }
 .product_color_8 {
-  background-color: #a1a09b !important;
+  background-color: #DCDCDC !important;
 }
 .hidden {
   display: none;
@@ -99,7 +102,7 @@ p.price_desc {
               Цвет - <span class="current_color"></span>
               <div class="btn-group-toggle" data-toggle="buttons">
                 {% for section in photo_sections %}
-                    <label class="btn btn-outline btn-primary{% comment %} active{% endcomment %} mb-2 product_color_{{ section.section_id }}">
+                    <label class="btn btn-outline btn-primary{% comment %} active{% endcomment %} mb-2 product_color_{{ section.section_id }} noborder">
                       <input type="radio" name="color" id="product_color_{{ section.section_id }}" autocomplete="off"{% comment %} checked{% endcomment %} class="product_color" data-section_id="{{ section.section_id }}">&nbsp;
                       <div class="color_name">
                         {% if section.section_id == "1" %}Красный{% endif %}

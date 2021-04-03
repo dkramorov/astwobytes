@@ -422,3 +422,19 @@ input[type=email] {
     display: block !important;
   }
 }
+.btn-order {
+  color: #000;
+}
+.btn-order:hover {
+  color: #fff;
+  background-color: #343a40;
+  border: 3px solid #343a40;
+}
+.pagination {
+  float: left;
+}
+.paginator_count {
+  display: inline-block;
+  height: 40px;
+  line-height: 40px;
+}

@@ -22,7 +22,9 @@
                   <div class="item-img mt-4 rounded-border">
                     <img class="img" src="{% imagine block.img '800x600' block.get_folder True %}" alt="{{ block.name|textize }}">
                     <div class="img-footer mask-gradient-black text-left">
-                      <h3 class="title">{{ block.name }}</h3>
+                      <h3 class="title">
+                        {% if block.link %}<a href="{{ block.link }}">{{ block.name }}</a>{% else %}{{ block.name }}{% endif %}
+                      </h3>
                       {% if block.html %}
                         <div class="i-text">
                           {{ block.html|safe }}

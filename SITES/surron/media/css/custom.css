@@ -555,30 +555,35 @@
   font-size: 2rem;
   padding-bottom: 1rem;
 }
-.article6 {
+.article6,
+.textpage {
   justify-content: unset;
   height: auto !important;
 }
-.article6 h2.h-title {
+.article6 h2.h-title,
+.textpage h2.h-title {
   color: #8d784e;
   padding: 20px 0;
   border-top: 2px solid #8d784e;
   border-bottom: 2px solid #8d784e;
 }
-.article6 .title {
+.article6 .title,
+.textpage .title {
   position: relative;
   padding-right: 140px;
   color: #b2b2b2;
   border-bottom: 2px solid #8d784e;
 }
-.article6 .counter {
+.article6 .counter,
+.textpage .counter {
   position: absolute;
   right: 0;
   bottom: 0;
   color: #8d784e;
   font-size: 6rem;
 }
-.article6 .content-text {
+.article6 .content-text,
+.textpage .content-text {
   color: #b2b2b2;
   -webkit-text-stroke-width: 0.2px;
   -moz-osx-font-smoothing: grayscale;
@@ -591,6 +596,13 @@
   }
 }
 /* Featurespages */
+.featurespage2 {
+  justify-content: unset;
+  height: auto !important;
+}
+.featurespage2 .section-margin {
+  padding-bottom: 20px !important;
+}
 .featurespage .c-wrapper img,
 .featurespage2 .c-wrapper img {
   display: block;
@@ -738,4 +750,7 @@ section.dealers-end {
 .fancybox-inner input[type="email"] {
   color: #000;
   border: 1px solid #ccc;
+}
+.call_to_action2 .h-title {
+  display: block;
 }

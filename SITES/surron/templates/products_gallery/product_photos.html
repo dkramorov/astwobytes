@@ -122,6 +122,7 @@
     });
   }
   $(document).ready(function(){
+    var color_loaded = false;
     // Выполнится нормально, потому что (document).ready
     // хотя select2 загружается поздже
     $('.photo_name_select').select2({
@@ -137,6 +138,9 @@
       //tags: true,
     });
     $('#color_select2').change(function(){
+      if(!color_loaded){
+        return;
+      }
       var color = $("#color_select2").val();
       $.ajax({
         type: "GET",
@@ -167,7 +171,6 @@
       });
     });
 
-
     $.ajax({
       type: "GET",
       url: "{% url 'product_colors:get_color' %}",
@@ -177,6 +180,7 @@
     }).done(function(r) {
       $("#color_select2").val('' + r['color']);
       $("#color_select2").trigger('change');
+      color_loaded = true;
     });
 
   });

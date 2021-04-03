@@ -289,7 +289,7 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
             'name': link.block.name,
             'tag': link.block.tag,
             'link': link.block.link,
-            'container': link.block.container,
+            'container': object_fields(link.block.container),
             'blocks': reverse('%s:%s' % (CUR_APP, blocks_vars['show_urla']),
                               kwargs={'ftype': fmenu, 'container_id': link.block.container_id}),
             'edit': reverse_edit(mh_vars, fmenu, 'edit', link.block.container_id),
@@ -660,12 +660,12 @@ def json_children(rows: list, result: list):
         result.append(obj)
 
 def update_linkcontainer(request, container, row):
-    """Записываем линковки к пункту меню
+    """Записываем линковки к пункту меню / каталогу
        :param request: HttpRequest
        :param container: контейнер блока меню
        :param row: блок меню к которому линкуем контейнеры
     """
-    if not container.state == 1:
+    if not container.state in (1, 7):
         return
     LinkContainer.objects.filter(block=row).delete()
     linkcontainer = [int(pk) for pk in request.POST.getlist('linkcontainer') if pk.isdigit()]
@@ -988,8 +988,8 @@ def tree_co(request):
                             'action': 'img',
                             'container_id': container.id,
                             'row_id': node.id})
-                # Линковки для пункта меню
-                if container.state == 1 and node.state == 4:
+                # Линковки для пункта меню / каталога
+                if container.state in (1, 7) and node.state == 4:
                     result['linkcontainer'] = []
                     linkcontainer = LinkContainer.objects.select_related('container').filter(block=node).order_by('position')
                     for item in linkcontainer:
@@ -1003,7 +1003,7 @@ def tree_co(request):
                 # лучше tabulator таблицей пользоваться,
                 # а через select2 добавлять, т/к слишком много
                 # товаров может быть привязано - медленно
-                elif is_products:
+                if is_products:
                     result['products_count'] = ProductsCats.objects.filter(cat=node).aggregate(Count('product'))['product__count']
                 #    result['products'] = [
                 #        {

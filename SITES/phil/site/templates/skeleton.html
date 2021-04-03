@@ -39,6 +39,10 @@
 
 <link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css">
 
+{% if containers.main.tags.webmaster.description %}
+  {{ containers.main.tags.webmaster.description|safe }}
+{% endif %}
+
 {% block extrahead %}{% endblock %}
 </head>
 <body>
