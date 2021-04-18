@@ -124,8 +124,8 @@ p.price_desc {
               <div class="custom_select mb-4">
                 <select id="product_order_type">
                   <option disabled>Выберите вариант покупки</option>
-                  {% if product.price and product.count %}<option value="1">В наличии</option>{% endif %}
-                  <option value="2">Под заказ</option>
+                  {% if product.price and product.count %}<option value="1">В НАЛИЧИИ</option>{% endif %}
+                  <option value="2">ПОД ЗАКАЗ</option>
                 </select>
               </div>
             {% endif %}
@@ -134,7 +134,7 @@ p.price_desc {
               <button class="add_to_cart_btn btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}">Добавить в корзину</button>
             {% endif %}
 
-            <a class="hidden fancybox_form order_product btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}" href="#product_order_form">Заказать</a>
+            <a class="hidden fancybox order_product btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary" data-product_id="{{ product.id }}" href="#product_order_form">Заказать</a>
           </div>
         </div>
       </div>

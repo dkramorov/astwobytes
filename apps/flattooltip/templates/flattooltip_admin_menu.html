@@ -1,5 +1,5 @@
 {% if perms.flattooltip.view_flattooltip %}
-<li{% ifequal menu 'flattooltip' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'flattooltip' %} class="active"{% endifequal %} id="left_menu_flattooltip_app">
   <a href="{% url 'flattooltip:show_flattooltip' %}">
     <em class="fa fa-info-circle"></em>
     <span class="item-text">Подсказки</span>

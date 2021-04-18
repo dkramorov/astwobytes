@@ -35,8 +35,8 @@
     {% endfor %}
   </ul>
 </nav>
-
 {% endifequal %}
+
 {% ifequal tag "bottommenu" %}
 <div class="container f-menu-list">
   <div class="row">
@@ -61,6 +61,7 @@
   </div>
 </div>
 {% endifequal %}
+
 {% ifequal tag "portfolio" %}
 <div class="w-post-category col-lg-12 col-md-12 col-sm-12 col-xs-12 vertical-menu">
   <div class="prev"><i class="fa fa-angle-up"></i></div>
@@ -98,4 +99,14 @@
     </tr>
   </table>
 </div>
+<script type="text/javascript">
+  var portfolio_mini_menu = [
+    {% for item in menus %}
+      {
+        'name': '{{ item.name }}',
+        'link': '{% if item.sub %}{{ item.sub.0.link }}{% else %}{{ item.link|textize }}{% endif %}',
+      }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+</script>
 {% endifequal %}

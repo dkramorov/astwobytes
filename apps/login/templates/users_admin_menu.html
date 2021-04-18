@@ -1,22 +1,22 @@
 {% if perms.auth.view_user %}
-<li{% ifequal menu 'users' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'users' %} class="active"{% endifequal %} id="left_menu_users_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-user"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Пользователи</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'users' %} in{% endifequal %}">
-    <li{% ifequal submenu 'users' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'users' %} class="active"{% endifequal %} id="left_menu_users_app_users">
       <a class="no-submenu" data-toggle="" href="{% url 'login:show_users' %}">
         <span class="item-text">Пользователи</span>
       </a>
     </li>
-    <li{% ifequal submenu 'groups' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'groups' %} class="active"{% endifequal %} id="left_menu_users_app_groups">
       <a class="no-submenu" data-toggle="" href="{% url 'login:show_groups' %}">
         <span class="item-text">Группы</span>
       </a>
     </li>
-    <li{% ifequal submenu 'extra_fields' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'extra_fields' %} class="active"{% endifequal %} id="left_menu_users_app_extra_fields">
       <a class="no-submenu" data-toggle="" href="{% url 'login:show_extra_fields' %}">
         <span class="item-text">Доп. поля пользователей</span>
       </a>

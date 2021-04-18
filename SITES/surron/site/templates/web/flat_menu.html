@@ -50,7 +50,7 @@
     {% for cont in menus|divide:2 %}
       <div class="col-6">
         {% for menu in cont %}
-          <p class="mb-1"><a href="{{ menu.link }}" class=" text-white-9">{{ menu.name }}</a></p>
+          <p class="mb-1"><a href="{{ menu.link }}" class=" text-white-9{% if menu.class_name %} {{ menu.class_name }}{% endif %}">{{ menu.name }}</a></p>
         {% endfor %}
       </div>
     {% endfor %}

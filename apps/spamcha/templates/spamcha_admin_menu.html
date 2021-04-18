@@ -1,42 +1,42 @@
 {% if perms.spamcha.view_spamtable %}
-<li{% ifequal menu 'spamcha' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'spamcha' %} class="active"{% endifequal %} id="left_menu_spamcha_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-envelope"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Спамчик</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'spamcha' %} in{% endifequal %}">
-    <li{% ifequal submenu 'mailbox' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'mailbox' %} class="active"{% endifequal %} id="left_menu_spamcha_app_mailbox">
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_mailbox' %}">
         <span class="item-text">Почтовый ящик</span>
       </a>
     </li>
-    <li{% ifequal submenu 'spam_tables' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'spam_tables' %} class="active"{% endifequal %} id="left_menu_spamcha_app_spam_tables">
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_spam_tables' %}">
         <span class="item-text">Рассылки</span>
       </a>
     </li>
-    <li{% ifequal submenu 'email_accounts' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'email_accounts' %} class="active"{% endifequal %} id="left_menu_spamcha_app_email_accounts">
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_email_accounts' %}">
         <span class="item-text">Email-аккаунты</span>
       </a>
     </li>
-    <li{% ifequal submenu 'black_list' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'black_list' %} class="active"{% endifequal %} id="left_menu_spamcha_app_black_list">
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_black_list' %}">
         <span class="item-text">Черный список</span>
       </a>
     </li>
-    <li{% ifequal submenu 'sms_phones' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'sms_phones' %} class="active"{% endifequal %} id="left_menu_spamcha_app_sms_phones">
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_sms_phones' %}">
         <span class="item-text">Телефоны для смс</span>
       </a>
     </li>
-    <li{% ifequal submenu 'redirects' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'redirects' %} class="active"{% endifequal %} id="left_menu_spamcha_app_redirects">
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_redirects' %}">
         <span class="item-text">Переадресации рассылки</span>
       </a>
     </li>
-    <li{% ifequal submenu 'redirects_stata' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'redirects_stata' %} class="active"{% endifequal %} id="left_menu_spamcha_app_redirects_stata">
       <a class="no-submenu" data-toggle="" href="{% url 'spamcha:show_redirects_stata' %}">
         <span class="item-text">Статистика переадресций</span>
       </a>

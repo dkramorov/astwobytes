@@ -125,6 +125,7 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_TIMEOUT = 360
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -344,6 +345,7 @@ SMS_HUB_TOKEN = env('SMS_HUB_TOKEN', default='')
 # FREESWITCH
 # ----------
 FS_TOKEN = env('FS_TOKEN', default='')
+FS_USER = env('FS_USER', default='user8800')
 
 # -------------------
 # Freeswitch settings

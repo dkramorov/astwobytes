@@ -1,5 +1,5 @@
 {% if perms.personal.view_personal %}
-<li{% ifequal menu 'personal' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'personal' %} class="active"{% endifequal %} id="left_menu_personal_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-users"></em>
     <div class="label label-primary pull-right">
@@ -8,12 +8,12 @@
     <span class="item-text">Посетители</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'personal' %} in{% endifequal %}">
-    <li{% ifequal submenu 'shoppers' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'shoppers' %} class="active"{% endifequal %} id="left_menu_personal_app_shoppers">
       <a class="no-submenu" data-toggle="" href="{% url 'personal:show_shoppers' %}">
         <span class="item-text">Посетители</span>
       </a>
     </li>
-    <li{% ifequal submenu 'oauth' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'oauth' %} class="active"{% endifequal %} id="left_menu_personal_app_oauth">
       <a class="no-submenu" data-toggle="" href="{% url 'personal:oauth_test' %}">
         <span class="item-text">Проверка OAuth</span>
       </a>

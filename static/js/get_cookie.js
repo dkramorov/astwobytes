@@ -11,3 +11,5 @@ function getCookie(c_name) {
   }
   return "";
 }
+// задать куку
+// document.cookie = "user=John; path=/; max-age=3600"

@@ -23,12 +23,6 @@
     <div class="clearfix"></div>
 
     <div class="sticky_container">
-      <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-        <aside aria-label="sidebar" class="sidebar sidebar-right">
-          {% flatmenu request "portfolio" %}
-        </aside>
-      </div>
-
       <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 images">
         {% for block in blocks %}
           {% if block.img %}
@@ -37,9 +31,18 @@
             </div>
           {% endif %}
         {% endfor %}
-      </div>
-      <div class="clearfix"></div>
-    </div>
 
+        <div id="portfolio_mini_menu_container"></div>
+      </div>
+
+      <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+        <aside aria-label="sidebar" class="sidebar sidebar-right">
+          {% flatmenu request "portfolio" %}
+        </aside>
+      </div>
+
+      <div class="clearfix"></div>
+
+    </div>
   </div>
 </div>

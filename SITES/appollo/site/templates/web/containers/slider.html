@@ -22,10 +22,10 @@
           <div class="type-js headline">
             {% for block in blocks %}
               {% ifequal block.tag 'animate' %}
-              <h1 class="white">{{ block.name }}</h1>
-              <h3 class="white">
-                <i>{{ block.description }} <span class="txt-rotate" data-period="2000" data-rotate='[ {% for item in block.sub %}"{{ item.name }}"{% if not forloop.last %},{% endif %}{% endfor %} ]'></span></i></h3>
-              <br>
+                <h1 class="white">{{ block.name }}</h1>
+                <h3 class="white">
+                  <i>{{ block.description }} <span class="txt-rotate" data-period="2000" data-rotate='[ {% for item in block.sub %}"{{ item.name }}"{% if not forloop.last %},{% endif %}{% endfor %} ]'></span></i></h3>
+                <br>
               {% endifequal %}
             {% endfor %}
             {% for block in blocks %}

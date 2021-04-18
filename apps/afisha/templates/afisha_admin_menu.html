@@ -1,32 +1,32 @@
 {% if perms.afisha.view_revents %}
-<li{% ifequal menu 'afisha' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'afisha' %} class="active"{% endifequal %} id="left_menu_afisha_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-bullhorn"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Афиша</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'afisha' %} in{% endifequal %}">
-    <li{% ifequal submenu 'rubrics' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'rubrics' %} class="active"{% endifequal %} id="left_menu_afisha_app_rubrics">
       <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_rubrics' %}">
         <span class="item-text">Рубрики мест</span>
       </a>
     </li>
-    <li{% ifequal submenu 'genres' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'genres' %} class="active"{% endifequal %} id="left_menu_afisha_app_genres">
       <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_genres' %}">
         <span class="item-text">Рубрики жанров</span>
       </a>
     </li>
-    <li{% ifequal submenu 'events' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'events' %} class="active"{% endifequal %} id="left_menu_afisha_app_events">
       <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_events' %}">
         <span class="item-text">События Афиши</span>
       </a>
     </li>
-    <li{% ifequal submenu 'places' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'places' %} class="active"{% endifequal %} id="left_menu_afisha_app_places">
       <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_places' %}">
         <span class="item-text">Места Афиши</span>
       </a>
     </li>
-    <li{% ifequal submenu 'seances' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'seances' %} class="active"{% endifequal %} id="left_menu_afisha_app_seances">
       <a class="no-submenu" data-toggle="" href="{% url 'afisha:show_seances' %}">
         <span class="item-text">Сеансы Афиши</span>
       </a>

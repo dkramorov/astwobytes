@@ -1,47 +1,47 @@
 {% if perms.freeswitch.view_redirects %}
-<li{% ifequal menu 'freeswitch' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'freeswitch' %} class="active"{% endifequal %} id="left_menu_freeswitch_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-phone"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Вирт. АТС</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'freeswitch' %} in{% endifequal %}">
-    <li{% ifequal submenu 'monitoring' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'monitoring' %} class="active"{% endifequal %} id="left_menu_freeswitch_app_monitoring">
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:monitoring' %}">
         <span class="item-text">Мониторинг звонков</span>
       </a>
     </li>
-    <li{% ifequal submenu 'fs_users' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'fs_users' %} class="active"{% endifequal %} id="left_menu_freeswitch_app_fs_users">
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:show_users' %}">
         <span class="item-text">Пользователи АТС</span>
       </a>
     </li>
-    <li{% ifequal submenu 'redirects' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'redirects' %} class="active"{% endifequal %} id="left_menu_freeswitch_app_redirects">
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:show_redirects' %}">
         <span class="item-text">Переадресации</span>
       </a>
     </li>
-    <li{% ifequal submenu 'cdrcsv' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'cdrcsv' %} class="active"{% endifequal %} id="left_menu_freeswitch_app_cdrcsv">
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:show_cdrcsv' %}">
         <span class="item-text">Звонки</span>
       </a>
     </li>
-    <li{% ifequal submenu 'call_from_site' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'call_from_site' %} class="active"{% endifequal %} id="left_menu_freeswitch_app_call_from_site>
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:call_from_site' %}">
         <span class="item-text">Звонок с сайта</span>
       </a>
     </li>
-    <li{% ifequal submenu 'callcenter' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'callcenter' %} class="active"{% endifequal %} id="left_menu_freeswitch_app_callcenter">
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:callcenter' %}">
         <span class="item-text">Коллцентр</span>
       </a>
     </li>
-    <li{% ifequal submenu 'phones_white_list' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'phones_white_list' %} class="active"{% endifequal %} id="left_menu_freeswitch_app_phones_white_list">
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:show_phones_white_list' %}">
         <span class="item-text">Телефоны CRM</span>
       </a>
     </li>
-    <li{% ifequal submenu 'personal_users' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'personal_users' %} class="active"{% endifequal %} id="left_menu_freeswitch_app_personal_users">
       <a class="no-submenu" data-toggle="" href="{% url 'freeswitch:show_personal_users' %}">
         <span class="item-text">Пользователи сайта</span>
       </a>

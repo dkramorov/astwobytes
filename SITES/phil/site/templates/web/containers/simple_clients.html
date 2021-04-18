@@ -13,12 +13,14 @@
 
     <div class="clients-item-wrap">
       {% for block in blocks %}
-        <div class="client-item{% if block.class_name %} {{ block.class_name }}{% endif %}">
-          <a {% if block.link %}href="{{ block.link }}" {% endif %}target="_blank" class="client-image">
-            <img loading="lazy" src="{% imagine block.img '300x300' block.get_folder True %}" alt="{{ block.name }}" class="hover{% if block.class_name %} {{ block.class_name }}{% endif %}">
+        <div class="client-item">
+          <a{% if block.link %} href="{{ block.link }}"{% endif %} target="_blank" class="client-image">
+            <img loading="lazy" src="{% imagine block.img '300x300' block.get_folder True %}" alt="{{ block.name }}" class="hover">
           </a>
         </div>
-        {% cycle '' '' '' '' '<div class="lg-clearfix"></div>' '' '' '' '<div class="lg-clearfix"></div>' '' '<div class="lg-clearfix"></div>' %}
+        {% if block.class_name %}
+          <div class="{{ block.class_name }}"></div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>

@@ -1,12 +1,12 @@
 {% if perms.yandex.view_yandex %}
-<li{% ifequal menu 'yandex' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'yandex' %} class="active"{% endifequal %} id="left_menu_yandex_app">
   <a href="{% url 'yandex:metrika' %}">
     <em class="fa fa-renren fa-rotate-180"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Яндекс</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'yandex' %} in{% endifequal %}">
-    <li{% ifequal submenu 'yandex' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'yandex' %} class="active"{% endifequal %} id="left_menu_yandex_app_yandex">
       <a class="no-submenu" data-toggle="" href="{% url 'yandex:metrika' %}">
         <span class="item-text">Метрика</span>
       </a>

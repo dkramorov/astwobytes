@@ -3,6 +3,12 @@
 
 {% block extrahead %}
 <link rel="stylesheet" href="/static/fancybox/jquery.fancybox.min.css">
+<style type="text/css">
+.bigimgtovar img {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+</style>
 {% endblock %}
 
 {% block page_title %}{{ product.name }}{% endblock %}

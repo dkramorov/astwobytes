@@ -21,6 +21,11 @@
     width: 20px;
     line-height: 22px;
   }
+  @media (max-width: 799px) {
+    .portfolio_side_info.special:after {
+      left: -15px;
+    }
+  }
 </style>
 {% endif %}
 <div class="container-fluid" id="dynamic_portfolio_{{ container.id }}">
@@ -71,8 +76,10 @@
                               <tr>
                                 <td class="wborder">&nbsp;</td>
                                 <td class="text">
-                                  <h6>{{ item.custom_block.name }}</h6>
+                                  <a href="{{ item.custom_block.link }}">
+                                    <h6>{{ item.custom_block.name }}</h6>
                                   {% if item.custom_block.html %}{{ item.custom_block.html|safe }}{% endif %}
+                                  </a>
                                 </td>
                                 <td class="wborder">&nbsp;</td>
                               </tr>
@@ -81,6 +88,12 @@
                               </tr>
                             </table>
                             <div class="clearfix"></div>
+                            <div class="mobile">
+                              <a href="{{ item.custom_block.link }}">
+                                <h6>{{ item.custom_block.name }}</h6>
+                                {% if item.custom_block.html %}{{ item.custom_block.html|safe }}{% endif %}
+                              </a>
+                            </div>
                           </div>
                         {% endif %}
                       {% endfor %}

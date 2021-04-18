@@ -1,0 +1,39 @@
+<div class="hidden call_to_action2">
+  <div id="any_order_form">
+    <form action="/feedback/" method="POST" id="confirm_any_order" class="checkout-form">
+      <input type="hidden" name="product_id" value="{{ product.id }}" />
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label class="mb-1 text-2">Ваше имя</label>
+          <input type="text" value="" class="form-control text-3 h-auto py-2 required" name="name" data-msg="Ваше имя">
+        </div>
+        <div class="form-group col-md-6">
+          <label class="mb-1 text-2">Телефон</label>
+          <input type="text" value="" class="form-control text-3 h-auto py-2 required" name="phone" data-msg="Ваш телефон">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12 mb-4">
+          <label class="mb-1 text-2">Напишите, что вы хотите?</label>
+          <textarea rows="6" class="form-control text-3 h-auto py-2" name="msg">Хочу заказать деталь:</textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <hr>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12 feedback_alerts">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12 mb-5">
+          <input type="submit" id="contactFormSubmit" value="Заказать" class="btn btn-primary btn-modern btn-dark pull-right">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

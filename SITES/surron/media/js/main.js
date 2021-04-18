@@ -455,6 +455,16 @@ $(document).ready(function(){
   $(".fancybox").fancybox();
   $(".fancybox_form").fancybox();
 
+  $(".fancybox_form").click(function(){
+    $("#confirm_any_order textarea").val("Напишите подробно ваш вопрос и мы обязательно свяжемся с Вами");
+    $("#contactFormSubmit").val("Отправить");
+  });
+  $(".fancybox").click(function(){
+    $("#confirm_any_order textarea").val("Хочу заказать деталь:");
+    $("#contactFormSubmit").val("Заказать");
+  });
+
+
   if($("#confirm_any_order").length > 0){
     var order_any = new FeedBack("confirm_any_order", {
       "wait": "Ждите...",

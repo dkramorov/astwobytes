@@ -1,111 +1,111 @@
-<li{% ifequal menu 'demo' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'demo' %} class="active"{% endifequal %} id="left_menu_demo_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-archive"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Демо-странички</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'demo' %} in{% endifequal %}">
-    <li{% ifequal submenu "dashboard" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "dashboard" %} class="active"{% endifequal %} id="left_menu_demo_app_dashboard">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='dashboard' %}">
         <span class="item-text">Главная</span>
       </a>
     </li>
-    <li{% ifequal submenu "animations" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "animations" %} class="active"{% endifequal %} id="left_menu_demo_app_animations">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='animations' %}">
         <span class="item-text">Анимация</span>
       </a>
     </li>
-    <li{% ifequal submenu "buttons" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "buttons" %} class="active"{% endifequal %} id="left_menu_demo_app_buttons">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='buttons' %}">
         <span class="item-text">Кнопки</span>
       </a>
     </li>
-    <li{% ifequal submenu "calendar" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "calendar" %} class="active"{% endifequal %} id="left_menu_demo_app_calendar">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='calendar' %}">
         <span class="item-text">Календарь</span>
       </a>
     </li>
-    <li{% ifequal submenu "dropdown_animations" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "dropdown_animations" %} class="active"{% endifequal %} id="left_menu_demo_app_dropdown_animations">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='dropdown_animations' %}">
         <span class="item-text">Выпадающие списки (аним.)</span>
       </a>
     </li>
-    <li{% ifequal submenu "typo" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "typo" %} class="active"{% endifequal %} id="left_menu_demo_app_typo">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='typo' %}">
         <span class="item-text">Типография</span>
       </a>
     </li>
-    <li{% ifequal submenu "tables" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "tables" %} class="active"{% endifequal %} id="left_menu_demo_app_tables">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='tables' %}">
         <span class="item-text">Таблицы</span>
       </a>
     </li>
-    <li{% ifequal submenu "standard_forms" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "standard_forms" %} class="active"{% endifequal %} id="left_menu_demo_app_standard_forms">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='standard_forms' %}">
         <span class="item-text">Формы</span>
       </a>
     </li>
-    <li{% ifequal submenu "extended_forms" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "extended_forms" %} class="active"{% endifequal %} id="left_menu_demo_app_extended_forms">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='extended_forms' %}">
         <span class="item-text">Расширенные формы</span>
       </a>
     </li>
-    <li{% ifequal submenu "form_validation" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "form_validation" %} class="active"{% endifequal %} id="left_menu_demo_app_form_validation">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='form_validation' %}">
         <span class="item-text">Валидация форм</span>
       </a>
     </li>
-    <li{% ifequal submenu "form_wizards" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "form_wizards" %} class="active"{% endifequal %} id="left_menu_demo_app_form_wizards">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='form_wizards' %}">
         <span class="item-text">Помощники для форм</span>
       </a>
     </li>
-    <li{% ifequal submenu "grid" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "grid" %} class="active"{% endifequal %} id="left_menu_demo_app_grid">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='grid' %}">
         <span class="item-text">Разметка</span>
       </a>
     </li>
-    <li{% ifequal submenu "grid_mansory" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "grid_mansory" %} class="active"{% endifequal %} id="left_menu_demo_app_grid_mansory">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='grid_mansory' %}">
         <span class="item-text">Адаптивная разметка</span>
       </a>
     </li>
-    <li{% ifequal submenu "icons" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "icons" %} class="active"{% endifequal %} id="left_menu_demo_app_icons">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='icons' %}">
         <span class="item-text">Иконки</span>
       </a>
     </li>
-    <li{% ifequal submenu "notifications" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "notifications" %} class="active"{% endifequal %} id="left_menu_demo_app_notifications">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='notifications' %}">
         <span class="item-text">Уведомления</span>
       </a>
     </li>
-    <li{% ifequal submenu "panels" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "panels" %} class="active"{% endifequal %} id="left_menu_demo_app_panels">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='panels' %}">
         <span class="item-text">Панели</span>
       </a>
     </li>
-    <li{% ifequal submenu "portlets" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "portlets" %} class="active"{% endifequal %} id="left_menu_demo_app_portlets">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='portlets' %}">
         <span class="item-text">Перемещаемые панели</span>
       </a>
     </li>
-    <li{% ifequal submenu "widgets" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "widgets" %} class="active"{% endifequal %} id="left_menu_demo_app_widgets">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='widgets' %}">
         <span class="item-text">Виджеты</span>
       </a>
     </li>
-    <li{% ifequal submenu "spinners" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "spinners" %} class="active"{% endifequal %} id="left_menu_demo_app_spinners">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='spinners' %}">
         <span class="item-text">Спинеры</span>
       </a>
     </li>
-    <li{% ifequal submenu "chat" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "chat" %} class="active"{% endifequal %} id="left_menu_demo_app_chat">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='chat' %}">
         <span class="item-text">Чат</span>
       </a>
     </li>
-    <li{% ifequal submenu "mail" %} class="active"{% endifequal %}>
+    <li{% ifequal submenu "mail" %} class="active"{% endifequal %} id="left_menu_demo_app_mail">
       <a class="no-submenu" data-toggle="" href="{% url 'login:demo' action='mail' %}">
         <span class="item-text">Почта</span>
       </a>

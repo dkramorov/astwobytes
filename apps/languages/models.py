@@ -5,20 +5,36 @@ from django.contrib.contenttypes.models import ContentType
 
 from apps.main_functions.models import Standard
 
+class UITranslate(Standard):
+    """Переводы для текста в интерфейсе админки
+    """
+    class_name = models.CharField(max_length = 255,
+        blank = True, null = True, db_index = True,
+        verbose_name = 'css класс элемента')
+    domain_pk = models.IntegerField(blank = True, null = True, db_index = True,
+        verbose_name = 'Домен на каждый сайт из settings.py')
+    value = models.CharField(max_length = 255,
+        blank = True, null = True,
+        verbose_name = 'Перевод')
+
+    class Meta:
+        verbose_name = 'Перевод UI'
+        verbose_name_plural = 'Переводы UI'
+
 class Translate(Standard):
     """Переводы для моделей по полям
     """
     domain_pk = models.IntegerField(blank = True, null = True, db_index = True,
         verbose_name = 'Домен на каждый сайт из settings.py')
-    content_type = models.CharField(max_length=255,
-        blank = True, null = True, db_index=True,
+    content_type = models.CharField(max_length = 255,
+        blank = True, null = True, db_index = True,
         verbose_name = 'Привязка к типу модели')
-    model_pk = models.IntegerField(blank=True, null = True, db_index = True,
+    model_pk = models.IntegerField(blank = True, null = True, db_index = True,
         verbose_name = 'ID экземпляра модели')
-    field = models.CharField(max_length=255,
+    field = models.CharField(max_length = 255,
         blank = True, null = True, db_index = True,
         verbose_name = 'Поле, которое переводим')
-    value = models.CharField(max_length=255,
+    value = models.CharField(max_length = 255,
         blank = True, null = True, db_index = True,
         verbose_name = 'Значение поля (перевод)')
     text = models.TextField(blank=True, null = True,

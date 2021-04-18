@@ -17,4 +17,9 @@ urlpatterns = [
     path('admin/positions/', views.translates_positions, name='translates_positions'),
     # выбор языка
     url('^pick/(?P<lang>[a-z]{3})/$', views.pick_language, name='pick_language'),
+
+    # Режим перевода UI админки
+    path('translate_mode/', views.translate_mode, name='translate_mode'),
+    # Получение переводов
+    path('get_translations/', views.get_translations, name='get_translations'),
 ]

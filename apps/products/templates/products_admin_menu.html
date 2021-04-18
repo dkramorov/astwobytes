@@ -1,22 +1,22 @@
 {% if perms.products.view_products %}
-<li{% ifequal menu 'products' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'products' %} class="active"{% endifequal %} id="left_menu_products_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-dropbox"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Товары</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'products' %} in{% endifequal %}">
-    <li{% ifequal submenu 'products' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'products' %} class="active"{% endifequal %} id="left_menu_products_app_products">
       <a class="no-submenu" data-toggle="" href="{% url 'products:show_products' %}">
         <span class="item-text">Товары</span>
       </a>
     </li>
-    <li{% ifequal submenu 'props' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'props' %} class="active"{% endifequal %} id="left_menu_products_app_props">
       <a class="no-submenu" data-toggle="" href="{% url 'products:show_props' %}">
         <span class="item-text">Свойства товаров</span>
       </a>
     </li>
-    <li{% ifequal submenu 'costs' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'costs' %} class="active"{% endifequal %} id="left_menu_products_app_costs">
       <a class="no-submenu" data-toggle="" href="{% url 'products:show_costs' %}">
         <span class="item-text">Типы цен</span>
       </a>

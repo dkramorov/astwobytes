@@ -297,6 +297,10 @@ var PHIL={};
           p=!!swiper.hasClass("auto-height"),
           f=c>1?20:0;
       n["swiper-"+swiper_id]=new Swiper(".swiper-"+swiper_id,{
+
+        preventClicks:!0,
+        preventClicksPropagation:!0,
+
         uniqueNavElements:t,
         nextButton: '.next-'+swiper_id,
         prevButton: '.prev-'+swiper_id,
@@ -584,10 +588,6 @@ var PHIL={};
 
   $('.fancybox').fancybox();
 
-  $(".swiper-container").click(function(){
-    $(this).find(".swiper-slide-active table").toggleClass("clicked");
-  });
-
   /* Ибучий сайдбар для project шаблона */
 
   if($(".project .sidebar .primary-menu-menu").length > 0){
@@ -707,6 +707,7 @@ var PHIL={};
     // заставляем меню быть плавучим
     check_resize_window();
   }
+
   /* Ибучее портфолио с мультислайдером
      https://swiperjs.com/demos/
    */
@@ -740,4 +741,19 @@ var PHIL={};
     "dont_reset_on_submit": 1, // or 1
     //"errorClass": "invalid",
   });
+  if($("#portfolio_mini_menu_container").length > 0 && portfolio_mini_menu){
+    var html = "<ul class='primary-menu-menu'>";
+    var class_name = "";
+    var link = "";
+    for(var i=0; i<portfolio_mini_menu.length; i++){
+      class_name = "";
+      link = portfolio_mini_menu[i]['link'];
+      if(window.location.href.indexOf(link) >= 0){
+        class_name = " class='active'";
+      }
+      html += "<li" + class_name + "><a href=" + link + ">" + portfolio_mini_menu[i]['name'] + "</a></li>"
+    }
+    html += "</ul>";
+    $("#portfolio_mini_menu_container").html(html);
+  }
 }(jQuery);

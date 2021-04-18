@@ -429,6 +429,7 @@ def calls_history(request):
             'filter__created__lte': end_date,
             'filter__created__gte': start_date,
             'order__created': 'desc',
+            'only_fields': 'dest,created,duration,billing,state,client_name',
         }
         headers = {
             'token': '%s-%s' % (SITE_ID, shopper.id),

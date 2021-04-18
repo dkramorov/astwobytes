@@ -1,5 +1,5 @@
 {% if perms.files.view_files %}
-<li{% ifequal menu 'files' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'files' %} class="active"{% endifequal %} id="left_menu_files_app">
   <a href="{% url 'files:show_files' %}">
     <em class="fa fa-file"></em>
     <span class="item-text">Файлы</span>

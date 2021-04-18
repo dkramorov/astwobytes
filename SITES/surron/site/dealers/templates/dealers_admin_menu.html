@@ -1,5 +1,5 @@
 {% if perms.dealers.view_dealers %}
-<li{% ifequal menu 'dealers' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'dealers' %} class="active"{% endifequal %} id="left_menu_dealers_app">
   <a href="{% url 'dealers:show_dealers' %}">
     <em class="fa fa-meh-o"></em>
     <span class="item-text">Дилеры</span>

@@ -1,12 +1,12 @@
 {% if perms.binary_com.view_robots %}
-<li{% ifequal menu 'binary_com' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'binary_com' %} class="active"{% endifequal %} id="left_menu_binary_com_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-android"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Роботы</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'binary_com' %} in{% endifequal %}">
-    <li{% ifequal submenu 'robots' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'robots' %} class="active"{% endifequal %} id="left_menu_binary_com_app_robots">
       <a class="no-submenu" data-toggle="" href="{% url 'binary_com:show_robots' %}">
         <span class="item-text">Роботы</span>
       </a>

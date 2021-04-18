@@ -7,19 +7,29 @@
 <h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
 {% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <p><span class="label_for_translate language_picker_label" attr-class_name="language_picker_label">Выберите язык для заполнения в панели управления</span></p>
 
-<p>Выберите язык для заполнения в панели управления</p>
+    <a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' 'rus' %}">Русский</a>
+    {% for domain in domains %}
+      <a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' domain.lang %}">{{ domain.name }}</a>
+    {% endfor %}
+  </div>
 
-<a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' 'rus' %}">Русский</a>
-{% for domain in domains %}
-  <a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' domain.lang %}">{{ domain.name }}</a>
-{% endfor %}
+  <div class="col-sm-12">
+    <div class="checkbox c-checkbox">
+      <label>
+        <input type="checkbox" value="1" class="translate_mode">
+        <span class="fa fa-check"></span>
+        <i class="label_for_translate translate_mode_label" attr-class_name="translate_mode_label">Включить редактирование перевода интерфейса панели управления</i>
+      </label>
+    </div>
+  </div>
+
+</div>
 
 {% endblock %}
 
 {% block extrascripts %}
-<script type="text/javascript">
-$(document).ready(function(){
-});
-</script>
 {% endblock %}

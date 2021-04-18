@@ -9,6 +9,7 @@
 <link href="/static/tabulator/tabulator.min.css" rel="stylesheet">
 <link href="/static/tabulator/tabulator_bootstrap4.min.css" rel="stylesheet">
 <link href="/static/select2/select2.min.css" rel="stylesheet" />
+<link href="/static/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
 <link href="/static/admin/css/app.css" rel="stylesheet"/>
 {% include "core/custom_css.html" %}
 
@@ -134,6 +135,11 @@
 <script src="/static/select2/select2.min.js"></script>
 <script src="/static/js/speech_recognition.js"></script>
 <script src="/static/js/get_cookie.js"></script>
+<script src="/static/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+{% settings_value "INSTALLED_APPS" as INSTALLED_APPS %}
+{% if "apps.languages" in INSTALLED_APPS %}
+  <script type="text/javascript" src="/static/languages_app/translations.js"></script>
+{% endif %}
 {% block extrascripts %}{% endblock %}
 <script src="/static/admin/js/app.js"></script>
 </body>

@@ -7,7 +7,8 @@
         <div class="call-container">
           {% for block in blocks %}
             <div class="col-lg-12 col-md-12">
-              <h2>{{ block.name }}</h2>
+              <h2>{{ block.name }}{% if block.sub %}-<span class="txt-rotate" data-period="2000" data-rotate='[ {% for item in block.sub %}"{{ item.name }}"{% if not forloop.last %},{% endif %}{% endfor %} ]'></span>{% endif %}
+              </h2>
             </div>
 
             <div class="col-lg-6 col-md-6 text-left">
@@ -28,9 +29,10 @@
 </section>
 <div style="display:none;">
   <form id="config-form" action="">
-    <input type="text" name="displayName" value="user8800" />
-    <input type="text" name="uri" value="user8800@calls.223-223.ru" />
-    <input type="text" name="authorizationUser" value="user8800" />
+    {% settings_value 'FS_USER' as fs_user %}
+    <input type="text" name="displayName" value="{{ fs_user }}" />
+    <input type="text" name="uri" value="{{ fs_user }}@calls.223-223.ru" />
+    <input type="text" name="authorizationUser" value="{{ fs_user }}" />
     <input type="password" name="password" value="cnfylfhnysq" />
     <input type="text" name="wsServers" value="wss://calls.223-223.ru:7443" />
   </form>

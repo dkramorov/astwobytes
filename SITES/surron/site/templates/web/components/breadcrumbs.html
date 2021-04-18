@@ -6,13 +6,13 @@
       <ul class="breadcrumb mb-4">
         <li>
           <a href="/" class="text-black-2 fs-1">Главная</a>
-          <i class="fa fa-caret-right fs-1"></i>
+          /
         </li>
         {% for crumb in breadcrumbs %}
           {% if forloop.last %}
-            <li class="px-1"><a class="text-black-2 fs-1">{{ crumb.name }}</a></li>
+            <li><a class="text-black-2 fs-1">{{ crumb.name }}</a></li>
           {% else %}
-            <li class="px-1"><a href="{{ crumb.link }}" class="text-black-2 fs-1">{{ crumb.name }}</a> <i class="fa fa-caret-right fs-1"></i></li>
+            <li><a href="{{ crumb.link }}" class="text-black-2 fs-1">{{ crumb.name }}</a> / </li>
           {% endif %}
         {% endfor %}
       </ul>

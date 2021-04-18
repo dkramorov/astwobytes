@@ -1494,7 +1494,9 @@
  }
 
 /*------------- swiper-container --------------*/
-.swiper-container:after { /* Прозрачная рамка */
+/* Прозрачная рамка */
+/*
+.swiper-container:after {
   content:"";
   position:absolute;
   top:0;
@@ -1504,6 +1506,10 @@
   opacity:0.65;
   border:40px solid #e7e1ee;
   z-index:1;
+}
+*/
+.swiper-container .link {
+  cursor: pointer;
 }
 .swiper-lazy {
   padding-top: 40px;
@@ -1621,12 +1627,17 @@
 }
 .portfolio_counter {
   margin-top: 10px;
-  font-size: 1.8em;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 1.4em;
   color: #e7e1ee;
 }
 .portfolio_swiper.hidden {
   display: none !important;
+}
+.portfolio_swiper .mobile {
+  display: none;
+}
+.portfolio_swiper .mobile h6 {
+  font-size: 20px;
 }
 @media (max-width: 799px) {
   .portfolio_title_bg {
@@ -1637,6 +1648,9 @@
   }
   .portfolio_side_info:after {
     left: -100px;
+  }
+  .portfolio_swiper .mobile {
+    display: block;
   }
 }
 /*------------- Projects ---------------*/
@@ -1719,6 +1733,9 @@
     margin-bottom: 35px;
     display: block;
   }
+  .projects .mobile h6 {
+    font-size: 20px;
+  }
   .projects table {
     display: none;
   }
@@ -1740,6 +1757,23 @@
 .project .project_img {
   margin-bottom: 25px;
 }
+.project #portfolio_mini_menu_container {
+  margin-top: 40px;
+  width: 100%;
+}
+.project #portfolio_mini_menu_container .primary-menu-menu{
+  width: 100%;
+}
+.project #portfolio_mini_menu_container li {
+  margin: 15px 0;
+  text-align: center;
+}
+@media (max-width: 799px) {
+  .project #portfolio_mini_menu_container li {
+    width: 33%;
+    display: inline-block;
+  }
+}
 /* --- Меню для проекта --- */
 .sidebar .primary-menu-menu,
 .project .images {
@@ -1756,15 +1790,6 @@
   display: inline-block;
   padding: inherit;
 }
-@media (max-width: 799px) {
-  .sidebar .vertical-menu {
-    display: none;
-  }
-  .sidebar .horizontal-menu {
-    display: block;
-  }
-}
-
 /*------------- project sticky menu --------------*/
 .project .sidebar .primary-menu-menu {
   max-height: 300px;
@@ -1843,6 +1868,42 @@
   padding: 0;
   margin: 0;
 }
+
+
+@media (max-width: 799px) {
+/*
+  .sidebar .vertical-menu {
+    display: none;
+  }
+  .sidebar .horizontal-menu {
+    display: block;
+  }
+*/
+  .sidebar .vertical-menu {
+    display: inline;
+  }
+  .sidebar .vertical-menu .primary-menu-menu {
+    width: 100%;
+    text-align: center;
+    background-color: #efebf3;
+    padding: 40px 0;
+  }
+  .project .sidebar .prev {
+    margin-left: 0;
+    width: 100%;
+    top: 40px;
+  }
+  .project .sidebar .next {
+    margin-left: 0;
+    width: 100%;
+    bottom: -20px;
+  }
+
+  .dynamic_portfolio_link a,
+  .dynamic_portfolio_link .portfolio_counter{
+    font-size: 16px;
+  }
+}
 /*------------- Simple Services ---------------*/
 .simple_services .servises-item .servises-item__content .servises-text {
   color: #582371;
@@ -1859,6 +1920,7 @@
   background-repeat: no-repeat;
   background-position: top right;
   background-image: url('/media/img/services_bg.png');
+  background-size: 50%;
 }
 .simple_services .servises-item:hover {
   background-color: rgba(240, 230, 230, 0.5);
@@ -1922,6 +1984,7 @@
   background-repeat: no-repeat;
   background-position: top left;
   background-image: url('/media/img/team_bg.png');
+  background-size: 85%;
 }
 .simple_team .features-item .read-more {
   color: #e53863;
@@ -5795,7 +5858,7 @@ Main Components
       .order .cheque .logos .btn {
         padding: 25px 30px; }
  }
-
+/*
 @media (max-width: 799px) {
   .sticky_container {
     display: grid;
@@ -5807,3 +5870,4 @@ Main Components
     order: 2;
   }
 }
+*/

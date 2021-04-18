@@ -93,6 +93,9 @@
   font-weight: 500;
   border-width: 3px;
 }
+.btn-order span {
+  font-size: 1.2rem !important;
+}
 .btn-order:hover {
   color: #fff;
   border-color: #fff;
@@ -550,6 +553,12 @@
   justify-content: unset;
   height: auto !important;
 }
+@media screen and (max-width: 768px) {
+  .newspage .item-grid-c .item-img .img-footer {
+    position: relative;
+    padding: 10px 0 30px 0;
+  }
+}
 /* Articles */
 .article5 .section-header .h-title {
   font-size: 2rem;
@@ -684,7 +693,7 @@ section.dealers-end {
   outline: 0;
   box-shadow: none;
   border: 0 !important;
-  background: #2c3e50;
+  background: #343a40;
   background-image: none;
 }
 /* Remove IE arrow */
@@ -731,6 +740,9 @@ section.dealers-end {
   color: #f39c12;
 }
 /* CallToActions */
+.call_to_action2.hidden {
+  display: none;
+}
 .call_to_action2 {
   justify-content: unset;
   height: auto !important;

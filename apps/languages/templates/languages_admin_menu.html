@@ -1,5 +1,5 @@
 {% if perms.languages.view_translates %}
-<li{% ifequal menu 'languages' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'languages' %} class="active"{% endifequal %} id="left_menu_languages_app">
   <a href="{% url 'languages:show_translates' %}">
     <em class="fa fa-lang"></em>
     <span class="item-text">Мультисайт-переводы</span>

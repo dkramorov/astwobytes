@@ -184,6 +184,17 @@ input[type=email] {
   margin: 0;
   padding: 0;
 }
+.breadcrumb li {
+  padding-right: 0.25rem;
+}
+@media screen and (max-width: 768px) {
+  .breadcrumb {
+    display: block;
+  }
+  .breadcrumb li {
+    padding-right: 0;
+  }
+}
 /* Simple Pages */
 .simple_page {
   padding-top: 100px;

@@ -3,6 +3,7 @@ import os
 import platform
 import psutil
 import socket
+import datetime
 
 def get_locale():
     """Возвращает локаль,
@@ -45,6 +46,31 @@ def search_binary(cmd):
 def get_psutil_attr_names():
     return list(psutil.Process().as_dict().keys())
 
+def search_process_created_time(process):
+    """Ищет время создания процесса по результатам
+       работы search_process
+    """
+    created = 'create_time'
+    if not process or not created in process:
+        return
+
+    stamp = None
+    if isinstance(process, str):
+        start = process.index(created) + len(created)
+        end = process[start:].index(',')
+        result = process[start:start+end]
+        result = result.replace(':', ' ').replace('\'', '')
+        result = result.strip().split('.')[0]
+    elif isinstance(process, dict):
+        result = str(process[created]).split('.')[0]
+    if not result:
+        return
+    try:
+        stamp = int(result)
+    except ValueError:
+        return None
+    return datetime.datetime.fromtimestamp(stamp)
+
 def search_process(q: list):
     """Ищем процесс
        :param q: список строк для поиска
@@ -68,5 +94,8 @@ def search_process(q: list):
                 match = False
                 break
         if match:
+            started = search_process_created_time(process)
+            if isinstance(process, dict):
+                process['started'] = started.strftime('%H:%M:%S %d-%m-%Y')
             return process
     return None

@@ -1,22 +1,22 @@
 {% if perms.promotion.view_promotion %}
-<li{% ifequal menu 'promotion' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'promotion' %} class="active"{% endifequal %} id="left_menu_promotion_app">
   <a class="has-submenu" data-toggle="collapse-next" href="{% url 'promotion:show_vocabulary' %}">
     <em class="fa fa-rocket"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Продвижение</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'promotion' %} in{% endifequal %}">
-    <li{% ifequal submenu 'vocabulary' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'vocabulary' %} class="active"{% endifequal %} id="left_menu_promotion_app_vocabulary">
       <a class="no-submenu" data-toggle="" href="{% url 'promotion:show_vocabulary' %}">
         <span class="item-text">Запросы</span>
       </a>
     </li>
-    <li{% ifequal submenu 'svisits' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'svisits' %} class="active"{% endifequal %} id="left_menu_promotion_app_svisits">
       <a class="no-submenu" data-toggle="" href="{% url 'promotion:show_svisits' %}">
         <span class="item-text">Посещения сайтов</span>
       </a>
     </li>
-    <li{% ifequal submenu 'seo_report' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'seo_report' %} class="active"{% endifequal %} id="left_menu_promotion_app_seo_report">
       <a class="no-submenu" data-toggle="" href="{% url 'promotion:show_seo_report' %}">
         <span class="item-text">Сео-проблемы</span>
       </a>

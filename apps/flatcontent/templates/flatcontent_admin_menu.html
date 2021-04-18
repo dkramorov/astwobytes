@@ -1,39 +1,37 @@
 {% if perms.flatcontent.view_containers %}
-<li{% ifequal menu 'flatcontent' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'flatcontent' %} class="active"{% endifequal %} id="left_menu_flatcontent_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-list-alt"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Контент</span>
   </a>
-  <!-- START SubMenu item-->
   <ul class="nav collapse{% ifequal menu 'flatcontent' %} in{% endifequal %}">
-    <li{% ifequal submenu 'flatmenu' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'flatmenu' %} class="active"{% endifequal %} id="left_menu_flatcontent_app_flatmenu">
       <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatmenu' %}">
         <span class="item-text">Меню</span>
       </a>
     </li>
-    <li{% ifequal submenu 'flatpages' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'flatpages' %} class="active"{% endifequal %} id="left_menu_flatcontent_app_flatpages">
       <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatpages' %}">
         <span class="item-text">Стат. Странички</span>
       </a>
     </li>
-    <li{% ifequal submenu 'flatmain' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'flatmain' %} class="active"{% endifequal %} id="left_menu_flatcontent_app_flatmain">
       <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatmain' %}">
         <span class="item-text">Контент для всех страничек</span>
       </a>
     </li>
-    <li{% ifequal submenu 'flatcat' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'flatcat' %} class="active"{% endifequal %} id="left_menu_flatcontent_app_flatcat">
       <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatcat' %}">
         <span class="item-text">Каталоги</span>
       </a>
     </li>
-    <li{% ifequal submenu 'flattemplates' %} class="active"{% endifequal %}>
+    <li{% ifequal submenu 'flattemplates' %} class="active"{% endifequal %} id="left_menu_flatcontent_app_flattemplates">
       <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flattemplates' %}">
         <span class="item-text">Шаблоны</span>
       </a>
     </li>
   </ul>
-  <!-- END SubMenu item-->
 </li>
 {% endif %}
 

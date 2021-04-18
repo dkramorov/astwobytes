@@ -260,6 +260,7 @@
         return;
       }
       $("#confirm_phone_button").prop('disabled', true);
+      $("#confirm_phone_label").html('Идет звонок на ваш телефон, будут названы цифры, прослушайте их, введите в поле "Проверочный код"<br>положьте трубку, и ожидайте надписи "Телефон подтвержден"');
       jQuery.ajax({
         async : true,
         type: "GET",
@@ -286,20 +287,25 @@
           html += '<tr>';
           html += '<th>Время</th>';
           html += '<th>Номер</th>';
-          html += '<th>Запись</th>';
+          html += '<th>Продолжительность</th>';
+          html += '<th>Биллинг</th>';
           html += '</tr>';
           html += '</thead>';
           html += '<tbody>';
           for(var i=0; i<r['data']['length']; i++){
             var row = r['data'][i];
+            var duration = row['duration'] ? row['duration']: '';
+            var billing = row['billing'] ? row['billing'] : '';
             html += '<tr>';
             html += '<td>' + row['created'] + '</td>';
             html += '<td>' + row['dest'] + '</td>';
-            html += '<td>';
+            html += '<td>' + duration + '</td>';
+            html += '<td>' + billing + '</td>';
+{% comment %}/*
             html += '<audio controls>';
             html += '<source src="{{ fs_server }}' + row['folder'] + '" type="audio/wav">Нет поддержки аудио';
             html += '</audio>';
-            html += '</td>';
+*/{% endcomment %}
             html += '</tr>';
           }
           html += '</tbody>';

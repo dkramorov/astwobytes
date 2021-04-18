@@ -1,5 +1,5 @@
 {% if perms.shop.view_orders %}
-<li{% ifequal menu 'shop' %} class="active"{% endifequal %}>
+<li{% ifequal menu 'shop' %} class="active"{% endifequal %} id="left_menu_shop_app">
   <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-shopping-cart"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
@@ -7,28 +7,28 @@
   </a>
   <ul class="nav collapse{% ifequal menu 'shop' %} in{% endifequal %}">
     {% if perms.shop.view_orders %}
-      <li{% ifequal submenu 'orders' %} class="active"{% endifequal %}>
+      <li{% ifequal submenu 'orders' %} class="active"{% endifequal %} id="left_menu_shop_app_orders">
         <a class="no-submenu" data-toggle="" href="{% url 'shop:show_orders' %}">
           <span class="item-text">Заказы</span>
         </a>
       </li>
     {% endif %}
     {% if perms.shop.view_purchases %}
-      <li{% ifequal submenu 'purchases' %} class="active"{% endifequal %}>
+      <li{% ifequal submenu 'purchases' %} class="active"{% endifequal %} id="left_menu_shop_app_purchases">
         <a class="no-submenu" data-toggle="" href="{% url 'shop:show_purchases' %}">
           <span class="item-text">Покупки</span>
         </a>
       </li>
     {% endif %}
     {% if perms.shop.view_transactions %}
-      <li{% ifequal submenu 'transactions' %} class="active"{% endifequal %}>
+      <li{% ifequal submenu 'transactions' %} class="active"{% endifequal %} id="left_menu_shop_app_transactions">
         <a class="no-submenu" data-toggle="" href="{% url 'shop:show_transactions' %}">
           <span class="item-text">Транзакции</span>
         </a>
       </li>
     {% endif %}
     {% if perms.shop.view_promocodes %}
-      <li{% ifequal submenu 'promocodes' %} class="active"{% endifequal %}>
+      <li{% ifequal submenu 'promocodes' %} class="active"{% endifequal %} id="left_menu_shop_app_promocodes">
         <a class="no-submenu" data-toggle="" href="{% url 'shop:show_promocodes' %}">
           <span class="item-text">Промокоды</span>
         </a>

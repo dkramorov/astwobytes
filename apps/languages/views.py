@@ -9,13 +9,13 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from apps.main_functions.functions import object_fields
-from apps.main_functions.model_helper import create_model_helper
+from apps.main_functions.model_helper import create_model_helper, get_user_permissions
 from apps.main_functions.api_helper import ApiHelper
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 
-from .models import Translate, get_domains
+from apps.languages.models import Translate, UITranslate, get_domains, get_domain
 
 CUR_APP = 'languages'
 languages_vars = {
@@ -124,3 +124,45 @@ def select_language(request, lang: str = None):
     context['domains'] = get_domains()
     template = '%sselect_lang.html' % mh.template_prefix
     return render(request, template, context)
+
+@login_required
+def translate_mode(request, *args, **kwargs):
+    """Перевод текстов админки"""
+    result = {}
+    domain = get_domain(request)
+    perms = get_user_permissions(request.user, UITranslate)
+    if not perms['edit']:
+        result['error'] = 'Недостаточно прав'
+    elif not domain:
+        result['error'] = 'Не выбран домен'
+    else:
+        domain_pk = domain.get('pk')
+        class_name = request.POST.get('pk')
+        value = request.POST.get('value', '')[:254]
+        analog = UITranslate.objects.filter(class_name=class_name, domain_pk=domain_pk).first()
+        if not analog:
+            analog = UITranslate(class_name=class_name, domain_pk=domain_pk)
+        analog.value = value.strip()
+        analog.save()
+        result['translate'] = object_fields(analog)
+
+    result['domain'] = domain
+    return JsonResponse(result, safe=False)
+
+
+def get_translations(request, *args, **kwargs):
+    """Получение переводов"""
+    result = {'translations': []}
+    domain = get_domain(request)
+    domain_pk = domain.get('pk')
+    class_names = []
+    for class_name in request.POST.get('class_names', '').split(','):
+        class_name = class_name.strip()
+        if class_name:
+            class_names.append(class_name)
+    if class_names:
+        translations = UITranslate.objects.filter(class_name__in=class_names, domain_pk=domain_pk).values('class_name', 'value')
+        result['translations'] = list(translations)
+    result['class_names'] = class_names
+    result['domain'] = domain
+    return JsonResponse(result, safe=False)

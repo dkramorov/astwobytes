@@ -823,13 +823,18 @@
 
   /* Dropdown/megamenu indicators */
   .primary-menu-responsive .primary-menu-menu li .indicator{
-    width: 60px;
+    /*width: 60px;
+    text-align: center;
+    */
+    text-align: right;
+    width: 100%;
+    padding-right: 25px;
+
     height: 100%;
     position: absolute;
     right: 0;
     top: 0;
     font-size: 14px;
-    text-align: center;
     line-height: 53px;
     border-left: solid 1px #f0f0f0;
   }

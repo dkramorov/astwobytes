@@ -82,6 +82,7 @@ class Command(BaseCommand):
         is_running = search_process(q = ('spam_task', 'manage.py'))
         if is_running:
             logger.info('Already running %s' % (is_running, ))
+            bot.send_message('Already running from %s' % is_running.get('started'))
             exit()
 
         by = 100

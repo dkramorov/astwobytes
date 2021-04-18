@@ -1,0 +1,8 @@
+{% if perms.robots.view_robots %}
+<li{% ifequal menu 'robots' %} class="active"{% endifequal %} id="left_menu_robots_app">
+  <a href="{% url 'robots:show_robots' %}">
+    <em class="fa fa-android"></em>
+    <span class="item-text">Роботы</span>
+  </a>
+</li>
+{% endif %}
