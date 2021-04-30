@@ -152,7 +152,11 @@ def translate_mode(request, *args, **kwargs):
 
 def get_translations(request, *args, **kwargs):
     """Получение переводов"""
-    result = {'translations': []}
+    left_menu_prefix = 'left_menu_'
+    result = {
+        'translations': [],
+        '%stranslations' % left_menu_prefix: [],
+    }
     domain = get_domain(request)
     domain_pk = domain.get('pk')
     class_names = []
@@ -163,6 +167,15 @@ def get_translations(request, *args, **kwargs):
     if class_names:
         translations = UITranslate.objects.filter(class_name__in=class_names, domain_pk=domain_pk).values('class_name', 'value')
         result['translations'] = list(translations)
+    # ---------------------------
+    # Меню надо возвращать всегда
+    # ---------------------------
+    menus = UITranslate.objects.filter(class_name__startswith=left_menu_prefix, domain_pk=domain_pk).values('class_name', 'value')
+    for menu in menus:
+        result['%stranslations' % left_menu_prefix].append({
+            'class_name': menu['class_name'],
+            'value': menu['value'],
+        })
     result['class_names'] = class_names
     result['domain'] = domain
     return JsonResponse(result, safe=False)

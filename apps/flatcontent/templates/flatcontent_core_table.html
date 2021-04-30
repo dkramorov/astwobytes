@@ -6,8 +6,7 @@
 {% block content %}
 {% include "flatcontent_containers_menu.html" %}
 
-<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
-
+{% include "core/title/page_title_table.html" %}
 {% include "core/breadcrumbs.html" %}
 {% include "core/tabulator_table.html" %}
 {% endblock %}
@@ -45,12 +44,18 @@ $(document).ready(function(){
     var rowIndex = row.getIndex();
     var pk = cell.getValue();
     var actions = "<div class='padding-rl5'>";
-    actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% if permissions.edit %}
+      actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% endif %}
     {% if ftype == 'flatpages' or ftype == 'flattemplates' %}
       actions += " <a class='btn-xs btn btn-info pull-left ml' target='_blank' href='{{ root_url }}show/" + pk + "/'><i class='fa fa-eye'></i></a>";
     {% endif %}
-    actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}tree/" + pk + "/'><i class='fa fa-sitemap'></i></a> ";
-    actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% if permissions.view %}
+      actions += " <a class='btn-xs btn btn-info pull-left ml' href='{{ root_url }}tree/" + pk + "/'><i class='fa fa-sitemap'></i></a> ";
+    {% endif %}
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
     actions += "</div>";
     return actions;
   };

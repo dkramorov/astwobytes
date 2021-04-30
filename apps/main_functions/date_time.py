@@ -22,9 +22,10 @@ def calc_elapsed_time(func):
        Используем функцию как декоратор"""
     def wrapper(*args, **kwargs):
         started = time.time()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         elapsed = time.time() - started
         logger.info('[ELAPSED]: %.2f (%.1f min)' % (elapsed, elapsed/60))
+        return result
     return wrapper
 
 def date_to_timestamp(date):

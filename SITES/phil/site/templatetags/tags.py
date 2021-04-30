@@ -58,7 +58,7 @@ def dynamic_portfolio(request):
         block.images = []
 
         ids_subblocks = {subblock.id: subblock.link for subblock in block.sub}
-
+        print(ids_subblocks )
         # Для описания надо узнать какая стат.страничка
         # ссылается на subblock.link и взять от нее описание
         related_by_link = Blocks.objects.filter(container__state=3, link__in=ids_subblocks.values())
@@ -100,7 +100,7 @@ def dynamic_portfolio(request):
             block.images.append(imga)
 
         # Правильная сортировка изображений так как они в админке
-        block.images.sort(key=lambda x:x.custom_pos)
+        block.images.sort(key=lambda x:x.custom_pos if hasattr(x, 'custom_pos') else 0)
 
     # Перевод описаний вытащенных по ссылкам
     if domain:

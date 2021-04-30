@@ -14,6 +14,7 @@ var PHIL={};
       g=e("#site-footer"),
       m=e("#hellopreloader");
 
+  PHIL.portfolio_swipers = Array();
   PHIL.headerSpacer={
     $spacer:null,
     $header:null,
@@ -282,6 +283,7 @@ var PHIL={};
     e(".swiper-container").each(function(){
       var swiper=e(this),
           swiper_id="swiper-unique-id-"+i;
+
       swiper.addClass("swiper-"+swiper_id+" initialized").attr("id",swiper_id),
       swiper.find(".swiper-pagination").addClass("pagination-"+swiper_id);
       swiper.parent().find(".next").addClass("next-"+swiper_id);
@@ -350,13 +352,16 @@ var PHIL={};
           }
         }
       }),
-      i++
+      i++;
+      if(swiper.parent().hasClass("portfolio_swiper")){
+        PHIL.portfolio_swipers.push(n["swiper-"+swiper_id]);
+      }
     }),
     e(".btn-prev").on("click",function(){
-      n["swiper-"+e(this).parent().attr("id")].slidePrev()
+      n["swiper-"+e(this).parent().attr("id")].slidePrev();
     }),
     e(".btn-next").on("click",function(){
-      n["swiper-"+e(this).parent().attr("id")].slideNext()
+      n["swiper-"+e(this).parent().attr("id")].slideNext();
     }),
     e(".slider-slides .slides-item").on("click",function(){
       if(e(this).hasClass("slide-active"))return!1;
@@ -541,7 +546,7 @@ var PHIL={};
     PHIL.parallaxFooter(),
     //PHIL.rangeSlider(), // Пока не нужен
     PHIL.headerSpacer.init(),
-    PHIL.updateResponsiveInit()
+    PHIL.updateResponsiveInit();
     //PHIL.animateSvg(), // Пока нахер не нужен, файлы удалил
 /* Пока убрал, нах эти счетчики и прогрессбары
     PHIL.counters(),
@@ -554,7 +559,20 @@ var PHIL={};
     e(".our-vision").length&&PHIL.OurVisionScrollAnnimation(),
     e(".background-mountains").length&&PHIL.MountainsScrollAnnimation()
 */
+
+
+/* Обыграть переход на следующий слайдер */
+    for(var i=0; i<PHIL.portfolio_swipers.length; i++){
+      var cur_swiper = PHIL.portfolio_swipers[i];
+      cur_swiper.loop = false;
+
+      cur_swiper.on('onSlideChangeStart', function(e){
+        //console.log(e.previousIndex, e.activeIndex, e.isEnd, e.isBegining);
+      });
+    }
+
   });
+
 
   var anchors = Array();
   $("#primary-menu ul li a").each(function(){
@@ -612,12 +630,13 @@ var PHIL={};
     }
     function create_sticky_portfolio_menu(){
       sticky = new Sticky('.project .w-post-category', {
-        'wrap': true,
-        'wrapWith': '<span class="sticky_wrapper"></span>',
-        'stickyClass': 'sticked',
+        //'wrap': true,
+        //'wrapWith': '<span class="sticky_wrapper"></span>',
+        //'stickyClass': 'sticked',
         'stickyContainer': '.sticky_container',
         'marginTop': 130,
       });
+find_active_sidebar_menu();
     }
     function check_resize_window(){
       var windowWidth = $(window).width();
@@ -637,15 +656,7 @@ var PHIL={};
       if(window.resizing) clearTimeout(window.resizing);
       window.resizing = setTimeout(check_resize_window, 500);
     });
-/*
-    $(window).scroll(function(){
-      if($("#site-header").hasClass("fadeIn")){
-        $(".project .sticky_wrapper .sticked").addClass("sticked2");
-      }else{
-        $(".project .sticky_wrapper .sticked").removeClass("sticked2");
-      }
-    });
-*/
+
     $(".project .vertical-menu .prev").click(function(){
       if (sidebar_menu_animating) {
         return;
@@ -741,18 +752,44 @@ var PHIL={};
     "dont_reset_on_submit": 1, // or 1
     //"errorClass": "invalid",
   });
+/*
   if($("#portfolio_mini_menu_container").length > 0 && portfolio_mini_menu){
     var html = "<ul class='primary-menu-menu'>";
     var class_name = "";
     var link = "";
     for(var i=0; i<portfolio_mini_menu.length; i++){
       class_name = "";
-      link = portfolio_mini_menu[i]['link'];
+      link = portfolio_mini_menu[i]['link'].split("/")[1];
       if(window.location.href.indexOf(link) >= 0){
         class_name = " class='active'";
       }
-      html += "<li" + class_name + "><a href=" + link + ">" + portfolio_mini_menu[i]['name'] + "</a></li>"
+      html += "<li" + class_name + "><a href=" + portfolio_mini_menu[i]['link'] + ">" + portfolio_mini_menu[i]['name'] + "</a></li>";
     }
+    html += "</ul>";
+    $("#portfolio_mini_menu_container").html(html);
+  }
+*/
+  if($("#portfolio_mini_menu_container").length > 0){
+    var html = "<ul class='primary-menu-menu'>";
+    var class_name = "";
+    var link = "";
+    var name = "";
+    var link_parts;
+    $("nav#primary-menu ul.portfolio>li>a").each(function(){
+      class_name = "";
+      name = $(this).html();
+      link = $(this).attr('href');
+
+      link_parts = link.split("/");
+      if(link_parts.length < 2){
+        return;
+      }
+
+      if(window.location.href.indexOf(link_parts[2]) >= 0){
+        class_name = " class='active'";
+      }
+      html += "<li" + class_name + "><a href=" + link + ">" + name + "</a></li>";
+    });
     html += "</ul>";
     $("#portfolio_mini_menu_container").html(html);
   }

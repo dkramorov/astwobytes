@@ -272,6 +272,20 @@ def pass_by_tag(blocks: list, tag: str = None):
                     container.append(block)
     return container
 
+@register.filter(name='block_by_tag')
+def block_by_tag(blocks: list, tag: str):
+    """Найти блок с тегом
+       :param blocks: блоки
+       :param tag: тег
+    """
+    if not blocks:
+        return {}
+    for block in blocks:
+        if not hasattr(block, 'tag') or not block.tag or not block.tag == tag:
+            continue
+        return block
+    return {}
+
 @register.filter(name='container_by_tag')
 def container_by_tag(containers: list, tag: str):
     """Искать контейнер/блок по тегу

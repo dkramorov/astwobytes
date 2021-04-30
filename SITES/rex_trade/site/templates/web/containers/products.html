@@ -1,0 +1,10 @@
+<div class="container pl-lg-0 pr-lg-0 pl-md-0 pr-md-0 mt-5">
+  <div class="row">
+    {% if container.description %}
+      <h1 class="block-title">
+        {{ container.description|safe }}
+      </h1>
+    {% endif %}
+    {% include "web/cat/plp.html" %}
+  </div>
+</div>

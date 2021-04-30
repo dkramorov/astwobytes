@@ -18,7 +18,7 @@ from apps.main_functions.views import DefaultFeedback
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.date_time import str_to_date
 
-from apps.personal.models import get_personal_user as get_shopper
+from apps.personal.models import Shopper, get_personal_user as get_shopper
 from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import save_user_to_request, remove_user_from_request
 from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site, phone_confirmed
@@ -29,8 +29,6 @@ main_vars = {
     'template_prefix': 'main_',
     'show_urla': 'home',
 }
-
-SITE_ID = 'user8800'
 
 def home(request):
     """Главная страничка сайта"""
@@ -383,6 +381,19 @@ def confirm_phone(request):
     result = {}
     shopper = get_shopper(request)
     if not shopper:
+        # Упрощенная регистрация по телефону
+        if request.GET.get('digits'):
+            if request.session.get('confirm_phone') and request.GET['digits'] == request.session['confirm_phone']:
+                new_user = Shopper.objects.create(
+                    phone=request.session['phone'],
+                    name='Гость',
+                )
+                save_user_to_request(request, new_user)
+                if phone_confirmed(request): # Тел подтвержден
+                    result['success'] = 1
+                    fs_shopper(request)
+                return JsonResponse(result, safe=False)
+        result = prepare_session(request, request.GET.get('phone'))
         return JsonResponse(result, safe=False)
     if request.GET.get('digits'):
         if request.session.get('confirm_phone') and request.GET['digits'] == request.session['confirm_phone']:
@@ -393,15 +404,20 @@ def confirm_phone(request):
     result = prepare_session(request)
     return JsonResponse(result, safe=False)
 
-def prepare_session(request):
+def prepare_session(request, phone: str = None):
     """Подготовить сессию для регистрации/обновления
-       профиля с подтверждением по обратному звонку"""
+       профиля с подтверждением по обратному звонку
+       :param request: HttpRequest
+       :param phone: Телефон (если нет пользователя)
+    """
     result = {}
     shopper = get_shopper(request)
-    if request.method == 'GET' and shopper:
-        phone = shopper.phone
+    if request.method == 'GET' and (shopper or phone):
+        if shopper:
+            phone = shopper.phone
         phone = kill_quotes(phone, 'int')
         request.session['confirm_phone'] = GenPasswd(4, '1234567890')
+        request.session['phone'] = phone
         request.session.save()
         # Скрипт отправляет на свич телефон
         # и код и свич звонит и диктует
@@ -432,7 +448,7 @@ def calls_history(request):
             'only_fields': 'dest,created,duration,billing,state,client_name',
         }
         headers = {
-            'token': '%s-%s' % (SITE_ID, shopper.id),
+            'token': '%s-%s' % (settings.FS_USER, shopper.id),
         }
         r = requests.get('%s/freeswitch/cdr_csv/api/' % settings.FREESWITCH_DOMAIN, params=params, headers=headers)
         result = r.json()
@@ -449,7 +465,7 @@ def fs_shopper(request):
     token = '0_o'
     endpoint = '/freeswitch/personal_users/sync/'
     params = {
-        'userkey': '%s-%s' % (SITE_ID, shopper.id),
+        'userkey': '%s-%s' % (settings.FS_USER, shopper.id),
         'username': shopper.login,
         'phone': shopper.phone,
         'phone_confirmed': 1 if shopper.phone_confirmed else 0,

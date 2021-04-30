@@ -45,6 +45,7 @@
           <form action="/registration/" method="post" id="register_form" class="register">
             {% csrf_token %}
             <div class="row wow fadeInUp" data-wow-duration="1.3s">
+<!--
               <div class="col-sm-6 mb-20 text-center">
                 <label>Ваше имя<span class="required">*</span></label>
                 <input class="mb-0 required" type="text" placeholder="Ваше имя" name="name" data-msg="Введите ваше имя">
@@ -53,14 +54,27 @@
                 <label>Ваш Email</label>
                 <input class="mb-0 email" type="text" placeholder="Ваш Email" name="email" data-msg="Введите ваш Email">
               </div>
+
               <div class="col-sm-6 mb-20 text-center">
                 <label>Логин<span class="required">*</span></label>
                 <input class="mb-0 required" type="text" placeholder="Логин" name="login" data-msg="Введите логин">
               </div>
+-->
               <div class="col-sm-6 mb-20 text-center">
                 <label>Телефон<span class="required">*</span></label>
                 <input class="mb-0 required phone" type="text" placeholder="Ваш телефон" name="phone" data-msg="Введите ваш телефон">
               </div>
+
+              <div class="col-sm-3 mb-20 text-center">
+                <label id="confirm_phone_label">Телефон не подтвержден</label><br>
+                <button class="btn dwnld-btn playmarket" id="confirm_phone_button"><i class="fa fa-shield"></i> Подтвердить</button>
+              </div>
+
+              <div class="col-sm-3 mb-20 text-center">
+                <label>Проверочный код</label>
+                <input placeholder="Проверочный код" type="text" id="confirm_phone_field">
+              </div>
+<!--
               <div class="col-sm-6 mb-20 text-center">
                 <label>Пароль<span class="required">*</span></label>
                 <input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
@@ -69,17 +83,18 @@
                 <label>Повторите пароль<span class="required">*</span></label>
                 <input class="mb-0 required" type="password" placeholder="Повторите пароль" name="passwd2" data-msg="Повторите пароль">
               </div>
+-->
               <div class="col-sm-12">
                 <p class="feedback_alerts"></p>
               </div>
-
-              <div class="col-sm-6">
+<!--
+              <div class="col-sm-6 text-center">
                 <button type="submit" class="btn dwnld-btn playmarket">
                   <i class="fa fa-user" aria-hidden="true"></i>
                   Регистрация
                 </button>
               </div>
-
+-->
               <div class="col-sm-6 text-right">
                 <a class="btn dwnld-btn" href="/login/">
                   <h4>
@@ -141,6 +156,55 @@
       "dont_reset_on_submit": 1, // or 1
       //"errorClass": "invalid",
     });
+
+
+    $("#confirm_phone_field").keyup(function(){
+      var value = $(this).val();
+      if(value.length == 4){
+        jQuery.ajax({
+          async : true,
+          type: "GET",
+          url: "/confirm_phone/",
+          data : "digits=" + value,
+          success: function (r){
+            if(r['success']){
+              $("#confirm_phone_label").html("Телефон подтвержден");
+              $("#confirm_phone_button").prop('disabled', true);
+              $("#confirm_phone_button").hide();
+              $("#confirm_phone_field").prop('disabled', true);
+              window.location.href = '/profile/';
+            }
+          }
+        });
+      }
+    });
+
+    $("#confirm_phone_button").click(function(){
+      var phone = parseInt($("#register_form .phone").val().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
+      if(phone.isNaN){
+        alert("Телефон введен неправильно");
+        return false;
+      }
+      var phone_str = phone + "";
+      if(phone_str.length !== 11 || phone_str[0] !== '8' || phone_str[1] !== '9'){
+        alert("Телефон введен неправильно");
+        return false;
+      }
+      $("#confirm_phone_button").prop('disabled', true);
+      $("#confirm_phone_label").html('Идет звонок на ваш телефон, будут названы цифры, прослушайте их, введите в поле "Проверочный код"<br>положьте трубку, и ожидайте надписи "Телефон подтвержден"');
+      jQuery.ajax({
+        async : true,
+        type: "GET",
+        url: "/confirm_phone/",
+        data : "phone=" + phone,
+        success: function (r){
+          console.log(r);
+        }
+      });
+      return false;
+    });
+
+    $("#register_form button[type='submit']").prop("disabled", true);
   });
 </script>
 {% endblock %}

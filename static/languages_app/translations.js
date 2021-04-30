@@ -13,6 +13,7 @@ function get_translatable_labels(){
       labels_for_translate.push(label_for_translate);
     }
   });
+
   return labels_for_translate;
 }
 
@@ -55,9 +56,11 @@ function get_translations(){
   /* Получение переводов
   */
   var class_names = get_translatable_labels();
+  /* Может и не быть в некоторых случаях
   if(class_names < 1){
     return;
   }
+  */
   $.ajax({
     async : true,
     type: "POST",
@@ -74,6 +77,11 @@ function get_translations(){
           $("." + r['translations'][i]['class_name']).html(r['translations'][i]['value']);
         }
       }
+      for(var i=0; i<r['left_menu_translations'].length; i++){
+        var menu = r['left_menu_translations'][i];
+        var pk = menu['class_name'].replace('_label', '')
+        $("#" + pk + " span").html(menu['value']);
+      }
     }
   });
 }
@@ -81,32 +89,51 @@ function get_translations(){
 function create_translatable_left_menu(){
   /* Создает дубль меню для перевода
   */
-  if($("#left_menu_apps").length < 1){
+  if($("#left_menu_apps").length < 1 || $("#left_menu_apps_translations").length < 1){
     return;
   }
-  if($("#left_menu_apps .translations").length < 1){
-    var container = $("#left_menu_apps");
-    container.append($('<li class="nav-heading translations">Translate menu:</li>'));
-    $("#left_menu_apps>li").each(function(){
-      var icon = $(this).find("em").attr('class');
+  $(".translations_for_menu").removeClass("hidden");
+  var container = $("#left_menu_apps_translations");
+  $("#left_menu_apps>li").each(function(){
+    var icon = $(this).find("em").attr('class');
+    var pk = $(this).attr("id");
+    if(typeof(pk) == "undefined"){
+      return;
+    }
 
-      var menu = '<li class="translations">';
-      menu += '<a>';
-      menu += '<em class="' + icon + '"></em>\n';
-      menu += '<span class="item-text">';
-      menu += $(this).find('span').html();
-      menu += '</span>';
-      menu += '</a>';
-      menu += '</li>';
-      container.append($(menu));
-    });
-  };
+    var menu = '<li class="translations">';
+    menu += '<a>';
+    menu += '<em class="' + icon + '"></em>\n';
+    menu += '<span class="item-text label_for_translate ' + pk + '_label" attr-class_name="' + pk + '_label">';
+    menu += $(this).find('span').html();
+    menu += '</span>';
+    menu += '</a>';
+    /* Подменю */
+    if($(this).find("ul").length > 0){
+      var submenus = $("#" + pk + " ul>li");
+      menu += '<ul class="nav">';
+      submenus.each(function(){
+        var pk_sub = $(this).attr('id');
+        menu += '<li class="translations">';
+        menu += '<a>';
+        menu += '<span class="item-text label_for_translate ' + pk_sub + '_label" attr-class_name="' + pk_sub + '_label">';
+        menu += $(this).find('span').html();
+        menu += '</span>';
+        menu += '</a>';
+        menu += '</li>';
+      });
+      menu += '</ul>';
+    }
+
+    menu += '</li>';
+    container.append($(menu));
+  });
 }
 function remove_translatable_left_menu(){
   /* Удаляет дубль меню для перевода */
-console.log($("#left_menu_apps .translations"));
-  if($("#left_menu_apps .translations").length > 0){
-    $("#left_menu_apps .translations").remove();
+  $(".translations_for_menu").addClass("hidden");
+  if($("#left_menu_apps_translations").length > 0){
+    $("#left_menu_apps_translations").html("");
   }
 }
 
@@ -116,6 +143,7 @@ function turn_on_translatable_labels(){
   create_translatable_left_menu();
   create_xeditable_for_translations();
   $(".translate_mode").prop("checked", "checked");
+  get_translations();
 }
 
 function turn_off_translatable_labels(){
@@ -124,6 +152,7 @@ function turn_off_translatable_labels(){
   remove_translatable_left_menu();
   destroy_xeditable_for_translations();
   $(".translate_mode").prop("checked", "");
+  get_translations();
 }
 
 $(document).ready(function(){
@@ -140,8 +169,6 @@ $(document).ready(function(){
   }else{
     turn_off_translatable_labels();
   }
-
-  get_translations();
 
   $(".translate_mode").click(function(){
     if($(this).prop("checked")){

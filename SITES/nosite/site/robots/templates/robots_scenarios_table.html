@@ -1,0 +1,72 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary pull-right" href="{{ url_create }}">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
+</a>
+
+<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+  var robotServerNameFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['robot'] ? data['robot']['server_name'] : '';
+  };
+  var robotIpFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['robot'] ? data['robot']['ip'] : '';
+  };
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {% include "core/tabulator_cell/name_multiline.html" %}
+      {
+        title: "Робот",
+        field: "robot__server_name",
+        headerFilterPlaceholder: "Робот",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: robotServerNameFormatter,
+        width: 120,
+      },
+      {
+        title: "IP Робота",
+        field: "robot__ip",
+        headerFilterPlaceholder: "IP Робота",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: robotIpFormatter,
+        width: 120,
+      },
+      {
+        title: "Сценарий",
+        field: "commands",
+        headerSort: false,
+        formatter: wordwrapFormatter,
+        minWidth: 150,
+        downloadTitle: "commands",
+      },
+/*
+      {% include "core/tabulator_cell/image.html" %}
+      {% include "core/tabulator_cell/is_active.html" %}
+      {% include "core/tabulator_cell/position.html" %}
+*/
+      {% include "core/tabulator_cell/actions.html" %}
+    ],
+  });
+
+});
+</script>
+{% endblock %}

@@ -3,11 +3,13 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.conf import settings
 
+from apps.login.models import create_default_user
 from apps.flatcontent.models import Containers, Blocks
 from apps.main_functions.models import Config
+from apps.main_functions.functions import object_fields
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +179,40 @@ def fill_settings():
                                          attr='flatcontent_feedback',
                                          value='dkramorov@mail.ru')
 
+def fill_users():
+    """Пользователи
+       1) сео-пользователь
+    """
+    seo_perms = ('seo_fields',
+                 'add_files',
+                 'view_files',
+                 'view_blocks',
+                 'view_containers', )
+    seo_group_name = 'SEO'
+    username = 'SeoManager'
+    group = Group.objects.filter(name=seo_group_name).first()
+    if not group:
+        group = Group.objects.create(name=seo_group_name)
+    for perm in Permission.objects.all():
+        #print(object_fields(perm))
+        if perm.codename in seo_perms:
+            group.permissions.add(perm)
+    user = User.objects.filter(username=username).first()
+    if not user:
+        kwargs = {
+            'username': username,
+            'email': 'seo_manager@masterme.ru',
+            'passwd': 'SeoManager',
+            'last_name': 'SeoManager',
+            'is_superuser': False,
+            'is_active': True,
+            'is_staff': True,
+        }
+        user = create_default_user(**kwargs)
+    groups = [group for group in user.groups.all() if group.name == seo_group_name]
+    if len(groups) < 1:
+        user.groups.add(group)
+
 class Command(BaseCommand):
     """Заливаем демонстрационными данными сайт"""
     def add_arguments(self, parser):
@@ -184,31 +220,42 @@ class Command(BaseCommand):
             action = 'store_true',
             dest = 'flatmain',
             default = False,
-            help = 'Fill only flatmain')
+            help = 'Fill flatmain')
         parser.add_argument('--flatmenu',
             action = 'store_true',
             dest = 'flatmenu',
             default = False,
-            help = 'Fill only flatmenu')
+            help = 'Fill flatmenu')
         parser.add_argument('--flatsettings',
             action = 'store_true',
             dest = 'flatsettings',
             default = False,
-            help = 'Fill only settings')
+            help = 'Fill settings')
+        parser.add_argument('--users',
+            action = 'store_true',
+            dest = 'users',
+            default = False,
+            help = 'Fill users')
 
     def handle(self, *args, **options):
+        cmd = []
         if options.get('flatmain'):
-            fill_flatmain()
-            return
+            cmd.append(fill_flatmain)
         if options.get('flatmenu'):
-            fill_flatmenu()
-            return
+            cmd.append(fill_flatmenu)
         if options.get('flatsettings'):
+            cmd.append(fill_settings)
+        if options.get('users'):
+            cmd.append(fill_users)
+        if not cmd:
+            fill_flatmain()
+            fill_flatmenu()
             fill_settings()
-            return
-        fill_flatmain()
-        fill_flatmenu()
-        fill_settings()
+            fill_users()
+        else:
+            for item in cmd:
+                item()
+
 
 
 

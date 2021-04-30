@@ -21,8 +21,50 @@
     width: 20px;
     line-height: 22px;
   }
+  #dynamic_portfolio_{{ container.id }} .swiper-navigation{
+    position: absolute;
+    left: 0;
+    top: 45%;
+    width: 100%;
+    z-index: 2;
+    margin-top: 0;
+  }
+  #dynamic_portfolio_{{ container.id }} .swiper-button-next,
+  #dynamic_portfolio_{{ container.id }} .swiper-button-prev {
+    background-image: none;
+  }
+  #dynamic_portfolio_{{ container.id }} .swiper-slide .dynamic_imga {
+    width: 85%;
+    margin: 0 auto;
+    position: relative;
+  }
+  #dynamic_portfolio_{{ container.id }} .swiper-navigation .next,
+  #dynamic_portfolio_{{ container.id }} .swiper-navigation .prev {
+    background-color: transparent;
+  }
+  #dynamic_portfolio_{{ container.id }} .swiper-navigation .next i,
+  #dynamic_portfolio_{{ container.id }} .swiper-navigation .prev i {
+    font-size: 2.5em;
+  }
+  @media (min-width: 1024px) {
+    .portfolio_side_info:after {
+      left: -30px;
+    }
+    .portfolio_side_info.special:after {
+      left: 40px;
+    }
+  }
   @media (max-width: 799px) {
     .portfolio_side_info.special:after {
+      left: -15px;
+    }
+    #dynamic_portfolio_{{ container.id }} .swiper-navigation{
+      top: 38%;
+    }
+    #dynamic_portfolio_{{ container.id }} .swiper-navigation .next {
+      right: -15px;
+    }
+    #dynamic_portfolio_{{ container.id }} .swiper-navigation .prev {
       left: -15px;
     }
   }
@@ -67,30 +109,34 @@
                       {% for item in block.images %}
                         {% if item.img %}
                           <div class="swiper-slide">
-                            <img data-src="{% imagine item.img '1200x768' item.get_folder True %}" alt="{{ item.name|textize }}" class="swiper-lazy">
                             <div class="swiper-lazy-preloader"></div>
-                            <table>
-                              <tr>
-                                <td colspan="3" class="hborder">&nbsp;</td>
-                              </tr>
-                              <tr>
-                                <td class="wborder">&nbsp;</td>
-                                <td class="text">
-                                  <a href="{{ item.custom_block.link }}">
-                                    <h6>{{ item.custom_block.name }}</h6>
-                                  {% if item.custom_block.html %}{{ item.custom_block.html|safe }}{% endif %}
-                                  </a>
-                                </td>
-                                <td class="wborder">&nbsp;</td>
-                              </tr>
-                              <tr>
-                                <td colspan="3" class="hborder">&nbsp;</td>
-                              </tr>
-                            </table>
+                            <div class="dynamic_imga">
+                              <img data-src="{% imagine item.img '1200x768' item.get_folder True %}" alt="{{ item.name|textize }}" class="swiper-lazy">
+                              <table>
+                                <tr>
+                                  <td colspan="3" class="hborder">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                  <td class="wborder">&nbsp;</td>
+                                  <td class="text">
+                                    <a href="{{ item.custom_block.link }}">
+                                      <h6>{{ item.custom_block.name }}</h6>
+                                    {% if item.custom_block.html %}{{ item.custom_block.html|safe }}{% endif %}
+                                    </a>
+                                  </td>
+                                  <td class="wborder">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                  <td colspan="3" class="hborder">&nbsp;</td>
+                                </tr>
+                              </table>
+                            </div>
                             <div class="clearfix"></div>
                             <div class="mobile">
                               <a href="{{ item.custom_block.link }}">
+{% comment %}<!--
                                 <h6>{{ item.custom_block.name }}</h6>
+-->{% endcomment %}
                                 {% if item.custom_block.html %}{{ item.custom_block.html|safe }}{% endif %}
                               </a>
                             </div>
@@ -98,11 +144,18 @@
                         {% endif %}
                       {% endfor %}
                     </div>
+                    <div class="swiper-navigation">
+                      <div class="swiper-button-prev prev"><i class="fa fa-angle-left"></i></div>
+                      <div class="swiper-button-next next"><i class="fa fa-angle-right"></i></div>
+                    </div>
+
                   </div>
+{% comment %}<!-- Стрелочки под слайдером (убрать стили)
                   <div class="swiper-navigation">
                     <div class="prev"><i class="fa fa-angle-left"></i></div>
                     <div class="next"><i class="fa fa-angle-right"></i></div>
                   </div>
+-->{% endcomment %}
                 </div>
               {% endfor %}
             </div>

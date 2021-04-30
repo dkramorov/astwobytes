@@ -85,6 +85,7 @@ $(document).ready(function(){
     // state будет помнить состояние
     "plugins": ["search", "wholerow", "dnd", "contextmenu"],
     "core" : {
+      "force_text": true, // & чтобы выводилась как текст, а не &amp;
       "animation": 0,
       "check_callback" : true,
       "data" : {
@@ -127,34 +128,43 @@ $(document).ready(function(){
       "items": function($node) {
         var tree = flat_tree.jstree(true);
         return {
+          {% if permissions.create %}
           "Create": {
             "separator_before": false,
             "separator_after": false,
             "label": "{{ action_create }} {{ rp_singular_obj }}",
             "action": function (obj) {
-              $node = tree.create_node($node, {'id': 'new', 'text': noname});
-              tree.edit($node);
+
+// Uncaught TypeError: this._model.data[c.parents[j]] is undefined
+//$("#flat_tree").jstree().create_node($("#flat_tree").jstree().get_node(83), {'id': 'new', 'text': 'hz'});
+
+              var new_node = tree.create_node($node, {'id': 'new', 'text': noname});
+              tree.edit(new_node);
             }
           },
+          {% endif %}
+          {% if permissions.edit %}
           "Rename": {
             "separator_before": false,
             "separator_after": false,
             "label": "{{ action_edit }} {{ rp_singular_obj }}",
             "action": function (obj) {
               tree.edit($node);
-              // Выбираем отредактированную ноду
-              tree.deselect_all();
-              tree.select_node(tree.select_node($node));
             }
           },
+          {% endif %}
+          {% if permissions.drop %}
           "Remove": {
             "separator_before": false,
             "separator_after": false,
             "label": "{{ action_drop }} {{ rp_singular_obj }}",
             "action": function (obj) {
               var selected_arr = tree.get_selected();
+
+              tree.deselect_all();
               for(var i=0; i<selected_arr.length; i++){
-                tree.delete_node(tree.get_node(selected_arr[i]));
+                var cur_node = tree.get_node(selected_arr[i]);
+                tree.delete_node(cur_node);
               }
               //tree.delete_node($node);
               //var parent = flat_tree.jstree(true).get_node($node.parent);
@@ -162,44 +172,55 @@ $(document).ready(function(){
               //description += "<strong>\"" + $node.text + "\"</strong>";
             }
           }
+          {% endif %}
         };
       }
     }
   })
   .bind("loaded.jstree", function(e, data) {
-    //console.log("--- jstree loaded ---");
     {% if not lazy %}
       flat_tree.jstree('open_all');
     {% endif %}
   })
   .bind("select_node.jstree", function (event, data) {
-    console.log("select", event, data);
+    //console.log("_select", event, data);
   })
   .on("rename_node.jstree", function (e, data) {
     if(data.old === data.text && data.text !== noname){
         return;
     }
+    var cur_tree = flat_tree.jstree(true);
+    cur_tree.deselect_all();
     var node_id = data.node.id;
     var parent_id = get_parent(data);
+    var name = encodeURIComponent(data.text);
     $.ajax({
       type: "GET",
       url: root_url,
-      data: "container_id={{ row.id }}&operation=rename_node&node_id=" + node_id + "&parent_id=" + parent_id + "&name=" + data.text,
+      data: "container_id={{ row.id }}&operation=rename_node&node_id=" + node_id + "&parent_id=" + parent_id + "&name=" + name,
     }).done(function(r) {
       // renamed
-      flat_tree.jstree().set_id(data.node, r.id);
+      cur_tree.set_id(data.node, r.id);
+
       // Приходится вручную обновлять ид и ссыль якоря (a),
       // иначе создать 2 подряд узла не получится,
       // будет одинаковый id и йух выберешь второй
       data.node.a_attr.id = r.id;
       data.node.a_attr.href = '#' + r.id;
 
+      //var node = cur_tree.get_node(r.id);
+      //cur_tree.trigger('refresh_node', {'node': node});
+
+      //cur_tree.refresh_node(parent_id); // Все ломает к хуам
+      cur_tree.redraw_node(parent_id, true);
       // Выбираем отредактированную ноду
-      flat_tree.jstree().deselect_all();
-      flat_tree.jstree().select_node(flat_tree.jstree().select_node(r.id));
+      cur_tree.select_node(r.id);
+      $("#current_edit_form").find('input[name="name"]').val(data.node.text);
     });
   })
   .on("delete_node.jstree", function (e, data) {
+    var cur_tree = flat_tree.jstree(true);
+    cur_tree.deselect_all();
     var node_id = data.node.id;
     var parent_id = get_parent(data);
     $.ajax({
@@ -207,7 +228,22 @@ $(document).ready(function(){
       url: root_url,
       data: "container_id={{ row.id }}&operation=drop_node&node_id=" + node_id + "&parent_id=" + parent_id,
     }).done(function(r) {
-      // dropped
+      var msg = 'Произошла ошибка';
+      var status = 'danger';
+      if(r.success){
+        msg = 'Успешно';
+        status = 'success';
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      if(r.error){
+        setTimeout(function(){
+          window.location.reload();
+        }, 1000);
+      }
     });
   })
   .on("move_node.jstree", function(e, data){
@@ -366,6 +402,25 @@ $(document).ready(function(){
       }, 500);
     }
   });
+
+/* Можно сделать, чтобы jstree ездило
+   со скроллом, но надо учесть, что у нас он
+   по высоте меньше правой части, а
+   правая часть ездить не должна, а то, если
+   экран не высокий - не доскролим до низу
+   ---
+   Лучше сделать кнопку прилипалку - нажали=ездит
+
+  var flat_tree_offset_y = $("#flat_tree").offset()['top'];
+  $(window).scroll(function() {
+    clearTimeout($.data(this, 'scrollTimer'));
+    $.data(this, 'scrollTimer', setTimeout(function() {
+      if($(document).scrollTop() > flat_tree_offset_y){
+        $("#flat_tree").css("position", "relative").css("top", $(document).scrollTop());
+      }
+    }, 250));
+  });
+*/
 
   // --------------------------
   // Получение файла с иконками

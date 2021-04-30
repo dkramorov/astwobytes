@@ -1,7 +1,8 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<h3>{{ plural_obj }}<br /><small>{{ action_create }} {{ rp_plural_obj }}</small></h3>
+
+{% include "core/title/page_title_table.html" %}
 {% include "core/breadcrumbs.html" %}
 
 <div class="panel panel-default">

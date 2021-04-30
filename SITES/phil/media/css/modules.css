@@ -1643,9 +1643,6 @@
   .portfolio_title_bg {
     top: -40px;
   }
-  .portfolio_counter {
-    color: #582371;
-  }
   .portfolio_side_info:after {
     left: -100px;
   }
@@ -1801,6 +1798,15 @@
   margin-top: 130px;
 }
 */
+.project .sticky_container .primary-menu-menu > li.active > a:after,
+.project .sticky_container .primary-menu-menu > li.active > a:before,
+.project .sticky_container .primary-menu-menu > li:hover > a:after,
+.project .sticky_container .primary-menu-menu > li:hover > a:before{
+  opacity: 1;
+}
+.project .primary-menu-menu li a {
+  font-size: 16px !important;
+}
 .project .sidebar .next,
 .project .sidebar .prev {
   position: absolute;
@@ -1810,7 +1816,7 @@
   top: 0;
 }
 .project .sidebar .next {
-  bottom: -50px;
+  bottom: -60px;
 }
 .project .next,
 .project .prev {
@@ -1891,17 +1897,22 @@
   .project .sidebar .prev {
     margin-left: 0;
     width: 100%;
-    top: 40px;
   }
   .project .sidebar .next {
     margin-left: 0;
     width: 100%;
-    bottom: -20px;
   }
 
   .dynamic_portfolio_link a,
   .dynamic_portfolio_link .portfolio_counter{
-    font-size: 16px;
+    font-size: 16px !important;
+  }
+
+  .primary-menu-menu > .dynamic_portfolio_link.active > a:after,
+  .primary-menu-menu > .dynamic_portfolio_link.active > a:before,
+  .primary-menu-menu > .dynamic_portfolio_link:hover > a:after,
+  .primary-menu-menu > .dynamic_portfolio_link:hover > a:before{
+    opacity: 1;
   }
 }
 /*------------- Simple Services ---------------*/

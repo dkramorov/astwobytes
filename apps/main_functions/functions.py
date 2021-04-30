@@ -249,13 +249,13 @@ def sort_voca(queryset, reverse: bool = False):
     if is_dict:
         for item in queryset:
             if 'sub' in item:
-                item['sub'] = sort_voca(item['sub'])
+                item['sub'] = sort_voca(item['sub'], reverse=reverse)
         result = sorted(queryset, key=lambda x:x['position'], reverse=reverse)
         return result
 
     for item in queryset:
         if item.sub:
-            item.sub = sort_voca(item.sub)
+            item.sub = sort_voca(item.sub, reverse=reverse)
     result = sorted(queryset, key=lambda x:x.position, reverse=reverse)
     return result
 

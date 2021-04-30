@@ -20,7 +20,7 @@ from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 
-from .models import Robots
+from .models import Robots, TestScenarios, TEST_COMMANDS
 
 CUR_APP = 'robots'
 robots_vars = {
@@ -40,6 +40,7 @@ robots_vars = {
     'model': Robots,
     #'custom_model_permissions': Robots,
     #'select_related_list': ('name', ),
+    'search_result_format': ('{} - {}', 'server_name ip'),
 }
 
 def api(request, action: str = 'robots'):
@@ -47,9 +48,10 @@ def api(request, action: str = 'robots'):
        :param request: HttpRequest
        :param action: к какой модели обращаемся
     """
-    #if action == 'robots':
-    #    result = ApiHelper(request, robots, CUR_APP)
-    result = ApiHelper(request, robots_vars, CUR_APP)
+    if action == 'test_scenarios':
+        result = ApiHelper(request, test_scenarios_vars, CUR_APP)
+    else:
+        result = ApiHelper(request, robots_vars, CUR_APP)
     return result
 
 @login_required
@@ -157,11 +159,152 @@ def robots_positions(request, *args, **kwargs):
     return JsonResponse(result, safe=False)
 
 def search_robots(request, *args, **kwargs):
-    """Поиск дилеров
+    """Поиск роботов
        :param request: HttpRequest
     """
     return search_view(request,
                        model_vars = robots_vars,
+                       cur_app = CUR_APP,
+                       sfields = None, )
+
+test_scenarios_vars = {
+    'singular_obj': 'Сценарий',
+    'plural_obj': 'Сценарии',
+    'rp_singular_obj': 'сценария',
+    'rp_plural_obj': 'сценариев',
+    'template_prefix': 'robots_scenarios_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'robots',
+    'submenu': 'test_scenarios',
+    'show_urla': 'show_test_scenarios',
+    'create_urla': 'create_test_scenario',
+    'edit_urla': 'edit_test_scenario',
+    'model': TestScenarios,
+    #'custom_model_permissions': TestScenarios,
+    'select_related_list': ('robot', ),
+}
+
+@login_required
+def show_test_scenarios(request, *args, **kwargs):
+    """Вывод сценариев
+       :param request: HttpRequest
+    """
+    mh_vars = test_scenarios_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh.select_related_add('robot')
+    context = mh.context
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        rows = mh.standard_show()
+        result = []
+        for row in rows:
+            item = object_fields(row)
+            item['actions'] = row.id
+            item['folder'] = row.get_folder()
+            item['thumb'] = row.thumb()
+            item['imagine'] = row.imagine()
+            result.append(item)
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+@login_required
+def edit_test_scenario(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование сценария
+       :param request: HttpRequest
+       :param action: действие над объектом (создание/редактирование/удаление)
+       :param row_id: ид записи
+    """
+    mh_vars = test_scenarios_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    mh.select_related_add('robot')
+    row = mh.get_row(row_id)
+    context = mh.context
+    if row:
+        try:
+            context['commands'] = json.loads(row.commands)
+        except Exception as e:
+            logger.error(e)
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+    context['test_commands'] = TEST_COMMANDS
+
+    if request.method == 'GET':
+        if action == 'create':
+            mh.breadcrumbs_add({
+                'link': mh.url_create,
+                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
+            })
+        elif action == 'edit' and row:
+            mh.breadcrumbs_add({
+                'link': mh.url_edit,
+                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+            })
+        elif action == 'drop' and row:
+            if mh.permissions['drop']:
+                row.delete()
+                mh.row = None
+                context['success'] = '%s удален' % (mh.singular_obj, )
+            else:
+                context['error'] = 'Недостаточно прав'
+    elif request.method == 'POST':
+        pass_fields = ()
+        mh.post_vars(pass_fields=pass_fields)
+        if action == 'create' or (action == 'edit' and row):
+            if action == 'create':
+                if mh.permissions['create']:
+                    mh.row = mh.model()
+                    mh.save_row()
+                    context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+            if action == 'edit':
+                if mh.permissions['edit']:
+                    mh.save_row()
+                    context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+        elif action == 'img' and request.FILES:
+            mh.uploads()
+    if mh.row:
+        context['row'] = object_fields(mh.row, pass_fields=('password', ))
+        context['row']['folder'] = mh.row.get_folder()
+        context['row']['thumb'] = mh.row.thumb()
+        context['row']['imagine'] = mh.row.imagine()
+        context['redirect'] = mh.get_url_edit()
+
+    if request.is_ajax() or action == 'img':
+        return JsonResponse(context, safe=False)
+    template = '%sedit.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+@login_required
+def test_scenarios_positions(request, *args, **kwargs):
+    """Изменение позиций сценариев
+       :param request: HttpRequest
+    """
+    result = {}
+    mh_vars = test_scenarios_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_test_scenarios(request, *args, **kwargs):
+    """Поиск сценариев
+       :param request: HttpRequest
+    """
+    return search_view(request,
+                       model_vars = test_scenarios_vars,
                        cur_app = CUR_APP,
                        sfields = None, )
 

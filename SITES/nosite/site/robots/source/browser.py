@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# VERSION 0.1 alpha
+# VERSION 0.2 alpha
 import os
 import json
 import pickle
@@ -12,8 +12,6 @@ import logging
 import requests
 import pytest
 
-from urllib import parse
-
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -22,12 +20,18 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
+from plugins.generic import GenericBrowser
 from plugins.yandex_search import YandexSearch
 from plugins.telegram import TelegramBot
 from plugins.skype import SkypePlugin
 from plugins.search_queries import get_search_queries
-from plugins.ua import generate_user_agent
-from plugins.utils import hd_clear_space, inform_server
+from plugins.ua import (generate_user_agent,
+                        fill_screen_resolution)
+from plugins.utils import (hd_clear_space,
+                           fill_starts_counter,
+                           simpler,
+                           check_connection_over_proxy,
+                           get_ip)
 
 FORMAT = '%(asctime)s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -44,7 +48,7 @@ logger.setLevel(logging.DEBUG)
 # */5 * * * * root source /home/jocker/selenium/env/bin/activate && pytest -s --cache-clear /home/jocker/selenium/a223223.py >/dev/null 2>&1
 # ------------------------------------
 
-class Browser():
+class Browser(GenericBrowser):
     """Реализация класса для удобной эксплуатации selenium"""
     def __init__(self, driver=None, **kwargs):
         """Инициализация браузера
@@ -53,7 +57,6 @@ class Browser():
                :kwargs['proxy'] (str): задать проксик
                :kwargs['proxy_percent'] (int): задать процент использования прокси
                :kwargs['custom_profile'] (str): папка с профилем
-               :kwargs['custom_profile_percent'] (int) если нет custom_profile, делаем новый
                :kwargs['custom_profile_arr'] (list): Список профилей на выбор
                :kwargs['queue_profiles'] (bool): True запускать профили по очереди
                :kwargs['screen'] (str): разрешение экрана
@@ -69,7 +72,6 @@ class Browser():
         # ------------------------------
         self.x = 0
         self.y = 0
-        self.test_url = 'https://223-223.ru'
         self.messages = []
         self.driver_type = kwargs.get('driver_type')
         if not self.driver_type:
@@ -84,7 +86,8 @@ class Browser():
         self.proxy = None
         self.headless = False
 
-        profile_arr = kwargs.get('custom_profile_arr') or [folder for folder in os.listdir(self.profile_dir) if os.path.isdir(os.path.join(self.profile_dir, folder))]
+        guess_folders = [folder for folder in os.listdir(self.profile_dir) if os.path.isdir(os.path.join(self.profile_dir, folder))]
+        profile_arr = kwargs.get('custom_profile_arr') or guess_folders
         ordered_profiles = sorted([x for x in profile_arr])
 
         if driver:
@@ -98,16 +101,7 @@ class Browser():
         # -----------------------------
         # Инкрементальный номер запуска
         # -----------------------------
-        self.total_starts_counter = 0
-        counter_file = os.path.join(self.cur_dir, 'starts_counter.txt')
-        if os.path.exists(counter_file):
-            with open(counter_file, 'r', encoding='utf-8') as f:
-                total_start_counter = json.loads(f.read())
-                self.total_starts_counter = total_start_counter['starts_counter']
-        with open(counter_file, 'w+', encoding='utf-8') as f:
-            f.write(json.dumps({
-                'starts_counter': self.total_starts_counter + 1,
-            }))
+        self.total_starts_counter = fill_starts_counter(self.cur_dir)
 
         # ------------------------------
         # Создание/выбор нужного профиля
@@ -115,11 +109,6 @@ class Browser():
         custom_profile = kwargs.get('custom_profile')
         if custom_profile:
             profile_path = os.path.join(self.profile_dir, custom_profile)
-            # --------------------------
-            # Новый профиль "незнакомец"
-            # --------------------------
-            if custom_profile in ('stranges', 'unknown', 'new'):
-                profile_path = self.get_next_profile_folder()
         else:
             # ------------------------
             # Выбор случайного профиля
@@ -129,27 +118,14 @@ class Browser():
                 profile_path = os.path.join(self.profile_dir, profile_arr[0])
             else:
                 profile_path = os.path.join(self.profile_dir, 'new_profile')
-            # ---------------------------------
-            # Если есть custom_profile_percent,
-            # то надо сплясать от этого шанса
-            # ---------------------------------
-            custom_profile_percent = kwargs.get('custom_profile_percent', 0)
-            if custom_profile_percent > 0:
-                loto = random.randint(0, 100)
-                if custom_profile_percent > loto:
-                    profile_path = self.get_next_profile_folder()
 
         # -----------------
         # Очередной профиль
         # -----------------
         is_queue_profiles = kwargs.get('queue_profiles')
         if is_queue_profiles:
-            queue_profile = self.simpler(self.total_starts_counter, len(profile_arr))
-            logger.info('\n[total starts count]: %s, simpler %s, queue profile %s' % (
-                self.total_starts_counter,
-                queue_profile,
-                ordered_profiles[queue_profile], )
-            )
+            queue_profile = simpler(self.total_starts_counter,
+                                    len(profile_arr))
             profile_path = os.path.join(self.profile_dir, ordered_profiles[queue_profile])
 
         if not os.path.exists(profile_path):
@@ -173,12 +149,11 @@ class Browser():
         # ------------------------------
         proxy = None
         proxy_candidate = kwargs.get('proxy')
-        if not proxy_candidate:
-            proxy_candidate  = 'http://10.10.9.1:3128'
         proxy_percent = kwargs.get('proxy_percent')
         if proxy_candidate and proxy_percent:
-            if self.check_connection_over_proxy(proxy=proxy_candidate, probability=proxy_percent):
+            if check_connection_over_proxy(proxy=proxy_candidate, probability=proxy_percent):
                 self.proxy = proxy_candidate
+
         # -----------------------------
         # Инкрементальный номер запуска
         # -----------------------------
@@ -209,34 +184,11 @@ class Browser():
         # --------------------------
         # Зарядить разрешение экрана
         # --------------------------
-        screen_resolutions = [
-                              #'1024,768',
-                              '1366,768',
-                              '1920,1080',
-                              '1400,1050',
-                              '1440,900',
-                              '1440,1080',
-                              '1600,900',
-                              '1680,1050',
-                              '1360,768',
-                              '1280,720',
-                              '1280,800',
-                              '1280,1024',
-                              '1280,960',
-                             ]
         screen = kwargs.get('screen', '').replace('x', ',').replace(' ', '')
         if not screen:
-            screen_file = os.path.join(self.cur_profile, 'screen.json')
-            if os.path.exists(screen_file):
-                with open(screen_file, 'r', encoding='utf-8') as f:
-                    screen = json.loads(f.read())['screen']
-            else:
-                random.shuffle(screen_resolutions)
-                screen = screen_resolutions[0]
-                with open(screen_file, 'w+', encoding='utf-8') as f:
-                    f.write(json.dumps({'screen': screen}))
+            screen = fill_screen_resolution(self.cur_profile)
         self.screen = screen
-        logger.info('[screen resolution]: %s' % (self.screen, ))
+
         # Успешное завершения теста
         self.success = False
         # --------
@@ -251,9 +203,11 @@ class Browser():
         # ----------------
         if 'telegram' in plugins:
             settings = plugins['telegram']
-            self.telegram = TelegramBot(proxies = settings.get('proxies'),
-                                        token = settings.get('token'),
-                                        chat_id = settings.get('chat_id'))
+            self.telegram = TelegramBot(
+                proxies = settings.get('proxies'),
+                token = settings.get('token'),
+                chat_id = settings.get('chat_id')
+            )
         headless = kwargs.get('headless')
         if headless:
             self.headless = True
@@ -373,7 +327,6 @@ class Browser():
                 self.telegram.send_message('%s %s' % (self.telegram.get_emoji('hot'), e))
             logger.exception('we can not start')
             exit()
-        inform_server(self.driver)
 
     def get_performance_logs(self):
         """Получаем логи (сетевая активность), например,
@@ -386,48 +339,6 @@ class Browser():
             return
         return self.driver.get_log('performance')
 
-    def simpler(self, digit, total):
-        """Упрощаем число, получаем неделимое на total
-           Например, хотим запускать последовательно профили,
-           тогда нужно ввести счетчик, который будет инкрементироваться
-           берем его и количество профилей и выясняем какой на очереди
-           :param digit число - номер запуска
-           :param total число - всего профилей
-        """
-        if total <= 0:
-            return digit
-        while digit >= total:
-            digit -= total
-        return digit
-
-    def get_next_profile_folder(self):
-        """Находим unknown_? профиль по порядку создаем, если нету"""
-        next_digit = 1
-        while True:
-            check_profile = os.path.join(self.profile_dir, 'unknown_%s' % (next_digit, ))
-            if os.path.exists(check_profile):
-                next_digit += 1
-            else:
-                return check_profile
-
-    def get_current_url(self, unquote: bool = False):
-        """Получить текущий url браузера
-           :param unquote: вывести кириллицу нормально
-        """
-        url = self.driver.current_url
-        if unquote:
-            url = parse.unquote(url)
-        return url
-
-    def get_ip(self):
-        """Получить ip адрес"""
-        if not self.ip:
-            #self.goto('https://223-223.ru/main/test/')
-            #myip = self.find_element_by_id('myip').text
-            r = requests.get('http://spam.223-223.ru/my_ip/')
-            myip = r.json().get('ip')
-            self.ip = myip
-        return self.ip
 
     def save_screenshot(self, name: str = None):
         """Сохранение скриншота"""
@@ -443,15 +354,15 @@ class Browser():
             os.mkdir(screenshots_path)
         fname = os.path.join(screenshots_path, name)
         self.driver.save_screenshot(fname)
-        logger.info('[SCREENSHOT]: %s' % (fname, ))
         return fname
+
 
     def log(self, msg: str = None):
         """Логирование в файл действия
            особенно нужен для регрессии"""
         now = datetime.datetime.now()
         if not msg:
-            msg = '%s ip=%s\n' % (now.strftime('%H:%M'), self.get_ip())
+            msg = '%s ip=%s\n' % (now.strftime('%H:%M'), get_ip())
         log_folder = os.path.join(self.log_folder,
                                   '%s' % (self.started.strftime('%Y-%m-%d'), ))
         if not os.path.exists(log_folder):
@@ -460,79 +371,12 @@ class Browser():
         with open(log_file, 'a+', encoding='utf-8') as f:
             f.write('%s\n' % (msg, ))
 
-    def get_capabilities(self) -> dict:
-        """Возвращает capabilities использованные для создания экземпляра"""
-        return self.driver.capabilities
-
-    def maximize_window(self):
-        """Сделать максимальный размер окна"""
-        self.driver.maximize_window()
-
-    def check_connection_over_proxy(self, proxy: str, probability: int = 50):
-        """Проверка соединения через проксики
-           если проверка проходит, то с вероятностью probability
-           используем проксик"""
-        proxies = {
-            'http'  : proxy,
-            'https' : proxy,
-        }
-        try:
-            r = requests.get(self.test_url, proxies=proxies, timeout=2)
-            if r.status_code == 200:
-                logger.info('[proxy]: proxies are available')
-                chance = random.randint(0, 100)
-                if chance <= probability:
-                    logger.info('[proxy]: USED PROXY')
-                    return True
-        except Exception as e:
-            logger.info('[proxy]: proxies not available %s' % (e, ))
-        return False
-
-    def goto(self, url: str):
-        """Перейти по ссылке"""
-        self.driver.get(url)
-
-    def refresh(self):
-        """Обновить страничку"""
-        self.driver.refresh()
-
     def get_random_query(self):
         random.shuffle(self.q_arr)
         return self.q_arr[0]
 
     def get_driver(self):
         return self.driver
-
-    def window_handles(self):
-        """Возвращет список открытых оконо/вкладок"""
-        return self.driver.window_handles
-
-    def current_window_handle(self):
-        """Возвращает активное окно/вкладку"""
-        return self.driver.current_window_handle
-
-    def close_current_window(self):
-        """Закрыть активную вкладку,
-           TODO: попробовать с таймаутом !!!
-           походу частенько вызывает
-           selenium.common.exceptions.InvalidSessionIdException: Message: invalid session id"""
-        self.driver.close()
-        time.sleep(3)
-
-    def switch_to_window(self, window_handle):
-        """Переключает на окно/вкладку"""
-        self.driver.switch_to.window(window_handle)
-
-    def close_other_tabs(self):
-        """Закрыть все вкладки, кроме активной"""
-        cur_tab = self.current_window_handle()
-        for tab in self.window_handles():
-            if tab != cur_tab:
-                self.switch_to_window(tab)
-                time.sleep(2)
-                self.close_current_window()
-                time.sleep(2)
-        self.switch_to_window(cur_tab)
 
     def get_attribute(self, el, attr):
         """Получение атрибута элемента"""
@@ -555,12 +399,16 @@ class Browser():
         return el.tag_name.lower()
 
     def is_element_visible(self, el):
-        """Проверка, что элемент видимый"""
+        """Проверка, что элемент видимый
+        """
         return el.is_displayed()
 
     def send_keys(self, el, text):
         """Отправка текста в элемент
-           Keys.RETURN для ENTER"""
+           Keys.RETURN для ENTER
+           :param el: элемент DOM
+           :param text: посылаемый текст
+        """
         el.send_keys(text)
 
     # TODO стирание
@@ -672,10 +520,6 @@ class Browser():
             }
         }
 
-    def get_window_size(self):
-        """Получить размер окна"""
-        return self.driver.get_window_size()
-
     def wait(self, cond):
         """Ожидание условия, например,
         WebDriverWait(driver, 10).until(
@@ -686,57 +530,6 @@ class Browser():
             EC.element_to_be_clickable((By.ID, "show_yandex_direct"))
         )"""
         WebDriverWait(self.driver, 10).until(cond)
-
-    # Другие варианты поиска элемента:
-    # find_element_by_partial_link_text
-    # find_element_by_class_name
-
-    def find_element_by_id(self, id_selector):
-        """Поиск элементов по имени"""
-        return self.driver.find_element_by_id(id_selector)
-
-    def find_element_by_name(self, name):
-        """Поиск элемента по имени"""
-        return self.driver.find_element_by_name(name)
-
-    def find_element_by_xpath(self, xpath):
-        """Поиск элемента по xpath"""
-        return self.driver.find_element_by_xpath(xpath)
-
-    def find_element_by_tag_name(self, tag):
-        """Поиск элемента по тегу"""
-        return self.driver.find_element_by_tag_name(tag)
-
-    def find_element_by_css_selector(self, selector):
-        """Поиск элемента по css селектору
-           например, find_element_by_css_selector('.megamenu-pattern')"""
-        return self.driver.find_element_by_css_selector(selector)
-
-    def find_element_by_link_text(self, link_text):
-        """Поиск элемента по тексту ссылки"""
-        return self.driver.find_element_by_link_text(link_text)
-
-    # Другие варианты поиска элементОВ:
-    # find_elements_by_link_text
-    # find_elements_by_partial_link_text
-    # find_elements_by_class_name
-
-    def find_elements_by_name(self, name):
-        """Поиск элементов по имени"""
-        return self.driver.find_elements_by_name(name)
-
-    def find_elements_by_tag_name(self, tag):
-        """Поиск элементов по тегу"""
-        return self.driver.find_elements_by_tag_name(tag)
-
-    def find_elements_by_xpath(self, xpath):
-        """Поиск элементов по xpath"""
-        return self.driver.find_elements_by_xpath(xpath)
-
-    def find_elements_by_css_selector(self, name):
-        """Поиск элемента по css селектору
-           например, find_element_by_css_selector('.megamenu-pattern')"""
-        return self.driver.find_elements_by_css_selector(name)
 
     def find_parent(self, el):
         """Найти parent элемента"""
@@ -915,45 +708,11 @@ return {'w': window.innerWidth, 'h': h};""")
                     self.driver.execute_script('window.scrollTo(0, %s)' % (scrolly, ))
                 break
 
-    def history_back(self):
-        """Возвращаемся на предыдущую страничку"""
-        self.driver.execute_script("window.history.go(-1)")
-
-# ------------------------------------
-# Через консоль веб-разработчика можно
-# посмотреть правильно ли мы можем
-# определить по локатору элемент,
-# насколько локатор точен?
-# ------------------------------------
-# jquery-style:
-# $("[name=btnK]") - находит первый элемент
-# $$("[name=btnK]") - находит все элементы
-# 0: <input value="Поиск в Google" aria-label="Поиск в Google" name="btnK" type="submit">
-# 1: <input value="Поиск в Google" aria-label="Поиск в Google" name="btnK" type="submit">
-# опа - а их 2 :) - локатор недостаточно точный
-# Можно делать уточняющие локаторы $$("#viewport [name=btnK]")
-
-# ------------------------------
-# Выполнение скриптов яваскрипт
-# Поиск локатора через яваскрипт
-# ------------------------------
-# driver.execute_script("return 2+2")
-# driver.execute_script("return document.getElementById('bugoga');").send_keys("123")
-# driver.execute_script("return $$('#bugoga');").send_keys("123")
-
-# -------------------------------------------------
-# Нужно дополнительно в PATH иметь сам chromedriver
-# -------------------------------------------------
-# selenium.common.exceptions.WebDriverException: Message: 'chromedriver' executable needs to be in PATH. Please see https://sites.google.com/a/chromium.org/chromedriver/home
-# скачиваем и помещаем в /env/bin
-
-
     def pretend_user_helper(self, do_click=False, **kwargs):
-        """Вспомогательная функция для того, чтобы притвориться пользователем"""
-        #exclude_endswith = ('.jpg', '.png', '.bmp', '.gif')
-        #if kwargs.get('exclude_endswith'):
-        #    exclude_endswith = kwargs['exclude_endswith']
-
+        """Вспомогательная функция,
+           чтобы притвориться пользователем
+           :param do_click: выполнять нажатия
+        """
         current_url = self.get_current_url()
         scheme = '%s://' % (current_url.split('://')[0], )
         domain = '%s%s' % (scheme, current_url.replace(scheme, '').split('/')[0])
@@ -994,7 +753,8 @@ return {'w': window.innerWidth, 'h': h};""")
 
     def emulate_mouse_move(self, count: int = None):
         """Эмулировать движение мыши
-           :param count: количество перепрыгиваний на случайные координаты
+           :param count: количество перепрыгиваний
+                         на случайные координаты
         """
         self.track_mouse()
         if not count:
@@ -1013,7 +773,9 @@ return {'w': window.innerWidth, 'h': h};""")
                 break
 
     def pretend_user(self):
-        """Притвориться пользователем на ТЕКУЩЕМ сайте и кликнуть на случайную ссыль"""
+        """Притвориться пользователем на ТЕКУЩЕМ сайте
+           и кликнуть на случайную ссыль
+        """
         time.sleep(1)
         self.pretend_user_helper(do_click=True)
         time.sleep(1)
@@ -1128,6 +890,7 @@ return getSize(%s);""" % css_selector)
                 try:
                     shutil.rmtree(bad_path)
                 except Exception as e:
-                    logger.error('[ERROR]: drop failed %s' % bad_path)
+                    #logger.error('[ERROR]: drop failed %s' % bad_path)
+                    pass
         hd_clear_space()
 

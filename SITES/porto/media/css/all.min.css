@@ -1,8 +1,8 @@
 /*!
- * Font Awesome Free 5.8.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.15.1 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
-.fa,.fab,.fal,.far,.fas{-moz-osx-font-smoothing:grayscale;
+.fa,.fab,.fad,.fal,.far,.fas{-moz-osx-font-smoothing:grayscale;
 -webkit-font-smoothing:antialiased;
 display:inline-block;
 font-style:normal;
@@ -42,23 +42,39 @@ padding:.2em .25em .15em}
 .fa-pull-right{float:right}
 .fa.fa-pull-left,.fab.fa-pull-left,.fal.fa-pull-left,.far.fa-pull-left,.fas.fa-pull-left{margin-right:.3em}
 .fa.fa-pull-right,.fab.fa-pull-right,.fal.fa-pull-right,.far.fa-pull-right,.fas.fa-pull-right{margin-left:.3em}
-.fa-spin{animation:fa-spin 2s infinite linear}
-.fa-pulse{animation:fa-spin 1s infinite steps(8)}
-@keyframes fa-spin{0%{transform:rotate(0deg)}
-to{transform:rotate(1turn)}
+.fa-spin{-webkit-animation:fa-spin 2s linear infinite;
+animation:fa-spin 2s linear infinite}
+.fa-pulse{-webkit-animation:fa-spin 1s steps(8) infinite;
+animation:fa-spin 1s steps(8) infinite}
+@-webkit-keyframes fa-spin{0%{-webkit-transform:rotate(0deg);
+transform:rotate(0deg)}
+to{-webkit-transform:rotate(1turn);
+transform:rotate(1turn)}
+}
+@keyframes fa-spin{0%{-webkit-transform:rotate(0deg);
+transform:rotate(0deg)}
+to{-webkit-transform:rotate(1turn);
+transform:rotate(1turn)}
 }
 .fa-rotate-90{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
+-webkit-transform:rotate(90deg);
 transform:rotate(90deg)}
 .fa-rotate-180{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
+-webkit-transform:rotate(180deg);
 transform:rotate(180deg)}
 .fa-rotate-270{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+-webkit-transform:rotate(270deg);
 transform:rotate(270deg)}
 .fa-flip-horizontal{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)";
+-webkit-transform:scaleX(-1);
 transform:scaleX(-1)}
-.fa-flip-vertical{transform:scaleY(-1)}
+.fa-flip-vertical{-webkit-transform:scaleY(-1);
+transform:scaleY(-1)}
 .fa-flip-both,.fa-flip-horizontal.fa-flip-vertical,.fa-flip-vertical{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"}
-.fa-flip-both,.fa-flip-horizontal.fa-flip-vertical{transform:scale(-1)}
-:root .fa-flip-both,:root .fa-flip-horizontal,:root .fa-flip-vertical,:root .fa-rotate-90,:root .fa-rotate-180,:root .fa-rotate-270{filter:none}
+.fa-flip-both,.fa-flip-horizontal.fa-flip-vertical{-webkit-transform:scale(-1);
+transform:scale(-1)}
+:root .fa-flip-both,:root .fa-flip-horizontal,:root .fa-flip-vertical,:root .fa-rotate-90,:root .fa-rotate-180,:root .fa-rotate-270{-webkit-filter:none;
+filter:none}
 .fa-stack{display:inline-block;
 height:2em;
 line-height:2em;
@@ -81,7 +97,6 @@ width:100%}
 .fa-address-card:before{content:"\f2bb"}
 .fa-adjust:before{content:"\f042"}
 .fa-adn:before{content:"\f170"}
-.fa-adobe:before{content:"\f778"}
 .fa-adversal:before{content:"\f36a"}
 .fa-affiliatetheme:before{content:"\f36b"}
 .fa-air-freshener:before{content:"\f5d0"}
@@ -156,7 +171,12 @@ width:100%}
 .fa-backspace:before{content:"\f55a"}
 .fa-backward:before{content:"\f04a"}
 .fa-bacon:before{content:"\f7e5"}
+.fa-bacteria:before{content:"\e059"}
+.fa-bacterium:before{content:"\e05a"}
+.fa-bahai:before{content:"\f666"}
 .fa-balance-scale:before{content:"\f24e"}
+.fa-balance-scale-left:before{content:"\f515"}
+.fa-balance-scale-right:before{content:"\f516"}
 .fa-ban:before{content:"\f05e"}
 .fa-band-aid:before{content:"\f462"}
 .fa-bandcamp:before{content:"\f2d5"}
@@ -180,6 +200,7 @@ width:100%}
 .fa-bezier-curve:before{content:"\f55b"}
 .fa-bible:before{content:"\f647"}
 .fa-bicycle:before{content:"\f206"}
+.fa-biking:before{content:"\f84a"}
 .fa-bimobject:before{content:"\f378"}
 .fa-binoculars:before{content:"\f1e5"}
 .fa-biohazard:before{content:"\f780"}
@@ -209,9 +230,13 @@ width:100%}
 .fa-book-reader:before{content:"\f5da"}
 .fa-bookmark:before{content:"\f02e"}
 .fa-bootstrap:before{content:"\f836"}
+.fa-border-all:before{content:"\f84c"}
+.fa-border-none:before{content:"\f850"}
+.fa-border-style:before{content:"\f853"}
 .fa-bowling-ball:before{content:"\f436"}
 .fa-box:before{content:"\f466"}
 .fa-box-open:before{content:"\f49e"}
+.fa-box-tissue:before{content:"\e05b"}
 .fa-boxes:before{content:"\f468"}
 .fa-braille:before{content:"\f2a1"}
 .fa-brain:before{content:"\f5dc"}
@@ -232,6 +257,7 @@ width:100%}
 .fa-bus:before{content:"\f207"}
 .fa-bus-alt:before{content:"\f55e"}
 .fa-business-time:before{content:"\f64a"}
+.fa-buy-n-large:before{content:"\f8a6"}
 .fa-buysellads:before{content:"\f20d"}
 .fa-calculator:before{content:"\f1ec"}
 .fa-calendar:before{content:"\f133"}
@@ -254,6 +280,7 @@ width:100%}
 .fa-car-battery:before{content:"\f5df"}
 .fa-car-crash:before{content:"\f5e1"}
 .fa-car-side:before{content:"\f5e4"}
+.fa-caravan:before{content:"\f8ff"}
 .fa-caret-down:before{content:"\f0d7"}
 .fa-caret-left:before{content:"\f0d9"}
 .fa-caret-right:before{content:"\f0da"}
@@ -333,6 +360,7 @@ width:100%}
 .fa-cloud-sun:before{content:"\f6c4"}
 .fa-cloud-sun-rain:before{content:"\f743"}
 .fa-cloud-upload-alt:before{content:"\f382"}
+.fa-cloudflare:before{content:"\e07d"}
 .fa-cloudscale:before{content:"\f383"}
 .fa-cloudsmith:before{content:"\f384"}
 .fa-cloudversify:before{content:"\f385"}
@@ -357,6 +385,7 @@ width:100%}
 .fa-compact-disc:before{content:"\f51f"}
 .fa-compass:before{content:"\f14e"}
 .fa-compress:before{content:"\f066"}
+.fa-compress-alt:before{content:"\f422"}
 .fa-compress-arrows-alt:before{content:"\f78c"}
 .fa-concierge-bell:before{content:"\f562"}
 .fa-confluence:before{content:"\f78d"}
@@ -366,6 +395,7 @@ width:100%}
 .fa-cookie-bite:before{content:"\f564"}
 .fa-copy:before{content:"\f0c5"}
 .fa-copyright:before{content:"\f1f9"}
+.fa-cotton-bureau:before{content:"\f89e"}
 .fa-couch:before{content:"\f4b8"}
 .fa-cpanel:before{content:"\f388"}
 .fa-creative-commons:before{content:"\f25e"}
@@ -399,9 +429,11 @@ width:100%}
 .fa-cuttlefish:before{content:"\f38c"}
 .fa-d-and-d:before{content:"\f38d"}
 .fa-d-and-d-beyond:before{content:"\f6ca"}
+.fa-dailymotion:before{content:"\e052"}
 .fa-dashcube:before{content:"\f210"}
 .fa-database:before{content:"\f1c0"}
 .fa-deaf:before{content:"\f2a4"}
+.fa-deezer:before{content:"\e077"}
 .fa-delicious:before{content:"\f1a5"}
 .fa-democrat:before{content:"\f747"}
 .fa-deploydog:before{content:"\f38e"}
@@ -428,6 +460,7 @@ width:100%}
 .fa-directions:before{content:"\f5eb"}
 .fa-discord:before{content:"\f392"}
 .fa-discourse:before{content:"\f393"}
+.fa-disease:before{content:"\f7fa"}
 .fa-divide:before{content:"\f529"}
 .fa-dizzy:before{content:"\f567"}
 .fa-dna:before{content:"\f471"}
@@ -462,6 +495,7 @@ width:100%}
 .fa-earlybirds:before{content:"\f39a"}
 .fa-ebay:before{content:"\f4f4"}
 .fa-edge:before{content:"\f282"}
+.fa-edge-legacy:before{content:"\e078"}
 .fa-edit:before{content:"\f044"}
 .fa-egg:before{content:"\f7fb"}
 .fa-eject:before{content:"\f052"}
@@ -489,6 +523,7 @@ width:100%}
 .fa-exclamation-circle:before{content:"\f06a"}
 .fa-exclamation-triangle:before{content:"\f071"}
 .fa-expand:before{content:"\f065"}
+.fa-expand-alt:before{content:"\f424"}
 .fa-expand-arrows-alt:before{content:"\f31e"}
 .fa-expeditedssl:before{content:"\f23e"}
 .fa-external-link-alt:before{content:"\f35d"}
@@ -500,9 +535,11 @@ width:100%}
 .fa-facebook-f:before{content:"\f39e"}
 .fa-facebook-messenger:before{content:"\f39f"}
 .fa-facebook-square:before{content:"\f082"}
+.fa-fan:before{content:"\f863"}
 .fa-fantasy-flight-games:before{content:"\f6dc"}
 .fa-fast-backward:before{content:"\f049"}
 .fa-fast-forward:before{content:"\f050"}
+.fa-faucet:before{content:"\e005"}
 .fa-fax:before{content:"\f1ac"}
 .fa-feather:before{content:"\f52d"}
 .fa-feather-alt:before{content:"\f56b"}
@@ -543,6 +580,7 @@ width:100%}
 .fa-fire-alt:before{content:"\f7e4"}
 .fa-fire-extinguisher:before{content:"\f134"}
 .fa-firefox:before{content:"\f269"}
+.fa-firefox-browser:before{content:"\e007"}
 .fa-first-aid:before{content:"\f479"}
 .fa-first-order:before{content:"\f2b0"}
 .fa-first-order-alt:before{content:"\f50a"}
@@ -596,6 +634,7 @@ width:100%}
 .fa-gift:before{content:"\f06b"}
 .fa-gifts:before{content:"\f79c"}
 .fa-git:before{content:"\f1d3"}
+.fa-git-alt:before{content:"\f841"}
 .fa-git-square:before{content:"\f1d2"}
 .fa-github:before{content:"\f09b"}
 .fa-github-alt:before{content:"\f113"}
@@ -621,6 +660,7 @@ width:100%}
 .fa-goodreads-g:before{content:"\f3a9"}
 .fa-google:before{content:"\f1a0"}
 .fa-google-drive:before{content:"\f3aa"}
+.fa-google-pay:before{content:"\e079"}
 .fa-google-play:before{content:"\f3ab"}
 .fa-google-plus:before{content:"\f2b3"}
 .fa-google-plus-g:before{content:"\f0d5"}
@@ -652,6 +692,7 @@ width:100%}
 .fa-grip-vertical:before{content:"\f58e"}
 .fa-gripfire:before{content:"\f3ac"}
 .fa-grunt:before{content:"\f3ad"}
+.fa-guilded:before{content:"\e07e"}
 .fa-guitar:before{content:"\f7a6"}
 .fa-gulp:before{content:"\f3ae"}
 .fa-h-square:before{content:"\f0fd"}
@@ -663,7 +704,9 @@ width:100%}
 .fa-hamsa:before{content:"\f665"}
 .fa-hand-holding:before{content:"\f4bd"}
 .fa-hand-holding-heart:before{content:"\f4be"}
+.fa-hand-holding-medical:before{content:"\e05c"}
 .fa-hand-holding-usd:before{content:"\f4c0"}
+.fa-hand-holding-water:before{content:"\f4c1"}
 .fa-hand-lizard:before{content:"\f258"}
 .fa-hand-middle-finger:before{content:"\f806"}
 .fa-hand-paper:before{content:"\f256"}
@@ -675,16 +718,25 @@ width:100%}
 .fa-hand-pointer:before{content:"\f25a"}
 .fa-hand-rock:before{content:"\f255"}
 .fa-hand-scissors:before{content:"\f257"}
+.fa-hand-sparkles:before{content:"\e05d"}
 .fa-hand-spock:before{content:"\f259"}
 .fa-hands:before{content:"\f4c2"}
 .fa-hands-helping:before{content:"\f4c4"}
+.fa-hands-wash:before{content:"\e05e"}
 .fa-handshake:before{content:"\f2b5"}
+.fa-handshake-alt-slash:before{content:"\e05f"}
+.fa-handshake-slash:before{content:"\e060"}
 .fa-hanukiah:before{content:"\f6e6"}
 .fa-hard-hat:before{content:"\f807"}
 .fa-hashtag:before{content:"\f292"}
+.fa-hat-cowboy:before{content:"\f8c0"}
+.fa-hat-cowboy-side:before{content:"\f8c1"}
 .fa-hat-wizard:before{content:"\f6e8"}
-.fa-haykal:before{content:"\f666"}
 .fa-hdd:before{content:"\f0a0"}
+.fa-head-side-cough:before{content:"\e061"}
+.fa-head-side-cough-slash:before{content:"\e062"}
+.fa-head-side-mask:before{content:"\e063"}
+.fa-head-side-virus:before{content:"\e064"}
 .fa-heading:before{content:"\f1dc"}
 .fa-headphones:before{content:"\f025"}
 .fa-headphones-alt:before{content:"\f58f"}
@@ -699,6 +751,7 @@ width:100%}
 .fa-hips:before{content:"\f452"}
 .fa-hire-a-helper:before{content:"\f3b0"}
 .fa-history:before{content:"\f1da"}
+.fa-hive:before{content:"\e07f"}
 .fa-hockey-puck:before{content:"\f453"}
 .fa-holly-berry:before{content:"\f7aa"}
 .fa-home:before{content:"\f015"}
@@ -709,6 +762,7 @@ width:100%}
 .fa-hospital:before{content:"\f0f8"}
 .fa-hospital-alt:before{content:"\f47d"}
 .fa-hospital-symbol:before{content:"\f47e"}
+.fa-hospital-user:before{content:"\f80d"}
 .fa-hot-tub:before{content:"\f593"}
 .fa-hotdog:before{content:"\f80f"}
 .fa-hotel:before{content:"\f594"}
@@ -718,6 +772,7 @@ width:100%}
 .fa-hourglass-half:before{content:"\f252"}
 .fa-hourglass-start:before{content:"\f251"}
 .fa-house-damage:before{content:"\f6f1"}
+.fa-house-user:before{content:"\e065"}
 .fa-houzz:before{content:"\f27c"}
 .fa-hryvnia:before{content:"\f6f2"}
 .fa-html5:before{content:"\f13b"}
@@ -725,9 +780,11 @@ width:100%}
 .fa-i-cursor:before{content:"\f246"}
 .fa-ice-cream:before{content:"\f810"}
 .fa-icicles:before{content:"\f7ad"}
+.fa-icons:before{content:"\f86d"}
 .fa-id-badge:before{content:"\f2c1"}
 .fa-id-card:before{content:"\f2c2"}
 .fa-id-card-alt:before{content:"\f47f"}
+.fa-ideal:before{content:"\e013"}
 .fa-igloo:before{content:"\f7ae"}
 .fa-image:before{content:"\f03e"}
 .fa-images:before{content:"\f302"}
@@ -738,7 +795,10 @@ width:100%}
 .fa-infinity:before{content:"\f534"}
 .fa-info:before{content:"\f129"}
 .fa-info-circle:before{content:"\f05a"}
+.fa-innosoft:before{content:"\e080"}
 .fa-instagram:before{content:"\f16d"}
+.fa-instagram-square:before{content:"\e055"}
+.fa-instalod:before{content:"\e081"}
 .fa-intercom:before{content:"\f7af"}
 .fa-internet-explorer:before{content:"\f26b"}
 .fa-invision:before{content:"\f7b0"}
@@ -777,6 +837,7 @@ width:100%}
 .fa-language:before{content:"\f1ab"}
 .fa-laptop:before{content:"\f109"}
 .fa-laptop-code:before{content:"\f5fc"}
+.fa-laptop-house:before{content:"\e066"}
 .fa-laptop-medical:before{content:"\f812"}
 .fa-laravel:before{content:"\f3bd"}
 .fa-lastfm:before{content:"\f202"}
@@ -816,6 +877,8 @@ width:100%}
 .fa-long-arrow-alt-up:before{content:"\f30c"}
 .fa-low-vision:before{content:"\f2a8"}
 .fa-luggage-cart:before{content:"\f59d"}
+.fa-lungs:before{content:"\f604"}
+.fa-lungs-virus:before{content:"\e067"}
 .fa-lyft:before{content:"\f3c3"}
 .fa-magento:before{content:"\f3c4"}
 .fa-magic:before{content:"\f0d0"}
@@ -841,6 +904,7 @@ width:100%}
 .fa-mask:before{content:"\f6fa"}
 .fa-mastodon:before{content:"\f4f6"}
 .fa-maxcdn:before{content:"\f136"}
+.fa-mdb:before{content:"\f8ca"}
 .fa-medal:before{content:"\f5a2"}
 .fa-medapps:before{content:"\f3c6"}
 .fa-medium:before{content:"\f23a"}
@@ -857,6 +921,7 @@ width:100%}
 .fa-menorah:before{content:"\f676"}
 .fa-mercury:before{content:"\f223"}
 .fa-meteor:before{content:"\f753"}
+.fa-microblog:before{content:"\e01a"}
 .fa-microchip:before{content:"\f2db"}
 .fa-microphone:before{content:"\f130"}
 .fa-microphone-alt:before{content:"\f3c9"}
@@ -870,6 +935,7 @@ width:100%}
 .fa-mitten:before{content:"\f7b5"}
 .fa-mix:before{content:"\f3cb"}
 .fa-mixcloud:before{content:"\f289"}
+.fa-mixer:before{content:"\e056"}
 .fa-mizuni:before{content:"\f3cc"}
 .fa-mobile:before{content:"\f10b"}
 .fa-mobile-alt:before{content:"\f3cd"}
@@ -887,6 +953,7 @@ width:100%}
 .fa-mosque:before{content:"\f678"}
 .fa-motorcycle:before{content:"\f21c"}
 .fa-mountain:before{content:"\f6fc"}
+.fa-mouse:before{content:"\f8cc"}
 .fa-mouse-pointer:before{content:"\f245"}
 .fa-mug-hot:before{content:"\f7b6"}
 .fa-music:before{content:"\f001"}
@@ -896,7 +963,6 @@ width:100%}
 .fa-neuter:before{content:"\f22c"}
 .fa-newspaper:before{content:"\f1ea"}
 .fa-nimblr:before{content:"\f5a8"}
-.fa-nintendo-switch:before{content:"\f418"}
 .fa-node:before{content:"\f419"}
 .fa-node-js:before{content:"\f3d3"}
 .fa-not-equal:before{content:"\f53e"}
@@ -906,6 +972,7 @@ width:100%}
 .fa-nutritionix:before{content:"\f3d6"}
 .fa-object-group:before{content:"\f247"}
 .fa-object-ungroup:before{content:"\f248"}
+.fa-octopus-deploy:before{content:"\e082"}
 .fa-odnoklassniki:before{content:"\f263"}
 .fa-odnoklassniki-square:before{content:"\f264"}
 .fa-oil-can:before{content:"\f613"}
@@ -915,6 +982,7 @@ width:100%}
 .fa-openid:before{content:"\f19b"}
 .fa-opera:before{content:"\f26a"}
 .fa-optin-monster:before{content:"\f23c"}
+.fa-orcid:before{content:"\f8d2"}
 .fa-osi:before{content:"\f41a"}
 .fa-otter:before{content:"\f700"}
 .fa-outdent:before{content:"\f03b"}
@@ -948,8 +1016,10 @@ width:100%}
 .fa-pencil-alt:before{content:"\f303"}
 .fa-pencil-ruler:before{content:"\f5ae"}
 .fa-penny-arcade:before{content:"\f704"}
+.fa-people-arrows:before{content:"\e068"}
 .fa-people-carry:before{content:"\f4ce"}
 .fa-pepper-hot:before{content:"\f816"}
+.fa-perbyte:before{content:"\e083"}
 .fa-percent:before{content:"\f295"}
 .fa-percentage:before{content:"\f541"}
 .fa-periscope:before{content:"\f3da"}
@@ -958,14 +1028,18 @@ width:100%}
 .fa-phoenix-framework:before{content:"\f3dc"}
 .fa-phoenix-squadron:before{content:"\f511"}
 .fa-phone:before{content:"\f095"}
+.fa-phone-alt:before{content:"\f879"}
 .fa-phone-slash:before{content:"\f3dd"}
 .fa-phone-square:before{content:"\f098"}
+.fa-phone-square-alt:before{content:"\f87b"}
 .fa-phone-volume:before{content:"\f2a0"}
+.fa-photo-video:before{content:"\f87c"}
 .fa-php:before{content:"\f457"}
 .fa-pied-piper:before{content:"\f2ae"}
 .fa-pied-piper-alt:before{content:"\f1a8"}
 .fa-pied-piper-hat:before{content:"\f4e5"}
 .fa-pied-piper-pp:before{content:"\f1a7"}
+.fa-pied-piper-square:before{content:"\e01e"}
 .fa-piggy-bank:before{content:"\f4d3"}
 .fa-pills:before{content:"\f484"}
 .fa-pinterest:before{content:"\f0d2"}
@@ -976,6 +1050,7 @@ width:100%}
 .fa-plane:before{content:"\f072"}
 .fa-plane-arrival:before{content:"\f5af"}
 .fa-plane-departure:before{content:"\f5b0"}
+.fa-plane-slash:before{content:"\e069"}
 .fa-play:before{content:"\f04b"}
 .fa-play-circle:before{content:"\f144"}
 .fa-playstation:before{content:"\f3df"}
@@ -1001,6 +1076,8 @@ width:100%}
 .fa-procedures:before{content:"\f487"}
 .fa-product-hunt:before{content:"\f288"}
 .fa-project-diagram:before{content:"\f542"}
+.fa-pump-medical:before{content:"\e06a"}
+.fa-pump-soap:before{content:"\e06b"}
 .fa-pushed:before{content:"\f3e1"}
 .fa-puzzle-piece:before{content:"\f12e"}
 .fa-python:before{content:"\f3e2"}
@@ -1026,6 +1103,7 @@ width:100%}
 .fa-readme:before{content:"\f4d5"}
 .fa-rebel:before{content:"\f1d0"}
 .fa-receipt:before{content:"\f543"}
+.fa-record-vinyl:before{content:"\f8d9"}
 .fa-recycle:before{content:"\f1b8"}
 .fa-red-river:before{content:"\f3e3"}
 .fa-reddit:before{content:"\f1a1"}
@@ -1035,6 +1113,7 @@ width:100%}
 .fa-redo:before{content:"\f01e"}
 .fa-redo-alt:before{content:"\f2f9"}
 .fa-registered:before{content:"\f25d"}
+.fa-remove-format:before{content:"\f87d"}
 .fa-renren:before{content:"\f18b"}
 .fa-reply:before{content:"\f3e5"}
 .fa-reply-all:before{content:"\f122"}
@@ -1062,6 +1141,7 @@ width:100%}
 .fa-ruler-vertical:before{content:"\f548"}
 .fa-running:before{content:"\f70c"}
 .fa-rupee-sign:before{content:"\f156"}
+.fa-rust:before{content:"\e07a"}
 .fa-sad-cry:before{content:"\f5b3"}
 .fa-sad-tear:before{content:"\f5b4"}
 .fa-safari:before{content:"\f267"}
@@ -1094,10 +1174,12 @@ width:100%}
 .fa-share-square:before{content:"\f14d"}
 .fa-shekel-sign:before{content:"\f20b"}
 .fa-shield-alt:before{content:"\f3ed"}
+.fa-shield-virus:before{content:"\e06c"}
 .fa-ship:before{content:"\f21a"}
 .fa-shipping-fast:before{content:"\f48b"}
 .fa-shirtsinbulk:before{content:"\f214"}
 .fa-shoe-prints:before{content:"\f54b"}
+.fa-shopify:before{content:"\e057"}
 .fa-shopping-bag:before{content:"\f290"}
 .fa-shopping-basket:before{content:"\f291"}
 .fa-shopping-cart:before{content:"\f07a"}
@@ -1112,6 +1194,7 @@ width:100%}
 .fa-signature:before{content:"\f5b7"}
 .fa-sim-card:before{content:"\f7c4"}
 .fa-simplybuilt:before{content:"\f215"}
+.fa-sink:before{content:"\e06d"}
 .fa-sistrix:before{content:"\f3ee"}
 .fa-sitemap:before{content:"\f0e8"}
 .fa-sith:before{content:"\f512"}
@@ -1143,16 +1226,23 @@ width:100%}
 .fa-snowflake:before{content:"\f2dc"}
 .fa-snowman:before{content:"\f7d0"}
 .fa-snowplow:before{content:"\f7d2"}
+.fa-soap:before{content:"\e06e"}
 .fa-socks:before{content:"\f696"}
 .fa-solar-panel:before{content:"\f5ba"}
 .fa-sort:before{content:"\f0dc"}
 .fa-sort-alpha-down:before{content:"\f15d"}
+.fa-sort-alpha-down-alt:before{content:"\f881"}
 .fa-sort-alpha-up:before{content:"\f15e"}
+.fa-sort-alpha-up-alt:before{content:"\f882"}
 .fa-sort-amount-down:before{content:"\f160"}
+.fa-sort-amount-down-alt:before{content:"\f884"}
 .fa-sort-amount-up:before{content:"\f161"}
+.fa-sort-amount-up-alt:before{content:"\f885"}
 .fa-sort-down:before{content:"\f0dd"}
 .fa-sort-numeric-down:before{content:"\f162"}
+.fa-sort-numeric-down-alt:before{content:"\f886"}
 .fa-sort-numeric-up:before{content:"\f163"}
+.fa-sort-numeric-up-alt:before{content:"\f887"}
 .fa-sort-up:before{content:"\f0de"}
 .fa-soundcloud:before{content:"\f1be"}
 .fa-sourcetree:before{content:"\f7d3"}
@@ -1160,6 +1250,7 @@ width:100%}
 .fa-space-shuttle:before{content:"\f197"}
 .fa-speakap:before{content:"\f3f3"}
 .fa-speaker-deck:before{content:"\f83c"}
+.fa-spell-check:before{content:"\f891"}
 .fa-spider:before{content:"\f717"}
 .fa-spinner:before{content:"\f110"}
 .fa-splotch:before{content:"\f5bc"}
@@ -1171,6 +1262,7 @@ width:100%}
 .fa-squarespace:before{content:"\f5be"}
 .fa-stack-exchange:before{content:"\f18d"}
 .fa-stack-overflow:before{content:"\f16c"}
+.fa-stackpath:before{content:"\f842"}
 .fa-stamp:before{content:"\f5bf"}
 .fa-star:before{content:"\f005"}
 .fa-star-and-crescent:before{content:"\f699"}
@@ -1190,8 +1282,11 @@ width:100%}
 .fa-stop:before{content:"\f04d"}
 .fa-stop-circle:before{content:"\f28d"}
 .fa-stopwatch:before{content:"\f2f2"}
+.fa-stopwatch-20:before{content:"\e06f"}
 .fa-store:before{content:"\f54e"}
 .fa-store-alt:before{content:"\f54f"}
+.fa-store-alt-slash:before{content:"\e070"}
+.fa-store-slash:before{content:"\e071"}
 .fa-strava:before{content:"\f428"}
 .fa-stream:before{content:"\f550"}
 .fa-street-view:before{content:"\f21d"}
@@ -1213,6 +1308,7 @@ width:100%}
 .fa-surprise:before{content:"\f5c2"}
 .fa-suse:before{content:"\f7d6"}
 .fa-swatchbook:before{content:"\f5c3"}
+.fa-swift:before{content:"\f8e1"}
 .fa-swimmer:before{content:"\f5c4"}
 .fa-swimming-pool:before{content:"\f5c5"}
 .fa-symfony:before{content:"\f83d"}
@@ -1261,6 +1357,7 @@ width:100%}
 .fa-thumbs-up:before{content:"\f164"}
 .fa-thumbtack:before{content:"\f08d"}
 .fa-ticket-alt:before{content:"\f3ff"}
+.fa-tiktok:before{content:"\e07b"}
 .fa-times:before{content:"\f00d"}
 .fa-times-circle:before{content:"\f057"}
 .fa-tint:before{content:"\f043"}
@@ -1270,6 +1367,7 @@ width:100%}
 .fa-toggle-on:before{content:"\f205"}
 .fa-toilet:before{content:"\f7d8"}
 .fa-toilet-paper:before{content:"\f71e"}
+.fa-toilet-paper-slash:before{content:"\e072"}
 .fa-toolbox:before{content:"\f552"}
 .fa-tools:before{content:"\f7d9"}
 .fa-tooth:before{content:"\f5c9"}
@@ -1279,6 +1377,7 @@ width:100%}
 .fa-trade-federation:before{content:"\f513"}
 .fa-trademark:before{content:"\f25c"}
 .fa-traffic-light:before{content:"\f637"}
+.fa-trailer:before{content:"\e041"}
 .fa-train:before{content:"\f238"}
 .fa-tram:before{content:"\f7da"}
 .fa-transgender:before{content:"\f224"}
@@ -1308,17 +1407,21 @@ width:100%}
 .fa-uber:before{content:"\f402"}
 .fa-ubuntu:before{content:"\f7df"}
 .fa-uikit:before{content:"\f403"}
+.fa-umbraco:before{content:"\f8e8"}
 .fa-umbrella:before{content:"\f0e9"}
 .fa-umbrella-beach:before{content:"\f5ca"}
+.fa-uncharted:before{content:"\e084"}
 .fa-underline:before{content:"\f0cd"}
 .fa-undo:before{content:"\f0e2"}
 .fa-undo-alt:before{content:"\f2ea"}
 .fa-uniregistry:before{content:"\f404"}
+.fa-unity:before{content:"\e049"}
 .fa-universal-access:before{content:"\f29a"}
 .fa-university:before{content:"\f19c"}
 .fa-unlink:before{content:"\f127"}
 .fa-unlock:before{content:"\f09c"}
 .fa-unlock-alt:before{content:"\f13e"}
+.fa-unsplash:before{content:"\e07c"}
 .fa-untappd:before{content:"\f405"}
 .fa-upload:before{content:"\f093"}
 .fa-ups:before{content:"\f7e0"}
@@ -1349,6 +1452,7 @@ width:100%}
 .fa-user-times:before{content:"\f235"}
 .fa-users:before{content:"\f0c0"}
 .fa-users-cog:before{content:"\f509"}
+.fa-users-slash:before{content:"\e073"}
 .fa-usps:before{content:"\f7e1"}
 .fa-ussunnah:before{content:"\f407"}
 .fa-utensil-spoon:before{content:"\f2e5"}
@@ -1358,6 +1462,8 @@ width:100%}
 .fa-venus:before{content:"\f221"}
 .fa-venus-double:before{content:"\f226"}
 .fa-venus-mars:before{content:"\f228"}
+.fa-vest:before{content:"\e085"}
+.fa-vest-patches:before{content:"\e086"}
 .fa-viacoin:before{content:"\f237"}
 .fa-viadeo:before{content:"\f2a9"}
 .fa-viadeo-square:before{content:"\f2aa"}
@@ -1371,8 +1477,12 @@ width:100%}
 .fa-vimeo-square:before{content:"\f194"}
 .fa-vimeo-v:before{content:"\f27d"}
 .fa-vine:before{content:"\f1ca"}
+.fa-virus:before{content:"\e074"}
+.fa-virus-slash:before{content:"\e075"}
+.fa-viruses:before{content:"\e076"}
 .fa-vk:before{content:"\f189"}
 .fa-vnv:before{content:"\f40b"}
+.fa-voicemail:before{content:"\f897"}
 .fa-volleyball-ball:before{content:"\f45f"}
 .fa-volume-down:before{content:"\f027"}
 .fa-volume-mute:before{content:"\f6a9"}
@@ -1384,6 +1494,7 @@ width:100%}
 .fa-walking:before{content:"\f554"}
 .fa-wallet:before{content:"\f555"}
 .fa-warehouse:before{content:"\f494"}
+.fa-watchman-monitoring:before{content:"\e087"}
 .fa-water:before{content:"\f773"}
 .fa-wave-square:before{content:"\f83e"}
 .fa-waze:before{content:"\f83f"}
@@ -1409,6 +1520,7 @@ width:100%}
 .fa-wine-glass-alt:before{content:"\f5ce"}
 .fa-wix:before{content:"\f5cf"}
 .fa-wizards-of-the-coast:before{content:"\f730"}
+.fa-wodu:before{content:"\e088"}
 .fa-wolf-pack-battalion:before{content:"\f514"}
 .fa-won-sign:before{content:"\f159"}
 .fa-wordpress:before{content:"\f19a"}
@@ -1451,22 +1563,22 @@ position:static;
 width:auto}
 @font-face{font-family:"Font Awesome 5 Brands";
 font-style:normal;
-font-weight:normal;
-font-display:auto;
+font-weight:400;
+font-display:block;
 src:url(../img/fa-brands-400.eot);
 src:url(../img/fa-brands-400.eot?#iefix) format("embedded-opentype"),url(../img/fa-brands-400.woff2) format("woff2"),url(../img/fa-brands-400.woff) format("woff"),url(../img/fa-brands-400.ttf) format("truetype"),url(../img/fa-brands-400.svg#fontawesome) format("svg")}
 .fab{font-family:"Font Awesome 5 Brands"}
 @font-face{font-family:"Font Awesome 5 Free";
 font-style:normal;
 font-weight:400;
-font-display:auto;
+font-display:block;
 src:url(../img/fa-regular-400.eot);
 src:url(../img/fa-regular-400.eot?#iefix) format("embedded-opentype"),url(../img/fa-regular-400.woff2) format("woff2"),url(../img/fa-regular-400.woff) format("woff"),url(../img/fa-regular-400.ttf) format("truetype"),url(../img/fa-regular-400.svg#fontawesome) format("svg")}
-.far{font-weight:400}
+.fab,.far{font-weight:400}
 @font-face{font-family:"Font Awesome 5 Free";
 font-style:normal;
 font-weight:900;
-font-display:auto;
+font-display:block;
 src:url(../img/fa-solid-900.eot);
 src:url(../img/fa-solid-900.eot?#iefix) format("embedded-opentype"),url(../img/fa-solid-900.woff2) format("woff2"),url(../img/fa-solid-900.woff) format("woff"),url(../img/fa-solid-900.ttf) format("truetype"),url(../img/fa-solid-900.svg#fontawesome) format("svg")}
 .fa,.far,.fas{font-family:"Font Awesome 5 Free"}

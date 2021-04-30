@@ -1,8 +1,22 @@
 {% if perms.robots.view_robots %}
 <li{% ifequal menu 'robots' %} class="active"{% endifequal %} id="left_menu_robots_app">
-  <a href="{% url 'robots:show_robots' %}">
+  <a class="has-submenu" data-toggle="collapse-next" href="">
     <em class="fa fa-android"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Роботы</span>
   </a>
+  <ul class="nav collapse{% ifequal menu 'robots' %} in{% endifequal %}">
+    <li{% ifequal submenu 'robots' %} class="active"{% endifequal %} id="left_menu_robots_app_robots">
+      <a class="no-submenu" data-toggle="" href="{% url 'robots:show_robots' %}">
+        <span class="item-text">Роботы</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'test_scenarios' %} class="active"{% endifequal %} id="left_menu_robots_app_test_scenarios">
+      <a class="no-submenu" data-toggle="" href="{% url 'robots:show_test_scenarios' %}">
+        <span class="item-text">Сценарии</span>
+      </a>
+    </li>
+  </ul>
 </li>
 {% endif %}
+

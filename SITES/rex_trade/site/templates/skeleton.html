@@ -1,0 +1,167 @@
+{% load flatcontent_tags mtags %}<!DOCTYPE html><html>
+<head>
+{% include "skeleton_header.html" %}
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+<link rel="stylesheet" href="/media/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/admin/css/font-awesome.min.css">
+<link rel="stylesheet" href="/media/css/animate.compat.css">
+<link rel="stylesheet" href="/media/css/simple-line-icons.min.css">
+<link rel="stylesheet" href="/media/css/owl.carousel.min.css">
+<link rel="stylesheet" href="/media/css/owl.theme.default.min.css">
+<!--
+<link rel="stylesheet" href="/media/css/magnific-popup.min.css">
+-->
+<link rel="stylesheet" href="/media/css/theme.css?v=2">
+<link rel="stylesheet" href="/media/css/theme-elements.css?v=2">
+<link rel="stylesheet" href="/media/css/theme-blog.css">
+<link rel="stylesheet" href="/media/css/theme-shop.css">
+<!--
+<link id="skinCSS" rel="stylesheet" href="/media/css/skin-landing.css">
+-->
+<link rel="stylesheet" href="/static/youtube_app/lazy_youtube.css">
+<link rel="stylesheet" href="/media/css/custom.css?v=2">
+<script src="/media/js/modernizr.min.js"></script>
+{% block extrahead %}{% endblock %}
+</head>
+<body>
+<div class="body">
+{% block body %}
+<header id="header" class="{% if not breadcrumbs %}header-transparent {% endif %}header-effect-shrink" data-plugin-options="{'stickyEnabled': true, 'stickyEffect': 'shrink', 'stickyEnableOnBoxed': true, 'stickyEnableOnMobile': true, 'stickyStartAt': 70, 'stickyChangeLogo': false, 'stickyHeaderContainerHeight': 70}">
+  <div class="header-body border-top-0">
+    <div class="header-container container pl-0 pr-0">
+      <div class="header-row">
+        <div class="header-column">
+          <div class="header-row">
+            <div class="header-logo">
+              <a href="/">
+                {% include "web/components/logo.html" %}
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="header-column justify-content-end">
+          <div class="header-row">
+            <div class="header-nav header-nav-line header-nav-bottom-line header-nav-bottom-line-no-transform header-nav-bottom-line-active-text-light header-nav-bottom-line-effect-1 header-nav-light-text header-nav-dropdowns-dark">
+              <div class="header-nav-main header-nav-main-square header-nav-main-dropdown-no-borders header-nav-main-text-capitalize header-nav-main-text-size-2 header-nav-main-mobile-dark header-nav-main-effect-1 header-nav-main-sub-effect-1">
+                <nav class="collapse">
+                  {% flatmenu request "mainmenu" %}
+                </nav>
+              </div>
+              <a class="px-3 text-light" href="{{ containers.main.tags.phone.link }}">{{ containers.main.tags.phone.html|safe }}</a>
+              <button class="btn header-btn-collapse-nav" data-toggle="collapse" data-target=".header-nav-main nav"><i class="fa fa-bars"></i></button>
+            </div>
+
+            <div class="header-column header-column-border-left flex-grow-0 justify-content-center">
+              <div class="header-row pl-4 justify-content-end">
+                <ul class="header-social-icons social-icons d-none d-sm-block social-icons-clean m-0">
+                  {% for block in containers.main.tags.social.sub %}
+                    <li class="social-icons-{{ block.tag }}">
+                      <a href="{{ block.link }}" target="_blank" title="{{ block.name }}"><i class="fab fa-{{ block.tag }}"></i></a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<div role="main" class="main">
+  {% include "web/components/breadcrumbs_white.html" %}
+  {% block content %}{% endblock %}
+</div>
+
+<footer id="footer">
+  <div class="container">
+    <div class="row py-5 justify-content-center">
+      {% for block in containers.main.tags.footer.sub %}
+        <div class="col-md-3 mb-4 pr-0 pl-0">
+          <div class="text-muted{% if not forloop.first %} pl-3{% else %} pl-3 pl-lg-0 pl-md-0 pl-sm-0{% endif %}">{{ block.name }}</div>
+          {% if block.html %}
+            <div class="text-light{% if not forloop.first %} pl-3{% else %} pl-3 pl-lg-0 pl-md-0 pl-sm-0{% endif %}">
+              {{ block.html|safe }}
+            </div>
+          {% endif %}
+          {% for item in block.sub %}
+            <div class="text-light pl-3">
+              <i class="fa{% if item.tag == 'whatsapp' %}b{% endif %} fa-{{ item.tag }}"></i> {{ item.html|safe }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="container footer-top-border footer-bottom-border">
+    <div class="row py-5 justify-content-center">
+      <div class="col-md-7 mb-4 mb-lg-0 d-flex align-items-center">
+        <div class="footer-nav footer-nav-links footer-nav-bottom-line">
+          {% flatmenu request "bottommenu" %}
+        </div>
+      </div>
+      <div class="col-md-5 mb-4 mb-lg-0">
+        <div class="footer-nav footer-nav-links footer-nav-bottom-line">
+          <nav>
+            <ul class="nav">
+              {% for block in containers.main.tags.social_footer.sub %}
+                <li class="social-link social-icons-{{ block.tag }} pr-3">
+                  <a href="{{ block.link }}" target="_blank" title="{{ block.name }}"><i class="fab fa-{{ block.icon }} pr-1"></i> {{ block.name }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container py-2">
+      <div class="row py-4">
+        <div class="col-lg-6 d-flex mb-4 mb-lg-0">
+          <div>{{ containers.main.tags.copyright.html|safe }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+</div>
+
+<script src="/media/js/jquery.min.js"></script>
+<script src="/media/js/jquery.appear.min.js"></script>
+<script src="/media/js/jquery.easing.min.js"></script>
+<script src="/media/js/jquery.cookie.min.js"></script>
+
+<!-- Всплывающие подсказки-->
+<script src="/media/js/popper.min.js"></script>
+
+<script src="/media/js/bootstrap.min.js"></script>
+<script src="/media/js/jquery.validate.min.js"></script>
+<script src="/media/js/jquery.easypiechart.min.js"></script>
+<script src="/media/js/jquery.gmap.min.js"></script>
+<script src="/media/js/lazysizes.min.js"></script>
+<script src="/media/js/jquery.isotope.min.js"></script>
+<script src="/media/js/owl.carousel.min.js"></script>
+<!--
+<script src="/media/js/jquery.magnific-popup.min.js"></script>
+-->
+<script src="/media/js/jquery.vide.min.js"></script>
+{% comment %}
+<!-- SVG Animation
+<script src="/media/js/vivus.min.js"></script>
+-->{% endcomment %}
+<script src="/media/js/theme.js"></script>
+<script src="/media/js/theme.init.js"></script>
+<script type="text/javascript" src="/static/yandex_app/yandex_2_1.js"></script>
+<script type="text/javascript">
+  var yandex_maps_api_key = "{% settings_value 'YANDEX_MAPS_API_KEY' %}";
+</script>
+<script src="/static/youtube_app/lazy_youtube.js"></script>
+<script src="/media/js/custom.js?v=2"></script>
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

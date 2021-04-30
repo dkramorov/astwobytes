@@ -10,13 +10,13 @@
   <em class="fa fa-sitemap fa-fw mr-sm"></em> Иерархия {{ rp_plural_obj }}
 </a>
 
-<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
-
+{% include "core/title/page_title_table.html" %}
 {% include "core/breadcrumbs.html" %}
 {% include "core/tabulator_table.html" %}
 {% endblock %}
 
 {% block extrascripts %}
+{% include "flatcontent_actions/actions.html" %}
 <script type="text/javascript">
 var main_table = null;
 window.disableMovableRows = true; // отключаем перетаскивание
@@ -137,7 +137,7 @@ $(document).ready(function(){
       },
       {% include "core/tabulator_cell/is_active.html" %}
       {% include "core/tabulator_cell/position.html" %}
-      {% include "core/tabulator_cell/actions.html" %}
+      {% include "flatcontent_actions/tabulator_actions.html" %}
     ],
   });
 });

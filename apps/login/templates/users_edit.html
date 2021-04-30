@@ -10,8 +10,7 @@
   </a>
 {% endif %}
 
-<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
-
+{% include "core/title/page_title_edit.html" %}
 {% include "core/breadcrumbs.html" %}
 <div class="row">
   <div class="col-sm-12">

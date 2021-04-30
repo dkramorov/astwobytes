@@ -16,7 +16,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 from browser import Browser
-from plugins.utils import search_process, get_hd_space
+from plugins.utils import search_process, get_hd_space, get_ip
 from plugins.yandex_adv_info import get_yandex_adv_clicks
 
 from envparse import env
@@ -64,7 +64,6 @@ def original_driver(request):
         #'screen': '1280x800',
         #'proxy_percent': 25,
         #'custom_profile': 'kimadav',
-        #'custom_profile_percent': 50,
         #'custom_profile_arr': ['bbugoga5', 'bbugoga6', ],
         'queue_profiles': QUEUE_PROFILES,
         'headless': HEADLESS,
@@ -705,7 +704,7 @@ def test_main(original_driver):
     fbalance = list(filter(lambda x:x.get('partner_wo_nds', ''), balance))
     if fbalance:
         balance = fbalance[0]['partner_wo_nds']
-    ip = driver.get_ip()
+    ip = get_ip()
     driver.messages.append('%s - %s - %s' % (balance, driver.profile_name, ip))
     driver.messages.append('hd: %s' % get_hd_space()['percent'])
     # ---------------------------

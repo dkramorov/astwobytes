@@ -2,22 +2,22 @@
   {% csrf_token %}
   {% for block in containers.main.tags.right_panel.sub %}
     {% ifequal block.tag 'name' %}
-      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="name" data-msg="Enter your name">
+      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="name" data-msg="Enter your name" autocomplete="off">
     {% endifequal %}
     {% ifequal block.tag 'email' %}
-      <input class="input-standard-white email" placeholder="{{ block.description }}" type="text" name="email" data-msg="Enter correct email">
+      <input class="input-standard-white email required" placeholder="{{ block.description }}" type="text" name="email" data-msg="Enter correct email" autocomplete="off">
     {% endifequal %}
     {% ifequal block.tag 'phone' %}
-      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="phone" data-msg="Enter your phone">
+      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="phone" data-msg="Enter your phone" autocomplete="off">
     {% endifequal %}
     {% ifequal block.tag 'qq' %}
-      <input class="input-standard-white" placeholder="{{ block.description }}" type="text" name="qq">
+      <input class="input-standard-white" placeholder="{{ block.description }}" type="text" name="qq" autocomplete="off">
     {% endifequal %}
     {% ifequal block.tag 'contacts' %}
-      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="contacts"></textarea>
+      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="contacts" autocomplete="off"></textarea>
     {% endifequal %}
     {% ifequal block.tag 'description' %}
-      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="description"></textarea>
+      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="description" autocomplete="off"></textarea>
     {% endifequal %}
     {% ifequal block.tag 'attach' %}
       <div class="upload_file_title">{{ block.description }}</div>

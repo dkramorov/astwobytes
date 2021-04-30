@@ -32,3 +32,50 @@ class Robots(Standard):
     def save(self, *args, **kwargs):
         super(Robots, self).save(*args, **kwargs)
 
+
+class TestScenarios(Standard):
+    """Сценарии, состоящие из команд
+       для выполнения роботами
+       список возможных команд
+    """
+    robot = models.ForeignKey(Robots, blank=True, null=True,
+        on_delete=models.CASCADE,
+        verbose_name='Робот')
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    commands = models.TextField(blank=True, null=True,
+        verbose_name='Команды в json')
+
+    class Meta:
+        verbose_name = 'Роботы - Сценарий'
+        verbose_name_plural = 'Роботы - Сценарии'
+
+
+# Команда, описание, параметры
+TEST_COMMANDS = (
+    ('goto', 'Перейти по ссылке', ['url']),
+    ('refresh', 'Обновить страничку', None),
+    ('window_handles', 'Список открытых вкладок', None),
+    ('current_window_handle', 'Ид активной вкладки', None),
+    ('close_current_window', 'Закрыть активную вкладку', None),
+    ('switch_to_window', 'Переключает на окно/вкладку', None),
+    ('close_other_tabs', 'Закрыть все вкладки, кроме активной', None),
+    ('get_capabilities', 'Настройки браузера', None),
+    ('maximize_window', 'Максимизировать размер окна', None),
+    ('get_current_url', 'Получить текущий url браузера', ['unquote']),
+    ('get_window_size', 'Получить размер окна', None),
+    ('find_element_by_id', 'Поиск элемента по ид', ['id_selector']),
+    ('find_element_by_name', 'Поиск элемента по имени', ['name']),
+    ('find_element_by_xpath', 'Поиск элемента по xpath', ['xpath']),
+    ('find_element_by_tag_name', 'Поиск элемента по тегу', ['tag']),
+    ('find_element_by_css_selector', 'Поиск элемента по css селектору', ['selector']),
+    ('find_element_by_link_text', 'Поиск элемента по тексту ссылки', ['link_text']),
+    ('find_elements_by_name', 'Поиск элементов по имени', ['name']),
+    ('find_elements_by_tag_name', 'Поиск элементов по тегу', ['tag']),
+    ('find_elements_by_xpath', 'Поиск элементов по xpath', ['xpath']),
+    ('find_elements_by_css_selector', 'Поиск элементов по css селектору', ['selector']),
+    ('history_back', 'Возвращаемся на предыдущую страничку', None),
+    ('screenshot2telegram', 'Отправить скриншот в телегу', ['msg']),
+    # Сложные методы
+    ('pretend_user', 'Притвориться пользователем', None),
+)

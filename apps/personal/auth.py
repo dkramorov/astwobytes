@@ -23,6 +23,10 @@ def phone_confirmed(request):
         del request.session['confirm_phone']
     except Exception as e:
         logger.info(e)
+    try:
+        del request.session['phone']
+    except Exception as e:
+        logger.info(e)
     user = Shopper.objects.get(pk=sid)
     request.session['shopper'] = user.to_dict()
     request.session.save()

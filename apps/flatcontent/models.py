@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 
 from apps.main_functions.models import Standard
-from apps.main_functions.string_parser import translit
+from apps.main_functions.string_parser import translit, fix_multiple_dashes
 
 # Если слишком много рубрик, то грузить надо lazy
 FAT_HIER = 250
@@ -224,6 +224,9 @@ class Blocks(Standard):
     class Meta:
         verbose_name = 'Стат.контент - Блоки'
         verbose_name_plural = 'Стат.контент - Блоки'
+        permissions = (
+            ('seo_fields', 'Заполнение сео-полей'),
+        )
 
     def create_menu_link(self, force: bool = False):
         """Создание ссылки для меню
@@ -259,6 +262,7 @@ class Blocks(Standard):
             link += translit(self.name) + '/'
         else:
             link = '/' + translit(self.name) + '/'
+        link = fix_multiple_dashes(link)
         self.link = link
 
     def create_cat_link(self, force: bool = False):

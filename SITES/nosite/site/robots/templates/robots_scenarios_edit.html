@@ -1,0 +1,146 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<style type="text/css">
+  #robots_scenarios_commands .select2 {
+    margin: 5px 0;
+    padding: 0 5px;
+  }
+  #robots_scenarios_commands .select2-selection__arrow {
+    margin-right: 10px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <input type="hidden" name="commands" value="{% if row.commands %}{{ row.commands }}{% endif %}" />
+          {% include "core/forms/row_name.html" %}
+
+          <div class="form-group bordered">
+            <div class="col-lg-2">
+              <p class="text-right">Робот</p>
+            </div>
+            <div class="col-lg-10">
+              <select id="robot_select2" name="robot" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.robot %}
+                  <option value="{{ row.robot.id }}" selected>{{ row.robot.server_name }} - {{ row.robot.ip }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Сценарий</label>
+            <div class="col-lg-10">
+              {% if row %}
+                <div class="panel panel-default">
+                  <div class="panel-heading">Команды</div>
+                    <div class="panel-body" id="robots_scenarios_commands">
+                    <div id="robots_scenarios-table"></div>
+                  </div>
+                  <div class="panel-footer">
+                    <div class="col-lg-6 col-sm-6 padding-tb5">
+                      <button type="button" class="btn btn-labeled btn-info" id="add_robot_command">
+                        <span class="btn-label"><i class="fa fa-plus"></i></span>Добавить команду
+                      </button>
+                    </div>
+                    <div class="clearfix"></div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% if row %}
+  {% include "robots_scenarios/tabulator_table.html" %}
+{% endif %}
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#current_edit_form").parsley();
+    $("#current_edit_form").submit(function(e) {
+
+      var commands = robots_scenarios_table.getRows();
+      var scenario = [];
+      for(var i=0; i<commands.length; i++){
+        var data = commands[i].getData();
+        scenario.push({
+          'command': data['command'],
+          'params': data['params'],
+        });
+      }
+      $("#current_edit_form input[name='commands']").val(JSON.stringify(scenario));
+
+      var $form = $(this);
+      var msg = 'Произошла ошибка, обновите страничку';
+      var status = 'danger'; // success, warning, info, danger
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          //$("#current_edit_form").attr("action", r.redirect);
+          {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+        }
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+      //отмена действия по умолчанию для кнопки submit
+      e.preventDefault();
+    });
+
+    $("#robot_select2").select2({
+      placeholder: 'Выберите робота',
+      allowClear: true,
+      width: '100%',
+      ajax: {
+        url: "{% url 'robots:search_robots' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+  });
+</script>
+{% endblock %}

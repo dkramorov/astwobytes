@@ -14,6 +14,17 @@ rega_strict_text = re.compile('[^0-9a-zA-Zа-яА-ЯёЁ/-]', re.U+re.I+re.DOTAL
 rega_html = re.compile('(<[^>]+>)?', re.U+re.I+re.DOTALL)
 rega_style = re.compile('(<style[^>]*>.+</style>)?', re.U+re.I+re.DOTALL)
 rega_ip = re.compile('([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})')
+rega_dashes = re.compile('[-]+', re.I+re.U+re.DOTALL)
+
+def fix_multiple_dashes(text: str):
+    """Убирает повторяющиеся дефизы,
+       например, в ссылках
+       /sections--parallax/ => /sections-parallax/
+       :param text: исходный текст
+    """
+    if not text:
+        return text
+    return rega_dashes.sub('-', text)
 
 def check_ip(ip: str):
     """Проверка на айпи адрес

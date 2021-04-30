@@ -127,7 +127,7 @@ $(document).ready(function(){
   };
   var jointFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();
-    return data['joint'] ? data['joint']['name']  : '';
+    return data['joint'] ? data['joint']['name'] : '';
   };
   var lineFormatter = function(cell, formatterParams, onRendered){
     var data = cell.getRow().getData();

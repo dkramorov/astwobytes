@@ -6,9 +6,9 @@
 {% block content %}
 {% include "core/forms/default_create.html" %}
 
-<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
-
+{% include "core/title/page_title_table.html" %}
 {% include "core/breadcrumbs.html" %}
+
 {% if perms.edit %}
   <form class="panel panel-default form-horizontal" action="{{ root_url }}" method="post" id="props2cat_form">
     {% csrf_token %}

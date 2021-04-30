@@ -629,9 +629,9 @@ def show_blocks(request, ftype: str, container_id: int, *args, **kwargs):
             children = []
             recursive_fill(subrows, children, parents='_%s' % (row.id, ))
             if children:
-                sort_voca(children)
+                sorted_children = sort_voca(children)
                 objs = []
-                json_children(children, objs)
+                json_children(sorted_children, objs)
                 item['_children'] = objs
             result.append(item)
         if request.GET.get('page'):
@@ -962,6 +962,11 @@ def tree_co(request):
 
     if request.method == 'GET':
         operation = request.GET.get('operation')
+        # Сообщение о нехватке прав
+        if operation in ('rename_node', 'move_node') and not mh.permissions['edit']:
+            result = {'error': 'Недостаточно прав'}
+        elif operation == 'drop_node' and not mh.permissions['drop']:
+            result = {'error': 'Недостаточно прав'}
         # Выбрать узел
         if operation == 'select_node':
             node_id = int(request.GET.get('node_id'), 0)
@@ -1094,10 +1099,14 @@ def tree_co(request):
                 if menu.parents:
                     parents_str = '%s_%s' % (menu.parents, menu.id)
                 children = Blocks.objects.filter(Q(parents=parents_str)|Q(parents__startswith='%s_' % (parents_str, )))
-                for child in children:
-                    child.delete()
-                menu.delete()
-                result = {'success': True}
+                # Только без вложенности
+                if not children:
+                    for child in children:
+                        child.delete()
+                    menu.delete()
+                    result = {'success': True}
+                else:
+                    result = {'error': True}
             else:
                 result = {'error': True}
         elif operation == 'move_node' and mh.permissions['edit']:

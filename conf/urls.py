@@ -76,11 +76,6 @@ if 'apps.products' in settings.INSTALLED_APPS:
     urlpatterns += [
         re_path(r'^products/', include('apps.products.urls')),
     ]
-if 'apps.flattooltip' in settings.INSTALLED_APPS:
-    # Подсказки для изображений
-    urlpatterns += [
-        re_path(r'^flattooltip/', include('apps.flattooltip.urls')),
-    ]
 if 'apps.promotion' in settings.INSTALLED_APPS:
     # Продвижение и сео
     urlpatterns += [

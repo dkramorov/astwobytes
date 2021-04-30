@@ -19,8 +19,6 @@ from apps.personal.utils import remove_user_from_request
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
 from apps.shop.models import Transactions
 
-from .yandex_kassa import YandexKassa
-
 CUR_APP = 'main'
 main_vars = {
     'singular_obj': 'Главная',

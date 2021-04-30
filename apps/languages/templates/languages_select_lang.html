@@ -4,8 +4,8 @@
 {% endblock %}
 
 {% block content %}
-<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
+{% include "core/title/page_title_table.html" %}
 {% include "core/breadcrumbs.html" %}
 <div class="row">
   <div class="col-sm-12">
@@ -27,6 +27,19 @@
     </div>
   </div>
 
+  <div class="col-sm-12 translations_for_menu hidden">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <span class="label_for_translate translate_dynamic_copy_for_left_menu_label" attr-class_name="translate_dynamic_copy_for_left_menu_label">Перевод для меню</span>
+      </div>
+      <div class="panel-body">
+        <div class="sidebar">
+          <ul class="nav" id="left_menu_apps_translations">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

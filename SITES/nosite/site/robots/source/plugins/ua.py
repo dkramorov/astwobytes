@@ -137,6 +137,36 @@ def generate_user_agent():
         ua = next(g)
     return ua
 
+def fill_screen_resolution(cur_profile: str):
+    """Сформировать и записать в файл
+       или считать из файла разрешения для экрана
+       :param cur_profile: путь к папке профиля
+    """
+    screen_resolutions = [
+        #'1024,768', # слишком мелко - будет МВС
+        '1366,768',
+        '1920,1080',
+        '1400,1050',
+        '1440,900',
+        '1440,1080',
+        '1600,900',
+        '1680,1050',
+        '1360,768',
+        '1280,720',
+        '1280,800',
+        '1280,1024',
+        '1280,960',
+    ]
+    screen_file = os.path.join(cur_profile, 'screen.json')
+    if os.path.exists(screen_file):
+        with open(screen_file, 'r', encoding='utf-8') as f:
+            return json.loads(f.read())['screen']
+    random.shuffle(screen_resolutions)
+    screen = screen_resolutions[0]
+    with open(screen_file, 'w+', encoding='utf-8') as f:
+        f.write(json.dumps({'screen': screen}))
+    return screen
+
 if __name__ == '__main__':
     #update_ua_in_all_profiles()
     #show_ua_from_all_profiles()

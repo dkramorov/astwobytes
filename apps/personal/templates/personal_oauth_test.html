@@ -4,8 +4,8 @@
 {% endblock %}
 
 {% block content %}
-<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
 
+{% include "core/title/page_title_table.html" %}
 {% include "core/breadcrumbs.html" %}
 
 <a target="_blank" class="btn btn-primary pull-left mr" href="{{ VK_OAUTH_LINK }}">

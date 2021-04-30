@@ -29,6 +29,7 @@
   </div>
 </div>
 <script type="text/javascript">
+var main_table;
 var tickCrossEditor = function(cell, onRendered, success, cancel, editorParams){
   //cell - the cell component for the editable cell
   //onRendered - function to call when the editor has been rendered
@@ -114,17 +115,6 @@ var booleanFormatter = function(cell, formatterParams, onRendered){
     result += " <a class='btn text-danger' href='javascript:void(0);'><i class='fa fa-square-o'></i></a> ";
   }
   result += "</div>";
-  return result;
-};
-var imgFormatter = function(cell, formatterParams, onRendered){
-  var value = cell.getValue();
-  var data = cell.getData();
-  var result = "";
-  if(value){
-    result += "<div style='height:150px;'>";
-    result += "<img src='" + data.thumb + "' />";
-    result += "</div>";
-  }
   return result;
 };
 

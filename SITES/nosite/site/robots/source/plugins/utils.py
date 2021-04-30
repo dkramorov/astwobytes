@@ -5,6 +5,7 @@ import shutil
 import json
 import requests
 import socket
+import random
 import logging
 
 from envparse import env
@@ -178,6 +179,76 @@ def inform_server(driver):
         print('[INFORM_SERVER]: %s => %s' % (r.status_code, r.text))
     except Exception as e:
         print(e)
+
+
+def fill_starts_counter(cur_dir: str):
+    """Инкрементальный номер запуска,
+       получаем из файла и инкрементируем
+       :param cur_dir: корневая директория
+    """
+    total_starts_counter = 0
+    counter_file = os.path.join(cur_dir, 'starts_counter.txt')
+    if os.path.exists(counter_file):
+        with open(counter_file, 'r', encoding='utf-8') as f:
+            start_counter = json.loads(f.read())
+            total_starts_counter = start_counter['starts_counter']
+    with open(counter_file, 'w+', encoding='utf-8') as f:
+        f.write(json.dumps({
+            'starts_counter': total_starts_counter + 1,
+        }))
+    return total_starts_counter
+
+
+def simpler(digit, total):
+    """Упрощаем число, получаем неделимое на total
+       Например, хотим запускать последовательно профили,
+       тогда нужно ввести счетчик, который будет инкрементироваться
+       берем его и количество профилей и выясняем какой на очереди
+       :param digit число - номер запуска
+       :param total число - всего профилей
+    """
+    if total <= 0:
+        return digit
+    while digit >= total:
+        digit -= total
+    return digit
+
+
+def check_connection_over_proxy(proxy: str,
+                                probability: int = 50,
+                                test_url: str = 'https://223-223.ru'):
+    """Проверка соединения через проксик
+       если проверка проходит, то с вероятностью probability
+       используем проксик
+       :param proxy: проксик, например,
+                     http://10.10.9.1:3128
+       :param probability: монетка для рандома
+       :param test_url: адрес сайта,
+                        соединение к которому проверяем
+                        через проксик
+    """
+    proxies = {
+        'http'  : proxy,
+        'https' : proxy,
+    }
+    try:
+        r = requests.get(test_url, proxies=proxies, timeout=5)
+        if r.status_code == 200:
+            chance = random.randint(0, 100)
+            if chance <= probability:
+                return True
+    except Exception as e:
+        logger.info('[proxy]: proxies not available %s' % (e, ))
+    return False
+
+
+def get_ip(api_url: str = 'http://spam.223-223.ru/my_ip/'):
+    """Получить ip адрес
+       :param api_url: адрес, который возвращает ip в json
+    """
+    r = requests.get(api_url, timeout=5)
+    return r.json().get('ip')
+
 
 if __name__ == '__main__':
     logger.info('hd_clear_space')

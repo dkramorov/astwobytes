@@ -1,0 +1,74 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<style type="text/css">
+body {
+  min-height: 400px;
+}
+@media only screen and (min-width: 768px) {
+  html,
+  body {
+    height: 100%;
+  }
+}
+.penguins a {
+  top: auto;
+  left: auto;
+  position: relative;
+}
+.panel-dark > .panel-heading,
+.btn-success {
+  background-color: #313649;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="row row-table page-wrapper">
+  <div class="col-lg-3 col-md-6 col-sm-8 col-xs-12 align-middle">
+    <div data-toggle="play-animation" data-play="fadeIn" data-offset="0" class="panel panel-dark panel-flat">
+      <div class="panel-heading text-center penguins">
+        <a href="{% url 'login:login_view' %}">
+          {% block logo %}
+            <img src="/media/misc/infinityink.jpg" alt="Control panel" class="block-center img-rounded">
+          {% endblock %}
+        </a>
+      </div>
+      <div class="panel-body">
+        <form role="form" class="mb-lg" method="post" action="{% url 'login:login_view' %}">
+          {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+          {% csrf_token %}
+{% comment %}<!--
+            <div class="text-right mb-sm">
+              <a href="#" class="text-muted">Еще {{ attempts_elapsed }}</a>
+            </div>
+-->{% endcomment %}
+          <div class="form-group has-feedback">
+            <input id="auth_username" type="text" placeholder="Your login" class="form-control" name="username">
+            <span class="fa fa-envelope form-control-feedback text-muted"></span>
+          </div>
+          <div class="form-group has-feedback">
+            <input id="auth_passwd" type="password" placeholder="Your password" class="form-control" name="passwd">
+            <span class="fa fa-lock form-control-feedback text-muted"></span>
+          </div>
+{% comment %}<!--
+          <div class="clearfix">
+            <div class="checkbox c-checkbox pull-left mt0">
+              <label>
+                <input type="checkbox" value="">
+                <span class="fa fa-check"></span>Запомнить меня</label>
+              </div>
+              <div class="pull-right"><a href="#" class="text-muted">Забыли пароль?</a>
+            </div>
+          </div>
+-->{% endcomment %}
+          <button type="submit" class="btn btn-block btn-success">Log in</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}

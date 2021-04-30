@@ -1,18 +1,85 @@
 {% ifequal tag "mainmenu" %}
-  {% for menu in menus %}
-    <li class="{% ifequal request.META.PATH_INFO menu.link %}active{% endifequal %}">
-      <a href="{{ menu.link }}"{% if menu.sub %} class="sf-with-ul"{% endif %}>{{ menu.name }}</a>
-      {% if menu.sub %}
-        <ul>
-          {% for item in menu.sub %}
-            <li>
-              <a href="{{ item.link }}">{{ item.name }}</a>
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    </li>
-  {% endfor %}
+<nav class="collapse">
+  <ul class="nav nav-pills" id="mainNav">
+    {% for menu in menus %}
+      {% ifequal menu.tag 'megamenu' %}
+        <li class="dropdown dropdown-mega">
+          <a class="dropdown-item dropdown-toggle" href="{{ menu.link }}"> {{ menu.name }}</a>
+          {% if menu.sub %}
+            <ul class="dropdown-menu">
+              <li>
+                <div class="dropdown-mega-content">
+                  <div class="row">
+                    {% for submenu in menu.sub %}
+                      <div class="col-lg-3">
+                        <span class="dropdown-mega-sub-title">{{ submenu.name }}</span>
+                        {% if submenu.sub %}
+                          <ul class="dropdown-mega-sub-nav">
+                            {% for item in submenu.sub %}
+                              <li>
+                                <a class="dropdown-item" href="{{ item.link }}">{{ item.name }}</a>
+                              </li>
+                            {% endfor %}
+                          </ul>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </li>
+            </ul>
+          {% endif %}
+        </li>
+      {% else %}
+        <li class="dropdown">
+          <a class="dropdown-item{% if menu.sub %} dropdown-toggle{% endif %}" href="{{ menu.link }}"> {{ menu.name }}</a>
+          {% if menu.sub %}
+            <ul class="dropdown-menu">
+              {% for submenu in menu.sub %}
+                <li{% if submenu.sub %} class="dropdown-submenu"{% endif %}>
+                  <a class="dropdown-item" href="{{ submenu.link }}">
+                    {% if item.tag %}
+                      <span class="tip tip-dark">{{ item.tag }}</span>
+                    {% endif %}
+                    {{ submenu.name }}
+                  </a>
+                  {% if submenu.sub %}
+                    <ul class="dropdown-menu">
+                      {% for item in submenu.sub %}
+                        <li{% if item.sub %} class="dropdown-submenu"{% endif %}>
+                          <a class="dropdown-item" href="{{ item.link }}">
+                            {% if item.tag %}
+                              <span class="tip tip-dark">{{ item.tag }}</span>
+                            {% endif %}
+                            {{ item.name }}
+                          </a>
+                          {% if item.sub %}
+                            <ul class="dropdown-menu">
+                              {% for sublevel in item.sub %}
+                                <li>
+                                  <a class="dropdown-item" href="{{ sublevel.link }}">
+                                    {% if sublevel.tag %}
+                                      <span class="tip tip-dark">{{ sublevel.tag }}</span>
+                                    {% endif %}
+                                    {{ sublevel.name }}
+                                  </a>
+                                </li>
+                              {% endfor %}
+                            </ul>
+                          {% endif %}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </li>
+      {% endifequal %}
+    {% endfor %}
+  </ul>
+</nav>
 {% endifequal %}
 {% ifequal tag "bottommenu" %}
   <div class="col-lg-9">

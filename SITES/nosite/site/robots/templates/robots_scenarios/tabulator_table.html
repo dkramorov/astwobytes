@@ -1,0 +1,173 @@
+<script type="text/javascript">
+var test_commands = {
+  {% for test_command in test_commands %}
+    '{{ test_command.0 }}': '{{ test_command.1 }}{% if test_command.2 %}{% for item in test_command.2 %} [{{ item }}]{% endfor %}{% endif %}',
+  {% endfor %}
+};
+var testCommandFormatter = function(cell, formatterParams, onRendered){
+  var pk = cell.getValue();
+  return test_commands[pk];
+};
+// Редктор для команд с выпадающим списком
+var commandEditor = function(cell, onRendered, success, cancel){
+  var cellValue = cell.getValue() || '';
+  var data = cell.getRow().getData();
+  var input = $('<select id="select2_pvalue_' + data['id'] + '"></select>');
+
+  onRendered(function(){
+    input.select2({
+      placeholder: "Команда",
+      width: '100%',
+      data: [{'id': '', 'text': 'Выберите команду'},
+      {% for test_command in test_commands %}
+        {
+          'id': '{{ test_command.0 }}',
+          'text': '{{ test_command.1 }}{% if test_command.2 %} {% for item in test_command.2 %} [{{ item }}]{% endfor %}{% endif %}',
+        },
+      {% endfor %}],
+      selectOnClose: true,
+    });
+    input.on('change', function (e) {
+      success(input.val());
+      //cell.getRow().update({
+      //  'pvalue_id': input.val(),
+      //});
+    });
+    input.on('blur', function (e) {
+      cancel();
+    });
+  });
+  return input.get(0);
+};
+var paramsEditor = function(cell, onRendered, success, cancel, editorParams){
+  var cellValue = cell.getValue(),
+  input = document.createElement("input");
+  input.setAttribute("type", "text");
+  input.value = $('<div/>').html(cellValue).text();
+  onRendered(function(){
+      input.focus();
+      input.style.height = "100%";
+  });
+  function onChange(){
+    if(input.value != cellValue){
+      success(input.value);
+    }else{
+      cancel();
+    }
+  }
+  //submit new value on blur or change
+  input.addEventListener("change", onChange);
+  input.addEventListener("blur", onChange);
+  //submit new value on enter
+  $(input).on("keydown", function(e){
+    if(e.keyCode == 13){
+      success($(input).val());
+    }
+    if(e.keyCode == 27){
+      cancel();
+    }
+  });
+  return input;
+}
+var dropActionFormatter = function(cell, formatterParams, onRendered){
+  var actions = "<div class='padding-rl5 text-center'>";
+  actions += " <a class='btn-xs btn btn-danger' href='javascript:void(0);'><i class='fa fa-trash'></i></a>";
+  actions += "</div>";
+  return actions;
+};
+var booleanFormatter = function(cell, formatterParams, onRendered){
+  var value = cell.getValue();
+  var result = "<div class='padding-rl5 text-center'>";
+  if(value){
+    result += " <a class='btn text-success' href='javascript:void(0);'><i class='fa fa-check-square-o'></i></a> ";
+  }else{
+    result += " <a class='btn text-danger' href='javascript:void(0);'><i class='fa fa-square-o'></i></a> ";
+  }
+  result += "</div>";
+  return result;
+};
+</script>
+
+<script type="text/javascript">
+var new_command_counter = {% if commands %}{{ commands|length }}{% else %}0{% endif %};
+var robots_scenarios_table;
+
+function fix_props_table_height_after_drop_row(){
+  // Чтобы экран не скакал, задаем высоту
+  var new_height = $("#robots_scenarios-table").height() - $("#robots_scenarios-table .tabulator-row").height();
+  robots_scenarios_table.setHeight(new_height);
+}
+
+function add_robot_command(){
+  // Добавление нового свойства для товара в список свойств
+  new_command_counter += 1;
+  var command_id = "command_" + new_command_counter;
+  // Чтобы экран не скакал, задаем высоту
+  var new_height = $("#robots_scenarios-table").height() + $("#robots_scenarios-table .tabulator-row").height() + 3;
+  robots_scenarios_table.setHeight(new_height);
+  if(robots_scenarios_table.getRows().length == 0){
+    robots_scenarios_table.setHeight(128);
+  }
+  robots_scenarios_table.addRow({'id': new_command_counter});
+  return new_command_counter;
+}
+
+$(document).ready(function(){
+
+  robots_scenarios_table = new Tabulator("#robots_scenarios-table", {
+    data: [{% for command in commands %}
+      {
+        'id': '{{ forloop.counter }}',
+        'command': '{{ command.command }}',
+        'params': '{{ command.params }}',
+      },
+    {% endfor %}],
+    history:true, //record table history
+    initialHeaderFilter: [],
+    initialSort:[
+      {column: "position", dir:"asc"},
+    ],
+    movableRows: true,
+    selectable: false,
+    layout: "fitColumns",
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {
+        title: "Команда",
+        field: "command",
+        headerFilterPlaceholder: "Команда",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        editor: commandEditor,
+        formatter: testCommandFormatter,
+        width: 250,
+      },
+      {
+        title: "Параметры",
+        field: "params",
+        headerFilterPlaceholder: "Параметры",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        editor: paramsEditor,
+        width: 150,
+      },
+      {
+        title: "Действия",
+        field: "actions",
+        formatter: dropActionFormatter,
+        width: 70,
+        align:"center",
+        download: false,
+        cellClick:function(e, cell){
+          cell.getRow().delete();
+          fix_props_table_height_after_drop_row();
+        }
+      },
+    ],
+  });
+
+  $("#add_robot_command").click(function(){
+    add_robot_command();
+  });
+});
+</script>

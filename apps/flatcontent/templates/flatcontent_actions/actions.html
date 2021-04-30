@@ -1,0 +1,16 @@
+<script type="text/javascript">
+var flatcontentActionsFormatter = function(cell, formatterParams, onRendered){
+  var row = cell.getRow();
+  var rowIndex = row.getIndex();
+  var pk = cell.getValue();
+  var actions = "<div class='padding-rl5'>";
+  {% if permissions.edit or permissions.seo_fields %}
+    actions += " <a class='btn-xs btn btn-primary pull-left' href='{{ root_url }}edit/" + pk + "/' title='Редактировать'><i class='fa fa-edit'></i></a> ";
+  {% endif %}
+  {% if permissions.drop %}
+    actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");' title='Удалить'><i class='fa fa-trash'></i></a> ";
+  {% endif %}
+  actions += "</div>";
+  return actions;
+};
+</script>

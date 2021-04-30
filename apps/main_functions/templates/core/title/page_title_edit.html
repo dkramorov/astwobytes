@@ -1,0 +1,5 @@
+<h3>
+  <span class="label_for_translate page_title_{{ menu }}_{{ submenu }}_{% if row.id %}edit{% else %}create{% endif %}_label" attr-class_name="page_title_{{ menu }}_{{ submenu }}_{% if row.id %}edit{% else %}create{% endif %}_label">{{ singular_obj }}</span>
+  <br />
+  <small class="label_for_translate page_subtitle_{{ menu }}_{{ submenu }}_{% if row.id %}edit{% else %}create{% endif %}_label" attr-class_name="page_subtitle_{{ menu }}_{{ submenu }}_{% if row.id %}edit{% else %}create{% endif %}_label">{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small>
+</h3>

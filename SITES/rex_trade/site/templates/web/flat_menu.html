@@ -1,0 +1,87 @@
+{% ifequal tag 'mainmenu' %}
+<ul class="nav nav-pills" id="mainNav">
+  {% for menu in menus %}
+    <li class="dropdown">
+      <a class="{% if not forloop.last %}dot {% endif %}dropdown-item{% if menu.sub %} dropdown-toggle{% endif %}" href="{{ menu.link }}"> {{ menu.name }} </a>
+      {% if menu.sub %}
+        <ul class="dropdown-menu">
+          {% for submenu in menu.sub %}
+            <li{% if submenu.sub %} class="dropdown-submenu"{% endif %}>
+              <a class="dropdown-item" href="{{ submenu.link }}">{{ submenu.name }}
+                {% if submenu.tag %}
+                  <span class="tip tip-dark">{{ submenu.tag }}</span>
+                {% endif %}
+              </a>
+              {% if submenu.sub %}
+                <ul class="dropdown-menu">
+                  {% for item in submenu.sub %}
+                    <li>
+                      <a class="dropdown-item" href="{{ item.link }}">{{ item.name }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </li>
+{% comment %}<!--
+  <li class="dropdown dropdown-mega">
+    <a class="dropdown-item dropdown-toggle" href="elements.html"> Elements</a>
+    <ul class="dropdown-menu">
+      <li>
+        <div class="dropdown-mega-content">
+          <div class="row">
+            <div class="col-lg-3">
+              <span class="dropdown-mega-sub-title">Elements 1</span>
+              <ul class="dropdown-mega-sub-nav">
+                <li>
+                  <a class="dropdown-item" href="elements-accordions.html">Accordions</a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-lg-3">
+              <span class="dropdown-mega-sub-title">Elements 2</span>
+              <ul class="dropdown-mega-sub-nav">
+                <li>
+                  <a class="dropdown-item" href="elements-buttons.html">Buttons</a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-lg-3">
+              <span class="dropdown-mega-sub-title">Elements 3</span>
+              <ul class="dropdown-mega-sub-nav">
+                <li>
+                  <a class="dropdown-item" href="elements-typography.html">Typography</a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-lg-3">
+              <span class="dropdown-mega-sub-title">Elements 4</span>
+              <ul class="dropdown-mega-sub-nav">
+                <li>
+                  <a class="dropdown-item" href="elements-headings.html">Headings</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </li>
+-->{% endcomment %}
+  {% endfor %}
+</ul>
+{% endifequal %}
+{% ifequal tag 'bottommenu' %}
+<nav>
+  <ul class="nav" id="footerNav">
+    {% for menu in menus %}
+      <li class="pr-4">
+        <a href="{{ menu.link }}" class="text-3">{{ menu.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endifequal %}

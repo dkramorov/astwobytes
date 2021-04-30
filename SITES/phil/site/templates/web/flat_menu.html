@@ -17,7 +17,7 @@
       <li{% ifequal menu.link request.META.PATH_INFO %} class="active"{% endifequal %}>
         <a href="{% ifnotequal request.META.PATH_INFO '/' %}{% if '#' in menu.link and not menu.link == '#' %}/{% endif %}{{ menu.link }}{% else %}{{ menu.link }}{% endifnotequal %}"{% if menu.class_name %} class="{{ menu.class_name|textize }}"{% endif %}>{{ menu.name }}</a>
         {% if menu.sub %}
-          <ul class="dropdown">
+          <ul class="dropdown{% if menu.class_name %} {{ menu.class_name }}{% endif %}">
             <li class="megamenu-item-info">
               <h5 class="megamenu-item-info-title">{{ menu.description }}</h5>
               <p class="megamenu-item-info-text">{{ menu.html|safe }}</p>

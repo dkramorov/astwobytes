@@ -9,9 +9,9 @@
   <em class="fa fa-file-text fa-fw mr-sm"></em>Обновить статусы телефонов
 </button>
 
-<h3>{{ plural_obj }}<br /><small>{{ action_create }}/{{ action_edit }} {{ rp_plural_obj }}</small></h3>
-
+{% include "core/title/page_title_table.html" %}
 {% include "core/breadcrumbs.html" %}
+
 <div class="panel panel-default">
   <div class="panel-heading">Отправка смс
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">

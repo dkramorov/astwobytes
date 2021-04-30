@@ -6,17 +6,31 @@ from django.dispatch import receiver
 from apps.main_functions.string_parser import kill_quotes
 from apps.main_functions.models import Standard
 
-def create_default_user():
-    """Демо-функция для создания пользователя по умолчанию"""
-    if User.objects.filter(username='jocker').first():
+def create_default_user(username: str = 'jocker',
+                        email: str = 'dkramorov@mail.ru',
+                        passwd: str = 'cnfylfhnysq',
+                        last_name: str = 'Kramorov',
+                        is_superuser: bool = True,
+                        is_active: bool = True,
+                        is_staff: bool = True):
+    """Демо-функция для создания пользователя по умолчанию
+       :param username: логин
+       :param email: емайл
+       :param last_name: фамилия
+       :param is_superuser: суперадми
+       :param is_active: включен
+       :param is_staff: в штате
+    """
+    if User.objects.filter(username=username).first():
         return
-    user = User.objects.create_user('jocker', 'dkramorov@mail.ru', 'cnfylfhnysq')
-    user.set_password('cnfylfhnysq')
-    user.last_name = 'Kramorov'
-    user.is_superuser = True
-    user.is_active = True
-    user.is_staff = True
+    user = User.objects.create_user(username, email, passwd)
+    user.set_password(passwd)
+    user.last_name = last_name
+    user.is_superuser = is_superuser
+    user.is_active = is_active
+    user.is_staff = is_staff
     user.save()
+    return user
 
 class customUser(Standard):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

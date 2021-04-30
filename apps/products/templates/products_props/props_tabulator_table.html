@@ -143,17 +143,6 @@ var booleanFormatter = function(cell, formatterParams, onRendered){
   result += "</div>";
   return result;
 };
-var imgFormatter = function(cell, formatterParams, onRendered){
-  var value = cell.getValue();
-  var data = cell.getData();
-  var result = "";
-  if(value){
-    result += "<div style='height:150px;'>";
-    result += "<img src='" + data.thumb + "' />";
-    result += "</div>";
-  }
-  return result;
-};
 
 function save_prop_pvalue(cell){
   // Редактируем значение для свойства товара

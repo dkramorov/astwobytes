@@ -1,0 +1,7 @@
+{% load mtags %}
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>{% if action == "create" %}{{ action_create }}{% endif %}{% if action == "edit" %}{{ action_edit }}{% endif %}{% if rp_singular_obj %} {{ rp_singular_obj }}{% endif %} | {{ plural_obj }}</title>
+
+<link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon"/>
+<meta name="author" content="Kramorov Den (Jocker)" />

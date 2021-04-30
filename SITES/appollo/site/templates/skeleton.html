@@ -18,7 +18,7 @@
 <link href="/media/css/cyan-2.css" rel="stylesheet">
 <link href="/media/css/phone.css" rel="stylesheet">
 {% if request.session.shopper %}
-<!-- SITE_ID --><script type="text/javascript">window.personal_user_id = 'user8800-{{ request.session.shopper.id }}@8800';</script>
+<!-- SITE_ID --><script type="text/javascript">window.personal_user_id = '{% settings_value "FS_USER" %}-{{ request.session.shopper.id }}@{{ request.META.HTTP_HOST }}';</script>
 {% endif %}
 {% block extrahead %}{% endblock %}
 </head>
