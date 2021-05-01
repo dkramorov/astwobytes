@@ -172,7 +172,6 @@ def get_catalogue_products_count(tag: str,
     inCache = cache.get(cache_var)
     if inCache and not force_new:
         return inCache
-
     # получаем список из (ид категории, кол-во товаров)
     # <QuerySet [(53, 42), (54, 7), (55, 7)]>
     pcats = ProductsCats.objects.filter(container__tag=tag, product__is_active=True, cat__is_active=True).values_list('cat').annotate(products_count=Count('product', distinct=True))
@@ -241,11 +240,16 @@ def get_catalogue(request,
         settings.PROJECT_NAME,
         tag,
     )
+    if not force_new:
+        if request.GET.get('force_new') or request.GET.get('ignore_cache'):
+            force_new = True
+
     inCache = cache.get(cache_var)
     if inCache and not force_new:
         if with_count:
             inCache['products_count'] = get_catalogue_products_count(tag)
         return inCache
+
     container = Containers.objects.filter(
         tag = tag,
         state = 7,

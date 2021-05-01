@@ -88,7 +88,10 @@ def welcome(request, *args, **kwargs):
     if not request.user.is_authenticated:
         urla = reverse('%s:login_view' % (CUR_APP, ))
         return redirect(urla)
-    context = {}
+    context = {
+        'singular_obj': 'Добро пожаловать',
+        'plural_obj': 'Панель управления',
+    }
     return render(request, 'core/welcome.html', context)
 
 def login_view(request, *args, **kwargs):
@@ -111,8 +114,13 @@ def login_view(request, *args, **kwargs):
     attempts_elapsed = MAX_ATTEMPTS
     attempts_elapsed_end = analyze_digit(attempts_elapsed, end=('попытка', 'попыток', 'попытки'))
     next_page = request.GET.get('next')
-    context = {'attempts_elapsed': '%s %s' % (attempts_elapsed, attempts_elapsed_end),
-               'next': next_page}
+    attempts_text = '%s %s' % (attempts_elapsed, attempts_elapsed_end)
+    context = {
+        'attempts_elapsed': attempts_text,
+        'next': next_page,
+        'singular_obj': 'Авторизация',
+        'plural_obj': 'Панель управления',
+    }
     return render(request, 'core/auth_form.html', context)
 
 def logout_view(request, *args, **kwargs):

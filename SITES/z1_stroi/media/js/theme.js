@@ -530,6 +530,13 @@ jQuery(window).load(function () {
     // Refresh owl carousels/sliders
     owlCarouselSelector.trigger('refresh');
     owlCarouselSelector.trigger('refresh.owl.carousel');
+
+    if(typeof(sidebar_cats_products_count) !== "undefined"){
+      for(var i=0; i<sidebar_cats_products_count.length; i++){
+        var item = sidebar_cats_products_count[i];
+        $("#sidebar_cats_products_count_" + item[0]).html(item[1]);
+      }
+    }
 });
 
 jQuery(window).resize(function () {

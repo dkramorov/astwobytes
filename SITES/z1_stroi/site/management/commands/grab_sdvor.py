@@ -102,14 +102,14 @@ def fill_products(cat: Blocks):
 
         cat_link = ProductsCats.objects.filter(product=analog, cat=cat).first()
         if not cat_link:
-            ProductsCats.objects.create(product=analog, cat=cat)
+            ProductsCats.objects.create(product=analog, cat=cat, container=cat.container)
 
 
 def get_products():
     """Получение товаров по категориям последнего уровня
     """
     container = get_container()
-    all_cats = container.blocks_set.all()
+    all_cats = container.blocks_set.select_related('container').all()
     for cat in all_cats:
         root_parents = cat.parents if cat.parents else ''
         parents = '%s_%s' % (root_parents, cat.id)

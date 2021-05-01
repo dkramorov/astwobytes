@@ -1,26 +1,40 @@
-<div class="section-sb-current">
-  <h3><a href="/cat/">{{ container.name }} <span id="section-sb-toggle" class="section-sb-toggle"><span class="section-sb-ico"></span></span></a></h3>
-  <ul class="section-sb-list" id="section-sb-list" data-container_id="{{ container.id }}">
-    {% for menu in menus %}
-      <li class="categ-1{% if menu.sub %} has_child{% endif %}" data-block_parents="{% if menu.parents %}{{ menu.parents }}{% endif %}_{{ menu.id }}">
-        <a href="{{ menu.link }}">
-          <span class="categ-1-label">{{ menu.name }}</span>
-          {% if menu.sub %}
-            <span class="section-sb-toggle"><span class="section-sb-ico"></span></span>
-          {% endif %}
-        </a>
-        {% if menu.sub %}
-          <ul>
-            {% for item in menu.sub %}
-              <li class="categ-2">
-                <a href="{{ item.link }}">
-                  <span class="categ-2-label">{{ item.name }}</span>
-                </a>
-              </li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-</div>
+<ul>
+  {% for menu in menus %}
+  <li>
+    {% if menu.sub %}
+      <span class="arrow">
+        <i class="fa fa-angle-down"></i>
+      </span>
+    {% endif %}
+    <a href="{{ menu.link }}">{{ menu.name }}</a>
+    {% if menu.sub %}
+      <ul class="children">
+        {% for submenu in menu.sub %}
+          <li>
+            {% if submenu.sub %}
+              <span class="arrow">
+                <i class="fa fa-angle-down"></i>
+              </span>
+            {% endif %}
+            <a href="{{ submenu.link }}">{{ submenu.name }}</a>
+            {% if submenu.sub %}
+              <ul class="children">
+                {% for item in submenu.sub %}
+                  <li>
+                    <a href="{{ item.link }}">{{ item.name }}
+                      <span class="count" id="sidebar_cats_products_count_{{ item.id }}">12</span>
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+<script type="text/javascript">
+var sidebar_cats_products_count = [{% for item in products_count %}[{{ item.0 }}, {{ item.1 }}]{% if not forloop.last %},{% endif %}{% endfor %}];
+</script>

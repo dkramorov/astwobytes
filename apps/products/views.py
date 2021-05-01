@@ -332,9 +332,12 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
             ids_cats = request.POST.getlist('cats')
             mh.row.productscats_set.filter(cat__container__state=7).delete()
             if ids_cats:
-                cats = Blocks.objects.filter(pk__in=ids_cats)
+                cats = Blocks.objects.select_related('container').filter(pk__in=ids_cats)
                 for cat in cats:
-                    ProductsCats.objects.create(product=mh.row, cat=cat)
+                    ProductsCats.objects.create(
+                        product=mh.row,
+                        cat=cat,
+                        container=cat.container)
             # ------------------
             # Сохраняем типы цен
             # ------------------

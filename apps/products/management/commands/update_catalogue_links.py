@@ -52,6 +52,6 @@ class Command(BaseCommand):
         catalogues = Containers.objects.filter(state=7)
         for catalogue in catalogues:
             logger.info(catalogue.name)
-            blocks = catalogue.blocks_set.filter(parents='')
+            blocks = catalogue.blocks_set.select_related('container').filter(parents='')
             recursive_update_links(blocks, catalogue)
 
