@@ -6,7 +6,8 @@
 {% block content %}
 {% if row.id %}
   <a class="btn btn-primary pull-right" href="{% url 'login:group_perms' row.id %}">
-    <em class="fa fa-key fa-fw mr-sm"></em> Права группы
+    <em class="fa fa-key fa-fw mr-sm"></em>
+    <span class="label_for_translate action_button_label_group_permissions" attr-class_name="action_button_label_group_permissions" attr-edit_mode="popup" attr-placement="bottom">Права группы</span>
   </a>
 {% endif %}
 
@@ -16,12 +17,13 @@
   <div class="col-sm-12">
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
-        <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
           {% include "core/forms/row_name.html" %}
           <div class="form-group">
-            <label class="col-lg-2 control-label">Пользователи в группе</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_group_users_label" attr-class_name="row_group_users_label" attr-edit_mode="popup" attr-placement="bottom">Пользователи в группе</span>
+            </label>
             <div class="col-lg-10">
               <select id="users_select2" autocomplete="off" name="group_users" multiple>
                 {% for user in row.users %}

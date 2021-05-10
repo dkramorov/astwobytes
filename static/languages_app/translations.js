@@ -3,8 +3,10 @@
 */
 var translate_mode = getCookie("translate_mode");
 function get_translatable_labels(){
-  /* Собираем все метки, которые хотим дать возможность перевести,
-     делаем динамически потому что есть пункты меню, выпадашки и др.
+  /* Собираем все метки,
+     которые хотим дать возможность перевести,
+     делаем динамически,
+     потому что есть пункты меню, выпадашки и др.
   */
   var labels_for_translate = [];
   $(".label_for_translate").each(function(){
@@ -13,6 +15,16 @@ function get_translatable_labels(){
       labels_for_translate.push(label_for_translate);
     }
   });
+
+  // Столбцы таблиц tabulator
+  var tables = get_tabulator_tables();
+  for(var i=0; i<tables.length; i++){
+    for(var j=0; j<tables[i]['columns'].length; j++){
+      var column = tables[i]['columns'][j]['field'];
+      column = "tabulator_field_name_" + column;
+      labels_for_translate.push(column);
+    }
+  }
 
   return labels_for_translate;
 }
@@ -32,8 +44,13 @@ function create_xeditable_for_translations(){
   var class_names = get_translatable_labels();
   for(var i=0; i<class_names.length; i++){
     var edit_mode = "inline"; // or popup
+    var placement = 'top';
     if($("." + class_names[i]).attr("attr-edit_mode") === "popup"){
-      edit_mode = "popup"
+      edit_mode = "popup";
+      placement = $("." + class_names[i]).attr("attr-placement");
+      if(!placement){
+        placement = "top";
+      }
     }
     $("." + class_names[i]).editable({
       //type: "text",
@@ -41,15 +58,96 @@ function create_xeditable_for_translations(){
       url: "/languages/translate_mode/",
       pk: class_names[i],
       mode: edit_mode,
+      placement: placement,
       params: function(params) {
         params.csrfmiddlewaretoken = csrf;
         return params;
       },
-      success: function(response, newValue){
-        //console.log(response, newValue);
+      success: function(r, newValue){
+        var status = 'danger';
+        var msg = 'error';
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+        }
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+        // Если возвращать результат,
+        // будет выведена ошибка под полем
+        // return "Ошибка";
       }
     });
   }
+}
+
+function get_tabulator_tables(){
+  /* Получить все названия столбцов в таблицах tabulator,
+     чтобы запросить переовод
+  */
+  var tables = Array();
+  $(".tabulator_table").each(function(){
+    var table_pk = $(this).attr('id');
+    if(!table_pk){
+      return;
+    }
+    // id="main-table", но var main_table=
+    table_pk = table_pk.replace("-", "_");
+    var table_columns_var = table_pk + "_columns";
+    if(window[table_pk] !== undefined && window[table_columns_var] !== undefined){
+      tables.push({
+        'table': window[table_pk],
+        'columns': window[table_columns_var],
+      });
+
+    }
+  });
+  return tables;
+}
+
+function tabulator_title_changed(column){
+  /* Функция изменения заголовка стобца в tabulator
+     :param column: столбец tabulator
+  */
+  var pk = "tabulator_field_name_" + column._column.field;
+  var value = column._column.definition.title;
+  update_translation(pk, value);
+}
+
+function update_translation(pk, value){
+  /* Отправляем на сервер перевод
+     :param pk: код строки
+     :param value: переведенная строка
+  */
+  $.ajax({
+    async : true,
+    type: "POST",
+    data: {
+      "csrfmiddlewaretoken": getCookie('csrftoken'),
+      "pk": pk,
+      "value": value,
+    },
+    url: "/languages/translate_mode/",
+    success : function (r) {
+      var status = 'danger';
+      var msg = 'error';
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    }
+  });
 }
 
 function get_translations(){
@@ -70,17 +168,66 @@ function get_translations(){
     },
     url: "/languages/get_translations/",
     success : function (r) {
+      var tables = get_tabulator_tables();
+      var columns = {};
+
       for(var i=0; i<r['translations'].length; i++){
-        if(translate_mode === "on"){
-          $("." + r['translations'][i]['class_name']).editable("setValue", r['translations'][i]['value']);
+        var translate = r['translations'][i];
+        if(translate['class_name'].indexOf('tabulator_field_name_') == 0){
+          var column_name = translate['class_name'].replace('tabulator_field_name_', '');
+          columns[column_name] = translate['value'];
         }else{
-          $("." + r['translations'][i]['class_name']).html(r['translations'][i]['value']);
+          if(translate_mode === "on"){
+            $("." + translate['class_name']).editable("setValue", translate['value']);
+          }else{
+            $("." + translate['class_name']).html(translate['value']);
+          }
+          // Надо найти placeholder
+          if(translate['class_name'].indexOf("row_") == 0){
+            var parent = $("." + translate['class_name']).parent().parent();
+            if(parent.hasClass("form-group")){
+              parent.find("input.form-control").attr("placeholder", translate['value']);
+              parent.find("textarea.form-control").attr("placeholder", translate['value']);
+            }
+          }
         }
       }
       for(var i=0; i<r['left_menu_translations'].length; i++){
         var menu = r['left_menu_translations'][i];
         var pk = menu['class_name'].replace('_label', '')
-        $("#" + pk + " span").html(menu['value']);
+        $("#" + pk + " > a > span").html(menu['value']);
+      }
+      // Заменяем столбцы для таблиц tabulator
+      for(var i=0; i<tables.length; i++){
+
+        for(var j=0; j<tables[i]['columns'].length; j++){
+          var column = tables[i]['columns'][j];
+          if(column['field'] == undefined){
+            continue;
+          }
+          if(translate_mode === "on"){
+            // Разрешаем редактирование
+            column['editableTitle'] = true;
+          }
+          if(columns[column['field']] !== undefined){
+            column['title'] = columns[column['field']];
+            column['headerFilterPlaceholder'] = columns[column['field']];
+          }
+        }
+
+        // Задать перевод колонкам таблицы,
+        // ставятся новые колонки
+        // main_table.setColumns(translated_columns);
+        tables[i]['table'].setColumns(tables[i]['columns']);
+        // Ибучие placeholder не переписываются,
+        // поэтому придется отдельно пробежать по ним
+        var cur_columns = tables[i]['table'].getColumns();
+        for(var j=0; j<tables[i]['columns'].length; j++){
+          var column = tables[i]['columns'][j];
+          if(column['headerFilterPlaceholder'] !== undefined){
+            $(cur_columns[j]._column.element).find("input").attr("placeholder", column['headerFilterPlaceholder']);
+          }
+        }
       }
     }
   });
@@ -141,6 +288,7 @@ function turn_on_translatable_labels(){
   /* Включить режим перевода
   */
   create_translatable_left_menu();
+
   create_xeditable_for_translations();
   $(".translate_mode").prop("checked", "checked");
   get_translations();

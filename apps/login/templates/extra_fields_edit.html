@@ -11,12 +11,13 @@
   <div class="col-sm-12">
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
-        <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
           {% include "core/forms/row_name.html" %}
           <div class="form-group">
-            <label class="col-lg-2 control-label">Системное имя поля</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_sysname_label" attr-class_name="row_sysname_label" attr-edit_mode="popup" attr-placement="bottom">Системное имя поля</span>
+            </label>
             <div class="col-lg-10">
               <input type="text" placeholder="Системное имя поля" class="form-control" name="field" value="{% if row.field %}{{ row.field }}{% endif %}" autocomplete="off">
             </div>
@@ -26,13 +27,16 @@
               <div class="checkbox c-checkbox">
                 <label>
                   <input type="checkbox" value="1" name="show_in_table" {% if row.show_in_table %} checked{% endif %} autocomplete="off">
-                  <span class="fa fa-check"></span> Показывать в общей таблице
+                  <span class="fa fa-check"></span>
+                  <strong class="label_for_translate row_show_in_main_table_label" attr-class_name="row_show_in_main_table_label" attr-edit_mode="popup" attr-placement="bottom">Показывать в общей таблице</strong>
                 </label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">Только для группы</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_only_for_group_label" attr-class_name="row_only_for_group_label" attr-edit_mode="popup" attr-placement="bottom">Только для группы</span>
+            </label>
             <div class="col-lg-10">
               <select id="group_select2" autocomplete="off" name="group">
                 {% if row.group %}

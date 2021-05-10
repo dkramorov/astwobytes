@@ -1,0 +1,56 @@
+{% extends "flatcontent_settings.html" %}
+
+{% block extracontent %}
+<div>
+  <strong>Настройки зависимы от пользователя</strong>
+</div>
+<hr />
+Примеры:
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>Атрибут</th>
+      <th>Значение</th>
+      <th>Результат</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>admin_translate_rows</td>
+      <td>1</td>
+      <td>Перевод в панели управления полей модели для которых есть перевод</td>
+    </tr>
+  </tbody>
+</table>
+<hr />
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <strong class="label_for_translate translate_mode_label_title" attr-class_name="translate_mode_label_title">Перевод UI панели управления</strong>
+  </div>
+  <div class="panel-body">
+    <div class="col-sm-12">
+      <div class="checkbox c-checkbox">
+        <label>
+          <input type="checkbox" value="1" class="translate_mode">
+          <span class="fa fa-check"></span>
+          <i class="label_for_translate translate_mode_label" attr-class_name="translate_mode_label">Включить редактирование перевода интерфейса панели управления</i>
+        </label>
+      </div>
+    </div>
+
+    <div class="col-sm-12 translations_for_menu hidden">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span class="label_for_translate translate_dynamic_copy_for_left_menu_label" attr-class_name="translate_dynamic_copy_for_left_menu_label">Перевод для меню</span>
+        </div>
+        <div class="panel-body">
+          <div class="sidebar">
+            <ul class="nav" id="left_menu_apps_translations">
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

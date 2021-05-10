@@ -1,4 +1,5 @@
 import os
+import socket
 import time
 import json
 import logging
@@ -12,11 +13,53 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 class GenericBrowser():
-    """ Основные функции расширяющие Browser
+    """Основные функции расширяющие Browser
+       Скриптизер для Browser
     """
 
+    def run_script(self, script):
+        """Выполнение функций скрипта
+           например, script = (
+               ('goto', 'http://ya.ru'),
+               ('screenshot2telegram', ''),
+           )
+           :param script: алгоритм с командами
+        """
+        if not self.check_script(script):
+            exit()
+        for cmd, params in script:
+            func = getattr(self, cmd)
+            if isinstance(params, str):
+                result = func(params)
+            elif isinstance(params, (list, tuple)):
+                result = func(*params)
+            elif isinstance(params, dict):
+                result = func(**params)
+            else:
+                result = func()
+
+    def check_script(self, script):
+        """Проверка всех функций скрипта,
+           например, script = (
+               ('goto', 'http://ya.ru'),
+               ('screenshot2telegram', ''),
+           )
+           :param script: алгоритм с командами
+        """
+        for item in script:
+            if not hasattr(self, item[0]):
+                logger.info('[ERROR]: driver method %s not found' % item[0])
+                return False
+        return True
+
+    def hostname(self):
+        """Получить название сервера"""
+        return socket.gethostname()
+
     def goto(self, url: str):
-        """Перейти по ссылке"""
+        """Перейти по ссылке
+           :param url: ссылка
+        """
         self.driver.get(url)
 
     def refresh(self):
@@ -183,6 +226,11 @@ class GenericBrowser():
             logger.info('[ERROR]: screenshot not found')
             return
         with open(screenshot, 'rb') as f:
+            msg = '%s %s %s\n%s' % (
+                self.get_ip(),
+                self.hostname(),
+                self.profile_name,
+                msg)
             self.telegram.send_document(f, caption=msg)
         os.unlink(screenshot)
 

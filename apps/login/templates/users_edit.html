@@ -6,7 +6,8 @@
 {% block content %}
 {% if row.id %}
   <a class="btn btn-primary pull-right" href="{% url 'login:user_perms' row.id %}">
-    <em class="fa fa-key fa-fw mr-sm"></em> Права пользователя
+    <em class="fa fa-key fa-fw mr-sm"></em>
+    <span class="label_for_translate action_button_label_user_permissions" attr-class_name="action_button_label_user_permissions" attr-edit_mode="popup" attr-placement="bottom">Права пользователя</span>
   </a>
 {% endif %}
 
@@ -16,41 +17,52 @@
   <div class="col-sm-12">
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
-        <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
           <div class="form-group">
-            <label class="col-lg-2 control-label">Логин</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_login_label" attr-class_name="row_login_label" attr-edit_mode="popup" attr-placement="bottom">Логин</span>
+            </label>
             <div class="col-lg-10">
               <input type="text" placeholder="Ваш логин" class="form-control" name="username" value="{% if row.username %}{{ row.username }}{% endif %}" autocomplete="off"{% if row %} disabled{% else %} data-parsley-required{% endif %}>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">Имя</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_first_name_label" attr-class_name="row_first_name_label" attr-edit_mode="popup" attr-placement="bottom">Имя</span>
+            </label>
             <div class="col-lg-10">
               <input type="text" placeholder="Имя" class="form-control" name="first_name" value="{% if row.first_name %}{{ row.first_name }}{% endif %}" autocomplete="off">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">Фамилия</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_last_name_label" attr-class_name="row_last_name_label" attr-edit_mode="popup" attr-placement="bottom">Фамилия</span>
+            </label>
             <div class="col-lg-10">
               <input type="text" placeholder="Фамилия" class="form-control" name="last_name" value="{% if row.last_name %}{{ row.last_name }}{% endif %}" autocomplete="off">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">Телефон</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_phone_label" attr-class_name="row_phone_label" attr-edit_mode="popup" attr-placement="bottom">Телефон</span>
+            </label>
             <div class="col-lg-10">
               <input type="text" placeholder="Телефон" class="form-control phone" name="customuser.phone" value="{% if row.customuser.phone %}{{ row.customuser.phone }}{% endif %}" autocomplete="off">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">Email</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_email_label" attr-class_name="row_email_label" attr-edit_mode="popup" attr-placement="bottom">Email</span>
+            </label>
             <div class="col-lg-10">
               <input type="text" placeholder="Email" class="form-control" name="email" value="{% if row.email %}{{ row.email }}{% endif %}" autocomplete="off" data-parsley-type="email">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">Должность</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_function_label" attr-class_name="row_function_label" attr-edit_mode="popup" attr-placement="bottom">Должность</span>
+            </label>
             <div class="col-lg-10">
               <input type="text" placeholder="Должность" class="form-control" name="customuser.function" value="{% if row.customuser.function %}{{ row.customuser.function }}{% endif %}" autocomplete="off">
             </div>
@@ -58,13 +70,17 @@
           {% include "core/forms/row_image.html" %}
 
           <div class="form-group">
-            <label class="col-lg-2 control-label">Пароль</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_password_label" attr-class_name="row_password_label" attr-edit_mode="popup" attr-placement="bottom">Пароль</span>
+            </label>
             <div class="col-lg-10">
               <input type="password" placeholder="Пароль" class="form-control" name="passwd" id="passwd1" autocomplete="off" {% ifequal action "create" %}data-parsley-required{% endifequal %} data-parsley-equalto="#passwd2">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-2 control-label">Повторите пароль</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_repeat_password_label" attr-class_name="row_repeat_password_label" attr-edit_mode="popup" attr-placement="bottom">Повторите пароль</span>
+            </label>
             <div class="col-lg-10">
               <input type="password" placeholder="Повторите пароль" class="form-control" id="passwd2" autocomplete="off" {% ifequal action "create" %}data-parsley-required{% endifequal %} data-parsley-equalto="#passwd1">
             </div>
@@ -74,7 +90,8 @@
               <div class="checkbox c-checkbox">
                 <label>
                   <input type="checkbox" value="1" name="is_superuser" {% if row.is_superuser %} checked{% endif %} autocomplete="off">
-                  <span class="fa fa-check"></span> Суперпользователь
+                  <span class="fa fa-check"></span>
+                  <strong class="label_for_translate row_is_superuser_label" attr-class_name="row_is_superuser_label" attr-edit_mode="popup" attr-placement="bottom">Суперпользователь</strong>
                 </label>
               </div>
             </div>
@@ -84,7 +101,8 @@
               <div class="checkbox c-checkbox">
                 <label>
                   <input type="checkbox" value="1" name="is_staff" {% if row.is_staff %} checked{% endif %} autocomplete="off">
-                  <span class="fa fa-check"></span> В штате
+                  <span class="fa fa-check"></span>
+                  <strong class="label_for_translate row_is_state_label" attr-class_name="row_is_state_label" attr-edit_mode="popup" attr-placement="bottom">В штате</strong>
                 </label>
               </div>
             </div>

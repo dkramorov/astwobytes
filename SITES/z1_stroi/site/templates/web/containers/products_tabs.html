@@ -36,15 +36,8 @@
                     <span class="star active"></span>
                     <span class="star active"></span>
                   </div>
-                  <div class="price">
-                    <ins>{{ product.price|money_format }} ₽</ins>
-                    <del>{{ product.old_price|money_format }} ₽</del>
-                  </div>
-                  <div class="buttons">
-                    <a class="btn btn-theme btn-theme-transparent btn-wish-list" href="#"><i class="fa fa-heart"></i></a>
-                    <a class="btn btn-theme btn-theme-transparent btn-icon-left" href="#"><i class="fa fa-shopping-cart"></i>В корзину</a>
-                    <a class="btn btn-theme btn-theme-transparent btn-compare" href="#"><i class="fa fa-exchange"></i></a>
-                  </div>
+                  {% include "web/cat/product_price_row.html" %}
+                  {% include "web/cat/product_buy_button.html" %}
                 </div>
               </div>
             </div>

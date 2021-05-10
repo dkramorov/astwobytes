@@ -210,7 +210,8 @@ a:hover .btn-play,
         border-top: solid 5px #d80018;
     }
 }
-.widget.shop-categories ul a:hover {
+.widget.shop-categories ul a:hover,
+.widget.shop-categories ul a.active {
     color: #d80018;
 }
 .widget-flickr-feed ul a:hover {

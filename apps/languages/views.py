@@ -139,12 +139,20 @@ def translate_mode(request, *args, **kwargs):
         domain_pk = domain.get('pk')
         class_name = request.POST.get('pk')
         value = request.POST.get('value', '')[:254]
+        value = value.strip()
         analog = UITranslate.objects.filter(class_name=class_name, domain_pk=domain_pk).first()
+        # Херим, если пустое поле
+        if not value:
+            if analog:
+                analog.delete()
+            result['success'] = 'Перевод удален'
+            return JsonResponse(result, safe=False)
         if not analog:
             analog = UITranslate(class_name=class_name, domain_pk=domain_pk)
-        analog.value = value.strip()
+        analog.value = value
         analog.save()
         result['translate'] = object_fields(analog)
+        result['success'] = 'Данные записаны'
 
     result['domain'] = domain
     return JsonResponse(result, safe=False)

@@ -1,0 +1,6 @@
+{% if permissions.edit %}
+    <a class="btn btn-primary pull-right" href="{{ url_edit }}">
+        <em class="fa fa-pencil fa-fw mr-sm"></em>
+        <span class="label_for_translate action_button_label_edit_{{ menu }}_{{ submenu }}" attr-class_name="action_button_label_edit_{{ menu }}_{{ submenu }}" attr-edit_mode="popup" attr-placement="bottom">{{ action_edit }} {{ rp_singular_obj }}</span>
+    </a>
+{% endif %}

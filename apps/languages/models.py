@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
-from apps.main_functions.models import Standard
+from apps.main_functions.models import Standard, Config
 
 class UITranslate(Standard):
     """Переводы для текста в интерфейсе админки
@@ -43,6 +43,18 @@ class Translate(Standard):
     class Meta:
         verbose_name = 'Перевод'
         verbose_name_plural = 'Переводы'
+
+def get_admin_translate_rows(request):
+    """Вытащить настройку
+       "Переводить модель в панели управления"
+       настройка зависит от пользователя
+    """
+    key = 'languages_admin_translate_rows'
+    config = Config.objects.filter(attr=key).first()
+    if config:
+        return True
+    return False
+
 
 def get_domains():
     """Получить список доменов"""

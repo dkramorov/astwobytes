@@ -1,0 +1,40 @@
+{% load mtags %}
+<div class="widget widget-tabs">
+  <div class="widget-content">
+    <ul id="tabs_{{ container.id }}" class="nav nav-justified">
+      {% for block in blocks %}
+        <li{% if forloop.first %} class="active"{% endif %}>
+          <a href="#tab-s{{ block.id }}" data-toggle="tab">{{ block.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="tab-content">
+      {% for block in blocks %}
+        <div class="tab-pane fade{% if forloop.first %} in active{% endif %}" id="tab-s{{ block.id }}">
+          <div class="product-list">
+            {% for product in block.products %}
+              <div class="media">
+                <a class="pull-left media-link" href="{{ product.link }}">
+                  <img class="media-object" src="{{ product.thumb }}" alt="{{ product.name|textize }}">
+                  <i class="fa fa-plus"></i>
+                </a>
+                <div class="media-body">
+                  <h4 class="media-heading"><a href="{{ product.link }}">{{ product.name }}</a></h4>
+                  <div class="rating">
+                    <span class="star"></span>
+                    <span class="star active"></span>
+                    <span class="star active"></span>
+                    <span class="star active"></span>
+                    <span class="star active"></span>
+                  </div>
+                  {% include "web/cat/product_price_row.html" %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <a class="btn btn-theme btn-theme-dark btn-theme-sm btn-block" href="/cat/">Все товары</a>
+  </div>
+</div>

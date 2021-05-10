@@ -184,6 +184,9 @@ $(document).ready(function(){
   })
   .bind("select_node.jstree", function (event, data) {
     //console.log("_select", event, data);
+    if($("#current_edit_form").hasClass("hidden")){
+      $("#current_edit_form").removeClass("hidden");
+    }
   })
   .on("rename_node.jstree", function (e, data) {
     if(data.old === data.text && data.text !== noname){
@@ -427,10 +430,10 @@ $(document).ready(function(){
   // и подстановка их в select2
   // --------------------------
   fontawesome_select2("icon_fontawesome");
+  $("#current_edit_form").addClass("hidden");
 });
 
 function clear_search(){
   $("#rubrics_tree").jstree("clear_search");
 }
-
 </script>

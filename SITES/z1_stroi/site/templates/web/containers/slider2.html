@@ -1,0 +1,28 @@
+{% load mtags %}
+<div class="main-slider sub">
+  <div class="owl-carousel" id="main-slider">
+    {% for block in blocks %}
+      <div class="item slide{{ forloop.counter }} sub">
+        <img class="slide-img" src="{% imagine block.img '1920x1080' block.get_folder True %}" alt="{{ block.name|textize }}"/>
+        <div class="caption">
+          <div class="container">
+            <div class="div-table">
+              <div class="div-cell">
+                <div class="caption-content">
+                  <h3 class="caption-subtitle">
+                    <span>{{ block.name }}</span>
+                  </h3>
+                  {% if block.link %}
+                    <p class="caption-text">
+                      <a class="btn btn-theme" href="{{ block.link }}">{{ block.description }}</a>
+                    </p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

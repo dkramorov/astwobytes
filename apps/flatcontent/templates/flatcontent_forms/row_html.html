@@ -1,6 +1,6 @@
 <div class="form-group">
   <label class="col-lg-2 control-label">
-    Содержимое (html)
+    <span class="label_for_translate row_html_label" attr-class_name="row_html_label" attr-edit_mode="popup" attr-placement="bottom">Содержимое (html)</span>
     {% if domains %}
       <a href="javascript:void(0);" data-attr-translate="html" class="translate_toggle"><i class="fa fa-globe"></i></a>
     {% endif %}
@@ -13,7 +13,8 @@
 <!-- Переводы для html -->
 {% for domain in domains %}
   <div class="form-group translate_html hidden">
-    <label class="col-lg-2 control-label">Содержимое (html) {{ domain.name }} ({{ domain.domain }})</label>
+    <label class="col-lg-2 control-label">
+    <span class="row_html_label">Содержимое (html)</span> {{ domain.name }} ({{ domain.domain }})</label>
     <div class="col-lg-10">
       <textarea placeholder="Содержимое (html) {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_html_{{ domain.pk }}" {% if not '<script' in row.html %}id="html_redactor_{{ domain.pk }}"{% endif %} autocomplete="off">{% if domain.translations.html %}{{ domain.translations.html }}{% endif %}</textarea>
     </div>

@@ -1,65 +1,77 @@
-<div class="form-group">
-  <label class="col-lg-2 control-label">
-    Title
-    {% if domains %}
-      <a href="javascript:void(0);" data-attr-translate="title" class="translate_toggle"><i class="fa fa-globe"></i></a>
-    {% endif %}
-  </label>
-  <div class="col-lg-10">
-    <input type="text" placeholder="Title" class="form-control" name="title" value="{% if row.title %}{{ row.title }}{% endif %}" autocomplete="off">
+<div class="panel panel-default" id="seo_fields_form">
+  <div class="panel-heading">
+    <span class="label_for_translate seo_fields_edit_label" attr-class_name="seo_fields_edit_label">Заполните SEO-теги</span>
+  </div>
+  <div class="panel-body">
+
+    <div class="form-group">
+      <label class="col-lg-2 control-label">
+        <span class="label_for_translate row_title_label" attr-class_name="row_title_label" attr-edit_mode="popup" attr-placement="bottom">Title</span>
+        {% if domains %}
+          <a href="javascript:void(0);" data-attr-translate="title" class="translate_toggle"><i class="fa fa-globe"></i></a>
+        {% endif %}
+      </label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Title" class="form-control" name="title" value="{% if row.title %}{{ row.title }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Переводы для title -->
+    {% for domain in domains %}
+      <div class="form-group translate_title hidden">
+        <label class="col-lg-2 control-label">
+          <span class="row_title_label">Title</span> {{ domain.name }} ({{ domain.domain }})</label>
+        <div class="col-lg-10">
+          <input placeholder="Title {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_title_{{ domain.pk }}" value="{% if domain.translations.title %}{{ domain.translations.title }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="form-group">
+      <label class="col-lg-2 control-label">
+        <span class="label_for_translate row_description_label" attr-class_name="row_description_label" attr-edit_mode="popup" attr-placement="bottom">Description</span>
+        {% if domains %}
+          <a href="javascript:void(0);" data-attr-translate="description" class="translate_toggle"><i class="fa fa-globe"></i></a>
+        {% endif %}
+      </label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Description" class="form-control" name="description" value="{% if row.description %}{{ row.description }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Переводы для description -->
+    {% for domain in domains %}
+      <div class="form-group translate_description hidden">
+        <label class="col-lg-2 control-label">
+          <span class="row_description_label">Description</span> {{ domain.name }} ({{ domain.domain }})
+        </label>
+        <div class="col-lg-10">
+          <input placeholder="Description {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_description_{{ domain.pk }}" value="{% if domain.translations.description %}{{ domain.translations.description }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="form-group">
+      <label class="col-lg-2 control-label">
+        <span class="label_for_translate row_keywords_label" attr-class_name="row_keywords_label" attr-edit_mode="popup" attr-placement="bottom">Keywords</span>
+        {% if domains %}
+          <a href="javascript:void(0);" data-attr-translate="keywords" class="translate_toggle"><i class="fa fa-globe"></i></a>
+        {% endif %}
+      </label>
+      <div class="col-lg-10">
+        <input type="text" placeholder="Keywords" class="form-control" name="keywords" value="{% if row.keywords %}{{ row.keywords }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Переводы для keywords -->
+    {% for domain in domains %}
+      <div class="form-group translate_keywords hidden">
+        <label class="col-lg-2 control-label">
+          <span class="row_keywords_label">Keywords</span> {{ domain.name }} ({{ domain.domain }})</label>
+        <div class="col-lg-10">
+          <input placeholder="Description {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_keywords_{{ domain.pk }}" value="{% if domain.translations.keywords %}{{ domain.translations.keywords }}{% endif %}" autocomplete="off">
+        </div>
+      </div>
+    {% endfor %}
   </div>
 </div>
-
-<!-- Переводы для title -->
-{% for domain in domains %}
-  <div class="form-group translate_title hidden">
-    <label class="col-lg-2 control-label">Title {{ domain.name }} ({{ domain.domain }})</label>
-    <div class="col-lg-10">
-      <input placeholder="Title {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_title_{{ domain.pk }}" value="{% if domain.translations.title %}{{ domain.translations.title }}{% endif %}" autocomplete="off">
-    </div>
-  </div>
-{% endfor %}
-
-<div class="form-group">
-  <label class="col-lg-2 control-label">
-    Description
-    {% if domains %}
-      <a href="javascript:void(0);" data-attr-translate="description" class="translate_toggle"><i class="fa fa-globe"></i></a>
-    {% endif %}
-  </label>
-  <div class="col-lg-10">
-    <input type="text" placeholder="Description" class="form-control" name="description" value="{% if row.description %}{{ row.description }}{% endif %}" autocomplete="off">
-  </div>
-</div>
-
-<!-- Переводы для description -->
-{% for domain in domains %}
-  <div class="form-group translate_description hidden">
-    <label class="col-lg-2 control-label">Description {{ domain.name }} ({{ domain.domain }})</label>
-    <div class="col-lg-10">
-      <input placeholder="Description {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_description_{{ domain.pk }}" value="{% if domain.translations.description %}{{ domain.translations.description }}{% endif %}" autocomplete="off">
-    </div>
-  </div>
-{% endfor %}
-
-<div class="form-group">
-  <label class="col-lg-2 control-label">
-    Keywords
-    {% if domains %}
-      <a href="javascript:void(0);" data-attr-translate="keywords" class="translate_toggle"><i class="fa fa-globe"></i></a>
-    {% endif %}
-  </label>
-  <div class="col-lg-10">
-    <input type="text" placeholder="Keywords" class="form-control" name="keywords" value="{% if row.keywords %}{{ row.keywords }}{% endif %}" autocomplete="off">
-  </div>
-</div>
-
-<!-- Переводы для keywords -->
-{% for domain in domains %}
-  <div class="form-group translate_keywords hidden">
-    <label class="col-lg-2 control-label">Keywords {{ domain.name }} ({{ domain.domain }})</label>
-    <div class="col-lg-10">
-      <input placeholder="Description {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_keywords_{{ domain.pk }}" value="{% if domain.translations.keywords %}{{ domain.translations.keywords }}{% endif %}" autocomplete="off">
-    </div>
-  </div>
-{% endfor %}

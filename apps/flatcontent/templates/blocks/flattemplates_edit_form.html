@@ -3,7 +3,9 @@
     <input type="hidden" name="state" value="1" />
     <input type="hidden" name="container" value="{{ container.id }}" />
 
-    <div class="panel-heading">{{ singular_obj }}</div>
+    <div class="panel-heading">
+      {% include "core/forms/default_singular_obj.html" %}
+    </div>
     <div class="panel-body">
       {% csrf_token %}
       {% include "core/forms/row_name.html" %}

@@ -342,19 +342,26 @@ def edit_container(request, ftype: str, action: str, row_id: int = None, *args, 
             context['lazy'] = row.blocks_set.all().aggregate(Count('id'))['id__count'] > FAT_HIER
             mh.breadcrumbs_add({
                 'link': mh.url_edit,
-                'name': '%s %s' % ('Иерархия', mh.rp_singular_obj),
+                'name': '%s %s' % ('Вид деревом', mh.rp_singular_obj),
             })
+            # В иерархии нужны права именно блоков,
+            # а не контейнеров
+            mh.get_permissions(Blocks)
+            context['permissions'] = mh.permissions
         elif action == 'copy' and row:
             # ---------------------
             # Клонировать контейнер
             # ---------------------
-            new_container = row
-            new_container.id = None
-            new_container.position = None
-            new_container.save()
-            fill_from_template(new_container, row.state)
-            urla = reverse_edit(mh_vars, ftype, 'edit', new_container.id)
-            return redirect(urla)
+            if mh.permissions['create'] and mh.permissions['edit']:
+                new_container = row
+                new_container.id = None
+                new_container.position = None
+                new_container.save()
+                fill_from_template(new_container, row.state)
+                urla = reverse_edit(mh_vars, ftype, 'edit', new_container.id)
+                return redirect(urla)
+            else:
+                context['error'] = 'Недостаточно прав'
 
         elif action == 'show' and row:
             # -------------------------------
@@ -796,29 +803,43 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
             # ---------------------
             # Клонировать контейнер
             # ---------------------
-            parents = '_%s' % row.id
-            if row.parents:
-                parents = '%s%s' % (row.parents, parents)
-            blocks = mh_containers.row.blocks_set.filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents))
-            result = []
-            blocks = [block for block in blocks]
-            blocks.append(row)
-            recursive_fill(blocks, result, parents=row.parents)
-            if len(result) != 1:
-                assert False
-            new_block = clone_block(result[0], mh_containers.row, parents=result[0].parents)
-            urla = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']),
-                           kwargs={'ftype': ftype,
-                                   'action': 'edit',
-                                   'container_id': mh_containers.row.id,
-                                   'row_id': new_block.id})
-            return redirect(urla)
+            if mh.permissions['create'] and mh.permissions['edit']:
+                parents = '_%s' % row.id
+                if row.parents:
+                    parents = '%s%s' % (row.parents, parents)
+                blocks = mh_containers.row.blocks_set.filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents))
+                result = []
+                blocks = [block for block in blocks]
+                blocks.append(row)
+                recursive_fill(blocks, result, parents=row.parents)
+                if len(result) != 1:
+                    assert False
+                new_block = clone_block(result[0], mh_containers.row, parents=result[0].parents)
+                clone_url_params = {
+                    'ftype': ftype,
+                    'action': 'edit',
+                    'container_id': mh_containers.row.id,
+                    'row_id': new_block.id,
+                }
+                urla = reverse('%s:%s' % (CUR_APP, mh_vars['edit_urla']), kwargs=clone_url_params)
+                return redirect(urla)
+            else:
+                context['error'] = 'Недостаточно прав'
 
     elif request.method == 'POST':
         pass_fields = ('parents', )
         mh.post_vars(pass_fields=pass_fields)
 
-        if action == 'create' or (action == 'edit' and row):
+        # Специфическая операция - обновление сео-полей
+        # редактируем, но прав нет, но есть сео-права
+        if action == 'edit' and not mh.permissions['edit'] and row and mh.permissions.get('seo_fields') == True:
+            context['success'] = 'Данные успешно записаны'
+            block_fields = object_fields(Blocks())
+            pass_fields = [field for field in block_fields if not field in ('title', 'description', 'keywords')]
+            mh.post_vars(pass_fields=pass_fields)
+            mh.save_row()
+
+        elif action == 'create' or (action == 'edit' and row):
             if action == 'create':
                 if mh.permissions['create']:
                     mh.row = mh.model()
@@ -959,6 +980,9 @@ def tree_co(request):
 
     mh_vars = containers_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, 'tree', reverse_params={'ftype': 'flatmain'})
+    # В иерархии нужны права именно блоков,
+    # а не контейнеров
+    mh.get_permissions(Blocks)
 
     if request.method == 'GET':
         operation = request.GET.get('operation')
@@ -1061,7 +1085,7 @@ def tree_co(request):
                 prepare_jstree(data, menus, lazy=True)
                 result = data
 
-        # Создание / редактирование рубрики
+        # Создание / редактирование блока
         elif operation == 'rename_node' and mh.permissions['edit']:
             node_id = request.GET.get('node_id')
             node_name = request.GET.get('name')

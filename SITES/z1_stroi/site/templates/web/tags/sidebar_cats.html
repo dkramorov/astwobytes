@@ -6,9 +6,9 @@
         <i class="fa fa-angle-down"></i>
       </span>
     {% endif %}
-    <a href="{{ menu.link }}">{{ menu.name }}</a>
+    <a href="{{ menu.link }}"{% ifequal menu.link request.META.PATH_INFO %} class="active"{% endifequal %}>{{ menu.name }}</a>
     {% if menu.sub %}
-      <ul class="children">
+      <ul class="children{% if menu.link in request.META.PATH_INFO %} active{% endif %}">
         {% for submenu in menu.sub %}
           <li>
             {% if submenu.sub %}
@@ -16,13 +16,13 @@
                 <i class="fa fa-angle-down"></i>
               </span>
             {% endif %}
-            <a href="{{ submenu.link }}">{{ submenu.name }}</a>
+            <a href="{{ submenu.link }}"{% ifequal submenu.link request.META.PATH_INFO %} class="active"{% endifequal %}>{{ submenu.name }}</a>
             {% if submenu.sub %}
-              <ul class="children">
+              <ul class="children{% if submenu.link in request.META.PATH_INFO %} active{% endif %}">
                 {% for item in submenu.sub %}
                   <li>
-                    <a href="{{ item.link }}">{{ item.name }}
-                      <span class="count" id="sidebar_cats_products_count_{{ item.id }}">12</span>
+                    <a href="{{ item.link }}"{% ifequal item.link request.META.PATH_INFO %} class="active"{% endifequal %}>{{ item.name }}
+                      <span class="count" id="sidebar_cats_products_count_{{ item.id }}"></span>
                     </a>
                   </li>
                 {% endfor %}

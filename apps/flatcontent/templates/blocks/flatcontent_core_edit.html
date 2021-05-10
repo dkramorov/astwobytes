@@ -10,9 +10,7 @@
   <a class="btn btn-primary pull-right" href="{% url 'flatcontent:create_block' ftype container.id 'create' %}">
     <em class="fa fa-plus-circle fa-fw mr-sm"></em> {{ action_create }} {{ rp_singular_obj }}
   </a>
-  <a class="btn btn-primary pull-right mb-sm mr-sm" href="{{ url_tree }}">
-    <em class="fa fa-sitemap fa-fw mr-sm"></em> Режим иерархии
-  </a>
+    {% include "flatcontent_forms/tree_button.html" %}
 {% endif %}
 {% block extraactions %}{% endblock %}
 

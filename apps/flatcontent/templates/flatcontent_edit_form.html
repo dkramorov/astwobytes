@@ -1,7 +1,6 @@
 <div class="panel panel-default">
   <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
     <input type="hidden" name="state" value="{{ ftype_state }}" />
-    <div class="panel-heading">{{ singular_obj }}</div>
     <div class="panel-body">
       {% csrf_token %}
       {% include "core/forms/row_name.html" %}
@@ -10,7 +9,7 @@
       {% include "flatcontent_forms/row_products.html" %}
       {% include "flatcontent_forms/row_description.html" %}
       {% include "flatcontent_forms/row_class_name.html" %}
-
+      {% include "flatcontent_forms/row_template_position.html" %}
       {% include "core/forms/row_image.html" %}
       {% include "core/forms/row_position.html" %}
       {% include "core/forms/row_is_active.html" %}

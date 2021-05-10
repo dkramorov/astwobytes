@@ -21,7 +21,13 @@ logger = logging.getLogger()
 is_domains = False
 if 'apps.languages' in settings.INSTALLED_APPS:
     is_domains = True
-    from apps.languages.models import get_domains, save_translate, get_translate
+    from apps.languages.models import (
+        get_domain,
+        get_domains,
+        save_translate,
+        get_translate,
+        translate_rows,
+        get_admin_translate_rows, )
 
 def get_user_permissions(user, model):
     """Права пользователя на модель
@@ -279,7 +285,8 @@ class ModelHelper:
 
     def post_vars(self, pass_fields: list = None):
         """Получаем переменные из формы
-           pass_fields - пропускаем поля"""
+           :param pass_fields: пропускаем поля
+        """
         if not self.request:
             self.error = 1
             return None
@@ -523,7 +530,8 @@ class ModelHelper:
            filters = Q(name__isnull=True)|Q(name="")
            :param only_query: просто вернуть запрос с фильтрами
            :param only_fields: достать только определенные поля
-           :param related_fields: ссылающиеся объекты (OneToOneRel) для фильтра
+           :param related_fields: ссылающиеся объекты
+                                  (OneToOneRel) для фильтра
         """
         result = []
 
@@ -737,6 +745,12 @@ class ModelHelper:
         # -------
         if is_domains:
             domains = get_translate(result, self.context['domains'])
+            # ---------------------------------
+            # отдаем перевод по текущему домену
+            # ---------------------------------
+            if self.request and get_admin_translate_rows(self.request):
+                domain = get_domain(self.request, domains)
+                translate_rows(result, domain)
         return result
 
     def update_positions(self, custom_positions: list = None):

@@ -20,9 +20,9 @@
             {{ request.user.customuser.function }}
           {% else %}
             {% if request.user.is_superuser %}
-              Администратор
+              Admin
             {% else %}
-              Пользователь
+              User
             {% endif %}
           {% endif %}
         </span>

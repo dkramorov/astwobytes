@@ -3,7 +3,8 @@
         <div class="checkbox c-checkbox">
             <label>
                 <input type="checkbox" value="1" name="is_active" {% if row.is_active or not row %} checked{% endif %} autocomplete="off">
-                <span class="fa fa-check"></span> Включен
+                <span class="fa fa-check"></span>
+                <strong class="label_for_translate row_is_active_label" attr-class_name="row_is_active_label" attr-edit_mode="popup" attr-placement="bottom"> Включен</strong>
             </label>
         </div>
     </div>

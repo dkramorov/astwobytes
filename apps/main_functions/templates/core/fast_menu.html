@@ -7,13 +7,14 @@
 
 <ul class="dropdown-menu">
   {% if 'flatcontent' in apps %}
-    <li><a href="{% url 'main_functions:settings' 'flatcontent' %}">Настройки "Контент"</a></li>
+    <li><a href="{% url 'main_functions:settings' 'flatcontent' %}">Настройки "Контента"</a></li>
   {% endif %}
   {% if 'spamcha' in apps %}
-    <li><a href="{% url 'main_functions:settings' 'spamcha' %}">Настройки Почты</a></li>
+    <li><a href="{% url 'main_functions:settings' 'spamcha' %}">Настройки "Почты"</a></li>
   {% endif %}
   {% if 'languages' in apps %}
-    <li><a href="{% url 'languages:select_language' %}">Выбор языка</a></li>
+    <li><a href="{% url 'main_functions:settings' 'languages' %}">Настройки "Мультидомена"</a></li>
+    <li><a href="{% url 'languages:select_language' %}">Выбор домена</a></li>
   {% endif %}
 
 {% comment %}<!--

@@ -4,25 +4,31 @@
 {% endblock %}
 
 {% block content %}
-<h3>Раздел "Контент"<br /><small>Настройки раздела "Контент" и стат. страничек</small></h3>
+<h3>
+  <span class="label_for_translate page_title_{{ menu }}_{{ submenu }}_label" attr-class_name="page_title_{{ menu }}_{{ submenu }}_label">{{ singular_obj }}</span><br />
+  <small class="label_for_translate page_subtitle_{{ menu }}_{{ submenu }}_label" attr-class_name="page_subtitle_{{ menu }}_{{ submenu }}_label">Настройки {{ rp_singular_obj }}</small>
+</h3>
 
 {% include "core/breadcrumbs.html" %}
 <form class="panel panel-default" action="{{ root_url }}" method="post" id="current_edit_form">
   {% csrf_token %}
   <div class="panel-heading">
-    Настройки для раздела "Контент" и стат. страничек
+    <span class="label_for_translate settings_{{ menu }}_{{ submenu }}_table_title_label" attr-class_name="settings_{{ menu }}_{{ submenu }}_table_title_label">{{ title }}</span>
   </div>
   <div class="panel-body">
-    <div id="main-table"></div>
+    <div id="main-table" class="tabulator_table"></div>
   </div>
   <div class="panel-footer">
     <div class="col-lg-6 col-sm-6 padding-tb5">
       <button type="submit" class="btn btn-labeled btn-success">
-        <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
+        <span class="btn-label"><i class="fa fa-check"></i></span>
+        <span class="label_for_translate footer_button_save_label" attr-class_name="footer_button_save_label" attr-edit_mode="popup" attr-placement="right">Сохранить</span>
       </button>
     </div>
     <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
-      <a id="add_settings" href="javascript:void(0);" class="btn btn-default">Добавить настройку</a>
+      <a id="add_settings" href="javascript:void(0);" class="btn btn-default">
+        <span class="label_for_translate footer_button_add_config_label" attr-class_name="footer_button_add_config_label" attr-edit_mode="popup" attr-placement="left">Добавить настройку</span>
+      </a>
     </div>
     <div class="clearfix"></div>
   </div>
@@ -30,9 +36,41 @@
 </form>
 {% endblock %}
 
+{% block extracontent %}
+<div>
+  <strong class="label_for_translate settings_not_depends_from_user_label" attr-class_name="settings_not_depends_from_user_label" attr-edit_mode="popup" attr-placement="right">Настройки не зависят от пользователя</strong>
+</div>
+<span class="label_for_translate examples_label" attr-class_name="examples_label" attr-edit_mode="popup" attr-placement="right">Примеры:</span>
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>
+        <span class="label_for_translate attribute_label" attr-class_name="attribute_label" attr-edit_mode="popup" attr-placement="right">Атрибут</span>
+      </th>
+      <th>
+        <span class="label_for_translate value_label" attr-class_name="value_label" attr-edit_mode="popup" attr-placement="right">Значение</span>
+      </th>
+      <th>
+        <span class="label_for_translate result_label" attr-class_name="result_label" attr-edit_mode="popup" attr-placement="right">Результат</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>feedback</td>
+      <td>dkramorov@mail.ru</td>
+      <td>
+        <span class="label_for_translate default_email_hint_label" attr-class_name="default_email_hint_label" attr-edit_mode="popup" attr-placement="right">Отправка на электронную почту писем с форм обратной связи и заказов с сайта</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}
+
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 function fill_settings(){
   // Заполнение формы настройками,
   // вызываем перед отправкой в $("#current_edit_form").submit
@@ -100,6 +138,46 @@ $(document).ready(function(){
     {% endfor %}
   ]
 
+  main_table_columns = [
+    {
+      title: "Настройка",
+      field: "name",
+      headerFilterPlaceholder: "Название",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      editor: "input",
+      width: 150,
+    },
+    {
+      title: "Атрибут",
+      field: "attr",
+      headerFilterPlaceholder: "Атрибут",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      editor: "input",
+      width: 150,
+    },
+    {
+      title: "Значение",
+      field: "value",
+      headerFilterPlaceholder: "Название",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      editor: "input",
+      width: 250,
+    },
+    {
+      title: "Действия",
+      field: "actions",
+      formatter: "buttonCross",
+      width: 120,
+      align:"center",
+      cellClick:function(e, cell){
+        cell.getRow().delete();
+      }
+    },
+  ];
+
   main_table = new Tabulator("#main-table", {
     data: tableData,
     persistentLayout: true,
@@ -107,45 +185,9 @@ $(document).ready(function(){
     persistenceID: "{{ root_url }}",
     persistentFilter: false,
     layout: "fitColumns",
-    columns:[
-      {
-        title: "Настройка",
-        field: "name",
-        headerFilterPlaceholder: "Название",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        editor: "input",
-        width: 150,
-      },
-      {
-        title: "Атрибут",
-        field: "attr",
-        headerFilterPlaceholder: "Атрибут",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        editor: "input",
-        width: 150,
-      },
-      {
-        title: "Значение",
-        field: "value",
-        headerFilterPlaceholder: "Название",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        editor: "input",
-        width: 250,
-      },
-      {
-        title: "Действия",
-        formatter: "buttonCross",
-        width: 120,
-        align:"center",
-        cellClick:function(e, cell){
-          cell.getRow().delete();
-        }
-      },
-    ],
+    columns: main_table_columns,
   });
+
   $("#add_settings").click(function(){
     var rows = main_table.getRows();
     main_table.addRow({

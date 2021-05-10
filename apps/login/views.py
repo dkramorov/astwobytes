@@ -630,6 +630,8 @@ def prepare_perm_list(cur_perms):
             'id': perms[perm]['content_type'].id,
             'name': perms[perm]['content_type'].name,
             'perms': perms[perm]['perms'],
+            'app_label': perms[perm]['content_type'].app_label,
+            'model': perms[perm]['content_type'].model,
         } for perm in sorted(perms.keys())
           if not perms[perm]['content_type'].name in pass_perms]
     for perm in perm_list:
@@ -770,6 +772,8 @@ def demo(request, action='panels'):
         'mail': 'demo/demo_mail.html',
     }
     context = {}
+    context['singular_obj'] = 'Демо-страничка %s' % action
+    context['plural_obj'] = 'Демо-странички'
     context['menu'] = 'demo'
     context['submenu'] = action
     # Шаблон по-умолчанию panels

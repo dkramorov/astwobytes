@@ -1,7 +1,9 @@
 {% if is_products %}
   <!-- Привязанные товары -->
   <div class="form-group">
-    <label class="col-lg-2 control-label">Привязанные товары ({{ products_count }})</label>
+    <label class="col-lg-2 control-label">
+      <span class="label_for_translate row_linked_products_label" attr-class_name="row_linked_products_label" attr-edit_mode="popup" attr-placement="bottom">Привязанные товары</span> ({{ products_count }})
+    </label>
     <div class="col-lg-10">
       {% include "blocks/linked_products_select2.html" %}
       <!-- Плавно переходим на таблицу товаров от select2

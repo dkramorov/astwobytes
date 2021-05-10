@@ -1,0 +1,15 @@
+<table>
+  {% for item in product.props %}
+    {% if forloop.counter < 5 %}
+      <tr>
+        <td class="title">{{ item.prop.name }}</td>
+        <td>
+          {% for pvalue in item.values %}
+            {{ pvalue.str_value }}
+            {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>

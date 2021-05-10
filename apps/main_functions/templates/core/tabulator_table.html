@@ -1,5 +1,6 @@
 <div class="panel panel-default">
-  <div class="panel-heading">{{ plural_obj }} - действия
+  <div class="panel-heading">
+    <span class="label_for_translate title_for_tabulator_actions_{{ menu }}_{{ submenu }}" attr-class_name="title_for_tabulator_actions_{{ menu }}_{{ submenu }}" attr-edit_mode="popup" attr-placement="bottom">{{ plural_obj }} - действия</span>
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
       <em class="fa fa-times"></em>
     </a>
@@ -20,31 +21,25 @@
         </button>
 -->{% endcomment %}
         <a class="mb-sm btn btn-primary" id="reset-table-settings">
-          <em class="fa fa-times fa-fw mr-sm"></em>Сброс настроек таблицы
+          <em class="fa fa-times fa-fw mr-sm"></em>
+          <span class="label_for_translate action_button_label_tabulator_reset_settings" attr-class_name="action_button_label_tabulator_reset_settings" attr-edit_mode="popup" attr-placement="bottom">Сброс настроек таблицы</span>
         </a>
         <button class="mb-sm btn btn-primary" type="button" id="download-xlsx">
-          <em class="fa fa-files-o fa-fw mr-sm"></em>Скачать xlsx
+          <em class="fa fa-files-o fa-fw mr-sm"></em>
+          <span class="label_for_translate  action_button_label_tabulator_download_xlsx" attr-class_name="action_button_label_tabulator_download_xlsx" attr-edit_mode="popup" attr-placement="bottom">Скачать xlsx</span>
         </button>
         <a class="mb-sm btn btn-primary" id="main-table-link">
-          <em class="fa fa-link fa-fw mr-sm"></em>Ссылка на таблицу
+          <em class="fa fa-link fa-fw mr-sm"></em>
+          <span class="label_for_translate  action_button_label_tabulator_link_for_table" attr-class_name="action_button_label_tabulator_link_for_table" attr-edit_mode="popup" attr-placement="bottom">Ссылка на таблицу</span>
         </a>
       {% endblock %}
     </div>
   </div>
 </div>
 <div class="panel panel-default main_panel">
-  <div class="panel-heading"><strong>{{ plural_obj }}</strong>
-    <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
-      <em class="fa fa-times"></em>
-    </a>
-    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть" class="pull-right">
-      <em class="fa fa-minus"></em>
-    </a>
-  </div>
-  <div class="clearfix"></div>
-  <div id="main-table"></div>
+  <div id="main-table" class="tabulator_table"></div>
   <div id="main-table-footer">
-    <span class="start"></span> - <span class="end"></span> из <span class="max"></span>
+    <span class="start"></span> - <span class="end"></span> / <span class="max"></span>
   </div>
 </div>
 <script type="text/javascript">
@@ -129,18 +124,30 @@ var accessor_not_empty = function(value, data, type, params, column){
 $(document).ready(function(){
   //trigger download of data.csv file
   $("#download-csv").click(function(){
+    if($(this).find(".editable")){
+      return true;
+    }
     main_table.download("csv", "{{ plural_obj }}.csv");
   });
   //trigger download of data.json file
   $("#download-json").click(function(){
+    if($(this).find(".editable")){
+      return true;
+    }
     main_table.download("json", "{{ plural_obj }}.json");
   });
   //trigger download of data.xlsx file
   $("#download-xlsx").click(function(){
+    if($(this).find(".editable")){
+      return true;
+    }
     main_table.download("xlsx", "{{ plural_obj }}.xlsx", {sheetName:"{{ plural_obj }}"});
   });
   //trigger download of data.pdf file
   $("#download-pdf").click(function(){
+    if($(this).find(".editable")){
+      return true;
+    }
     main_table.download("pdf", "{{ plural_obj }}.pdf", {
       orientation:"portrait", //set page orientation to portrait
       title:"{{ plural_obj }}", //add title to report
@@ -148,6 +155,9 @@ $(document).ready(function(){
   });
   //reset persistence settings
   $("#reset-table-settings").click(function(){
+    if($(this).find(".editable")){
+      return true;
+    }
     if(window.localStorage.getItem("tabulator-{{ root_url }}")){
       window.localStorage.removeItem("tabulator-{{ root_url }}");
     }

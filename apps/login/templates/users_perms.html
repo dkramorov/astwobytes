@@ -4,13 +4,18 @@
 {% endblock %}
 
 {% block content %}
-<h3>{{ singular_obj }} {{ row }}<br /><small>Права {{ rp_singular_obj }}</small></h3>
+<h3>
+  <span class="label_for_translate page_title_{{ submenu }}_permissions_label" attr-class_name="page_title_{{ submenu }}_permissions_label">{{ singular_obj }} {{ row }}</span><br />
+  <small class="label_for_translate page_subtitle_{{ submenu }}_permissions_label" attr-class_name="page_subtitle_{{ submenu }}_permissions_label">Права {{ rp_singular_obj }}</small>
+</h3>
 {% include "core/breadcrumbs.html" %}
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{{ url_edit }}" id="current_edit_form">
-        <div class="panel-heading">Права {{ rp_singular_obj }} "{{ row }}"</div>
+        <div class="panel-heading">
+          <span class="label_for_translate page_form_title_{{ submenu }}_permissions_label" attr-class_name="page_form_title_{{ submenu }}_permissions_label">Права {{ rp_singular_obj }}</span> "{{ row }}"
+        </div>
         <div class="panel-body">
           {% csrf_token %}
 
@@ -26,93 +31,103 @@
                       </label>
                     </div>
                   </th>
-                  <th>Раздел</th>
-                  <th>Просмотр</th>
-                  <th>Добавление</th>
-                  <th>Изменение</th>
-                  <th>Удаление</th>
+                  <th>
+                    <span class="label_for_translate permissions_folder_label" attr-class_name="permissions_folder_label">Раздел</span>
+                  </th>
+                  <th>
+                    <span class="label_for_translate permissions_view_label" attr-class_name="permissions_view_label">Просмотр</span>
+                  </th>
+                  <th>
+                    <span class="label_for_translate permissions_add_label" attr-class_name="permissions_add_label">Добавление</span>
+                  </th>
+                  <th>
+                    <span class="label_for_translate permissions_change_label" attr-class_name="permissions_change_label">Изменение</span>
+                  </th>
+                  <th>
+                    <span class="label_for_translate permissions_delete_label" attr-class_name="permissions_delete_label">Удаление</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {% for data in permissions %}
                   <tr>
                     <td class="toggle_checkbox_line">
-                       <div class="checkbox c-checkbox">
-                         <label>
-                           <input type="checkbox" name="toggle_{{ data.id }}" autocomplete="off">
-                           <span class="fa fa-check"></span>
-                         </label>
-                       </div>
-                     </td>
-                     <td>
-                       <p>{{ data.name }}</p>
-                       {% if data.custom %}
-                         {% for perm in data.perms %}
-                           {% if perm.code == 'custom' %}
-                             <p>
-                               <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
-                                 <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
-                                 <span class="fa fa-check"></span>
-                                 {{ perm.name }}
-                               </label>
-                             </p>
-                           {% endif %}
-                         {% endfor %}
-                       {% endif %}
-                     </td>
-                     {% for perm in data.perms %}
-                       {% if perm.code == 'view' %}
-                         <td>
-                           <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
-                             <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
-                             <span class="fa fa-eye"></span>
-                           </label>
-                         </td>
-                       {% endif %}
-                     {% endfor %}
-                     {% for perm in data.perms %}
-                       {% if perm.code == 'create' %}
-                         <td>
-                           <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
-                             <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
-                             <span class="fa fa-plus"></span>
-                           </label>
-                         </td>
-                       {% endif %}
-                     {% endfor %}
-                     {% for perm in data.perms %}
-                       {% if perm.code == 'edit' %}
-                         <td>
-                           <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
-                             <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
-                             <span class="fa fa-edit"></span>
-                           </label>
-                         </td>
-                       {% endif %}
-                     {% endfor %}
-                     {% for perm in data.perms %}
-                       {% if perm.code == 'drop' %}
-                         <td>
-                           <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
-                             <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
-                             <span class="fa fa-trash-o"></span>
-                           </label>
-                         </td>
-                       {% endif %}
-                     {% endfor %}
+                      <div class="checkbox c-checkbox">
+                        <label>
+                          <input type="checkbox" name="toggle_{{ data.id }}" autocomplete="off">
+                          <span class="fa fa-check"></span>
+                        </label>
+                      </div>
+                    </td>
+                    <td>
+                      <p>
+                        <span class="label_for_translate permission_{{ data.app_label }}_{{ data.model }}" attr-class_name="permission_{{ data.app_label }}_{{ data.model }}">{{ data.name }}</span>
+                      </p>
+                      {% if data.custom %}
+                        {% for perm in data.perms %}
+                          {% if perm.code == 'custom' %}
+                            <p>
+                              <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
+                                <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
+                                <span class="fa fa-check"></span>
+                                <em class="label_for_translate permission_{{ data.app_label }}_{{ data.model }}_{{ perm.codename }}" attr-class_name="permission_{{ data.app_label }}_{{ data.model }}_{{ perm.codename }}">{{ perm.name }}</em>
+                              </label>
+                            </p>
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    </td>
+                    {% for perm in data.perms %}
+                      {% if perm.code == 'view' %}
+                        <td>
+                          <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
+                            <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
+                            <span class="fa fa-eye"></span>
+                          </label>
+                        </td>
+                      {% endif %}
+                    {% endfor %}
+                    {% for perm in data.perms %}
+                      {% if perm.code == 'create' %}
+                        <td>
+                          <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
+                            <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
+                            <span class="fa fa-plus"></span>
+                          </label>
+                        </td>
+                      {% endif %}
+                    {% endfor %}
+                    {% for perm in data.perms %}
+                      {% if perm.code == 'edit' %}
+                        <td>
+                          <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
+                            <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
+                            <span class="fa fa-edit"></span>
+                          </label>
+                        </td>
+                      {% endif %}
+                    {% endfor %}
+                    {% for perm in data.perms %}
+                      {% if perm.code == 'drop' %}
+                        <td>
+                          <label class="checkbox-inline c-checkbox toggle_{{ data.id }}">
+                            <input type="checkbox" value="{{ perm.id }}" name="perm" {% if perm.access %} checked{% endif %} autocomplete="off">
+                            <span class="fa fa-trash-o"></span>
+                          </label>
+                        </td>
+                      {% endif %}
+                    {% endfor %}
                   </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
-          {% for data in permissions %}
-            
-          {% endfor %}
         </div>
         <div class="panel-footer">
           <div class="col-lg-6 col-sm-6 padding-tb5">
             <button type="submit" class="btn btn-labeled btn-success">
-              <span class="btn-label"><i class="fa fa-check"></i></span>Сохранить
+              <span class="btn-label"><i class="fa fa-check"></i></span>
+              <span class="label_for_translate footer_button_save_label" attr-class_name="footer_button_save_label" attr-edit_mode="popup" attr-placement="right">Сохранить</span>
             </button>
           </div>
         </form>

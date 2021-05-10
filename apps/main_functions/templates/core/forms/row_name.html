@@ -1,8 +1,8 @@
 <div class="form-group">
     <label class="col-lg-2 control-label">
-        Название
+        <span class="label_for_translate row_name_label" attr-class_name="row_name_label" attr-edit_mode="popup" attr-placement="bottom">Название</span>
         {% if domains %}
-        <a href="javascript:void(0);" data-attr-translate="name" class="translate_toggle"><i class="fa fa-globe"></i></a>
+            <a href="javascript:void(0);" data-attr-translate="name" class="translate_toggle"><i class="fa fa-globe"></i></a>
         {% endif %}
     </label>
     <div class="col-lg-10">
@@ -13,7 +13,10 @@
 <!-- Переводы для name -->
 {% for domain in domains %}
     <div class="form-group translate_name hidden">
-        <label class="col-lg-2 control-label">Название {{ domain.name }} ({{ domain.domain }})</label>
+        <label class="col-lg-2 control-label">
+          <span class="row_name_label">Название</span>
+          {{ domain.name }} ({{ domain.domain }})
+        </label>
         <div class="col-lg-10">
             <input placeholder="Название {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_name_{{ domain.pk }}" value="{% if domain.translations.name %}{{ domain.translations.name }}{% endif %}" autocomplete="off">
         </div>

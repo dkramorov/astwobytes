@@ -254,18 +254,33 @@ def DefaultFeedback(request, **kwargs):
 
 @login_required
 def settings(request, app: str = 'flatcontent'):
-    """Настройки"""
+    """Настройки для разделов
+       :param app: приложение
+    """
     result = {}
     app_label = '%s_' % app
     permissions = get_user_permissions(request.user, Config)
+    # настройки могут быть зависимы или независимы от пользователя
+    # 'user_defined': False, # Не зависят от пользователя
+    # 'user_defined': True, # Зависят от пользователя
     settings_store = {
         'flatcontent': {
+            'singular_obj': 'Раздел "Контент" и стат. странички',
+            'rp_singular_obj': 'раздела "Контент" и стат. страничек',
             'name': 'Настройки раздела "Контент" и стат. страничек',
-            'user_defined': False, # Не зависят от пользователя
+            'user_defined': False,
         },
         'spamcha': {
+            'singular_obj': 'Раздел "Почта"',
+            'rp_singular_obj': 'раздела "Почта"',
             'name': 'Настройки почты',
-            'user_defined': True, # Зависят от пользователя
+            'user_defined': True,
+        },
+        'languages': {
+            'singular_obj': 'Раздел "Мультидомен"',
+            'rp_singular_obj': 'раздела "Мультидомен"',
+            'name': 'Настройки раздела "Мультидомен"',
+            'user_defined': True,
         },
     }
     name = settings_store[app]['name']
@@ -274,11 +289,15 @@ def settings(request, app: str = 'flatcontent'):
     context = {
          'app': app,
          'title': name,
+         'singular_obj': settings_store[app]['singular_obj'],
+         'rp_singular_obj': settings_store[app]['rp_singular_obj'],
          'user_defined': user_defined,
          'breadcrumbs': [{
              'name': name,
              'link': root_url,
          }],
+         'menu': main_vars['menu'],
+         'submenu': app,
     }
     template = '%s_settings.html' % (app, )
     if request.method == 'POST':

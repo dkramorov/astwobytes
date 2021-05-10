@@ -1,6 +1,8 @@
 {% if row %}
     <div class="form-group">
-        <label class="col-lg-2 control-label">Изображение</label>
+        <label class="col-lg-2 control-label">
+        <span class="label_for_translate row_img_label" attr-class_name="row_img_label" attr-edit_mode="popup" attr-placement="bottom">Изображение</span>
+        </label>
         <div class="col-lg-7 img_block">
             <a href="{% if row.img %}{{ row.imagine }}{% else %}/static/img/empty.png{% endif %}" target="_blank" id="preview_img_full">
                 <img src="{% if row.img %}{{ row.thumb }}{% else %}/static/img/empty.png{% endif %}" class="img-responsive" id="preview_img">
@@ -13,14 +15,17 @@
 
     <fieldset>
         <div class="form-group">
-            <label class="col-sm-2 control-label"><small>Загрузка изображения</small></label>
+            <label class="col-sm-2 control-label">
+                <small class="label_for_translate row_upload_img_label" attr-class_name="row_upload_img_label" attr-edit_mode="popup" attr-placement="bottom">Загрузка изображения</small>
+            </label>
             <div class="col-sm-10">
                 <div id="upload-drop-files" class="box-placeholder text-center">
                     <p>
                         <em class="fa fa-cloud-upload fa-2x"></em>
                     </p>
-                    Перетащите файл сюда или
-                    <div class="btn-link form-file">выберите файл для загрузки
+                    <span class="label_for_translate row_drag_file_here_label" attr-class_name="row_drag_file_here_label" attr-edit_mode="popup" attr-placement="bottom">Перетащите файл сюда или</span>
+                    <div class="btn-link form-file">
+                        выберите файл для загрузки
                         <input id="upload-select-files" type="file" name="path">
                     </div>
                 </div>

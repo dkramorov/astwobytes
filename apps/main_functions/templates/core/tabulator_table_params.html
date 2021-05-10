@@ -121,3 +121,11 @@ ajaxRequesting:function(url, params){
   $("#main-table-link").attr("href", url + "?" + query);
   return true;
 },
+
+columnTitleChanged:function(column){
+  console.log(column);
+  // Функция, выполняющаяся после изменения заголовка столбца
+  if(window.tabulator_title_changed !== undefined){
+    window.tabulator_title_changed(column);
+  }
+},

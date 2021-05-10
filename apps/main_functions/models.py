@@ -239,6 +239,7 @@ class Config(Standard):
         verbose_name = 'Админка - Настройка'
         verbose_name_plural = 'Админка - Настройки'
 
+
 class Tasks(Standard):
     """Задачи для call_command"""
     name = models.CharField(blank=True, null=True, max_length=255, db_index=True)

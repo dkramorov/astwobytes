@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block content %}
-{% include "flatcontent_containers_menu.html" %}
+{% include "core/forms/default_create.html" %}
 
 {% include "core/title/page_title_table.html" %}
 {% include "core/breadcrumbs.html" %}
@@ -14,6 +14,7 @@
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 $(document).ready(function(){
 
   var pathFormatter = function(cell, formatterParams, onRendered){
@@ -60,63 +61,55 @@ $(document).ready(function(){
     return actions;
   };
 
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Название",
+      field: "name",
+      headerFilterPlaceholder: "Название",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: linkFormatter,
+      width: 150,
+    },
+    {% include "core/tabulator_cell/image.html" %}
+    {
+      title: "Описание",
+      field: "description",
+      headerSort: false,
+      width: 150,
+    },
+    {
+      title: "Тег",
+      field: "tag",
+      headerFilterPlaceholder: "Тег",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "Размещение (в шаблоне)",
+      field: "template_position",
+      headerFilterPlaceholder: "Размещение (в шаблоне)",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {
+      title: "Действия",
+      field: "actions",
+      headerSort: false,
+      formatter: actionsFlatFormatter,
+      width: 160,
+    },
+  ];
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
-    columns:[
-/*
-      {
-        formatter: "responsiveCollapse",
-        width: 30,
-        minWidth: 30,
-        align: "center",
-        resizable: false,
-        headerSort: false,
-      },
-*/
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
-      {
-        title: "Название",
-        field: "name",
-        headerFilterPlaceholder: "Название",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: linkFormatter,
-        minWidth: 150,
-      },
-      {% include "core/tabulator_cell/image.html" %}
-      {
-        title: "Описание",
-        field: "description",
-        headerSort: false,
-        minWidth: 150,
-      },
-      {
-        title: "Тег",
-        field: "tag",
-        headerFilterPlaceholder: "Тег",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        width: 150,
-      },
-      {
-        title: "Размещение (в шаблоне)",
-        field: "template_position",
-        headerFilterPlaceholder: "Размещение (в шаблоне)",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        width: 150,
-      },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
-      {
-        title: "Действия",
-        field: "actions",
-        headerSort: false,
-        formatter: actionsFlatFormatter,
-        width: {% if ftype == 'flatpages' or ftype == 'flattemplates' %}160{% else %}120{% endif %},
-      },
-    ],
+    columns: main_table_columns,
   });
 });
 </script>

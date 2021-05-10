@@ -19,6 +19,7 @@
 {% include "flatcontent_actions/actions.html" %}
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 window.disableMovableRows = true; // отключаем перетаскивание
 $(document).ready(function(){
 
@@ -45,67 +46,66 @@ $(document).ready(function(){
     return result;
   };
 
+  main_table_columns = [
+/*
+    {
+      formatter: "responsiveCollapse",
+      width: 30,
+      minWidth: 30,
+      align: "center",
+      resizable: false,
+      headerSort: false,
+    },
+    {% include "core/tabulator_cell/drag.html" %}
+*/
+    {% include "core/tabulator_cell/name.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Ссылка",
+      field: "link",
+      headerFilterPlaceholder: "Ссылка",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: linkFormatter,
+      width: 150,
+    },
+    {
+      title: "Новое окно",
+      field: "blank",
+      editor: "select",
+      headerFilterPlaceholder: "Новое окно",
+      headerFilter: true,
+      headerFilterFunc: "=",
+      headerFilterParams: {
+        values: {"": "Без фильтра", true: "Да", false: "Нет"},
+      },
+      formatter: booleanFormatter,
+      width: 110,
+    },
+    {
+      title: "Иконка",
+      field: "icon",
+      headerFilterPlaceholder: "Иконка",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {% include "core/tabulator_cell/image.html" %}
+    {
+      title: "Тег",
+      field: "tag",
+      headerFilterPlaceholder: "Тег",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "flatcontent_actions/tabulator_actions.html" %}
+  ];
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
-    columns:[
-/*
-      {
-        formatter: "responsiveCollapse",
-        width: 30,
-        minWidth: 30,
-        align: "center",
-        resizable: false,
-        headerSort: false,
-      },
-      {% include "core/tabulator_cell/drag.html" %}
-*/
-
-      {% include "core/tabulator_cell/name.html" %}
-      {% include "core/tabulator_cell/id.html" %}
-
-      {
-        title: "Ссылка",
-        field: "link",
-        headerFilterPlaceholder: "Ссылка",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: linkFormatter,
-        minWidth: 150,
-      },
-      {
-        title: "Новое окно",
-        field: "blank",
-        editor: "select",
-        headerFilterPlaceholder: "Новое окно",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: {"": "Без фильтра", true: "Да", false: "Нет"},
-        },
-        formatter: booleanFormatter,
-        width: 110,
-      },
-      {
-        title: "Иконка",
-        field: "icon",
-        headerFilterPlaceholder: "Иконка",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        width: 150,
-      },
-      {% include "core/tabulator_cell/image.html" %}
-      {
-        title: "Тег",
-        field: "tag",
-        headerFilterPlaceholder: "Тег",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        width: 150,
-      },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
-      {% include "flatcontent_actions/tabulator_actions.html" %}
-    ],
+    columns: main_table_columns,
   });
 });
 </script>

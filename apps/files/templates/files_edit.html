@@ -11,12 +11,13 @@
   <div class="col-sm-12">
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
-        <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
           {% include "core/forms/row_name.html" %}
           <div class="form-group">
-            <label class="col-lg-2 control-label">Ссылка</label>
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_file_link_label" attr-class_name="row_file_link_label" attr-edit_mode="popup" attr-placement="bottom">Ссылка</span>
+            </label>
             <div class="col-lg-10">
               <input type="text" placeholder="Ссылка" class="form-control" name="link" value="{% if row.link %}{{ row.link }}{% endif %}" autocomplete="off" id="form-field-link">
             </div>
@@ -24,7 +25,7 @@
 
           <div class="form-group">
             <label class="col-lg-2 control-label">
-              Описание
+              <span class="label_for_translate row_description_label" attr-class_name="row_description_label" attr-edit_mode="popup" attr-placement="bottom">Описание</span>
               {% if domains %}
                 <a href="javascript:void(0);" data-attr-translate="desc" class="translate_toggle"><i class="fa fa-globe"></i></a>
               {% endif %}
@@ -37,7 +38,10 @@
           <!-- Переводы для desc -->
           {% for domain in domains %}
             <div class="form-group translate_desc hidden">
-              <label class="col-lg-2 control-label">Описание {{ domain.name }} ({{ domain.domain }})</label>
+              <label class="col-lg-2 control-label">
+                <span class="row_description_label">Описание</span>
+                {{ domain.name }} ({{ domain.domain }})
+              </label>
               <div class="col-lg-10">
                 <textarea placeholder="Описание {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_desc_{{ domain.pk }}" autocomplete="off">{% if domain.translations.desc %}{{ domain.translations.desc }}{% endif %}</textarea>
               </div>
@@ -52,16 +56,34 @@
             <div class="panel-body">
               <div class="row row-table text-center">
                 <div class="col-xs-4">
-                  <p>Mime-тип</p>
+                  <p>
+                    <span class="label_for_translate mime_type_label" attr-class_name="mime_type_label" attr-edit_mode="popup" attr-placement="bottom">Mime-тип</span>
+                  </p>
                   <h3 class="m0 text-primary file-mime-type">{% if row.mime %}{{ row.mime }}{% endif %}</h3>
                 </div>
                 <div class="col-xs-4">
-                  <p>Путь</p>
-                  <p class="m0 text-primary file-path">{% if row.path %}<a href='/media/{{ row.folder }}{{ row.path }}' target='_blank'>Служебная ссылка на файл</a>{% endif %}</p>
+                  <p>
+                    <span class="label_for_translate path_label" attr-class_name="path_label" attr-edit_mode="popup" attr-placement="bottom">Путь</span>
+                  </p>
+                  <p class="m0 text-primary file-path">
+                    {% if row.path %}
+                      <a href='/media/{{ row.folder }}{{ row.path }}' target='_blank'>
+                        <span class="label_for_translate admin_link_for_file_label" attr-class_name="admin_link_for_file_label" attr-edit_mode="popup" attr-placement="bottom">Служебная ссылка на файл</span>
+                      </a>
+                    {% endif %}
+                  </p>
                 </div>
                 <div class="col-xs-4">
-                  <p>Ссылка</p>
-                  <p class="m0 text-primary file-link">{% if row.link %}<a href='{{ row.link }}' target='_blank'>Пользовательская ссылка на файл</a>{% endif %}</p>
+                  <p>
+                    <span class="label_for_translate link_label" attr-class_name="link_label" attr-edit_mode="popup" attr-placement="bottom">Ссылка</span>
+                  </p>
+                  <p class="m0 text-primary file-link">
+                    {% if row.link %}
+                      <a href='{{ row.link }}' target='_blank'>
+                        <span class="label_for_translate user_link_for_file_label" attr-class_name="user_link_for_file_label" attr-edit_mode="popup" attr-placement="bottom">Пользовательская ссылка на файл</span>
+                      </a>
+                    {% endif %}
+                  </p>
                 </div>
               </div>
             </div>
@@ -70,12 +92,15 @@
           {% if row %}
           <fieldset>
             <div class="form-group">
-              <label class="col-sm-2 control-label"><small>Загрузка файла</small></label>
+              <label class="col-sm-2 control-label">
+                <small class="label_for_translate upload_file_label" attr-class_name="upload_file_label" attr-edit_mode="popup" attr-placement="bottom">Загрузка файла</small>
+              </label>
               <div class="col-sm-10">
                 <div id="upload-drop-files" class="box-placeholder text-center">
                   <p>
                     <em class="fa fa-cloud-upload fa-2x"></em>
-                  </p>Перетащите файл сюда или
+                  </p>
+                  <span class="label_for_translate row_drag_file_here_label" attr-class_name="row_drag_file_here_label" attr-edit_mode="popup" attr-placement="bottom">Перетащите файл сюда или</span>
                   <div class="btn-link form-file">выберите файл для загрузки
                     <input id="upload-select-files" type="file" name="path">
                   </div>

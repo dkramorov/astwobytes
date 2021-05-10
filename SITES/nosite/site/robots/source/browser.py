@@ -2,7 +2,6 @@
 # VERSION 0.2 alpha
 import os
 import json
-import pickle
 import time
 import datetime
 import random
@@ -773,9 +772,7 @@ return {'w': window.innerWidth, 'h': h};""")
                 break
 
     def pretend_user(self):
-        """Притвориться пользователем на ТЕКУЩЕМ сайте
-           и кликнуть на случайную ссыль
-        """
+        """Притвориться пользователем на ТЕКУЩЕМ сайте и кликнуть на случайную ссыль"""
         time.sleep(1)
         self.pretend_user_helper(do_click=True)
         time.sleep(1)

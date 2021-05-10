@@ -16,30 +16,6 @@
       <a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' domain.lang %}">{{ domain.name }}</a>
     {% endfor %}
   </div>
-
-  <div class="col-sm-12">
-    <div class="checkbox c-checkbox">
-      <label>
-        <input type="checkbox" value="1" class="translate_mode">
-        <span class="fa fa-check"></span>
-        <i class="label_for_translate translate_mode_label" attr-class_name="translate_mode_label">Включить редактирование перевода интерфейса панели управления</i>
-      </label>
-    </div>
-  </div>
-
-  <div class="col-sm-12 translations_for_menu hidden">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <span class="label_for_translate translate_dynamic_copy_for_left_menu_label" attr-class_name="translate_dynamic_copy_for_left_menu_label">Перевод для меню</span>
-      </div>
-      <div class="panel-body">
-        <div class="sidebar">
-          <ul class="nav" id="left_menu_apps_translations">
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 {% endblock %}

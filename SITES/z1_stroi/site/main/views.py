@@ -337,6 +337,17 @@ def checkout(request):
     if 'order' in context and context['order']:
         template = 'web/order/confirmed.html'
 
+    # Если пользователь вернулся
+    # на страничку оформленного заказа,
+    # например, для оплаты
+    if request.GET.get('order_id'):
+        order_id = request.GET['order_id']
+        if order_id.isdigit():
+            order = Orders.objects.filter(pk=order_id, shopper=shopper).first()
+            if order:
+                template = 'web/order/confirmed.html'
+                context['order'] = order
+
     return render(request, template, context)
 
 order_vars = {

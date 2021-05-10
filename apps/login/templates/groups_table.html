@@ -14,6 +14,7 @@
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 $(document).ready(function(){
 
   var actionsUserFormatter = function(cell, formatterParams, onRendered){
@@ -32,28 +33,29 @@ $(document).ready(function(){
     return actions;
   };
 
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {% include "core/tabulator_cell/name.html" %}
+    {
+      title: "Пользователи",
+      field: "users",
+      headerSort: false,
+      formatter: wordwrapFormatter,
+      width: 180,
+    },
+    {
+      title: "Действия",
+      field: "actions",
+      headerSort: false,
+      formatter: actionsUserFormatter,
+      width: 120,
+    },
+  ];
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
-
-    columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
-      {% include "core/tabulator_cell/name.html" %}
-      {
-        title: "Пользователи",
-        field: "users",
-        headerSort: false,
-        formatter: wordwrapFormatter,
-        width: 180,
-      },
-      {
-        title: "Действия",
-        field: "actions",
-        headerSort: false,
-        formatter: actionsUserFormatter,
-        width: 120,
-      },
-    ],
+    columns: main_table_columns,
   });
 });
 </script>

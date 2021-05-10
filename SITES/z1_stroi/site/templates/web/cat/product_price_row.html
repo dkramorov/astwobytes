@@ -1,0 +1,7 @@
+{% load mtags %}
+<div class="price">
+  <ins>{{ product.price|money_format }} ₽</ins>
+  {% if product.old_price %}
+    <del>{{ product.old_price|money_format }} ₽</del>
+  {% endif %}
+</div>

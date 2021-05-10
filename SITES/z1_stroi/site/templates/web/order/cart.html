@@ -3,34 +3,223 @@
 
 {% block extrahead %}
 <style type="text/css">
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+  padding: 3px;
+}
+.table > tbody > tr > td.total {
+  width: 115px;
+}
+.quantity input {
+  width: 30px;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 {% if not cart %}
-  <article class="stylization">
-    <div class="woocommerce">
-      <h2 class="text-center pt-100 pb-100">Ваша корзина пуста, сначала выберите, что хотите купить</h2>
+  <section class="page-section color">
+    <div class="container">
+      <h3 class="block-title alt">Ваша корзина пуста, сначала выберите, что хотите купить</h3>
     </div>
-  </article>
+  </section>
 {% else %}
-  {% include "web/order/purchases.html" %}
-  <div class="cart-submit">
-    <div class="cart-coupon">
-      <input placeholder="Купон" type="text">
-      <a class="cart-coupon-btn" href="javascript:void(0);"><img src="/media/misc/ok.png" alt="купон"></a>
+  <section class="page-section color">
+    <div class="container">
+{% comment %}<!--
+      <h3 class="block-title alt"><i class="fa fa-angle-down color"></i>1. Account</h3>
+      <form action="#" class="form-sign-in">
+        <div class="row ">
+          <div class="col-md-6">
+            <a class="btn btn-theme btn-block btn-icon-left facebook" href="#"><i class="fa fa-facebook"></i>Sign in with Facebook</a>
+          </div>
+          <div class="col-md-6">
+            <a class="btn btn-theme btn-block btn-icon-left twitter" href="#"><i class="fa fa-twitter"></i>Sign in with Twitter</a>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group"><input class="form-control" type="text" placeholder="User name or email"></div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group"><input class="form-control" type="password" placeholder="Your password"></div>
+          </div>
+          <div class="col-md-6">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox"> Remember me
+              </label>
+            </div>
+          </div>
+          <div class="col-md-6 text-right-md">
+            <a class="forgot-password" href="#">Forgot your password ?</a>
+          </div>
+          <div class="col-md-12">
+            <p class="btn-row"><a class="btn btn-theme btn-theme-dark" href="#">Login</a> <span class="text"> or </span> <a class="btn btn-theme btn-theme-dark" href="#">Create account</a></p>
+          </div>
+        </div>
+      </form>
+
+      <h3 class="block-title alt"><i class="fa fa-angle-down"></i>2. Orders</h3>
+-->{% endcomment %}
+
+      <div class="row orders">
+        {% include "web/order/purchases.html" %}
+        <div class="col-md-4">
+          <h3 class="block-title"><span>Корзина</span></h3>
+          <div class="shopping-cart">
+            <table>
+              <tr>
+                <td>Сумма:</td>
+                <td>{{ cart.total|money_format }} ₽</td>
+              </tr>
+              <tr>
+                <td>Доставка:</td>
+                <td>-</td>
+              </tr>
+              <tfoot>
+                <tr>
+                  <td>Итого:</td>
+                  <td>{{ cart.total_with_discount|money_format }} ₽</td>
+                </tr>
+              </tfoot>
+            </table>
+{% comment %}<!--
+            <div class="form-group">
+              <textarea class="form-control" placeholder="Комментарий к заказу"></textarea>
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Enter your coupon code"/>
+            </div>
+            <button class="btn btn-theme btn-theme-dark btn-block">Apply Coupon</button>
+-->{% endcomment %}
+            <a href="/shop/checkout/" class="btn btn-theme btn-theme-dark btn-block">Оформить заказ</a>
+          </div>
+        </div>
+      </div>
+
+{% comment %}<!--
+      <h3 class="block-title alt"><i class="fa fa-angle-down"></i>3. Delivery address</h3>
+      <form action="#" class="form-delivery">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group"><input class="form-control" type="text" placeholder="First Name"></div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group"><input class="form-control" type="text" placeholder="Last Name"></div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group"><input class="form-control" type="text" placeholder="Address"></div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group selectpicker-wrapper">
+              <select class="selectpicker input-price" data-live-search="true" data-width="100%" data-toggle="tooltip" title="Select">
+                <option>Country</option>
+                <option>Country</option>
+                <option>Country</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group selectpicker-wrapper">
+              <select class="selectpicker input-price" data-live-search="true" data-width="100%" data-toggle="tooltip" title="Select">
+                <option>City</option>
+                <option>City</option>
+                <option>City</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group"><input class="form-control" type="text" placeholder="Postcode/ZIP"></div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group"><input class="form-control" type="text" placeholder="Email"></div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group"><input class="form-control" type="text" placeholder="Phone Number"></div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group"><textarea class="form-control" placeholder="Addıtıonal Informatıon" name="name" id="id" cols="30" rows="10"></textarea></div>
+          </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox"> Ship to  Different address for invoice
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <h3 class="block-title alt"><i class="fa fa-angle-down"></i>4. Payments options</h3>
+      <div class="panel-group payments-options" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel radio panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="true" aria-controls="collapseOne">
+                <span class="dot"></span> Direct Bank Transfer
+              </a>
+            </h4>
+          </div>
+          <div id="collapse1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading1">
+            <div class="panel-body">
+              <div class="alert alert-success" role="alert">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sollicitudin ultrices suscipit. Sed commodo vel mauris vel dapibus.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingTwo">
+            <h4 class="panel-title">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="false" aria-controls="collapseTwo">
+              <span class="dot"></span> Cheque Payment</a>
+            </h4>
+          </div>
+          <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
+            <div class="panel-body">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store</div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingThree">
+            <h4 class="panel-title">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="false" aria-controls="collapseThree">
+                <span class="dot"></span> Credit Card
+              </a>
+              <span class="overflowed pull-right">
+                <img src="assets/img/preview/payments/mastercard-2.jpg" alt=""/>
+                <img src="assets/img/preview/payments/visa-2.jpg" alt=""/>
+                <img src="assets/img/preview/payments/american-express-2.jpg" alt=""/>
+                <img src="assets/img/preview/payments/discovery-2.jpg" alt=""/>
+                <img src="assets/img/preview/payments/eheck-2.jpg" alt=""/>
+              </span>
+            </h4>
+          </div>
+          <div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3"></div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="heading4">
+            <h4 class="panel-title">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                <span class="dot"></span> PayPal
+              </a>
+              <span class="overflowed pull-right"><img src="assets/img/preview/payments/paypal-2.jpg" alt=""/></span>
+            </h4>
+          </div>
+          <div id="collapse4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading4"></div>
+        </div>
+      </div>
+      <div class="overflowed">
+        <a class="btn btn-theme btn-theme-dark" href="#">Home Page</a>
+        <a class="btn btn-theme pull-right" href="#">Place Order</a>
+      </div>
+-->{% endcomment %}
     </div>
-    <a href="/shop/checkout/" class="cart-submit-btn">Оформить заказ</a>
-    <!--<a href="#" class="cart-clear">Очистить корзину</a>-->
-  </div>
+  </section>
 {% endif %}
 
 {% for container in page.containers %}
   {% flatcontent request page container.container.tag %}
 {% endfor %}
 {% endblock %}
-
-{% block subscribe %}{% endblock %}
 
 {% block extrascripts %}
 <script type="text/javascript">

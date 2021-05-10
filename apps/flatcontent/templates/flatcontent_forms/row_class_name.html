@@ -1,6 +1,6 @@
 <div class="form-group">
   <label class="col-lg-2 control-label">
-    Класс css
+    <span class="label_for_translate row_class_name_label" attr-class_name="row_class_name_label" attr-edit_mode="popup" attr-placement="bottom">Класс css</span>
     {% if domains %}
       <a href="javascript:void(0);" data-attr-translate="class_name" class="translate_toggle"><i class="fa fa-globe"></i></a>
     {% endif %}
@@ -13,7 +13,8 @@
 <!-- Переводы для class_name -->
 {% for domain in domains %}
   <div class="form-group translate_class_name hidden">
-    <label class="col-lg-2 control-label">Класс css {{ domain.name }} ({{ domain.domain }})</label>
+    <label class="col-lg-2 control-label">
+    <span class="row_class_name_label">Класс css</span> {{ domain.name }} ({{ domain.domain }})</label>
     <div class="col-lg-10">
       <input placeholder="Класс css {{ domain.name }} ({{ domain.domain }})" class="form-control" name="translate_class_name_{{ domain.pk }}" value="{% if domain.translations.class_name %}{{ domain.translations.class_name }}{% endif %}" autocomplete="off">
     </div>

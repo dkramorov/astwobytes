@@ -1,37 +1,27 @@
 {% load tags mtags %}
-<div class="prod-i gridview">
-  <div class="prod-i-top">
-    <a href="{{ product.link }}" class="prod-i-img">
-      <img src="{{ product.thumb }}" alt="{{ product.name|textize }}" loading="lazy">
-    </a>
-    <p class="prod-i-info">
-      <a href="#" class="prod-i-favorites"><span>Избранное</span><i class="fa fa-heart"></i></a>
-      <a href="#" class="qview-btn prod-i-qview"><span>Быстрый просмотр</span><i class="fa fa-search"></i></a>
-      <a class="prod-i-compare" href="#"><span>Сравнить</span><i class="fa fa-bar-chart"></i></a>
-    </p>
-    <a href="javascript:void(0);" class="prod-i-buy add_to_cart_btn" data-product_id="{{ product.id }}">В корзину</a>
-    <p class="prod-i-properties-label"><i class="fa fa-info"></i></p>
-    <div class="prod-i-properties">
-      <dl>
-        {% for item in product.props %}
-          {% if forloop.counter < 5 %}
-            <d{% cycle 't' 'd' %}>{{ item.prop.name }}
-            {% for pvalue in item.values %}
-              {{ pvalue.str_value }}
-              {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
-            {% endfor %}
-            </d{% cycle 't' 'd' %}>
-          {% endif %}
-        {% endfor %}
-      </dl>
+<div class="col-md-4 col-sm-6">
+  <div class="thumbnail no-border no-padding">
+    <div class="media">
+      <a class="media-link" href="{{ product.link }}">
+        <img src="{% imagine product.img '800x600' product.get_folder True %}" alt="{{ product.name|textize }}"/>
+        <span class="icon-view">
+          <strong><i class="fa fa-eye"></i></strong>
+        </span>
+      </a>
     </div>
-{% comment %}<!--
-    <div class="prod-sticker">
-      <p class="prod-sticker-1">NEW</p>
-      <br><p class="prod-sticker-2">HIT</p>
+    <div class="caption text-center">
+      <h4 class="caption-title product-title">
+        <a href="{{ product.link }}">{{ product.name }}</a>
+      </h4>
+      <div class="rating">
+        <span class="star"></span>
+        <span class="star active"></span>
+        <span class="star active"></span>
+        <span class="star active"></span>
+        <span class="star active"></span>
+      </div>
+      {% include "web/cat/product_price_row.html" %}
+      {% include "web/cat/product_buy_button.html" %}
     </div>
--->{% endcomment %}
   </div>
-  <h3 class="product-title"><a href="{{ product.link }}">{{ product.name }}</a></h3>
-  <p class="prod-i-price"><b>{{ product.price|money_format }} ₽</b></p>
 </div>

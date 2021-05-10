@@ -80,8 +80,11 @@ function purchase_drop(purchase_id){
 }
 function cart_details(cart){
   /* Выводит аяксовую корзинку в шаблон
-     для обновления цены и кол-ва в аякс корзинке используем
-     <div id="ajax_cart_info" data-items="" data-total="₽"
+     в ajax_cart.html
+     для обновления цены и кол-ва
+     <div class="hidden" id="ajax_cart_info"
+          data-items="{% if cart.items %}{{ cart.items }}{% else %}0{% endif %}"
+          data-total="{% if cart.total %}{{ cart.total|money_format }} ₽{% else %}0{% endif %}"
           data-items-selector="#sm_cartpro .cartpro-count"
           data-total-selector="#sm_cartpro .price">
      </div>

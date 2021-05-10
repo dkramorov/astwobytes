@@ -3,12 +3,16 @@
     <input type="hidden" name="state" value="1" />
     <input type="hidden" name="container" value="{{ container.id }}" />
 
-    <div class="panel-heading">{{ singular_obj }}</div>
+    <div class="panel-heading">
+      {% include "core/forms/default_singular_obj.html" %}
+    </div>
     <div class="panel-body">
       {% csrf_token %}
       {% include "core/forms/row_name.html" %}
       <div class="form-group">
-        <label class="col-lg-2 control-label">Стат. страничка</label>
+        <label class="col-lg-2 control-label">
+          <span class="label_for_translate row_flatpage_label" attr-class_name="row_flatpage_label" attr-edit_mode="popup" attr-placement="bottom">Стат. страничка</span>
+        </label>
         <div class="col-lg-10">
           <input type="text" placeholder="Стат. страничка" class="form-control" name="container_name" value="{% if row.container %}{{ row.container.name }} ({{ row.container.tag }}){% else %}{{ container.name }} ({{ container.tag }}){% endif %}" autocomplete="off" readonly>
         </div>

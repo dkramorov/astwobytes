@@ -16,6 +16,9 @@
 <link href="/media/css/custom.css" rel="stylesheet">
 <script src="/media/js/modernizr.custom.js"></script>
 <!--[if lt IE 9]><script src="/media/js/html5shiv.js"></script><script src="/media/js/respond.min.js"></script><![endif]-->
+<script type="text/javascript">
+var cart_id = "#popup-cart";
+</script>
 {% block extrahead %}{% endblock %}
 </head>
 <body id="home" class="wide">
@@ -34,7 +37,10 @@
 </div>
 
 <div class="wrapper">
-  {% ajax_cart request %}
+
+  <div class="modal fade popup-cart" id="popup-cart" tabindex="-1" role="dialog" aria-hidden="true">
+    {% ajax_cart request %}
+  </div>
   <div class="top-bar">
     <div class="container">
       {% include "web/components/left_top_bar.html" %}
@@ -53,7 +59,7 @@
 
         <div class="header-search visible-xs">
           <form action="/cat/" method="get">
-            <input class="form-control" type="text" placeholder="Поиск"/>
+            <input class="form-control" type="text" placeholder="Поиск" name="q" value="{% if q_string.q.q %}{{ q_string.q.q }}{% endif %}"/>
             <button>
               <i class="fa fa-search"></i>
             </button>
@@ -77,7 +83,7 @@
         <form action="/cat/" method="get">
           <div class="container">
             <div class="flex">
-              <input class="form-control search_field" type="text" placeholder="Поиск"/>
+              <input class="form-control search_field" type="text" placeholder="Поиск" name="q" value="{% if q_string.q.q %}{{ q_string.q.q }}{% endif %}" />
               <button type="submit" class="btn btn-theme">
                 Найти <i class="fa fa-search"></i>
               </button>
@@ -172,9 +178,7 @@
 <script src="/media/js/jquery.easing.min.js"></script>
 <script src="/media/js/jquery.smoothscroll.min.js"></script>
 <script src="/media/js/smooth-scrollbar.min.js"></script>
-
 <script src="/media/js/theme.js"></script>
-
 <script src="/media/js/jquery.cookie.js"></script>
 {% block extrascripts %}{% endblock %}
 </body>

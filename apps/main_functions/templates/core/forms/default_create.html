@@ -1,6 +1,6 @@
 {% if permissions.create %}
     <a class="btn btn-primary pull-right" href="{{ url_create }}">
         <em class="fa fa-plus-circle fa-fw mr-sm"></em>
-        {{ action_create }} {{ rp_singular_obj }}
+        <span class="label_for_translate action_button_label_create_{{ menu }}_{{ submenu }}" attr-class_name="action_button_label_create_{{ menu }}_{{ submenu }}" attr-edit_mode="popup" attr-placement="bottom">{{ action_create }} {{ rp_singular_obj }}</span>
     </a>
 {% endif %}

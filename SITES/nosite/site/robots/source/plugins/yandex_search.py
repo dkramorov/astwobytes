@@ -237,7 +237,8 @@ class YandexSearch:
 
     def yandex_auth(self):
         """Авторизация на яндексе
-           пароль храним в файле credentials.json"""
+           пароль храним в файле credentials.json
+        """
         if self.search_authorization():
             return
         credentials = os.path.join(self.browser.cur_profile, 'credentials.json')
@@ -254,6 +255,7 @@ class YandexSearch:
                нажимаем ее, если нашли
                Нужно, только если аккаунтов очень много
             """
+            # https://passport.yandex.ru
             css_selector = 'a .passp-account-list__sign-in-button-text'
             try:
                 self.browser.wait(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))

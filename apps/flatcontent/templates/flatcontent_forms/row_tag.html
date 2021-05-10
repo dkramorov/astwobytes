@@ -1,5 +1,7 @@
 <div class="form-group">
-  <label class="col-lg-2 control-label">Тег</label>
+  <label class="col-lg-2 control-label">
+    <span class="label_for_translate row_tag_label" attr-class_name="row_tag_label" attr-edit_mode="popup" attr-placement="bottom">Тег</span>
+  </label>
   <div class="col-lg-10">
     <input type="text" placeholder="Тег" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
   </div>
