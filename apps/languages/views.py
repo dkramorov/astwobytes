@@ -60,7 +60,7 @@ def pick_language(request, lang):
             #if settings.DEBUG:
             #    return redirect(referer)
             # Если домен совпадает с доменом по умолчанию,
-            # тогда переадресацию делаюм на MAIN_DOMAIN
+            # тогда переадресацию делаем на MAIN_DOMAIN
             dest = '%s%s%s' % (schema, domain['domain'], referer)
             if settings.DEFAULT_DOMAIN == lang:
                 dest = '%s%s%s' % (schema, settings.MAIN_DOMAIN, referer)
@@ -122,6 +122,10 @@ def select_language(request, lang: str = None):
         request.session['lang'] = lang
 
     context['domains'] = get_domains()
+    for item in context['domains']:
+        if item['lang'] == 'rus':
+            context['default'] = True
+
     template = '%sselect_lang.html' % mh.template_prefix
     return render(request, template, context)
 
@@ -130,6 +134,14 @@ def translate_mode(request, *args, **kwargs):
     """Перевод текстов админки"""
     result = {}
     domain = get_domain(request)
+
+    # Если русский, то без перевода
+    if domain.get('lang') == 'rus':
+        result['error'] = 'Русский то не надо переводить!'
+        if request.POST.get('old_value'):
+            result['old_value'] = request.POST['old_value']
+        return JsonResponse(result, safe=False)
+
     perms = get_user_permissions(request.user, UITranslate)
     if not perms['edit']:
         result['error'] = 'Недостаточно прав'
@@ -159,13 +171,17 @@ def translate_mode(request, *args, **kwargs):
 
 
 def get_translations(request, *args, **kwargs):
-    """Получение переводов"""
+    """Получение переводов для UI"""
     left_menu_prefix = 'left_menu_'
     result = {
         'translations': [],
         '%stranslations' % left_menu_prefix: [],
     }
     domain = get_domain(request)
+    # Если русский, то без перевода
+    if domain.get('lang') == 'rus' or not domain:
+        return JsonResponse(result, safe=False)
+
     domain_pk = domain.get('pk')
     class_names = []
     for class_name in request.POST.get('class_names', '').split(','):

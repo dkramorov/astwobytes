@@ -70,10 +70,19 @@ class Standard(models.Model):
                 setattr(self, field, None)
 
     def drop_media(self):
-        """Удаление папки"""
+        """Удаление папки экземпляра модели"""
         if not self.id:
             return
-        drop_folder(self.get_folder())
+        folder = self.get_folder()
+        drop_folder(folder)
+        parent_folder = os.path.split(folder.rstrip('/'))[0]
+        if check_path(parent_folder):
+            return
+        pass_items = ('.DS_Store', )
+        parent_folder_fp = full_path(parent_folder)
+        items_in_folder = [item for item in os.listdir(parent_folder_fp) if not item in pass_items]
+        if not items_in_folder:
+            os.rmdir(parent_folder_fp)
 
     def upload_img(self, img):
         """Загрузка изображения"""

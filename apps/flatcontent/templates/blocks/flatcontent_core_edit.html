@@ -161,6 +161,7 @@ $(document).ready(function(){
   {% endfor %}
   function update_links(r){
     $("#field_link").val(r['row']['link']);
+    $('#field_link_action').attr('href', r['row']['link']).html(r['row']['link']);
     var thumb = r['row']['thumb'];
     if(thumb === ''){
       thumb = '/static/img/empty.png';

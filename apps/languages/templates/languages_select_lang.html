@@ -11,7 +11,9 @@
   <div class="col-sm-12">
     <p><span class="label_for_translate language_picker_label" attr-class_name="language_picker_label">Выберите язык для заполнения в панели управления</span></p>
 
-    <a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' 'rus' %}">Русский</a>
+    {% if default_domain and not default_domain == 'rus' %}
+      <a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' 'rus' %}">Русский</a>
+    {% endif %}
     {% for domain in domains %}
       <a class="btn btn-primary pull-left mr" href="{% url 'languages:select_language' domain.lang %}">{{ domain.name }}</a>
     {% endfor %}

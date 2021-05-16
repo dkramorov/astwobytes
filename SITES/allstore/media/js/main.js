@@ -769,8 +769,8 @@ $(window).load(function () {
           }
         }, 100);
     });
-
 })(jQuery);
+
 
 // для аякс форм: {csrfmiddlewaretoken: getCookie('csrftoken')}
 function getCookie(c_name) {
@@ -872,3 +872,129 @@ function get_fat_catalogue(){
     });
   }
 }
+
+// ----------------------
+// Скролл к нужной секции
+// ----------------------
+function scroll_to(section, offset){
+  if(typeof(offset) == "undefined"){
+    offset = 0;
+  }
+  $("html, body").animate({
+    scrollTop: $(section).offset().top + offset
+  }, 500);
+  console.log("scrolling to " + section + " " + $(section).offset().top);
+}
+
+var myMapContainer = "mapContainer";
+var mapContainer_points = null;
+var myPickupPoint = null;
+function create_pickup_points_map(){
+  var kwargs = {};
+  kwargs['default_town'] = "Иркутск";
+  create_new_map(myMapContainer);
+  wait_for_result(myMapContainer, function(){
+    var myMap = get_map(myMapContainer);
+    disable_map_wheel(myMapContainer);
+    myMap.kwargs = kwargs;
+    var point;
+
+    var pickup_points_menu = $("#map_pickup_points_menu");
+    pickup_points_menu.html("");
+
+    if(typeof(mapContainer_points) != null){
+      for(var i=0; i<mapContainer_points.length; i++){
+        point = mapContainer_points[i];
+
+        myMap.myPoints.push({
+          "type": "Feature",
+          "id": point.id,
+          "geometry": {
+            "type": "Point",
+            "coordinates": [point.latitude, point.longitude],
+          },
+          "properties": {
+            "balloonContent": "<strong>" + point.addressLines + "</strong><br>" + point.place + "<br><a href='javascript:void(0);' onclick='set_pickup_point(" + point.id + ")'>Выбрать</a>",
+            "clusterCaption": "Пункты выдачи",
+            "hintContent": "Пункты выдачи",
+          },
+        });
+        pickup_points_menu.append($("<li><a href='javascript:void(0);' id='pickup_point_" + point.id + "'>" + point.addressLines + " " + point.place + "</a></li>"));
+
+        $("#pickup_point_" + point['id']).click(function(){
+          scroll_to("#mapContainer");
+          var pk = $(this).attr("id").replace("pickup_point_", "");
+          var placemark = find_placemark_by_id(pk, myMap);
+          console.log("placemark", placemark);
+          if(placemark != null){
+            var props = placemark['properties'];
+            var coords = placemark['geometry']['coordinates'];
+            if(myMap.balloon.isOpen()){
+              myMap.balloon.close();
+            }
+            myMap.balloon.open(coords, props['balloonContent'], {});
+            myMap.setCenter(coords, 16);
+          }else{
+            console.log("placemark is null", pk);
+          }
+        });
+      }
+      add_points_to_map(myMapContainer, myMap.myPoints);
+      set_map_bounds(myMapContainer);
+      $("#yandex_map_tab").click(function(){
+        myMap.redraw();
+      });
+      if(myPickupPoint != null){
+        $("#map_pickup_points_menu a").removeClass("selected");
+        $("#pickup_point_" + myPickupPoint.id).addClass("selected");
+      }
+    }else{
+      console.log("[ERROR]: mapContainer_points undefined");
+    }
+  }, ["map"]);
+}
+function set_pickup_point(point_id){
+  scroll_to("#map_pickup_points_menu");
+  $("#map_pickup_points_menu a").removeClass("selected");
+  $("#pickup_point_" + point_id).addClass("selected");
+  var params = {
+    'point_id': point_id,
+  };
+  $.ajax({
+    type: 'GET',
+    url: '/simaland/set_pickup_point/',
+    data: params,
+    success: function(r) {
+      console.log(r);
+    }
+  });
+}
+$(document).ready(function(){
+  if($("#" + myMapContainer).length > 0){
+    $.ajax({
+      type: 'GET',
+      url: '/simaland/get_pickup_point/',
+      success: function(r) {
+        if(r.address != undefined){
+          myPickupPoint = r.address;
+          if($("#pickup_point_" + myPickupPoint.id).length > 0){
+            $("#map_pickup_points_menu a").removeClass("selected");
+            $("#pickup_point_" + myPickupPoint.id).addClass("selected");
+          }
+        }
+      }
+    });
+    var params = {
+      'by': 100,
+    }
+    $.ajax({
+      type: 'GET',
+      url: '/addresses/addresses/api/',
+      data: params,
+      success: function(r) {
+        mapContainer_points = r.data;
+        load_yandex_maps_script(yandex_maps_api_key, create_pickup_points_map);
+      }
+    });
+  }
+});

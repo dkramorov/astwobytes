@@ -14,6 +14,7 @@
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 $(document).ready(function(){
 
   var pathFormatter = function(cell, formatterParams, onRendered){
@@ -28,26 +29,28 @@ $(document).ready(function(){
     return result;
   };
 
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {% include "core/tabulator_cell/name.html" %}
+    {
+      title: "Описание",
+      field: "desc",
+      headerFilterPlaceholder: "Описание",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: pathFormatter,
+      width: 150,
+    },
+    {% include "core/tabulator_cell/image.html" %}
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
+
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
-    columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
-      {% include "core/tabulator_cell/name.html" %}
-      {
-        title: "Описание",
-        field: "desc",
-        headerFilterPlaceholder: "Описание",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: pathFormatter,
-        width: 150,
-      },
-      {% include "core/tabulator_cell/image.html" %}
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
-      {% include "core/tabulator_cell/actions.html" %}
-    ],
+    columns: main_table_columns,
   });
 });
 </script>

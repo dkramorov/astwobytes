@@ -17,6 +17,21 @@ var main_table = null;
 var main_table_columns = null;
 $(document).ready(function(){
 
+  var file_domain_choices = {
+    "": "-",
+    {% for domain in domains %}
+      {{ domain.pk }}: "{{ domain.lang }} ({{ domain.name }})",
+    {% endfor %}
+  };
+
+  var fileDomainFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return file_domain_choices[pk];
+  };
+  var accessor_file_domain = function(value, data, type, params, column){
+    return file_domain_choices[value];
+  }
+
   var pathFormatter = function(cell, formatterParams, onRendered){
     //console.log(cell.getRow().getData());
     var data = cell.getRow().getData();
@@ -50,7 +65,7 @@ $(document).ready(function(){
       headerFilter: "input",
       headerFilterFunc: "like",
       formatter: linkFormatter,
-      minWidth: 150,
+      width: 150,
     },
     {
       title: "Описание",
@@ -58,7 +73,7 @@ $(document).ready(function(){
       headerFilterPlaceholder: "Описание",
       headerFilter: "input",
       headerFilterFunc: "like",
-      minWidth: 150,
+      width: 150,
     },
     {
       title: "Mime-тип",
@@ -66,7 +81,7 @@ $(document).ready(function(){
       headerFilterPlaceholder: "Mime-тип",
       headerFilter: "input",
       headerFilterFunc: "like",
-      minWidth: 60,
+      width: 60,
     },
     {
       title: "Путь",
@@ -75,8 +90,25 @@ $(document).ready(function(){
       headerFilter: "input",
       headerFilterFunc: "like",
       formatter: pathFormatter,
-      minWidth: 120,
+      width: 120,
     },
+    {% if domains %}
+      {
+        title: "Домен",
+        field: "domain",
+        headerFilterPlaceholder: "Домен",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: file_domain_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: fileDomainFormatter,
+        width: 90,
+        accessorDownload: accessor_file_domain,
+      },
+    {% endif %}
     {% include "core/tabulator_cell/is_active.html" %}
     {% include "core/tabulator_cell/position.html" %}
     {% include "core/tabulator_cell/actions.html" %}

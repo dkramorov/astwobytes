@@ -7,11 +7,23 @@ from django.db import models
 from apps.main_functions.models import Standard
 
 class Files(Standard):
-    name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    link = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    desc = models.TextField(blank=True, null=True)
-    mime = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    path = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Название для файла')
+    link = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Пользовательская ссылка на файл')
+    desc = models.TextField(blank=True, null=True,
+        verbose_name='Описание')
+    mime = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Mime-type')
+    path = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Внутренняя ссылка на файл')
+    domain = models.IntegerField(db_index=True,
+        blank=True, null=True,
+        verbose_name='Домен для мультиязычного сайта')
 
     class Meta:
         verbose_name = 'Стат.контет - Файл'

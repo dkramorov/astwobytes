@@ -1,0 +1,99 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+{% include "core/title/page_title_table.html" %}
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+$(document).ready(function(){
+  var addressLinesFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['address'] ? data['address']['addressLines'] : '';
+  };
+  var addressPlaceFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['address'] ? data['address']['place'] : '';
+  };
+  var shopperLoginFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['shopper'] ? data['shopper']['login'] : '';
+  };
+  var shopperPhoneFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['shopper'] ? data['shopper']['phone'] : '';
+  };
+  var orderFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['order'] ? data['order']['id'] : '';
+  };
+
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Адрес пункта вывоза",
+      field: "address__addressLines",
+      headerFilterPlaceholder: "Адрес пункта вывоза",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: addressLinesFormatter,
+      width: 150,
+    },
+    {
+      title: "Место пункта вывоза",
+      field: "address__place",
+      headerFilterPlaceholder: "Место пункта вывоза",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: addressPlaceFormatter,
+      width: 150,
+    },
+    {
+      title: "Пользователь",
+      field: "shopper__login",
+      headerFilterPlaceholder: "Пользователь",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: shopperLoginFormatter,
+      width: 120,
+    },
+    {
+      title: "Тел. пользователя",
+      field: "shopper__phone",
+      headerFilterPlaceholder: "Тел. пользователя",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: shopperPhoneFormatter,
+      width: 120,
+    },
+    {
+      title: "Номер заказа",
+      field: "order__id",
+      headerFilterPlaceholder: "Номер заказа",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: orderFormatter,
+      width: 70,
+    },
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
+});
+</script>
+{% endblock %}

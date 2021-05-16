@@ -310,6 +310,7 @@ $(document).ready(function(){
         container.find('#html_redactor').setCode('');
       }
       container.find('input[name="link"]').val(row['link']);
+      container.find('#field_link_action').attr('href', row['link']).html(row['link']);
       var blank_checked = 'checked' ? row['blank'] : '';
       container.find('input[name="blank"]').prop('checked', blank_checked);
       container.find('input[name="icon"]').val(row['icon']);

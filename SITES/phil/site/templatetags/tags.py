@@ -58,7 +58,6 @@ def dynamic_portfolio(request):
         block.images = []
 
         ids_subblocks = {subblock.id: subblock.link for subblock in block.sub}
-        print(ids_subblocks )
         # Для описания надо узнать какая стат.страничка
         # ссылается на subblock.link и взять от нее описание
         related_by_link = Blocks.objects.filter(container__state=3, link__in=ids_subblocks.values())

@@ -775,8 +775,7 @@ h1, .h1 {
   margin: 0;
   font-size: 48px;
   font-weight: 400;
-  color: #582371;
-  font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif; }
+  color: #582371; }
   h1 a, .h1 a {
     color: inherit; }
   @media (max-width: 800px) {
@@ -804,8 +803,7 @@ h2, .h2 {
   margin: 0;
   font-size: 42px;
   font-weight: 400;
-  color: #582371;
-  font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif; }
+  color: #582371; }
   h2 a, .h2 a {
     color: inherit; }
   @media (max-width: 800px) {
@@ -828,8 +826,7 @@ h3, .h3 {
   margin: 0;
   font-size: 36px;
   font-weight: 400;
-  color: #582371;
-  font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif; }
+  color: #582371; }
   h3 a, .h3 a {
     color: inherit; }
   @media (max-width: 800px) {
@@ -852,8 +849,7 @@ h4, .h4 {
   margin: 0;
   font-size: 30px;
   font-weight: 400;
-  color: #582371;
-  font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif; }
+  color: #582371; }
   h4 a, .h4 a {
     color: inherit; }
   @media (max-width: 800px) {
@@ -876,8 +872,7 @@ h5, .h5 {
   margin: 0;
   font-size: 24px;
   font-weight: 400;
-  color: #582371;
-  font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif; }
+  color: #582371; }
   h5 a, .h5 a {
     color: inherit; }
   @media (max-width: 980px) {
@@ -895,8 +890,7 @@ h6, .h6 {
   margin: 0;
   font-size: 18px;
   font-weight: 400;
-  color: #582371;
-  font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif; }
+  color: #582371; }
   h6 a, .h6 a {
     color: inherit; }
   @media (max-width: 800px) {

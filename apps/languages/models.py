@@ -55,7 +55,6 @@ def get_admin_translate_rows(request):
         return True
     return False
 
-
 def get_domains():
     """Получить список доменов"""
     return [{
@@ -129,7 +128,7 @@ def get_domain(request, domains: list = None):
     """
     domain = None
     if not hasattr(request, 'META') or not 'HTTP_HOST' in request.META:
-        return
+        return {}
     # -------------------
     # Домен/язык по хосту
     # -------------------
@@ -137,6 +136,16 @@ def get_domain(request, domains: list = None):
         domains = get_domains()
 
     lang = request.META['HTTP_HOST'].split('.')[0]
+
+    # --------------
+    # Либо по сессии
+    # --------------
+    if hasattr(request, 'session') and request.session.get('lang'):
+        lang = request.session['lang']
+        for item in domains:
+            if item['lang'] == lang:
+                return item
+
     # ---------
     # По домену
     # ---------
@@ -148,14 +157,7 @@ def get_domain(request, domains: list = None):
             if request.META['HTTP_HOST'] == settings.MAIN_DOMAIN:
                 request.session['lang'] = settings.DEFAULT_DOMAIN
                 return item
-    # --------------
-    # Либо по сессии
-    # --------------
-    if hasattr(request, 'session') and request.session.get('lang'):
-        lang = request.session['lang']
-        for item in domains:
-            if item['lang'] == lang:
-                return item
+
     # -------------
     # Либо основной
     # -------------
@@ -164,7 +166,7 @@ def get_domain(request, domains: list = None):
             if item['lang'] == settings.DEFAULT_DOMAIN:
                 request.session['lang'] = lang
                 return item
-    return None
+    return {}
 
 def get_translate(rows, domains: list, only_fields: list = None):
     """Заполняем переводы для queryset rows

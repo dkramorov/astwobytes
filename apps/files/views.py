@@ -16,7 +16,10 @@ from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 
-from .models import Files
+from apps.files.models import Files
+
+if settings.IS_DOMAINS:
+    from apps.languages.models import get_domain, get_domains
 
 CUR_APP = 'files'
 files_vars = {
@@ -58,7 +61,6 @@ def edit_file(request, action:str, row_id:int = None, *args, **kwargs):
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     row = mh.get_row(row_id)
     context = mh.context
-
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
 
@@ -141,7 +143,17 @@ def ReturnFile(request, link):
         response['Content-Disposition'] = 'inline; filename=%s' % (path, )
         return response
 
-    search_file = Files.objects.filter(link=link, is_active=True).first()
+    search_files = Files.objects.filter(link=link, is_active=True)
+    # Если мультидомен,
+    # то ищем в том числе специфический для домена файл,
+    # но если нету, то возвращаем без домена
+    if settings.IS_DOMAINS:
+        domain = get_domain(request)
+        search_file_with_domain = search_files.filter(domain=domain['pk']).values_list('id', flat=True)
+        if search_file_with_domain:
+            search_files = search_files.filter(domain=domain['pk'])
+
+    search_file = search_files.first()
     if search_file:
         path = '%s%s' % (search_file.get_folder(), search_file.path)
         if not check_path(path):

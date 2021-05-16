@@ -8,12 +8,22 @@ from django.conf import settings
 
 from apps.login.models import create_default_user
 from apps.flatcontent.models import Containers, Blocks
+from apps.files.models import Files
 from apps.main_functions.models import Config
 from apps.main_functions.functions import object_fields
+from apps.main_functions.files import open_file, make_folder
 
 logger = logging.getLogger(__name__)
 
-def fill_flatmain():
+if settings.IS_DOMAINS:
+    from apps.languages.models import get_domains
+
+robots_txt_content = """User-agent: *
+Disallow: /admin/
+Sitemap: https://{}/sitemap.xml
+"""
+
+def fill_flatmain(**kwargs):
     """Контент для всех страничек"""
     container = Containers.objects.filter(tag='main', state=2).first()
     if not container:
@@ -104,7 +114,7 @@ def fill_flatmain():
                 html='<script type="text/javascript"></script>',
             )
 
-def fill_flatmenu():
+def fill_flatmenu(**kwargs):
     """Меню"""
     mainmenu = Containers.objects.filter(tag='mainmenu', state=1).first()
     if not mainmenu:
@@ -171,7 +181,7 @@ def fill_flatmenu():
                 tag='_%s_feedbackpage' % menu.tag,
             )
 
-def fill_settings():
+def fill_settings(**kwargs):
     """Настройки"""
     feedback = Config.objects.filter(attr='flatcontent_feedback').first()
     if not feedback:
@@ -179,7 +189,7 @@ def fill_settings():
                                          attr='flatcontent_feedback',
                                          value='dkramorov@mail.ru')
 
-def fill_users():
+def fill_users(**kwargs):
     """Пользователи
        1) сео-пользователь
     """
@@ -213,6 +223,43 @@ def fill_users():
     if len(groups) < 1:
         user.groups.add(group)
 
+def fill_files(**kwargs):
+    """Файлы
+       :param kwargs['force'] принудительно обновляет файл
+    """
+    def create_robots_txt(domain: dict = None):
+        """Вспомогательная функция для создания robotx.txt файла
+           :param domain: словарь с параметрами домена
+        """
+        if not domain:
+            domain = {}
+        robots_txt = Files.objects.create(link=robots_txt_link,
+            name='robots.txt',
+            desc='Файл для запретов индексации поисковым системам',
+            domain=domain.get('pk'))
+        folder = robots_txt.get_folder()
+        make_folder(folder)
+        dest = '%s%s' % (folder.rstrip('/'), robots_txt_link)
+        with open_file(dest, mode='w+', encoding='utf-8') as f:
+            domain_site = domain.get('domain')
+            if not domain_site:
+                domain_site = settings.MAIN_DOMAIN or 'masterme.ru'
+            f.write(robots_txt_content.format(domain_site))
+        robots_txt.path = robots_txt_link.lstrip('/')
+        robots_txt.save()
+
+    robots_txt_link = '/robots.txt'
+    robots_txt = Files.objects.filter(link=robots_txt_link)
+    if not robots_txt or kwargs.get('force'):
+        for item in Files.objects.filter(link=robots_txt_link):
+            item.delete()
+
+        create_robots_txt()
+        if settings.IS_DOMAINS:
+            domains = get_domains()
+            for domain in domains:
+                create_robots_txt(domain)
+
 class Command(BaseCommand):
     """Заливаем демонстрационными данными сайт"""
     def add_arguments(self, parser):
@@ -236,9 +283,20 @@ class Command(BaseCommand):
             dest = 'users',
             default = False,
             help = 'Fill users')
+        parser.add_argument('--files',
+            action = 'store_true',
+            dest = 'files',
+            default = False,
+            help = 'Fill files')
+        parser.add_argument('--force',
+            action = 'store_true',
+            dest = 'force',
+            default = False,
+            help = 'Set force update (for files)')
 
     def handle(self, *args, **options):
         cmd = []
+        kwargs = {}
         if options.get('flatmain'):
             cmd.append(fill_flatmain)
         if options.get('flatmenu'):
@@ -247,14 +305,21 @@ class Command(BaseCommand):
             cmd.append(fill_settings)
         if options.get('users'):
             cmd.append(fill_users)
+        if options.get('files'):
+            cmd.append(fill_files)
+
+        if options.get('force'):
+            kwargs['force'] = True
+
         if not cmd:
-            fill_flatmain()
-            fill_flatmenu()
-            fill_settings()
-            fill_users()
+            fill_flatmain(**kwargs)
+            fill_flatmenu(**kwargs)
+            fill_settings(**kwargs)
+            fill_users(**kwargs)
+            fill_files(**kwargs)
         else:
             for item in cmd:
-                item()
+                item(**kwargs)
 
 
 

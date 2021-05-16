@@ -1,23 +1,28 @@
 <li{% ifequal menu 'simaland' %} class="active"{% endifequal %} id="left_menu_simaland_app">
-  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'main:simaland_cart' %}">
+  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'simaland:simaland_cart' %}">
     <em class="fa fa-shopping-cart"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">sima-land.ru</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'simaland' %} in{% endifequal %}">
     <li{% ifequal submenu 'cart' %} class="active"{% endifequal %} id="left_menu_simaland_app_cart">
-      <a class="no-submenu" data-toggle="" href="{% url 'main:simaland_cart' %}">
+      <a class="no-submenu" data-toggle="" href="{% url 'simaland:simaland_cart' %}">
         <span class="item-text">Корзина покупок</span>
       </a>
     </li>
     <li{% ifequal submenu 'orders' %} class="active"{% endifequal %} id="left_menu_simaland_app_orders">
-      <a class="no-submenu" data-toggle="" href="{% url 'main:simaland_orders' %}">
+      <a class="no-submenu" data-toggle="" href="{% url 'simaland:simaland_orders' %}">
         <span class="item-text">Заказы</span>
       </a>
     </li>
     <li{% ifequal submenu 'credentials' %} class="active"{% endifequal %} id="left_menu_simaland_app_credentials">
-      <a class="no-submenu" data-toggle="" href="{% url 'main:simaland_credentials' %}">
+      <a class="no-submenu" data-toggle="" href="{% url 'simaland:simaland_credentials' %}">
         <span class="item-text">Настройки аккаунта</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'pickup_points' %} class="active"{% endifequal %} id="left_menu_simaland_app_pickup_points">
+      <a class="no-submenu" data-toggle="" href="{% url 'simaland:show_pickup_points' %}">
+        <span class="item-text">Пункты вывоза</span>
       </a>
     </li>
   </ul>

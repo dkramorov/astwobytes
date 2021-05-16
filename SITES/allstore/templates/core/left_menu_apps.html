@@ -2,7 +2,7 @@
 {% with ''|installed_apps as apps %}
 <ul class="nav">
   <li class="nav-heading">&nbsp;</li>
-  {% include "simaland/admin_menu.html" %}
+  {% include "simaland_admin_menu.html" %}
 
   {% if 'shop' in apps %}
     {% include "shop_admin_menu.html" %}

@@ -69,6 +69,14 @@
             <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}">
           </p>
         </div>
+
+        <div class="col-md-12">
+          <p>
+            <label>Пункт выдачи</label>
+            <div id="mapContainer" class="mapContainer"></div>
+            <ul id="map_pickup_points_menu"></ul>
+          </p>
+        </div>
         <div class="clearfix"></div><br>
 
         <div class="col-md-12">

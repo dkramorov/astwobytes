@@ -1,0 +1,38 @@
+{% load mtags %}
+<section class="blog-details">
+  <div class="padding-masc">
+    <div class="container">
+      {% for block in blocks %}
+        <div class="col-md-10 col-md-offset-1">
+          {% if block.img %}
+            <img src="{% imagine block.img '1920x1080' block.get_folder True %}" alt="{{ block.name|textize }}">
+          {% endif %}
+{% comment %}<!--
+          <div class="row blog-panel">
+            <div class="col-md-6 blog-panel-left">
+              <p class="date">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                &nbsp; 24.12.17 &nbsp;
+                <i class="fa fa-clock-o" aria-hidden="true"></i>
+                &nbsp; 17:17
+              </p>
+            </div>
+            <div class="col-md-6 blog-panel-right">
+              <p class="interactive">
+                <i class="fa fa-heart-o" aria-hidden="true"></i>
+                &nbsp; 45 &nbsp;
+                <i class="fa fa-comment-o" aria-hidden="true"></i>
+                &nbsp; 2
+              </p>
+            </div>
+          </div>
+-->{% endcomment %}
+          {% if block.name %}
+            <h3 class="post-title">{{ block.name }}</h3>
+          {% endif %}
+          {% if block.html %}{{ block.html|safe }}{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

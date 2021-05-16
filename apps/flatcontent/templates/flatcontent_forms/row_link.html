@@ -4,5 +4,7 @@
   </label>
   <div class="col-lg-10">
     <input type="text" placeholder="Ссылка" class="form-control" id="field_link" name="link" value="{% if row.link %}{{ row.link }}{% endif %}" autocomplete="off">
+    <br>
+    <a href="{{ row.link }}" target="_blank" id="field_link_action">{{ row.link }}</a>
   </div>
 </div>

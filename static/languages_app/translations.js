@@ -61,6 +61,7 @@ function create_xeditable_for_translations(){
       placement: placement,
       params: function(params) {
         params.csrfmiddlewaretoken = csrf;
+        params.old_value = $(this).text();
         return params;
       },
       success: function(r, newValue){
@@ -80,6 +81,9 @@ function create_xeditable_for_translations(){
         // Если возвращать результат,
         // будет выведена ошибка под полем
         // return "Ошибка";
+        if(r.error && r.old_value != undefined){
+          return r.old_value;
+        }
       }
     });
   }

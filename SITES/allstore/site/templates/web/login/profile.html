@@ -28,6 +28,7 @@
     <li><a data-frpoptab-num="1" data-frpoptab="#frpoptab-tab-1" href="#dashboad" class="active">Ваш аккаунт</a></li>
     <li><a data-frpoptab-num="2" data-frpoptab="#frpoptab-tab-2" href="#orders">Заказы</a></li>
     <li><a data-frpoptab-num="3" data-frpoptab="#frpoptab-tab-3" href="#account-info">Профиль</a></li>
+    <li><a data-frpoptab-num="4" data-frpoptab="#frpoptab-tab-4" href="#pickup-point" id="yandex_map_tab">Пункты выдачи</a></li>
   </ul>
   <div class="fr-pop-tab-cont col-md-9">
     <p data-frpoptab-num="1" class="fr-pop-tab-mob active" data-frpoptab="#frpoptab-tab-1">Ваш аккаунт</p>
@@ -137,6 +138,11 @@
         <span class="tabs-margin"></span>
       </div>
     </div>
+    <p data-frpoptab-num="4" class="fr-pop-tab-mob" data-frpoptab="#frpoptab-tab-4">Пункты выдачи</p>
+    <div class="fr-pop-tab stylization" id="frpoptab-tab-4">
+      <div id="mapContainer" class="mapContainer"></div>
+      <ul id="map_pickup_points_menu"></ul>
+    </div>
   </div>
 </div>
 <div class="clearfix clear"></div>
@@ -155,19 +161,19 @@
 <script src="/static/js/jquery.maskedinput.min.js"></script>
 <script src="/static/js/feedback.js"></script>
 <script type="text/javascript">
-  $(document).ready(function(){
-    var profile = new FeedBack("profile_form", {
-      "wait": "Ждите...",
-      //"send": "Отправить",
-      "success": "Профиль обновлен",
-      "progress": "Пожалуйста, ждите...",
-      "error": "Произошла ошибка, сообщите нам по телефону",
-      "error_captcha": "Не пройдена проверка на работа",
-      "callback_success": "",
-      "callback_error": "",
-      "dont_reset_on_submit": 1, // or 1
-      //"errorClass": "invalid",
-    });
+$(document).ready(function(){
+  var profile = new FeedBack("profile_form", {
+    "wait": "Ждите...",
+    //"send": "Отправить",
+    "success": "Профиль обновлен",
+    "progress": "Пожалуйста, ждите...",
+    "error": "Произошла ошибка, сообщите нам по телефону",
+    "error_captcha": "Не пройдена проверка на работа",
+    "callback_success": "",
+    "callback_error": "",
+    "dont_reset_on_submit": 1, // or 1
+    //"errorClass": "invalid",
   });
+});
 </script>
 {% endblock %}

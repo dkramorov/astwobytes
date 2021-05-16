@@ -268,7 +268,10 @@
     {% endif %}
   });
   function update_links(r){
-    {% if is_tree %}$("#field_link").val(r['row']['link']);{% endif %}
+    {% if is_tree %}
+      $("#field_link").val(r['row']['link']);
+      $('#field_link_action').attr('href', r['row']['link']).html(r['row']['link']);
+    {% endif %}
     var thumb = r['row']['thumb'];
     if(thumb === ''){
       thumb = '/static/img/empty.png';

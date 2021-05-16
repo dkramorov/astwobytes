@@ -330,3 +330,10 @@ def ends(digit, end):
        тысяча,тысяч,тысячи
     """
     return analyze_digit(digit, end.split(','))
+
+@register.filter(name = 'quotes2apostrophe')
+def quotes2apostrophe(text: str):
+    if not text:
+        return ''
+    return text.replace('"', '\'')
+

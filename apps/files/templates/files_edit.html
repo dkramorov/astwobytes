@@ -48,6 +48,22 @@
             </div>
           {% endfor %}
 
+          {% if domains %}
+            <div class="form-group">
+              <label class="col-lg-2 control-label">
+                <span class="label_for_translate row_file_domain_label" attr-class_name="row_file_domain_label" attr-edit_mode="popup" attr-placement="bottom">Домен</span>
+              </label>
+              <div class="col-lg-10">
+                <select name="domain" id="file_domain_select2" autocomplete="off">
+                  <option value="">-</option>
+                  {% for domain in domains %}
+                    <option value="{{ domain.pk }}"{% ifequal row.domain domain.pk %} selected{% endifequal %}>{{ domain.domain }} ({{ domain.name }})</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          {% endif %}
+
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
 
@@ -124,6 +140,7 @@
   <script src="/static/admin/js/parsley.min.js"></script>
   <script type="text/javascript">
     $(document).ready(function(){
+      $("#file_domain_select2").select2();
       $("#current_edit_form").parsley();
       $("#current_edit_form").submit(function(e) {
         var $form = $(this);

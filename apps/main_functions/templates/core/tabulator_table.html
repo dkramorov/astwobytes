@@ -1,6 +1,6 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <span class="label_for_translate title_for_tabulator_actions_{{ menu }}_{{ submenu }}" attr-class_name="title_for_tabulator_actions_{{ menu }}_{{ submenu }}" attr-edit_mode="popup" attr-placement="bottom">{{ plural_obj }} - действия</span>
+    <span class="label_for_translate title_for_tabulator_actions_{{ menu }}_{{ submenu }}" attr-class_name="title_for_tabulator_actions_{{ menu }}_{{ submenu }}" attr-edit_mode="popup" attr-placement="right">{{ plural_obj }} - действия</span>
     <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
       <em class="fa fa-times"></em>
     </a>
@@ -124,28 +124,28 @@ var accessor_not_empty = function(value, data, type, params, column){
 $(document).ready(function(){
   //trigger download of data.csv file
   $("#download-csv").click(function(){
-    if($(this).find(".editable")){
+    if($(this).find(".editable").length > 0){
       return true;
     }
     main_table.download("csv", "{{ plural_obj }}.csv");
   });
   //trigger download of data.json file
   $("#download-json").click(function(){
-    if($(this).find(".editable")){
+    if($(this).find(".editable").length > 0){
       return true;
     }
     main_table.download("json", "{{ plural_obj }}.json");
   });
   //trigger download of data.xlsx file
   $("#download-xlsx").click(function(){
-    if($(this).find(".editable")){
+    if($(this).find(".editable").length > 0){
       return true;
     }
     main_table.download("xlsx", "{{ plural_obj }}.xlsx", {sheetName:"{{ plural_obj }}"});
   });
   //trigger download of data.pdf file
   $("#download-pdf").click(function(){
-    if($(this).find(".editable")){
+    if($(this).find(".editable").length > 0){
       return true;
     }
     main_table.download("pdf", "{{ plural_obj }}.pdf", {
@@ -155,7 +155,7 @@ $(document).ready(function(){
   });
   //reset persistence settings
   $("#reset-table-settings").click(function(){
-    if($(this).find(".editable")){
+    if($(this).find(".editable").length > 0){
       return true;
     }
     if(window.localStorage.getItem("tabulator-{{ root_url }}")){

@@ -16,10 +16,12 @@
 {% else %}
   {% include "web/order/purchases.html" %}
   <div class="cart-submit">
+{% comment %}<!--
     <div class="cart-coupon">
       <input placeholder="Купон" type="text">
       <a class="cart-coupon-btn" href="javascript:void(0);"><img src="/media/misc/ok.png" alt="купон"></a>
     </div>
+-->{% endcomment %}
     <a href="/shop/checkout/" class="cart-submit-btn">Оформить заказ</a>
     <!--<a href="#" class="cart-clear">Очистить корзину</a>-->
   </div>

@@ -1,15 +1,18 @@
 {% load mtags %}
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
+<title>
 {% if q_string.title or page.title %}
-    <title>{% if q_string.title %}{{ q_string.title|textize }}{% else %}{{ page.title|textize }}{% endif %}{% if containers.main.tags.company_name %} | {{ containers.main.tags.company_name.title }}{% endif %}</title>
+    {% if q_string.title %}{{ q_string.title }}{% else %}{{ page.title }}{% endif %}
 {% else %}
-    <title>{{ page.name }}{% if containers.main.tags.company_name %} | {{ containers.main.tags.company_name.title }}{% endif %}</title>
+    {{ page.name }}
 {% endif %}
+{% if containers.main.tags.company_name %} | {{ containers.main.tags.company_name.title }}{% endif %}
+</title>
 
-<meta name="description" content="{% if q_string.description %}{{ q_string.description|textize }}{% else %}{{ page.description|textize }}{% endif %}" />
+<meta name="description" content="{% if q_string.description %}{{ q_string.description|quotes2apostrophe }}{% else %}{{ page.description|quotes2apostrophe }}{% endif %}" />
 {% if q_string.keywords or page.keywords %}
-<meta name="keywords" content="{% if q_string.keywords %}{{ q_string.keywords|textize }}{% else %}{{ page.keywords|textize }}{% endif %}" />
+<meta name="keywords" content="{% if q_string.keywords %}{{ q_string.keywords|quotes2apostrophe }}{% else %}{{ page.keywords|quotes2apostrophe }}{% endif %}" />
 {% endif %}
 
 {% if containers.main.tags.favicon.img %}
