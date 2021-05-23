@@ -50,7 +50,7 @@ def get_admin_translate_rows(request):
        настройка зависит от пользователя
     """
     key = 'languages_admin_translate_rows'
-    config = Config.objects.filter(attr=key).first()
+    config = Config.objects.filter(attr=key, user=request.user).values_list('id', flat=True)
     if config:
         return True
     return False
@@ -112,7 +112,21 @@ def save_translate(row, row_vars: list, request_post: dict):
                 Translate.objects.filter(pk=analog.id).update(**new_values)
     return domains
 
-def get_domain(request, domains: list = None):
+def get_lang_from_session(request, domains):
+    """Вспомогательная функция для get_domain
+       на получения языка из сессии
+       :param request: HttpRequest
+       :param domains: домены
+    """
+    if hasattr(request, 'session') and request.session.get('lang'):
+        lang = request.session['lang']
+        for item in domains:
+            if item['lang'] == lang:
+                return item
+
+def get_domain(request,
+               domains: list = None,
+               priority: str = 'domain'):
     """Получить текущий язык/домен
        ---------------------------
        При переключении языка между доменами
@@ -125,6 +139,10 @@ def get_domain(request, domains: list = None):
        В сессию язык надо писать, чтобы в шаблонах логику не повторять
        ---------------------------
        :param request: HttpRequest
+       :param domains: домены
+       :param priority: приориет domain/session
+                        используется во views.py
+                        получения перевода UI админки
     """
     domain = None
     if not hasattr(request, 'META') or not 'HTTP_HOST' in request.META:
@@ -137,26 +155,29 @@ def get_domain(request, domains: list = None):
 
     lang = request.META['HTTP_HOST'].split('.')[0]
 
-    # --------------
-    # Либо по сессии
-    # --------------
-    if hasattr(request, 'session') and request.session.get('lang'):
-        lang = request.session['lang']
-        for item in domains:
-            if item['lang'] == lang:
-                return item
+    if priority == 'session':
+        lang_from_session = get_lang_from_session(request, domains)
+        if lang_from_session:
+            return lang_from_session
 
     # ---------
     # По домену
     # ---------
     for item in domains:
         if item['domain'] == '%s.%s' % (lang, settings.MAIN_DOMAIN):
-            request.session['lang'] = lang
+            #request.session['lang'] = lang
             return item
         elif settings.DEFAULT_DOMAIN:
             if request.META['HTTP_HOST'] == settings.MAIN_DOMAIN:
-                request.session['lang'] = settings.DEFAULT_DOMAIN
+                #request.session['lang'] = settings.DEFAULT_DOMAIN
                 return item
+
+    # --------------
+    # Либо по сессии
+    # --------------
+    lang_from_session = get_lang_from_session(request, domains)
+    if lang_from_session:
+        return lang_from_session
 
     # -------------
     # Либо основной
@@ -164,7 +185,7 @@ def get_domain(request, domains: list = None):
     if settings.DEFAULT_DOMAIN:
         for item in domains:
             if item['lang'] == settings.DEFAULT_DOMAIN:
-                request.session['lang'] = lang
+                #request.session['lang'] = lang
                 return item
     return {}
 

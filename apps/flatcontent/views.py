@@ -36,9 +36,7 @@ if 'apps.products' in settings.INSTALLED_APPS:
     from apps.flatcontent.flatcat import get_costs_types
     from apps.products.models import Products, ProductsCats
 
-is_domains = False
-if 'apps.languages' in settings.INSTALLED_APPS:
-    is_domains = True
+if settings.IS_DOMAINS:
     from apps.languages.models import (
         get_domain,
         get_domains,
@@ -997,7 +995,7 @@ def tree_co(request):
             node = Blocks.objects.filter(container=container, pk=node_id).first()
             if node:
                 domains = []
-                if is_domains:
+                if settings.IS_DOMAINS:
                     domains = get_domains()
                     get_translate([node], domains)
                 result = object_fields(node)
@@ -1225,7 +1223,7 @@ def SearchLink(q_string: dict = None,
         # Если сайт мультиязычный,
         # то кэш нужен на домен
         # ------------------------
-        if is_domains:
+        if settings.IS_DOMAINS:
             domain = get_domain(request)
             if domain:
                 cache_var = '%s%s' % (domain['pk'], cache_var)
@@ -1443,7 +1441,7 @@ def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
 
     # Переводим блоки/контейнеры
     # Если выбран не основной домен
-    if is_domains and request:
+    if settings.IS_DOMAINS and request:
         domains = get_domains()
         domain = get_domain(request, domains)
         if domain:

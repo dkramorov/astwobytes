@@ -133,7 +133,7 @@ def select_language(request, lang: str = None):
 def translate_mode(request, *args, **kwargs):
     """Перевод текстов админки"""
     result = {}
-    domain = get_domain(request)
+    domain = get_domain(request, priority='session')
 
     # Если русский, то без перевода
     if domain.get('lang') == 'rus':
@@ -177,7 +177,7 @@ def get_translations(request, *args, **kwargs):
         'translations': [],
         '%stranslations' % left_menu_prefix: [],
     }
-    domain = get_domain(request)
+    domain = get_domain(request, priority='session')
     # Если русский, то без перевода
     if domain.get('lang') == 'rus' or not domain:
         return JsonResponse(result, safe=False)

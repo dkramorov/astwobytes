@@ -18,9 +18,7 @@ from apps.main_functions.tabulator import tabulator_filters_and_sorters
 
 logger = logging.getLogger()
 
-is_domains = False
-if 'apps.languages' in settings.INSTALLED_APPS:
-    is_domains = True
+if settings.IS_DOMAINS:
     from apps.languages.models import (
         get_domain,
         get_domains,
@@ -173,7 +171,7 @@ class ModelHelper:
         # -------
         # Перевод
         # -------
-        if is_domains:
+        if settings.IS_DOMAINS:
             self.domains = get_domains()
             self.context['domains'] = self.domains
 
@@ -227,7 +225,7 @@ class ModelHelper:
         # -------
         # Перевод
         # -------
-        if is_domains and self.row:
+        if settings.IS_DOMAINS and self.row:
             get_translate([self.row], self.context['domains'])
         return self.row
 
@@ -457,7 +455,7 @@ class ModelHelper:
         # -------
         # Перевод
         # -------
-        if is_domains:
+        if settings.IS_DOMAINS:
             domains = save_translate(self.row, self.row_vars, self.request.POST)
         return self.row
 
@@ -743,13 +741,13 @@ class ModelHelper:
         # -------
         # Перевод
         # -------
-        if is_domains:
+        if settings.IS_DOMAINS:
             domains = get_translate(result, self.context['domains'])
             # ---------------------------------
             # отдаем перевод по текущему домену
             # ---------------------------------
             if self.request and get_admin_translate_rows(self.request):
-                domain = get_domain(self.request, domains)
+                domain = get_domain(self.request, domains, priority='session')
                 translate_rows(result, domain)
         return result
 

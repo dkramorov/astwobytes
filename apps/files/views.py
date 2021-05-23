@@ -17,6 +17,7 @@ from apps.main_functions.views_helper import (show_view,
                                               search_view, )
 
 from apps.files.models import Files
+from apps.files.sitemap import SitemapXML, SitemapHTML
 
 if settings.IS_DOMAINS:
     from apps.languages.models import get_domain, get_domains
@@ -142,6 +143,20 @@ def ReturnFile(request, link):
         response['Content-Length'] = file_size(path)
         response['Content-Disposition'] = 'inline; filename=%s' % (path, )
         return response
+    elif link == '/sitemap.xml':
+        context = {}
+        sitemap = SitemapXML()
+        context['managers'] = sitemap.get_menu_managers()
+        template = 'sitemap_index.html'
+        return render(request, template, context,
+                      content_type='text/xml')
+    elif link.startswith('/sitemap/'):
+        context = {}
+        sitemap = SitemapXML()
+        context['blocks'] = sitemap.get_manager(link)
+        template = 'sitemap_xml.html'
+        return render(request, template, context,
+                      content_type='text/xml')
 
     search_files = Files.objects.filter(link=link, is_active=True)
     # Если мультидомен,
@@ -166,3 +181,6 @@ def ReturnFile(request, link):
             raise Http404
     return redirect("/")
 
+def show_sitemap(request):
+    """Страничка карты сайта HTML"""
+    return SitemapHTML().show_sitemap(request)

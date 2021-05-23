@@ -74,7 +74,7 @@ def fill_flatmain(**kwargs):
     if not company_name:
         company_name = Blocks.objects.create(
             container=container, tag='company_name',
-            title='RGBA и COMPыта', name='Название компании',
+            title='Company name', name='Название компании',
             state=3,
         )
     favicon = Blocks.objects.filter(container=container, tag='favicon').first()

@@ -1037,25 +1037,25 @@ h6, .h6 {
 .twitter i {
   color: #3fa6da;
 }
-.simple_contacts {
-  background-image: url('/media/img/footer_bg.png');
-  background-position: bottom right;
-  background-repeat: no-repeat;
-  background-size: 50%;
+.simple_copyright {
+  background-color: #582371;
 }
-.simple_contacts .footer_logo {
-  position: relative;
-}
-.simple_contacts .bottom_right {
-  position: absolute;
-  bottom: 0;
-  right: 15px;
-}
-.simple_contacts .bottom_right img {
+.simple_copyright img {
+  display: inline-block;
   max-width: 160px;
+  vertical-align: top;
 }
-.simple_contacts .copyright p{
-  color: #582371;
+.simple_copyright .copyright {
+  display: inline-block;
+  height: 100%;
+  padding-top: 5px;
+  padding-left: 35px;
+}
+.simple_copyright .copyright a {
+  color: #fff;
+}
+.simple_copyright .copyright p {
+  color: #fff;
   font-size: 15px;
   padding: 0;
   margin: 0;
@@ -1063,17 +1063,23 @@ h6, .h6 {
 .contact_row {
   margin-top: 40px;
   color: #582371;
-  line-height: 35px;
+  line-height: 28px;
 }
 .wechat {
   color: #582371;
   padding-top: 10px;
   display: inline-block;
   text-align: center;
+  float: right;
 }
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 799px) {
+  .simple_copyright .copyright {
+    padding-left: 0;
+    padding-bottom: 20px;
+    display: block;
+  }
   .wechat {
-    margin-left: -33px;
+    float: none;
   }
 }
 .lg-clearfix {

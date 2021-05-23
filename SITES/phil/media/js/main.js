@@ -775,6 +775,7 @@ find_active_sidebar_menu();
     var link = "";
     var name = "";
     var link_parts;
+    //html += "<li><a href='portfolio'>All</a></li>";
     $("nav#primary-menu ul.portfolio>li>a").each(function(){
       class_name = "";
       name = $(this).html();

@@ -1804,6 +1804,9 @@
 .project .sticky_container .primary-menu-menu > li:hover > a:before{
   opacity: 1;
 }
+.project .sticky_container .primary-menu-menu > li > a {
+  white-space: nowrap;
+}
 .project .primary-menu-menu li a {
   font-size: 16px !important;
 }
@@ -1889,6 +1892,7 @@
     display: inline;
   }
   .sidebar .vertical-menu .primary-menu-menu {
+    max-height: 285px;
     width: 100%;
     text-align: center;
     background-color: #efebf3;
@@ -1930,8 +1934,7 @@
 .simple_services {
   background-repeat: no-repeat;
   background-position: top right;
-  background-image: url('/media/img/services_bg.png');
-  background-size: 50%;
+  background-image: url('/media/img/services_bg.jpg');
 }
 .simple_services .servises-item:hover {
   background-color: rgba(240, 230, 230, 0.5);

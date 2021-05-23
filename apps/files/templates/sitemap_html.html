@@ -1,0 +1,28 @@
+{% extends 'skeleton.html' %}
+
+{% block content %}
+<section class="site_sitemap">
+  <div class="container">
+    <div class="row">
+      {% for key, manager in managers.items %}
+        {% for item in manager.structure %}
+          <div class="col-md-12">
+            <h1>{{ item.container.name }}</h1>
+            <ul>
+              {% for block in item.blocks %}
+                <li>
+                  <a target="_blank" href="{{ block.link }}">{{ block.name }}</a>
+                  {% with block as container %}
+                    {% include "sitemap_html_tree.html" %}
+                  {% endwith %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="clearfix"></div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

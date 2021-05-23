@@ -99,13 +99,28 @@ def dynamic_portfolio(request):
             block.images.append(imga)
 
         # Правильная сортировка изображений так как они в админке
-        block.images.sort(key=lambda x:x.custom_pos if hasattr(x, 'custom_pos') else 0)
+        block.images.sort(key=lambda x:x.custom_pos if hasattr(x, 'custom_pos') else 0, reverse=True)
 
     # Перевод описаний вытащенных по ссылкам
     if domain:
         domains = [domain]
         get_translate(descriptions, domains)
         translate_rows(descriptions, domain)
+
+    main_block = Blocks(name='All',
+                        title=blocks[0].title,
+                        class_name=blocks[0].class_name)
+    main_block.images = []
+    main_block.count = 0
+    max_size = max([len(block.images) for block in blocks])
+
+    for i in range(max_size):
+        for block in blocks:
+            if len(block.images) > i:
+                main_block.images.append(block.images[-(i+1)])
+                main_block.count += 1
+
+    blocks.insert(0, main_block)
 
     result = {
         'blocks': blocks,

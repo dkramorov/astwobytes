@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    {% for block in blocks %}
+    <url>
+        <loc>{{ block.loc }}</loc>
+        <lastmod>{{ block.lastmod }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    {% endfor %}
+</urlset>

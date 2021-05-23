@@ -197,6 +197,9 @@ class Containers(Standard):
             return '/cat/%s/' % self.tag
         return '/cat/'
 
+    def __str__(self):
+        return '%s, pk=%s, %s, state=%s' % (self._meta.model_name, self.pk, self.name, self.state)
+
 class Blocks(Standard):
     """Блоки - динамический контент
        картинка, текст, html, ссылка (пункт меню)

@@ -18,7 +18,6 @@ from apps.spamcha.models import SpamTable, SpamRow, EmailAccount, SpamRedirect
 from apps.telegram.telegram import TelegramBot
 
 logger = logging.getLogger(__name__)
-bot = TelegramBot()
 
 def get_accounts():
     """Достаем аккаунты для спама
@@ -79,6 +78,7 @@ class Command(BaseCommand):
         """Задача для рассылки
            python manage.py spam_task --spam_id=3 --dest_email=dk@223-223.ru --spam_delay=3 --images_with_watermarks --fake
         """
+        bot = TelegramBot()
         is_running = search_process(q = ('spam_task', 'manage.py'))
         if is_running:
             logger.info('Already running %s' % (is_running, ))
@@ -115,7 +115,7 @@ class Command(BaseCommand):
         if not spam:
             inf = 'Spam not found'
             logger.info(inf)
-            bot.send_message('%s %s' % (spam.get_emoji('hot'), inf))
+            bot.send_message('%s %s' % (bot.get_emoji('hot'), inf))
             return
 
         inf = '--- %s. %s (%s) ---' % (spam.id, spam.name, spam.tag)

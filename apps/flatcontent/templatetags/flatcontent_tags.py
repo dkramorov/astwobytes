@@ -13,9 +13,7 @@ register = template.Library()
 # -----------------------
 # Если мультиязычный сайт
 # -----------------------
-is_domains = False
-if 'apps.languages' in settings.INSTALLED_APPS:
-    is_domains = True
+if settings.IS_DOMAINS:
     from apps.languages.models import (
         get_domain,
         get_domains,
@@ -34,7 +32,7 @@ def flatmenu(request, tag: str = None, containers: list = []):
         return result
     cache_time = 60 # 60 секунд
     cache_var = '%s_flatmenu_%s' % (settings.PROJECT_NAME, tag)
-    if is_domains:
+    if settings.IS_DOMAINS:
         domain = get_domain(request)
         if domain:
             cache_var += '_%s' % domain['pk']
@@ -54,7 +52,7 @@ def flatmenu(request, tag: str = None, containers: list = []):
         # --------------------------
         # Переводим блоки/контейнеры
         # --------------------------
-        if is_domains:
+        if settings.IS_DOMAINS:
             domains = get_domains()
             domain = get_domain(request, domains)
             if domain:

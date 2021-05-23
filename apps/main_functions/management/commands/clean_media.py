@@ -5,6 +5,7 @@ import logging
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
+from apps.main_functions.fortasks import search_process
 from apps.main_functions.files import (check_path,
                                        full_path,
                                        image_to_RGB,
@@ -16,9 +17,6 @@ logger = logging.getLogger('main')
 
 FOLDERS_BLACK_LIST = (
     '.DS_Store',
-)
-FOLDERS_WHITE_LIST = (
-    'env',
 )
 
 def drop_if_empty(folder: str = ''):
@@ -54,12 +52,13 @@ class Command(BaseCommand):
             dest = 'drop_pyc',
             default = False,
             help = 'Drop pyc files')
-        parser.add_argument('--index',
-            action = 'store_true',
-            dest = 'index',
-            default = False,
-            help = 'Partial djapian index')
+
     def handle(self, *args, **options):
+
+        is_running = search_process(q = ('clean_media', 'manage.py'))
+        if is_running:
+            logger.error('Already running %s' % (is_running, ))
+            exit()
 
         if options.get('drop_empty_folders'):
             drop_if_empty()

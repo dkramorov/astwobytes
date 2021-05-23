@@ -46,6 +46,13 @@
   #dynamic_portfolio_{{ container.id }} .swiper-navigation .prev i {
     font-size: 2.5em;
   }
+  .dynamic_imga .link {
+    cursor: pointer;
+  }
+  #dynamic_portfolio_{{ container.id }} .primary-menu-menu {
+    float: right;
+    padding-right: 70px;
+  }
   @media (min-width: 1024px) {
     .portfolio_side_info:after {
       left: -30px;
@@ -67,6 +74,10 @@
     #dynamic_portfolio_{{ container.id }} .swiper-navigation .prev {
       left: -15px;
     }
+    #dynamic_portfolio_{{ container.id }} .primary-menu-menu {
+      float: none;
+      padding-right: 0;
+    }
   }
 </style>
 {% endif %}
@@ -76,18 +87,24 @@
       <div class="col-lg-12">
         {% with request|dynamic_portfolio as portfolio %}
           <div class="container pt120">
-            <div class="col-lg-5">
+            <div class="col-lg-4">
               <div class="portfolio_title_bg"></div>
               <div class="portfolio_title">
                 {{ container.description|safe }}
               </div>
             </div>
 
-            <div class="col-lg-7">
+            <div class="col-lg-8">
               <ul class="primary-menu-menu">
                 {% for block in portfolio.blocks %}
                   <li class="dynamic_portfolio_link{% if forloop.first %} active{% endif %}" data-container_id="{{ container.id }}" data-block_id="{{ block.id }}">
-                    <a href="javascript:void(0);">{{ block.name }}</a>
+                    <a href="javascript:void(0);">
+                      {% if forloop.first %}
+                        {{ blocks.0.name }}
+                      {% else %}
+                        {{ block.name }}
+                      {% endif %}
+                    </a>
                     <div class="portfolio_counter">{{ block.count }}</div>
                   </li>
                 {% endfor %}
@@ -118,10 +135,12 @@
                                 </tr>
                                 <tr>
                                   <td class="wborder">&nbsp;</td>
-                                  <td class="text">
-                                    <a href="{{ item.custom_block.link }}">
+                                  <td class="text link" onclick="window.open('{{ item.custom_block.link }}', '_blank');return false;">
+                                    <a href="{{ item.custom_block.link }}" target="_blank">
                                       <h6>{{ item.custom_block.name }}</h6>
-                                    {% if item.custom_block.html %}{{ item.custom_block.html|safe }}{% endif %}
+                                      {% if item.custom_block.html %}
+                                        {{ item.custom_block.html|safe }}
+                                      {% endif %}
                                     </a>
                                   </td>
                                   <td class="wborder">&nbsp;</td>
@@ -133,11 +152,13 @@
                             </div>
                             <div class="clearfix"></div>
                             <div class="mobile">
-                              <a href="{{ item.custom_block.link }}">
+                              <a href="{{ item.custom_block.link }}" target="_blank">
 {% comment %}<!--
                                 <h6>{{ item.custom_block.name }}</h6>
 -->{% endcomment %}
-                                {% if item.custom_block.html %}{{ item.custom_block.html|safe }}{% endif %}
+                                {% if item.custom_block.html %}
+                                  {{ item.custom_block.html|safe }}
+                                {% endif %}
                               </a>
                             </div>
                           </div>
