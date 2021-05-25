@@ -7,6 +7,7 @@ import datetime
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
+from apps.main_functions.files import check_path, full_path
 from apps.main_functions.string_parser import kill_quotes
 from apps.products.models import Products
 
@@ -19,6 +20,7 @@ class XMLHandler(xml.sax.ContentHandler):
         self.isProduct = False
         self.Price = 'Прайс'
         self.Product = 'Товар'
+        self.Kod = 'Код'
         self.Name = 'Номенклатура'
         self.Articul = 'Артикул'
         self.Count = 'Количество'
@@ -32,13 +34,14 @@ class XMLHandler(xml.sax.ContentHandler):
            :param attributes: атрибуты товара
         """
         articul = '_%s' % attributes.get(self.Articul)
-        count = attributes.get(self.Count)
+        code = attributes.get(self.Kod)
+        count = ''.join(attributes.get(self.Count, '').split())
         manufacturer = attributes.get(self.Manufacturer)
         price = attributes.get(self.Cost)
         price = kill_quotes(price, 'int')
         price = price.replace(',', '.')
         name = attributes.get(self.Name)
-        analog = Products.objects.filter(code=articul).first()
+        analog = Products.objects.filter(code=code).first()
         if not analog:
             #logger.info('[ERROR]: product not exists: %s' % articul)
             return
@@ -48,8 +51,12 @@ class XMLHandler(xml.sax.ContentHandler):
             'price': price,
             'manufacturer': manufacturer,
         }
-        Products.objects.filter(pk=analog.id).update(**params)
-        self.updated.append(analog.id)
+        try:
+            Products.objects.filter(pk=analog.id).update(**params)
+        except Exception as e:
+            print(params, e)
+            return
+        self.updated.append(analog.code)
 
     def startElement(self, tag, attributes):
         if self.isPrice:
@@ -83,18 +90,17 @@ class Command(BaseCommand):
             default = False,
             help = 'Set cat tag for update')
     def handle(self, *args, **options):
-        #path = '/home/jocker/Downloads/price.xml'
-        path = '/home/d/dsarhirus/obmen/price/Price_{}.xml' # 28.01.2021
+        path = 'price/Price_{}.xml' # 28.01.2021
         now = datetime.date.today()
         path = path.format(now.strftime('%d.%m.%Y'))
-        if not os.path.exists(path):
+        if check_path(path):
             logger.info('[ERROR]: file %s not exists' % path)
             return
 
         parser = xml.sax.make_parser()
         handler = XMLHandler()
         parser.setContentHandler(handler)
-        parser.parse(path)
-        logger.info('[UPDATED]: %s' % handler.updated)
+        parser.parse(full_path(path))
+        logger.info('[UPDATED]: %s, %s' % (len(handler.updated), handler.updated))
 
 

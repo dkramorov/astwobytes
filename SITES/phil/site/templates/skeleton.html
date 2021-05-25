@@ -39,8 +39,8 @@
 <link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css">
 
 <link rel="stylesheet" type="text/css" href="/static/admin/css/font-awesome.min.css">
-{% if containers.main.tags.webmaster.description %}
-  {{ containers.main.tags.webmaster.description|safe }}
+{% if containers.main.tags.webmaster.html %}
+  {{ containers.main.tags.webmaster.html|safe }}
 {% endif %}
 
 {% block extrahead %}{% endblock %}

@@ -228,7 +228,7 @@ class Blocks(Standard):
         verbose_name = 'Стат.контент - Блоки'
         verbose_name_plural = 'Стат.контент - Блоки'
         permissions = (
-            ('seo_fields', 'Заполнение сео-полей'),
+            ('seo_fields', 'Заполнение сео-полей меню'),
         )
 
     def create_menu_link(self, force: bool = False):

@@ -142,7 +142,8 @@
 <script src="/static/js/get_cookie.js"></script>
 <script src="/static/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 {% block extrascripts %}{% endblock %}
-<script src="/static/admin/js/app.js"></script>
+<script type="text/javascript" src="/static/tabulator/tabulator_visibility_columns.js"></script>
+<script type="text/javascript" src="/static/admin/js/app.js"></script>
 
 {% settings_value "INSTALLED_APPS" as INSTALLED_APPS %}
 {% if "apps.languages" in INSTALLED_APPS %}

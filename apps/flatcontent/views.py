@@ -830,7 +830,8 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
 
         # Специфическая операция - обновление сео-полей
         # редактируем, но прав нет, но есть сео-права
-        if action == 'edit' and not mh.permissions['edit'] and row and mh.permissions.get('seo_fields') == True:
+        seo_perms = (row and row.container.state == 1 and mh.permissions.get('seo_fields') == True)
+        if action == 'edit' and not mh.permissions['edit'] and seo_perms:
             context['success'] = 'Данные успешно записаны'
             block_fields = object_fields(Blocks())
             pass_fields = [field for field in block_fields if not field in ('title', 'description', 'keywords')]
