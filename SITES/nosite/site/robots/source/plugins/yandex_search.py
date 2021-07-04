@@ -52,16 +52,13 @@ class YandexSearch:
         """Поиск на Яндексе
            :param query: строка запроса
         """
+        self.goto_desktop_version()
         if not query:
             query = self.browser.get_random_query()
         logger.info('[SEARCH QUERY]: %s' % (query, ))
 
-        cur_url = self.browser.get_current_url()
         ya_url = 'https://yandex.ru'
-        if not ya_url in cur_url:
-            self.browser.goto(ya_url)
-
-        self.goto_desktop_version()
+        self.browser.goto(ya_url)
         self.browser.emulate_mouse_move()
 
         ya_url = self.browser.get_current_url()
@@ -126,7 +123,7 @@ class YandexSearch:
                 self.browser.wait(EC.presence_of_element_located((By.CSS_SELECTOR, '.serp-item')))
                 break
             except Exception:
-                msg = 'Не найдены .serp-item элементы, ip %s, profile %s' % (self.browser.ip, self.browser.profile_name)
+                msg = 'Не найдены .serp-item элементы, ip %s, profile %s' % (self.browser.get_ip(), self.browser.profile_name)
                 logger.error(msg)
                 if self.browser.telegram and i == (attempts - 1):
                     screenshot = self.browser.save_screenshot(name='serp_item_not_found.png')
@@ -203,12 +200,20 @@ class YandexSearch:
            что будет означать, что мы на мобильной версии"""
         if not self.browser.get_current_url() == 'https://yandex.ru':
             self.browser.goto('https://yandex.ru')
-        css_selector = '.mini-suggest__button'
-        try:
-            self.browser.wait(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
-            return True
-        except Exception:
-            return False
+
+        css_selector = '.switch-type'
+        links = self.browser.find_elements_by_css_selector(css_selector)
+        for link in links:
+            if link.text == 'Мобильная версия':
+                return False
+
+        tag = 'html'
+        html = self.browser.find_element_by_tag_name(tag)
+        html_classes = self.browser.get_attribute(html, 'class')
+        for html_class in html_classes.split(' '):
+            if html_class.startswith('i-ua_browser_') and 'mobile' in html_class:
+                return True
+        return False
 
     def goto_desktop_version(self):
         """Перейти на десктоп версию"""
@@ -235,27 +240,35 @@ class YandexSearch:
             time.sleep(2)
             return
 
+    def load_credentials(self):
+        """Загрузить логин/пароль из файла"""
+        login, passwd = None, None
+        credentials = os.path.join(self.browser.cur_profile, 'credentials.json')
+        if not os.path.exists(credentials):
+            logger.info('profile credentials not found %s' % credentials)
+            return None, None
+        with open(credentials, 'r', encoding='utf-8') as f:
+            auth = json.loads(f.read())
+            login = auth.get('yandex_login') or auth.get('login')
+            passwd = auth.get('yandex_passwd') or auth.get('passwd')
+        return login, passwd
+
     def yandex_auth(self):
         """Авторизация на яндексе
            пароль храним в файле credentials.json
         """
         if self.search_authorization():
             return
-        credentials = os.path.join(self.browser.cur_profile, 'credentials.json')
-        if not os.path.exists(credentials):
-            logger.info('profile credentials not found %s' % credentials)
+        login, passwd = self.load_credentials()
+        if not login or not passwd:
+            logger.info('yandex credentials not found %s' % credentials)
             return
-        with open(credentials, 'r', encoding='utf-8') as f:
-            auth = json.loads(f.read())
-            login = auth['login']
-            passwd = auth['passwd']
 
         def search_enter_another_account():
             """Поиск кнопки Войти в другой аккаунт
                нажимаем ее, если нашли
                Нужно, только если аккаунтов очень много
             """
-            # https://passport.yandex.ru
             css_selector = 'a .passp-account-list__sign-in-button-text'
             try:
                 self.browser.wait(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
@@ -271,7 +284,9 @@ class YandexSearch:
                 time.sleep(2)
                 return
 
-        css_selector = 'a span.button__text'
+        passport_link = 'https://passport.yandex.ru'
+        #css_selector = 'a span.button__text'
+        css_selector = 'a.home-link'
         try:
             self.browser.wait(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
         except Exception:
@@ -280,7 +295,8 @@ class YandexSearch:
 
         buttons = self.browser.find_elements_by_css_selector(css_selector)
         for button in buttons:
-            if not button.text == 'Войти в почту':
+            link = self.browser.get_attribute(button, 'href')
+            if not link or not link.startswith(passport_link):
                 continue
             window_handles = self.browser.window_handles()
             alink = self.browser.find_parent(button)
@@ -309,13 +325,43 @@ class YandexSearch:
                         break
             except Exception as e:
                 logger.info('[ERROR]: %s' % e)
-
             break
 
         screenshot = self.browser.save_screenshot(name='yandex_auth_result.png')
         msg = 'Результат авторизации на Яндекс %s' % self.browser.profile_name
         with open(screenshot, 'rb') as f:
             self.browser.telegram.send_document(f, caption=msg)
+
+    def load_yandex_adv(self, el_id, rtb_block_id: str):
+        """Подгрузить контекстную рекламу в el с rtb_block_id идентификатором
+           :param el_id: ид элемента, куда будем подгружать объяву
+           :param rtb_block_id: идентификатор блока
+        """
+        el = self.browser.find_element_by_id(el_id)
+        if not el:
+            logger.error('[ERROR]: load_yandex_adv - #%s not found' % el_id)
+            return
+        self.browser.scroll_to_element(el)
+        self.browser.scroll(count=2)
+        self.browser.driver.execute_script("""
+(function(n) {
+  window[n] = window[n] || [];
+  window[n].push(function() {
+    Ya.Context.AdvManager.render({
+      blockId: "%s",
+      renderTo: "%s",
+      async: true,
+    });
+  });
+  var t = document.getElementsByTagName("script")[0];
+  var s = document.createElement("script");
+  s.type = "text/javascript";
+  s.src = "//an.yandex.ru/system/context.js";
+  s.async = true;
+  t.parentNode.insertBefore(s, t);
+})("yandexContextAsyncCallbacks");
+        """ % (rtb_block_id, el_id))
+        time.sleep(3)
 
     def fuck_yandex_adv(self, rtb_blocks: list = None,
                         container_id: str = None,
@@ -433,18 +479,21 @@ class YandexSearch:
             logger.info('- yandex adv links NOT found %s' % rtb_block)
         return False
 
-    def yandex_reviews(self):
+    def yandex_reviews(self, max_work: int = 5):
         """За отзывы даются балы,
-           надо заходить и протыкивать все"""
-        MAX_WORK = 50
+           надо заходить и протыкивать все
+           :param max_work: максимальное кол-во отзывов
+        """
         cur_url = self.browser.get_current_url()
         ya_url = 'https://reviews.yandex.ru/ugcpub/cabinet'
         if not ya_url in cur_url:
             self.browser.goto(ya_url)
 
         def search_new_rating():
-            """Поиск звездочек, то есть, того, что можно оценить,
-               если не найдем, вернем False, иначе True
+            """Поиск звездочек, то есть, того,
+               что можно оценить,
+               если не найдем, вернем False
+               :return bool:
             """
             ratings = self.browser.find_elements_by_css_selector('.RatingEditable')
             if not ratings:
@@ -460,8 +509,92 @@ class YandexSearch:
                 return True
             return False
 
-        for i in range(MAX_WORK):
+        for i in range(max_work):
             if not search_new_rating():
                 break
             self.browser.refresh()
             time.sleep(2)
+
+
+    def yandex_make_review(self,
+                           org_name: str = 'Первая справочная 223',
+                           text: str = 'Отличная организация'):
+        """Сделать отзыв по организации
+           :param org_name: ключевики для нахождения компании
+           :param text: отзыв
+        """
+        cur_url = self.browser.get_current_url()
+        ya_url = 'https://reviews.yandex.ru/ugcpub/cabinet'
+        if not ya_url in cur_url:
+            self.browser.goto(ya_url)
+
+        # Кнопка поиска организации
+        selector = '.SearchOrgsButton'
+        if not self.browser.wait_for_element(selector=selector):
+            return
+        button = self.browser.find_element_by_css_selector(selector)
+        self.browser.scroll_to_element(button)
+        time.sleep(1)
+        self.browser.move_to_element(button, do_click=True)
+
+        # Модалка для поиска организации
+        selector = '.SearchOrgsPopup-Content'
+        if not self.browser.wait_for_element(selector=selector):
+            return
+        modal = self.browser.find_element_by_css_selector(selector)
+
+        # input для поиска организации
+        selector = '.Textinput-Control'
+        if not self.browser.wait_for_element(selector=selector):
+            return
+        modal_input = self.browser.find_element_by_css_selector(selector)
+        self.browser.move_to_element(modal_input, do_click=True)
+        self.browser.send_keys(modal_input, org_name)
+        time.sleep(2)
+
+        # компания в списке после поиска
+        selector = '.SearchBlock-List .ObjectInfo'
+        if not self.browser.wait_for_element(selector=selector):
+            return
+        orgs = self.browser.find_elements_by_css_selector(selector)
+        if len(orgs) > 1:
+            self.browser.screenshot2telegram(msg = 'yandex_make_review: нашлось больше одной компании по %s' % org_name)
+            return
+        org = orgs[0]
+        self.browser.move_to_element(org, do_click=True)
+
+        # кол-во звезд
+        selector = '.Card-Content .ReviewFormContent-FormContentLastReviewLabelInfo .RatingEditable-Star'
+        if not self.browser.wait_for_element(selector=selector):
+            return
+        review_stars = self.browser.find_elements_by_css_selector(selector)
+        # звезды идут по-дурацки справо налево
+        self.browser.move_to_element(review_stars[0], do_click=True)
+        time.sleep(1)
+
+        # поле для ввода отзыва
+        selector = '.Card-Content textarea.Textarea-Control'
+        if not self.browser.wait_for_element(selector=selector):
+            return
+        review_textarea = self.browser.find_element_by_css_selector(selector)
+        value = self.browser.get_attribute(review_textarea, 'value')
+        #if value:
+        #    err = 'yandex_make_review: отзыв по %s уже оставлен: %s' % (org_name, value)
+        #    self.browser.screenshot2telegram(msg = err)
+        #    return
+        if not value:
+            for letter in text:
+                review_textarea.send_keys(letter)
+                time.sleep(0.3)
+
+        # кнопка отправки отзыва, не всегда видна,
+        # поэтому жмакаем яваскриптом
+        selector = '.Card-Content .ReviewFormContent-FormButton'
+        if not self.browser.wait_for_element(selector=selector):
+            return
+        #review_submit = self.browser.find_element_by_css_selector(selector)
+        #self.browser.move_to_element(review_submit, do_click=True)
+        self.browser.driver.execute_script("""
+            document.querySelector("%s").click();
+        """ % selector)
+        time.sleep(2)

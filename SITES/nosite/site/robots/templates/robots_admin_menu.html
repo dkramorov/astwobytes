@@ -6,14 +6,30 @@
     <span class="item-text">Роботы</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'robots' %} in{% endifequal %}">
+
+    <li{% ifequal submenu 'test_scenarios' %} class="active"{% endifequal %} id="left_menu_robots_app_test_scenarios">
+      <a class="no-submenu" data-toggle="" href="{% url 'robots:show_test_scenarios' %}">
+        <span class="item-text">Сценарии</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'robot_profiles' %} class="active"{% endifequal %} id="left_menu_robots_app_robot_profiles">
+      <a class="no-submenu" data-toggle="" href="{% url 'robots:show_robot_profiles' %}">
+        <span class="item-text">Профили роботов</span>
+      </a>
+    </li>
     <li{% ifequal submenu 'robots' %} class="active"{% endifequal %} id="left_menu_robots_app_robots">
       <a class="no-submenu" data-toggle="" href="{% url 'robots:show_robots' %}">
         <span class="item-text">Роботы</span>
       </a>
     </li>
-    <li{% ifequal submenu 'test_scenarios' %} class="active"{% endifequal %} id="left_menu_robots_app_test_scenarios">
-      <a class="no-submenu" data-toggle="" href="{% url 'robots:show_test_scenarios' %}">
-        <span class="item-text">Сценарии</span>
+    <li{% ifequal submenu 'search_queries' %} class="active"{% endifequal %} id="left_menu_robots_app_search_queries">
+      <a class="no-submenu" data-toggle="" href="{% url 'robots:show_search_queries' %}">
+        <span class="item-text">Поисковые запросы</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'sites' %} class="active"{% endifequal %} id="left_menu_robots_app_sites">
+      <a class="no-submenu" data-toggle="" href="{% url 'robots:show_sites' %}">
+        <span class="item-text">Сайты</span>
       </a>
     </li>
   </ul>

@@ -1,0 +1,14 @@
+{% load mtags %}
+{% with ''|installed_apps as apps %}
+<ul class="nav">
+  <li class="nav-heading">&nbsp;</li>
+
+  {% include "struct_admin_menu.html" %}
+
+  {% if 'files' in apps %}
+    {% include "files_admin_menu.html" %}
+  {% endif %}
+
+  {% include "users_admin_menu.html" %}
+</ul>
+{% endwith %}

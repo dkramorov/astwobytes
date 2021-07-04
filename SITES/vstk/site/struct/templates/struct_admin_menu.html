@@ -1,0 +1,21 @@
+{% if perms.struct.view_structobject %}
+<li{% ifequal menu 'struct' %} class="active"{% endifequal %} id="left_menu_struct">
+  <a class="has-submenu" data-toggle="collapse-next">
+    <em class="fa fa-file"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Структура</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'struct' %} in{% endifequal %}">
+    <li{% ifequal submenu 'struct' %} class="active"{% endifequal %} id="left_menu_struct_objects">
+      <a class="no-submenu" data-toggle="" href="{% url 'struct:show_struct' %}">
+        <span class="item-text">Объекты</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'source_data' %} class="active"{% endifequal %} id="left_menu_struct_source_data">
+      <a class="no-submenu" data-toggle="" href="{% url 'struct:show_source_data' %}">
+        <span class="item-text">Исходные данные</span>
+      </a>
+    </li>
+  </ul>
+</li>
+{% endif %}

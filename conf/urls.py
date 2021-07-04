@@ -111,6 +111,11 @@ if 'apps.contractors' in settings.INSTALLED_APPS:
     urlpatterns += [
         re_path(r'^contractors/', include('apps.contractors.urls')),
     ]
+if 'apps.jabber' in settings.INSTALLED_APPS:
+    # Jabber XMPP
+    urlpatterns += [
+        re_path(r'^jabber/', include('apps.jabber.urls')),
+    ]
 if 'djapian' in settings.INSTALLED_APPS:
     # DJAPIAN SEARCH
     from djapian.utils import load_indexes

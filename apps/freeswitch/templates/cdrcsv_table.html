@@ -15,6 +15,7 @@
 
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 window.disableMovableRows = true;
 $(document).ready(function(){
   var recordFormatter = function(cell, formatterParams, onRendered){
@@ -44,139 +45,140 @@ $(document).ready(function(){
     return result;
   };
 
+  main_table_columns = [
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Кто звонит",
+      field: "cid",
+      headerFilterPlaceholder: "Кто звонит",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "Назначение",
+      field: "dest",
+      headerFilterPlaceholder: "Назначение",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: linkFormatter,
+      width: 120,
+    },
+    {
+      title: "Запись",
+      field: "uuid",
+      headerFilterPlaceholder: "Запись",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: recordFormatter,
+      width: 300,
+    },
+    {
+      title: "Ид компании",
+      field: "client_id",
+      headerFilterPlaceholder: "Ид компании",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 80,
+    },
+    {
+      title: "Название компании",
+      field: "client_name",
+      headerFilterPlaceholder: "Название компании",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "Контекст",
+      field: "context",
+      headerFilterPlaceholder: "Контекст",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 80,
+    },
+    {
+      title: "Когда",
+      field: "created",
+      headerFilterPlaceholder: "Когда",
+      headerFilter: "input",
+      headerFilterFunc: "regex",
+      width: 150,
+    },
+    {
+      title: "Время",
+      field: "duration",
+      headerFilterPlaceholder: "Время",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 60,
+    },
+    {
+      title: "Биллинг",
+      field: "billing",
+      headerFilterPlaceholder: "Биллинг",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 60,
+    },
+    {
+      title: "Статус",
+      field: "state",
+      editor: "select",
+      headerFilterPlaceholder: "Статус",
+      headerFilter: true,
+      headerFilterFunc: "=",
+      headerFilterParams: {
+        {% autoescape off %}
+          values: {"": "Без фильтра", {% for sip_code in sip_codes %}"{{ sip_code }}": "{{ sip_code }}", {% endfor %} },
+        {% endautoescape %}
+      },
+      width: 90,
+    },
+    {
+      title: "IP",
+      field: "ip",
+      headerFilterPlaceholder: "IP",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 60,
+    },
+    {
+      title: "Account",
+      field: "account",
+      headerFilterPlaceholder: "Account",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 60,
+    },
+    {
+      title: "UA",
+      field: "user_agent",
+      headerFilterPlaceholder: "UA",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 60,
+    },
+    {
+      title: "Ид пользователя",
+      field: "personal_user_id",
+      headerFilterPlaceholder: "Ид пользователя",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 60,
+    },
+    {
+      title: "Пользователь",
+      field: "personal_user_name",
+      headerFilterPlaceholder: "Пользователь",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 80,
+    },
+  ];
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
-    columns:[
-      {% include "core/tabulator_cell/id.html" %}
-      {
-        title: "Кто звонит",
-        field: "cid",
-        headerFilterPlaceholder: "Кто звонит",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 120,
-      },
-      {
-        title: "Назначение",
-        field: "dest",
-        headerFilterPlaceholder: "Назначение",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: linkFormatter,
-        minWidth: 120,
-      },
-      {
-        title: "Запись",
-        field: "uuid",
-        headerFilterPlaceholder: "Запись",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        formatter: recordFormatter,
-        minWidth: 300,
-      },
-      {
-        title: "Ид компании",
-        field: "client_id",
-        headerFilterPlaceholder: "Ид компании",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 80,
-      },
-      {
-        title: "Название компании",
-        field: "client_name",
-        headerFilterPlaceholder: "Название компании",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 120,
-      },
-      {
-        title: "Контекст",
-        field: "context",
-        headerFilterPlaceholder: "Контекст",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 80,
-      },
-      {
-        title: "Когда",
-        field: "created",
-        headerFilterPlaceholder: "Когда",
-        headerFilter: "input",
-        headerFilterFunc: "regex",
-        minWidth: 150,
-      },
-      {
-        title: "Время",
-        field: "duration",
-        headerFilterPlaceholder: "Время",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Биллинг",
-        field: "billing",
-        headerFilterPlaceholder: "Биллинг",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Статус",
-        field: "state",
-        editor: "select",
-        headerFilterPlaceholder: "Статус",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-            {% autoescape off %}
-            values: {"": "Без фильтра", {% for sip_code in sip_codes %}"{{ sip_code }}": "{{ sip_code }}", {% endfor %} },
-            {% endautoescape %}
-        },
-        width: 90,
-      },
-      {
-        title: "IP",
-        field: "ip",
-        headerFilterPlaceholder: "IP",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Account",
-        field: "account",
-        headerFilterPlaceholder: "Account",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "UA",
-        field: "user_agent",
-        headerFilterPlaceholder: "UA",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Ид пользователя",
-        field: "personal_user_id",
-        headerFilterPlaceholder: "Ид пользователя",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Пользователь",
-        field: "personal_user_name",
-        headerFilterPlaceholder: "Пользователь",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 80,
-      },
-    ],
+    columns: main_table_columns,
   });
 
   $(".tabulator-headers .tabulator-col").each(function(){

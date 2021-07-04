@@ -1,0 +1,13 @@
+{% load flatcontent_tags mtags %}<!DOCTYPE html><html>
+<head>
+{% include "skeleton_header.html" %}
+{% block extrahead %}{% endblock %}
+</head>
+<body>
+<div class="body">
+{% block body %}
+{% endblock %}
+</div>
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

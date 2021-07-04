@@ -14,65 +14,66 @@
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 $(document).ready(function(){
-
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Наш телефон",
+      field: "phone",
+      headerFilterPlaceholder: "Наш телефон",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      minWidth: 150,
+    },
+    {
+      title: "Назначение",
+      field: "dest",
+      headerFilterPlaceholder: "Назначение",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      minWidth: 150,
+    },
+    {
+      title: "Описание",
+      field: "description",
+      headerFilterPlaceholder: "Описание",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      minWidth: 150,
+    },
+    {
+      title: "Шлюз",
+      field: "gw",
+      headerFilterPlaceholder: "Шлюз",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      minWidth: 60,
+    },
+    {
+      title: "Цена",
+      field: "price",
+      headerFilterPlaceholder: "Цена",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      minWidth: 60,
+    },
+    {
+      title: "Кол-во секунд",
+      field: "price_unit",
+      headerFilterPlaceholder: "Кол-во секунд",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      minWidth: 60,
+    },
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
-    columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
-      {
-        title: "Наш телефон",
-        field: "phone",
-        headerFilterPlaceholder: "Наш телефон",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 150,
-      },
-      {
-        title: "Назначение",
-        field: "dest",
-        headerFilterPlaceholder: "Назначение",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 150,
-      },
-      {
-        title: "Описание",
-        field: "description",
-        headerFilterPlaceholder: "Описание",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 150,
-      },
-      {
-        title: "Шлюз",
-        field: "gw",
-        headerFilterPlaceholder: "Шлюз",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Цена",
-        field: "price",
-        headerFilterPlaceholder: "Цена",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Кол-во секунд",
-        field: "price_unit",
-        headerFilterPlaceholder: "Кол-во секунд",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
-      {% include "core/tabulator_cell/actions.html" %}
-    ],
+    columns: main_table_columns,
   });
 });
 </script>

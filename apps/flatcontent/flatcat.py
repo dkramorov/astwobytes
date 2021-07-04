@@ -7,7 +7,13 @@ from apps.main_functions.functions import recursive_fill, sort_voca, object_fiel
 from apps.main_functions.paginator import myPaginator, navigator
 from apps.main_functions.string_parser import q_string_fill
 
-from .models import Containers, Blocks, get_ftype, prepare_jstree, FAT_HIER
+from apps.flatcontent.models import (
+    Containers,
+    Blocks,
+    get_ftype,
+    prepare_jstree,
+    FAT_HIER,
+)
 
 is_products = False
 

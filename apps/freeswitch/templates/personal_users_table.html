@@ -14,65 +14,66 @@
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 $(document).ready(function(){
-
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Логин",
+      field: "username",
+      headerFilterPlaceholder: "Логин",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "Ид (устаревший)",
+      field: "userid",
+      headerFilterPlaceholder: "Ид (устаревший)",
+      headerFilter: "input",
+      headerFilterFunc: "=",
+      width: 60,
+    },
+    {
+      title: "Ид пользователя",
+      field: "userkey",
+      headerFilterPlaceholder: "Ид пользователя",
+      headerFilter: "input",
+      headerFilterFunc: "=",
+      width: 60,
+    },
+    {
+      title: "Телефон",
+      field: "phone",
+      headerFilterPlaceholder: "Телефон",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "Телефон подтвержден",
+      field: "phone_confirmed",
+      headerFilterPlaceholder: "Телефон подтвержден",
+      headerFilter: true,
+      headerFilterFunc: "=",
+      headerFilterParams: {
+        values: {"": "Без фильтра", true: "Да", false: "Нет"},
+      },
+      editable: false,
+      editor: "select",
+      formatter: booleanFormatter,
+      width: 90,
+      downloadTitle: "phone_confirmed",
+      accessorDownload: accessor_is_active,
+    },
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
-    columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
-      {
-        title: "Логин",
-        field: "username",
-        headerFilterPlaceholder: "Логин",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        width: 150,
-      },
-      {
-        title: "Ид (устаревший)",
-        field: "userid",
-        headerFilterPlaceholder: "Ид (устаревший)",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 60,
-      },
-      {
-        title: "Ид пользователя",
-        field: "userkey",
-        headerFilterPlaceholder: "Ид пользователя",
-        headerFilter: "input",
-        headerFilterFunc: "=",
-        width: 60,
-      },
-      {
-        title: "Телефон",
-        field: "phone",
-        headerFilterPlaceholder: "Телефон",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        width: 150,
-      },
-      {
-        title: "Телефон подтвержден",
-        field: "phone_confirmed",
-        headerFilterPlaceholder: "Телефон подтвержден",
-        headerFilter: true,
-        headerFilterFunc: "=",
-        headerFilterParams: {
-          values: {"": "Без фильтра", true: "Да", false: "Нет"},
-        },
-        editable: false,
-        editor: "select",
-        formatter: booleanFormatter,
-        width: 90,
-        downloadTitle: "phone_confirmed",
-        accessorDownload: accessor_is_active,
-      },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
-      {% include "core/tabulator_cell/actions.html" %}
-    ],
+    columns: main_table_columns,
   });
 });
 </script>

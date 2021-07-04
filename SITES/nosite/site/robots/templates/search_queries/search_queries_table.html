@@ -1,0 +1,84 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+{% include "core/title/page_title_table.html" %}
+{% include "core/breadcrumbs.html" %}
+
+{% include "core/excel/xlsx_form_import.html" %}
+
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script type="text/javascript">
+var main_table = null;
+var excel_table = null;
+var main_table_columns = null;
+var excel_table_columns = null;
+$(document).ready(function(){
+  var siteFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    // Для эксельки
+    if (data['site__url']){
+      return data['site__url'];
+    }
+    return data['site'] ? data['site']['url'] : '';
+  };
+  var accessor_site = function(value, data, type, params, column){
+    return data['site'] ? data['site']['url'] : '';
+  }
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Поисковой запрос",
+      field: "name",
+      headerFilterPlaceholder: "Поисковой запрос",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      downloadTitle: "name",
+      accessorDownload: accessor_not_empty,
+      width: 120,
+    },
+    {
+      title: "Сайт",
+      field: "site__url",
+      headerFilterPlaceholder: "Сайт",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      formatter: siteFormatter,
+      downloadTitle: "site__url",
+      accessorDownload: accessor_site,
+      width: 120,
+    },
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "updated"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "left top",
+        todayButton: new Date(),
+      });
+    }
+  });
+});
+</script>
+{% include "core/excel/xlsx_script_actions.html" %}
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+{% include "core/title/page_title_table.html" %}
+{% include "core/breadcrumbs.html" %}
+
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+
+$(document).ready(function(){
+  var menuFilterEditor = function(cell, onRendered, success, cancel, editorParams){
+    var container = document.createElement("select");
+    container.id = "menu_filter";
+
+    function buildValues(e){
+      console.log("searching phones by menu", container.value);
+      success(container.value);
+    }
+    // changed - custom event (instead of change)
+    container.addEventListener("changed", buildValues);
+    //container.addEventListener("blur", buildValues);
+    //container.addEventListener("keydown", keypress);
+
+    return container;
+  };
+  var menuFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var data = cell.getRow().getData();
+    if(!data['cat']){
+      return "";
+    }
+    var result = "<div class='padding-rl5'>";
+    var cat;
+    for(var i=0; i<data['cat'].length; i++){
+      cat = data['cat'][i];
+      result += " <a class='btn' target='_blank' href='" + cat['link'] + "'>" + cat['name'] + "</a><br />";
+    }
+    result += "</div>";
+    return result;
+  };
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {% include "core/tabulator_cell/name.html" %}
+    {
+      title: "Телефон",
+      field: "phone",
+      headerFilterPlaceholder: "Телефон",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+      {
+        title: "Меню",
+        field: "cat",
+        headerSort: false,
+        headerFilterPlaceholder: "Меню",
+        headerFilter: menuFilterEditor,
+        headerFilterFunc: "=",
+        formatter: menuFormatter,
+        width: 80,
+      },
+    {% include "core/tabulator_cell/image.html" %}
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ]
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
+
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "cat"){
+      $("#menu_filter").select2({
+        placeholder: 'Выберите меню',
+        width: '100%',
+        //tags: true,
+        allowClear: true,
+        ajax: {
+          delay: 150,
+          url: "{% url 'flatcontent:search_blocks' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              filter__container__tag: 'phones8800',
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      }).change(function(){
+        //console.log('cat', $(this).val());
+        var select = document.querySelector("#menu_filter");
+        select.value = $(this).val();
+        // changed - custom event (instead of change)
+        select.dispatchEvent(new Event('changed'));
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

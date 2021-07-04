@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import re
 from openpyxl import load_workbook
 from io import BytesIO
 
@@ -6,7 +7,11 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.db import transaction
 
-from apps.main_functions.functions import object_fields, object_fields_types
+from apps.main_functions.functions import (
+    object_fields,
+    object_fields_types,
+    object_foreign_keys,
+)
 from apps.main_functions.files import open_file, full_path
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.date_time import str_to_date
@@ -25,7 +30,8 @@ def ApiHelper(request,
                             только уже из вьюхи, а по GET/POST
     """
     # Если нету метода, то не надо мучать жопу
-    with_get_folder = hasattr(model_vars['model'], 'get_folder')
+    model = model_vars['model']
+    with_get_folder = hasattr(model, 'get_folder')
 
     if not reverse_params:
         reverse_params = {}
@@ -37,11 +43,14 @@ def ApiHelper(request,
     # Независимо от метода
     params = request.GET if request.method == 'GET' else request.POST
 
+    model_fields = object_fields(model())
+
     only_fields = []
     get_only_fields = params.get('only_fields')
     if get_only_fields:
-        get_only_fields = get_only_fields.split(',')
-        only_fields = [field.strip() for field in get_only_fields]
+        get_only_fields = [field.strip() for field in get_only_fields.split(',')]
+        only_fields = [field for field in get_only_fields if field in model_fields]
+
     # Параметры фильтрации через filter__field = ''
     # filter__ означает, что мы хотим отфильтровать по какому то полю,
     # например, ?filter__id=1&filter__is_active=1
@@ -107,15 +116,37 @@ def XlsxHelper(request,
         data = request.POST.get('data')
         if count.isdigit():
             count = int(count)
-            template = object_fields(mh.model(),
-                                     pass_fields=('created', 'updated', 'img'))
+            template = object_fields(
+                mh.model(),
+                pass_fields=('created', 'updated', 'img')
+            )
             if count > 0:
+                search_names = [k for k in request.POST.keys() if k.startswith('data[0][')]
+
+                # foreign_keys ключи, например, [0][key1][key2]
+                rega_fk_fields = re.compile('\[([^\]]+?)\]', re.I+re.U+re.DOTALL)
+                for search_name in search_names:
+                    # Ну вот так коряво проверяем,
+                    # что это со вложенным объектом,
+                    # ну а хуля делать?
+                    if search_name.count('][') > 1:
+                        hier = rega_fk_fields.findall(search_name)[1:]
+                        if hier:
+                            # '[%s]' % ']['.join(['1','2','3']) = '[1][2][3]'
+                            #names.append('[%s]' % ']['.join(hier))
+                            template['__'.join(hier)] = None
+
                 # тут проверяем именно наличие ключа,
                 # а не значение
-                names = [k for k in template.keys() if 'data[0][%s]' % k in request.POST]
-                # по шаблону модели обходим количество отправленных объектов
-                rows = [{k: request.POST.get('data[%s][%s]' % (i, k)) for k in names} for i in range(count)]
+                names = [k for k in template.keys() if 'data[0][%s]' % k in search_names]
 
+                # по шаблону модели обходим количество отправленных объектов
+                rows = [{
+                    k: request.POST.get('data[%s][%s]' % (i, k)) for k in names
+                } for i in range(count)]
+
+    # Предварительная подготовка данных
+    # для просмотра перед загрузкой
     if action == 'import_xlsx':
         job = import_from_excel(mh.model,
                                 request.FILES.get('file'))
@@ -225,8 +256,40 @@ def import_from_excel(model,
 
     template = object_fields(model(), only_fields=names)
     indexes = {name: names.index(name) for name in names if name in template}
-    data = []
 
+    # Добавить foreign keys в шапку
+    with_fk = [name for name in names if '__' in name]
+    if with_fk:
+        fkeys = object_foreign_keys(model())
+        for name in with_fk:
+            wrong_key = False
+            name_parts = name.split('__')
+            for i in range(len(name_parts) - 1):
+                if i == 0:
+                    prev_fkeys = fkeys
+                else:
+                    prev_fkeys = object_foreign_keys(prev_fkeys[name_parts[i]])
+                if not name_parts[i] in prev_fkeys:
+                    wrong_key = True
+            if not wrong_key:
+                indexes[name] = names.index(name)
+
+    def fill_fkey(item: dict, name: str, value: str):
+        """Перезаполнить выходящее значение из строки в словарь
+           :param item: словарь с текущими значениями
+           :param name: Название поля
+           :param value: Значение поля в виде словаря
+        """
+        parts = name.split('__')
+        prev = item
+        # Последняя вложенность - строкой (не словарем)
+        for part in parts[:-1]:
+            if not part in prev:
+                prev[part] = {}
+            prev = prev[part]
+        prev[parts[-1]] = value
+
+    data = []
     for row in rows:
         item = {}
         is_empty = True
@@ -235,7 +298,14 @@ def import_from_excel(model,
             value = row[ind].value
             if value:
                 is_empty = False
+            # Будет дубль и key1__key2 и [key1][key2]
             item[name] = value
+
+            # Спец обработка в словарь, если это foreign_key
+            if name in with_fk:
+                fill_fkey(item, name, value)
+                continue
+
         if not is_empty:
             data.append(item)
     result['data'] = data[1:]
@@ -266,6 +336,7 @@ def save_from_excel(model,
         return result
 
     field_types = object_fields_types(model())
+    fkeys = object_foreign_keys(model())
 
     # Небольшой хак на foreign key + reverse_params
     # Убираем _id, и,
@@ -282,6 +353,12 @@ def save_from_excel(model,
 
     create_tasks = []
     update_tasks = []
+    cached_fk = {}
+
+    for cond_field in cond_fields:
+        if cond_field.count('__') == 1:
+            del cond_fields[cond_fields.index(cond_field)]
+
     for item in data:
         cond = Q()
         # id обновлять - плохая затея
@@ -289,8 +366,10 @@ def save_from_excel(model,
             if key in item:
                 del item[key]
 
+        fordel = {}
         for k, v in item.items():
             if not k in field_types:
+                fordel[k] = v
                 continue
             field_type = field_types[k]
             # Некоторые типы полей пока пропускаем
@@ -308,12 +387,35 @@ def save_from_excel(model,
             elif field_type in ('boolean', ):
                 item[k] = True if item[k] in (1, '1') else False
 
+        # Дропаем всякое говно, которое не в полях модели
+        for k, v in fordel.items():
+            del item[k]
+            # Поддерживаем только одноуровневый fk
+            # TODO: адаптировать под key1__key2__... (больше 1) вложенность
+            # TODO: обработать по правилам поля (например, url до домена)
+            if k.count('__') == 1:
+                f_key, f_value = k.split('__')
+                if not f_key in fkeys:
+                    continue
+                if k in cached_fk:
+                    fk_obj = cached_fk[k]
+                else:
+                    fk_model = fkeys[f_key]
+                    fk_obj = fk_model.objects.filter(**{f_value:v}).first()
+                    if not fk_obj:
+                        fk_obj = fk_model.objects.create(**{f_value:v})
+                    cached_fk[k] = fk_obj
+                cond.add(Q(**{f_key:fk_obj}), Q.AND)
+                item[f_key] = fk_obj
+
         if fk_updates:
             item.update(fk_updates)
 
         for cond_field in cond_fields:
             cond.add(Q(**{cond_field: item.get(cond_field)}), Q.AND)
+        print(cond)
         analog = model.objects.filter(cond).only('id').first()
+
         if analog:
             update_tasks.append({'id': analog.id, 'data': item})
         else:
@@ -324,6 +426,7 @@ def save_from_excel(model,
             model.objects.filter(pk=update_task['id']).update(**update_task['data'])
         for create_task in create_tasks:
             model.objects.create(**create_task)
+
 
     result['created'] = len(create_tasks)
     result['updated'] = len(update_tasks)

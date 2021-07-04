@@ -1,12 +1,10 @@
-{% load mtags flatcontent_tags %}
+{% load mtags flatcontent_tags tags %}
 <div class="container project">
-  <div class="row pt120 pb30 sticky_container">
+  <div class="row pt60 pb30 sticky_container">
 
     <div class="col-lg-12">
-      <div class="col-lg-5">
-        <div class="portfolio_title">
-          {{ container.description|safe }}
-        </div>
+      <div class="portfolio_title">
+        {{ container.description|safe }}
       </div>
     </div>
 
@@ -27,7 +25,7 @@
         {% for block in blocks %}
           {% if block.img %}
             <div class="project_img">
-              {% imagine block.img '1024x768' block.get_folder %}
+              <img src="{{ block.imagine }}" alt="{{ block.name|quotes2apostrophe }}" loading="lazy" />
             </div>
           {% endif %}
         {% endfor %}
@@ -37,7 +35,7 @@
 
       <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
         <aside aria-label="sidebar" class="sidebar sidebar-right">
-          {% flatmenu request "portfolio" %}
+          {% portfolio_menu request %}
         </aside>
       </div>
 

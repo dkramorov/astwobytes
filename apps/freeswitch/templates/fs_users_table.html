@@ -18,57 +18,58 @@
 {% block extrascripts %}
 <script type="text/javascript">
 var main_table = null;
+var main_table_columns = null;
 $(document).ready(function(){
-
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Пользователь",
+      field: "user__username",
+      headerFilterPlaceholder: "Пользователь",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "Контекст",
+      field: "context",
+      headerFilterPlaceholder: "Контекст",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 60,
+    },
+    {
+      title: "Caller ID",
+      field: "cid",
+      headerFilterPlaceholder: "Caller ID",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "Группа",
+      field: "callgroup",
+      headerFilterPlaceholder: "Группа",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 60,
+    },
+    {
+      title: "Пользователь сайта",
+      field: "personal_user__username",
+      headerFilterPlaceholder: "Пользователь сайта",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
-    columns:[
-      {% include "core/tabulator_cell/drag.html" %}
-      {% include "core/tabulator_cell/id.html" %}
-      {
-        title: "Пользователь",
-        field: "user__username",
-        headerFilterPlaceholder: "Пользователь",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 150,
-      },
-      {
-        title: "Контекст",
-        field: "context",
-        headerFilterPlaceholder: "Контекст",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Caller ID",
-        field: "cid",
-        headerFilterPlaceholder: "Caller ID",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 120,
-      },
-      {
-        title: "Группа",
-        field: "callgroup",
-        headerFilterPlaceholder: "Группа",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 60,
-      },
-      {
-        title: "Пользователь сайта",
-        field: "personal_user__username",
-        headerFilterPlaceholder: "Пользователь сайта",
-        headerFilter: "input",
-        headerFilterFunc: "like",
-        minWidth: 150,
-      },
-      {% include "core/tabulator_cell/is_active.html" %}
-      {% include "core/tabulator_cell/position.html" %}
-      {% include "core/tabulator_cell/actions.html" %}
-    ],
+    columns: main_table_columns,
   });
 });
 </script>

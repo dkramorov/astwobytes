@@ -15,6 +15,8 @@
 <script type="text/javascript">
 var main_table = null;
 var main_table_columns = null;
+window.disableMovableRows = false;
+
 $(document).ready(function(){
 
   var actionsUserFormatter = function(cell, formatterParams, onRendered){
@@ -34,7 +36,9 @@ $(document).ready(function(){
   };
 
   main_table_columns = [
+/*
     {% include "core/tabulator_cell/drag.html" %}
+*/
     {% include "core/tabulator_cell/id.html" %}
     {% include "core/tabulator_cell/name.html" %}
     {

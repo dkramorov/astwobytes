@@ -1,0 +1,56 @@
+{% load mtags %}
+<section class="blog-details">
+  <div class="padding-masc">
+    <div class="container">
+      {% for block in blocks %}
+        <div class="col-md-12">
+          <img src="{% imagine block.img '1600x1200' block.get_folder True %}" alt="{{ block.name|textize }}">
+          <div class="row blog-panel">
+            <div class="col-md-6 blog-panel-left">
+              <p class="date">
+                <i class="fa fa-calendar" aria-hidden="true"></i> {{ block.created|date:'d-m-Y' }}
+                <i class="fa fa-clock-o" aria-hidden="true"></i> {{ block.created|date:'H:i:s' }}
+              </p>
+            </div>
+
+            <div class="col-md-6 blog-panel-right">
+              <p class="interactive">
+                <i class="fa fa-heart-o" aria-hidden="true"></i> 0
+                <i class="fa fa-comment-o" aria-hidden="true"></i> 0
+              </p>
+            </div>
+
+          </div>
+          <h3 class="post-title">{{ block.name }}</h3>
+          {% if block.html %}{{ block.html|safe }}{% endif %}
+          <br><br>
+          {% if block.description %}
+            <blockquote><i>{{ block.description }}</i></blockquote>
+          {% endif %}
+          <br>
+          {% if block.sub %}
+            <ul class="text-list">
+              {% for item in block.sub %}
+                <li><i class="fa fa-check"></i> {{ item.name }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          <div class="row blog-panel">
+            <div class="col-md-6 blog-panel-left">
+              <ul>
+                <li><a href="" class="tran3s">{{ container.name }}</a></li>
+              </ul>
+            </div>
+            <div class="col-md-6 blog-panel-right">
+              <ul>
+                <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                <li><a href="#"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

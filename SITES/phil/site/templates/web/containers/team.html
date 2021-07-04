@@ -1,7 +1,7 @@
 {% load mtags %}
 <div class="container-fluid" id="team">
   <div class="row">
-    <div class="container simple_team pt100">
+    <div class="container simple_team pt60"{% if container.img %} style="background-image:url('{{ container.imagine }}');"{% endif %}>
 
       <div class="col-lg-12">
         <div class="portfolio_title">

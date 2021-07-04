@@ -894,6 +894,7 @@ def search_blocks(request, *args, **kwargs):
            :param with_images: Только с изображениями
            :param only_templates: Только шаблоны state__in=(99,100)
            :param only_cats: Только рубрики state=7
+           :param only_menus: Только менюшки state=1
     """
     result = {'results': []}
 
@@ -915,9 +916,16 @@ def search_blocks(request, *args, **kwargs):
     only_cats = request.GET.get('only_cats')
     if only_cats:
         mh.filter_add(Q(container__state=7))
+    only_menus = request.GET.get('only_menus')
+    if only_menus:
+        mh.filter_add(Q(container__state=1))
     with_images = request.GET.get('with_images')
     if with_images:
         mh.filter_add(Q(img__isnull=False))
+    filters = [cond for cond in request.GET.keys() if cond.startswith('filter__')]
+    for key in filters:
+        cond = request.GET.get(key)
+        mh.filter_add(Q(**{key.replace('filter__', ''): cond}))
 
     mh_vars = blocks_vars.copy()
     for k, v in mh_vars.items():
@@ -1174,9 +1182,7 @@ def tree_co(request):
 
 def head_fill(block, q_string):
     """Заполнение мета-тегов и заголовка в q_string"""
-    if not isinstance(block, Blocks):
-        return
-    if not block.state == 4:
+    if not block.state == 4 or not isinstance(block, Blocks):
         return
     for field in ('title', 'keywords', 'description'):
         value = getattr(block, field)
@@ -1318,6 +1324,18 @@ def SearchLink(q_string: dict = None,
             }
             if container.container.tag:
                 block_with_content.tags.append(container.container.tag)
+
+    # Хлебные крошки выше текущего блока
+    if block_with_content and block_with_content.parents:
+        block_with_content.breadcrumbs = []
+        parents = [int(parent) for parent in block_with_content.parents.split('_') if parent]
+        superblocks = Blocks.objects.filter(pk__in=parents)
+        all_blocks += superblocks
+        ids_superblocks = {superblock.id: superblock for superblock in superblocks}
+        for parent in parents:
+            if parent in ids_superblocks:
+                block_with_content.breadcrumbs.append(ids_superblocks[parent])
+
     templar(ids_containers, mcap, block_with_content, all_containers, all_blocks, q_string, request)
 
     # -----
@@ -1481,6 +1499,8 @@ def MainStatPage(request, path: str = None, tags: list = None):
         return redirect(path)
     page = SearchLink(q_string, request, containers)
     if page:
+        if hasattr(page, 'breadcrumbs') and isinstance(page.breadcrumbs, list):
+            breadcrumbs += page.breadcrumbs
         breadcrumbs.append({'name': page.name, 'link': page.link})
         template = 'web/main_stat.html'
         return render(request, template, {

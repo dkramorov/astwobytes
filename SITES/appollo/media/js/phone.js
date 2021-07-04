@@ -38,8 +38,8 @@ function load_sipjs(callback){
     sip_script.type = "text/javascript";
     sip_script.src = "/static/call_from_site/js/sip-0.7.8.js";
     sip_script.onload = function(){
-      var not_registered_error = $("#not_registered_error").length;
-      var not_confirmed_phone_error = $("#not_confirmed_phone_error").length;
+      var not_registered_error = $(".not_registered_error").length;
+      var not_confirmed_phone_error = $(".not_confirmed_phone_error").length;
 
       var sipua_script = document.createElement("script");
       sipua_script.type = "text/javascript";
@@ -50,8 +50,11 @@ function load_sipjs(callback){
         set_phone_mask();
         set_phone_prefix("8800");
         $(".make_call").click(function(){
-          $("#not_registered_error").addClass("hidden");
-          $("#not_confirmed_phone_error").addClass("hidden");
+          if($(this).attr('data-phone') != undefined){
+            $("#phone_number").val($(this).attr('data-phone'));
+          }
+          $(".not_registered_error").addClass("hidden");
+          $(".not_confirmed_phone_error").addClass("hidden");
           // -------------------
           // Событие для метрики
           // -------------------
@@ -83,7 +86,7 @@ function load_sipjs(callback){
                   show_error(new_call);
                 }
               }else{
-                $("#not_confirmed_phone_error").removeClass("hidden");
+                $(".not_confirmed_phone_error").removeClass("hidden");
               }
             }
           }else {
@@ -93,7 +96,7 @@ function load_sipjs(callback){
                 show_error(new_call);
               }
             }else{
-              $("#not_registered_error").removeClass("hidden");
+              $(".not_registered_error").removeClass("hidden");
             }
           }
 

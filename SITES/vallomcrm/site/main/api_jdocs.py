@@ -2,6 +2,7 @@
 import os
 import json
 import requests
+import logging
 
 from django.conf import settings
 from envparse import env
@@ -10,6 +11,8 @@ from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.files import open_file
 
 env.read_envfile(os.path.join(settings.BASE_DIR, 'conf', '.env'))
+
+logger = logging.getLogger('simple')
 
 class APIJDOCS():
     """Класс для работы с jdocs (получение лотов)
@@ -87,14 +90,17 @@ class APIJDOCS():
         """Подготавливаем лоты для вставки в таблицу
            :param lots: лоты, которые будем подготавливать
         """
+        lots_old_format = []
         # Маппинг на старый формат
         mapping = {
+            'Client': 'numeprenume', # Клиент
             'yahoo_id': 'numar', # Номер лота
             'purchase_date': 'data', # Дата покупки
             'payment_date': 'data_oplacino',
             'warehouse': 'data_primire',
             'arrived_date': 'data_primire_ru', # Дата прихода
             'qnt1': 'kolicistvo',
+            'qnt2': 'kolicistvo_client',
             'product_name': 'description', # Название лота
             'client_price': 'price_pocup', # price?
             'client_bank_fee': 'price_bank_com',
@@ -110,11 +116,16 @@ class APIJDOCS():
             'weight': 'ves',
         }
         for lot in lots:
-            new_lot = {}
+            lot_old_format = {}
             for new_key, old_key in mapping.items():
-                new_lot[old_key] = lot[new_key]
-            new_lot['images'] = [img['image_full_path'] for img in lot.get('images', [])]
-        print(json_pretty_print(new_lot))
-        return new_lot
+                lot_old_format[old_key] = lot[new_key]
+            lot_old_format['images'] = [{
+                'link': img['image_full_path'],
+            } for img in lot.get('images', [])]
+            lots_old_format.append(lot_old_format)
+
+        with open_file('jdocs_prepared_data.json', 'w+', encoding='utf-8') as f:
+            f.write(json.dumps(lots_old_format))
+        return lots_old_format
 
 

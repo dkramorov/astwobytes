@@ -2,7 +2,7 @@
 from django import template
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from apps.main_functions.functions import recursive_fill, sort_voca
 from apps.main_functions.models import Config
@@ -31,18 +31,21 @@ def dynamic_portfolio(request):
         return inCache
 
     # Вытаскиваем менюшку portfolio
-    portfolio_menu = Containers.objects.filter(tag='portfolio', state=1).first()
+    portfolio_menu = Blocks.objects.filter(tag='portfolio', link='/portfolio/', state=4).first()
     if not portfolio_menu:
         return {}
-    all_blocks = portfolio_menu.blocks_set.all()
 
+    parents = '%s_%s' % (portfolio_menu.parents, portfolio_menu.id)
+    all_blocks = Blocks.objects.filter(state=4, is_active=True).filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents))
+
+    all_blocks = [block for block in all_blocks if not block.link == '/portfolio/']
     if domain:
         domains = [domain]
         get_translate(all_blocks, domains)
         translate_rows(all_blocks, domain)
 
     menu_queryset = []
-    recursive_fill(all_blocks, menu_queryset, '')
+    recursive_fill(all_blocks, menu_queryset, parents)
     blocks = sort_voca(menu_queryset)
 
     # К каждому блоку надо достать описание по сссылке
@@ -60,7 +63,12 @@ def dynamic_portfolio(request):
         ids_subblocks = {subblock.id: subblock.link for subblock in block.sub}
         # Для описания надо узнать какая стат.страничка
         # ссылается на subblock.link и взять от нее описание
-        related_by_link = Blocks.objects.filter(container__state=3, link__in=ids_subblocks.values())
+        #related_by_link = Blocks.objects.filter(container__state=3, link__in=ids_subblocks.values())
+        related_by_link = []
+        related_containers = block.linkcontainer_set.select_related('container').all()
+        if related_containers:
+            related_by_link = related_containers[0].container.blocks_set.filter(link__in=ids_subblocks.values())
+
         ids_desc = {related.link: related for related in related_by_link}
         # К каждому subblock надо докинуть описалово, чтобы получить его в картинках
         desc_arr = {}
@@ -71,7 +79,6 @@ def dynamic_portfolio(request):
                 desc_block = ids_desc[subblock.link]
                 descriptions.append(desc_block)
                 desc_arr[subblock.id] = desc_block
-
         links = LinkContainer.objects.filter(block__in=ids_subblocks.keys()).values('container', 'block')
         ids_links = {
             link['container']: {
@@ -126,4 +133,52 @@ def dynamic_portfolio(request):
         'blocks': blocks,
     }
     cache.set(cache_var, result, cache_time)
+    return result
+
+
+@register.inclusion_tag('web/tags/portfolio_menu.html')
+def portfolio_menu(request):
+    """Портфолио менюшка"""
+    result = {}
+    all_blocks = [] # Для перевода
+
+    cache_time = 60 # 60 секунд
+    cache_var = '%s_portfolio_menu' % (settings.PROJECT_NAME, )
+    if settings.IS_DOMAINS:
+        domain = get_domain(request)
+        if domain:
+            cache_var += '_%s' % domain['pk']
+
+    inCache = cache.get(cache_var)
+    ignore_cache = request.GET.get('ignore_cache') or request.GET.get('force_new')
+    if inCache and not ignore_cache:
+        result = inCache
+    else:
+
+        # Вытаскиваем менюшку portfolio
+        portfolio_menu = Blocks.objects.filter(tag='portfolio', link='/portfolio/', state=4).first()
+
+        parents = '%s_%s' % (portfolio_menu.parents, portfolio_menu.id)
+
+        search_blocks = Blocks.objects.filter(state=4, is_active=True).filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents))
+        for item in search_blocks:
+            all_blocks.append(item)
+        menu_queryset = []
+        recursive_fill(search_blocks, menu_queryset, parents)
+        menus = sort_voca(menu_queryset)
+
+        # --------------------------
+        # Переводим блоки/контейнеры
+        # --------------------------
+        if settings.IS_DOMAINS:
+            domains = get_domains()
+            domain = get_domain(request, domains)
+            if domain:
+                domains = [domain]
+                get_translate(all_blocks, domains)
+                translate_rows(all_blocks, domain)
+
+        result['menus'] = menus
+        cache.set(cache_var, result, cache_time)
+    result['request'] = request
     return result

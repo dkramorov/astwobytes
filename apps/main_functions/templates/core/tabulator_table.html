@@ -78,6 +78,36 @@ var tickCrossEditor = function(cell, onRendered, success, cancel, editorParams){
   editor.addEventListener("blur", successFunc);
   return editor;
 };
+var defaultInputEditor = function(cell, onRendered, success, cancel, editorParams){
+  var cellValue = cell.getValue(),
+  input = document.createElement("input");
+  input.setAttribute("type", "text");
+  input.value = $('<div/>').html(cellValue).text();
+  onRendered(function(){
+    input.focus();
+    input.style.height = "100%";
+  });
+  function onChange(){
+    if(input.value != cellValue){
+      success(input.value);
+    }else{
+      cancel();
+    }
+  }
+  //submit new value on blur or change
+  input.addEventListener("change", onChange);
+  input.addEventListener("blur", onChange);
+  //submit new value on enter
+  $(input).on("keydown", function(e){
+    if(e.keyCode == 13){
+      success($(input).val());
+    }
+    if(e.keyCode == 27){
+      cancel();
+    }
+  });
+  return input;
+}
 var actionsFormatter = function(cell, formatterParams, onRendered){
   var row = cell.getRow();
   var rowIndex = row.getIndex();

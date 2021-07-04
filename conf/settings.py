@@ -111,6 +111,8 @@ if env('ADDRESSES_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.addresses')
 if env('CONTRACTORS_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.contractors')
+if env('JABBER_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.jabber')
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 DATA_UPLOAD_MAX_MEMORY_SIZE = env('DATA_UPLOAD_MAX_MEMORY_SIZE', default=5 * 1024 * 1024)
@@ -254,7 +256,6 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': [
             '127.0.0.1:11211',
-            # another cache-servers
         ],
         'OPTIONS': {
             'server_max_value_length': 1024 * 1024 * 2, # 2Mb object size

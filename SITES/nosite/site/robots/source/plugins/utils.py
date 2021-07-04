@@ -160,13 +160,14 @@ def driver_versions(driver):
         result['chrome'] = driver.capabilities['chrome']['chromedriverVersion'].split(' ')[0]
     return result
 
-def inform_server(driver):
-    """Информируем сервер о наличии робота
-       :param driver: экземпляр selenium.webdriver
+def inform_server(browser):
+    """Информируем сервер о роботе
+       :param browser: экземпляр browser
     """
     if not API_SERVER or not API_TOKEN:
         logger.info('API_SERVER / API_TOKEN not set')
         return
+    driver = browser.driver
     headers = {'token': API_TOKEN}
     params = {
         'versions': driver_versions(driver),
@@ -174,11 +175,23 @@ def inform_server(driver):
         'free_space': get_hd_space(),
     }
     endpoint = '%s/robots/inform_server/' % API_SERVER.rstrip('/')
+
+    yandex_login, yandex_passwd = browser.yandex.load_credentials()
+    profile_params = {
+        'name': browser.profile_name,
+        'user_agent': browser.user_agent,
+        'resolution': browser.screen,
+        'yandex_login': yandex_login,
+        'yandex_passwd': yandex_passwd,
+    }
+    params['profile'] = profile_params
     try:
         r = requests.get(endpoint, json=params, headers=headers)
         print('[INFORM_SERVER]: %s => %s' % (r.status_code, r.text))
+        if not r.status_code == 200:
+            print(r.text)
     except Exception as e:
-        print(e)
+        logger.info('[ERROR]: %s' % e)
 
 
 def fill_starts_counter(cur_dir: str):
@@ -242,13 +255,20 @@ def check_connection_over_proxy(proxy: str,
     return False
 
 
-def get_ip(api_url: str = 'http://spam.223-223.ru/my_ip/'):
-    """Получить ip адрес
-       :param api_url: адрес, который возвращает ip в json
-    """
-    r = requests.get(api_url, timeout=5)
-    return r.json().get('ip')
+def get_ip():
+    """Получить ip адрес"""
+    api_url = '%s/my_ip/' % API_SERVER.rstrip('/')
+    ip = '0.0.0.0'
+    try:
+        r = requests.get(api_url, timeout=5)
+        ip = r.json().get('ip')
+    except Exception as e:
+        logger.info(e)
+    return ip
 
+def get_hostname():
+    """Получить имя хоста"""
+    return socket.gethostname()
 
 if __name__ == '__main__':
     logger.info('hd_clear_space')

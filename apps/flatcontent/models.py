@@ -198,7 +198,7 @@ class Containers(Standard):
         return '/cat/'
 
     def __str__(self):
-        return '%s, pk=%s, %s, state=%s' % (self._meta.model_name, self.pk, self.name, self.state)
+        return 'pk=%s, %s, state=%s' % (self.pk, self.name, self.state)
 
 class Blocks(Standard):
     """Блоки - динамический контент
@@ -299,6 +299,9 @@ class Blocks(Standard):
         if not self.parents:
             self.parents = ''
         super(Blocks, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return 'pk=%s, %s, state=%s' % (self.pk, self.name, self.state)
 
 class LinkContainer(Standard):
     """Линковка пункта меню к контейнеру

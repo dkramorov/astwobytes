@@ -583,6 +583,12 @@ input {
       padding-bottom: 35px; }
  }
 
+.pt60 {
+  padding-top: 60px; }
+  @media (max-width: 800px) {
+    .pt60 {
+      padding-top: 35px; }
+ }
 
 .pt80 {
   padding-top: 80px; }

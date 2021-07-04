@@ -12,7 +12,9 @@ logger.setLevel(logging.DEBUG)
 # Получение информации по РСЯ
 # ---------------------------
 def get_yandex_oauth_token(driver):
-    """Получение токена можно автоматизировать, но надо авторизовываться в Яндекс"""
+    """Получение токена можно автоматизировать,
+       но надо авторизовываться в Яндекс
+    """
     urla = 'https://oauth.yandex.ru/authorize'
     urla += '?response_type=token'
     urla += '&client_id=7806598477db40c09ffad90b86ebba0f'
@@ -34,17 +36,29 @@ def get_yandex_adv_clicks(proxies: dict = None,
     }
     if not proxies:
         proxies = {}
+    headers = {
+        'Authorization': 'OAuth %s' % token
+    }
     try:
-        r = requests.get('https://partner2.yandex.ru/api/statistics/get.json',
-                     params=params, proxies=proxies, timeout=5)
+        r = requests.get('https://partner2.yandex.ru/api/statistics2/get.json',
+                     params=params, proxies=proxies, headers=headers, timeout=5)
         resp = r.json()
-        data = resp.get('data', [])
-        values = data.get('data', [])
+        data = resp.get('data', {})
+        values = data.get('totals', {})
         if not values:
+            logger.info(resp)
             return {}
     except Exception as e:
         logger.error(e)
         values = {}
+
+    #keys = list(values.keys())
+    #if keys:
+    #    balance_list = values[keys[0]]
+    #    fbalance = list(filter(lambda x:x.get('partner_wo_nds', ''), balance_list))
+    #    if fbalance:
+    #        balance = fbalance[0]['partner_wo_nds']
+
     return values
 
 

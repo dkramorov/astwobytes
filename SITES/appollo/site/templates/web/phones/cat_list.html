@@ -1,0 +1,92 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extrahead %}
+<style type="text/css">
+  .with_imga img {
+    max-width: 300px;
+    float: left;
+    padding: 10px;
+    margin: 0 10px 10px 0;
+  }
+  .phones_catalogue a {
+    color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="blog-details" id="modern_phone">
+  <div class="padding-masc">
+    <div class="container">
+      <div class="col-md-4">
+        {% sidebar_phones_catalogue request %}
+      </div>
+      <div class="col-md-8">
+        {% if not phones %}<h3>К сожалению, ничего не нашлось</h3>{% endif %}
+        {% for phone in phones %}
+          <div class="with_imga">
+
+            <h3 class="phone_name">{{ phone.name }}</h3>
+            <img src="{% imagine phone.img '600x400' phone.get_folder True %}" alt="{{ phone.name|textize }}">
+            {% if phone.info1 %}{{ phone.info1|safe }}{% endif %}
+            <br><br>
+            {% if phone.phone %}
+              <blockquote>Телефон: <i>{{ phone.phone|defizize }}</i> {% if search_terms %}, <span class="phone_name">{{ phone.phone }}</span>{% endif %}</blockquote>
+            {% endif %}
+
+            {% if '8800' in phone.phone %}
+            <div class="col-md-12 call-container">
+              <div class="keypad">
+                {% include "web/phone_utils/keypad.html" %}
+              </div>
+              {% include "web/phone_utils/call_buttons.html" %}
+            </div>
+            {% endif %}
+
+          </div>
+          <div class="clearfix"></div><hr><br>
+        {% endfor %}
+        {% if paginator %}{{ paginator|safe }}{% endif %}
+      </div>
+      <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div style="display:none;">
+  <input type="text" value="88000000000" id="phone_number" class="phone" autocomplete="off" />
+  <form id="config-form" action="">
+    {% settings_value 'FS_USER' as fs_user %}
+    <input type="text" name="displayName" value="{{ fs_user }}" />
+    <input type="text" name="uri" value="{{ fs_user }}@calls.223-223.ru" />
+    <input type="text" name="authorizationUser" value="{{ fs_user }}" />
+    <input type="password" name="password" value="cnfylfhnysq" />
+    <input type="text" name="wsServers" value="wss://calls.223-223.ru:7443" />
+  </form>
+  <div id="ua">
+    <div id="ua-status">Disconnected</div>
+  </div>
+  <ul id="session-list"></ul>
+  <ul id="templates">
+    <li id="session-template" class="template session">
+      <video autoplay>Video Disabled or Unavailable</video>
+    </li>
+  </ul>
+</div>
+<audio id="ringtone" loop src="/static/call_from_site/sounds/ringtone2.wav"></audio>
+<audio id="ringbacktone" loop src="/static/call_from_site/sounds/ringbacktone.wav"></audio>
+{% endblock %}
+
+{% block extrascripts %}
+{% if search_terms %}
+<script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".phone_name").mark('{% for search_term in search_terms %}{% if not forloop.first %} {% endif %}{{ search_term }}{% endfor %}', {
+      'accuracy': 'complementary',
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}

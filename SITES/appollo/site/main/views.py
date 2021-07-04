@@ -23,6 +23,9 @@ from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import save_user_to_request, remove_user_from_request
 from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site, phone_confirmed
 
+from apps.site.phones.models import Phones
+from apps.site.phones.flatcat import get_phones_for_site
+
 CUR_APP = 'main'
 main_vars = {
     'singular_obj': 'Главная',
@@ -474,3 +477,33 @@ def fs_shopper(request):
         'token': token,
     }
     r = requests.post('%s%s' % (settings.FREESWITCH_DOMAIN, endpoint), data=params, headers=headers)
+
+phones_vars = {
+    'singular_obj': 'Телефоны 8800',
+    'template_prefix': 'phones_',
+    'show_urla': 'phones',
+}
+
+def phones_cat(request, link: str = None):
+    """Странички каталога телефонов
+       :param link: ссылка на рубрику (без /phones/ префикса)
+    """
+    mh_vars = cat_vars.copy()
+    kwargs = {
+        'q_string': {
+            'by': 10,
+        },
+    }
+    context = get_phones_for_site(request, link, **kwargs)
+    containers = {}
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/phones/%slist.html' % (mh_vars['template_prefix'], )
+
+    page = SearchLink(context['q_string'], request, containers)
+    if page:
+        context['page'] = page
+    context['containers'] = containers
+
+    return render(request, template, context)

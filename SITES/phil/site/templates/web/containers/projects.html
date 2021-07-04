@@ -1,11 +1,11 @@
 {% load mtags %}
-<div class="container projects pt100">
+<div class="container projects">
   <div class="row">
     <div class="recent-case align-center">
       <div class="col-lg-12">
         <div class="row">
 
-          <div class="col-md-12 pb30">
+          <div class="col-md-12 pb30 portfolio_title_container">
             <div class="portfolio_title">
               {{ container.description|safe }}
             </div>
@@ -36,7 +36,7 @@
                 </div>
               {% endfor %}
             {% else %}
-              <div class="clearfix"></div><br><br>
+              <div class="clearfix"></div>
               {% for block_container in block.sub|assembleby:3 %}
                 <div class="case-item-wrap">
                   {% for block in block_container %}
@@ -66,7 +66,7 @@
 
                         <div class="mobile">
                           <h6>
-                            <a href="{% if block.link %}{{ block.link }}{% else %}javscript:void(0);{% endif %}" class="fancybox" rel="gallery_{{ container.id }}">{{ block.name }}</a>
+                            <a href="{% if block.link %}{{ block.link }}{% else %}javscript:void(0);{% endif %}">{{ block.name }}</a>
                           </h6>
                           {% if block.html %}
                             <div class="thumb_desc">{{ block.html|safe }}</div>
@@ -81,12 +81,17 @@
             {% endif %}
           {% endfor %}
         </div>
-{% comment %}<!--
-        <a href="11_case_studies.html" class="btn btn-medium btn--dark">
-          <span class="text">All Projects</span>
-          <span class="semicircle"></span>
-        </a>
--->{% endcomment %}
+        <div class="clearfix"></div>
+        {% with blocks.0 as first_block %}
+          {% if first_block.link and first_block.description %}
+            <div class="pt30 align-left{% if page.class_name %} {{ page.class_name|textize }}{% endif %}">
+              <a class="btn btn-small c-primary details_link" href="{{ first_block.link }}" {% if first_block.blank %} target="_blank"{% endif %}>
+                <span class="text">{{ first_block.description }}</span>
+                <i class="fa {% if first_block.icon %}{{ first_block.icon }}{% else %}seoicon-right-arrow{% endif %}"></i>
+              </a>
+            </div>
+          {% endif %}
+        {% endwith %}
       </div>
     </div>
   </div>

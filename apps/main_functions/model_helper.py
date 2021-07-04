@@ -74,7 +74,7 @@ class ModelHelper:
         self.q_string = {}
         if self.request:
             q_string_fill(self.request, self.q_string)
-            if not "q" in self.q_string:
+            if not 'q' in self.q_string:
                 self.q_string['q'] = {}
         # -----------------------------
         # Если мы вызываем без request,
@@ -571,11 +571,11 @@ class ModelHelper:
             # ----------
             # GET / POST
             # ----------
-            for q_var in ("q", "data[q]"):
-                if self.request.method == "GET":
+            for q_var in ('q', 'data[q]'):
+                if self.request.method == 'GET':
                     if self.request.GET.get(q_var) and self.search_fields:
                         q = self.request.GET[q_var]
-                if self.request.method == "POST":
+                if self.request.method == 'POST':
                     if self.request.POST.get(q_var) and self.search_fields:
                         q = self.request.POST[q_var]
         # -------------------------------------------

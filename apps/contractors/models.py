@@ -33,7 +33,6 @@ class Contractor(Standard):
         blank=True, null=True, on_delete=models.SET_NULL,
         related_name='legal_address',
         verbose_name='Юридический адрес контрагента')
-
     ctype = models.IntegerField(blank=True, null=True, db_index=True,
         choices=ctype_choices,
         verbose_name='Тип контрагента')

@@ -1,0 +1,28 @@
+<div class="phones_catalogue">
+  {% if container.name %}<h3>{{ container.name }}</h3>{% endif %}
+  {% if container.description %}
+    <h4 class="mb50">
+      <i class="color">{{ container.description|safe }}</i>
+    </h4>
+  {% endif %}
+  <div class="panel-group">
+
+        <div class="panel-group">
+          <div class="panel panel-default text-left">
+            <form action="/phones/" method="get">
+              <input type="text" name="q" value="" placeholder="Поиск..." />
+            </form>
+          </div>
+        </div>
+
+    {% for block in blocks %}
+      <div class="panel panel-default text-left">
+        <a href="{{ block.link }}">
+          <div class="panel-heading">
+            <h4 class="panel-title">{{ block.name }}</h4>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>

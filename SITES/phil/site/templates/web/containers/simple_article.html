@@ -19,7 +19,7 @@
             {% if block.img %}
               <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
                 <div class="offers-thumb simple_article_img">
-                  <img loading="lazy" src="{% imagine block.img '800x600' block.get_folder True %}" alt="{{ block.name|textize }}">
+                  <img loading="lazy" src="{{ block.imagine }}" alt="{{ block.name|textize }}">
                 </div>
               </div>
             {% endif %}

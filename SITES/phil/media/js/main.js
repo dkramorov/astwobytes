@@ -318,6 +318,7 @@ var PHIL={};
         setWrapperSize:!0,
         preloadImages:false,
         lazyLoading: true,
+        lazyLoadingInPrevNext: true,
         updateOnImagesReady:!0,
         autoplay:m,
         autoHeight:p,
@@ -371,6 +372,8 @@ var PHIL={};
              e(this).addClass("slide-active"),!1
     })
   },
+
+
   PHIL.burgerAnimation=function(){
     function e(e){
       e.draw("80% - 240","80%",.3,{
@@ -454,7 +457,10 @@ var PHIL={};
             c(w)
           },450)
         }
-    },i.keydown(function(e){
+  },
+
+
+  i.keydown(function(e){
       27==e.which&&(d.hasClass("opened")&&PHIL.togglePanel(),
       o.hasClass("open")&&PHIL.toggleSearch())
     }),
@@ -707,7 +713,7 @@ find_active_sidebar_menu();
       return;
     }
     var parts = link_path.split("/");
-    var part = "/" + parts[1] + "/";
+    var part = "/" + parts[2] + "/";
     $(".project .sidebar .primary-menu-menu a").each(function(){
       if($(this).attr("href").indexOf(part) == -1){
         $(this).parent().addClass("hidden");
@@ -769,6 +775,8 @@ find_active_sidebar_menu();
     $("#portfolio_mini_menu_container").html(html);
   }
 */
+
+  // Менюшка снизу на проекте по всем разделам
   if($("#portfolio_mini_menu_container").length > 0){
     var html = "<ul class='primary-menu-menu'>";
     var class_name = "";
@@ -786,7 +794,7 @@ find_active_sidebar_menu();
         return;
       }
 
-      if(window.location.href.indexOf(link_parts[2]) >= 0){
+      if(window.location.href.indexOf(link_parts[2]) >= 0 && link_parts[2] != ""){
         class_name = " class='active'";
       }
       html += "<li" + class_name + "><a href=" + link + ">" + name + "</a></li>";
@@ -794,4 +802,40 @@ find_active_sidebar_menu();
     html += "</ul>";
     $("#portfolio_mini_menu_container").html(html);
   }
+
+
+  // Менюшка сверху на проектах по всем разделам
+  if(window.location.href.replace("//", "").split("/")[1] === "portfolio"){
+    var html = "<div class='mobile projects_menu'>";
+    var class_name = "";
+    var link = "";
+    var name = "";
+    var link_parts;
+    $("nav#primary-menu ul.portfolio>li>a").each(function(){
+      class_name = "";
+      name = $(this).html();
+      link = $(this).attr('href');
+
+      link_parts = link.split("/");
+      if(link_parts.length < 2 || link === "/portfolio/"){
+        return;
+      }
+
+      if(window.location.href.indexOf(link_parts[2]) >= 0 && link_parts[2] != ""){
+        class_name = " active";
+      }
+      html += "<div class='col-sm-4" + class_name + "'><a href=" + link + ">" + name + "</a></div>";
+    });
+    html += "<div class='clearfix'></div></div>";
+    $(".projects").first().before(html);
+    $(".projects").addClass("projects_with_menu");
+  }
+
+  $(".services_grid .service").click(function(){
+    var link = $(this).attr("data-link");
+    if(link && link.length > 0){
+      window.location.href = link;
+    }
+  });
+
 }(jQuery);

@@ -18,10 +18,10 @@
 
 <link rel="stylesheet" type="text/css" href="/media/css/phil-fonts.css">
 <link rel="stylesheet" type="text/css" href="/media/css/normalize.css">
-<link rel="stylesheet" type="text/css" href="/media/css/grid.css">
-<link rel="stylesheet" type="text/css" href="/media/css/base.css?v=5">
+<link rel="stylesheet" type="text/css" href="/media/css/grid.css?v=3">
+<link rel="stylesheet" type="text/css" href="/media/css/base.css?v=6">
 <link rel="stylesheet" type="text/css" href="/media/css/blocks.css">
-<link rel="stylesheet" type="text/css" href="/media/css/modules.css?v=6">
+<link rel="stylesheet" type="text/css" href="/media/css/modules.css?v=9">
 <link rel="stylesheet" type="text/css" href="/media/css/widgets-styles.css">
 {% comment %}<!-- Пока не нужен
 <link rel="stylesheet" type="text/css" href="/media/css/ion.rangeSlider.css">
@@ -29,7 +29,7 @@
 <!-- нужен для прокрутки в popup не влазящих на экран -->
 <link rel="stylesheet" type="text/css" href="/media/css/jquery.mCustomScrollbar.css">
 <link rel="stylesheet" type="text/css" href="/media/css/swiper.min.css">
-<link rel="stylesheet" type="text/css" href="/media/css/primary-menu.css?v=5">
+<link rel="stylesheet" type="text/css" href="/media/css/primary-menu.css?v=6">
 {% comment %}<!-- Пока погасил, возможно, понадобится
 <link rel="stylesheet" type="text/css" href="/media/css/magnific-popup.css">
 -->{% endcomment %}
@@ -39,6 +39,7 @@
 <link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css">
 
 <link rel="stylesheet" type="text/css" href="/static/admin/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="/media/css/mobile.css">
 {% if containers.main.tags.webmaster.html %}
   {{ containers.main.tags.webmaster.html|safe }}
 {% endif %}
@@ -62,8 +63,12 @@
   <div class="container">
     <div class="header-content-wrapper">
 
-      {% include "web/components/logo.html" %}
-
+      <div class="desktop">
+        {% include "web/components/logo.html" %}
+      </div>
+      <div class="mobile">
+        {% include "web/components/logo_mobile.html" %}
+      </div>
       {% flatmenu request "mainmenu" %}
 
       {% include "web/components/languages.html" %}
@@ -81,28 +86,15 @@
           <span></span>
         </a>
       </div>
-    </div>
 -->{% endcomment %}
+    </div>
+  </div>
   </div>
 </header>
 
 {% include "web/components/right_panel.html" %}
 <div class="content-wrapper">
-{% comment %}<!--
-  {% include "web/containers/slider.html" %}
-  {% include "web/containers/services.html" %}
-  {% include "web/containers/call_to_action.html" %}
-  {% include "web/containers/article.html" %}
-  {% include "web/containers/article_video.html" %}
-  {% include "web/containers/advantages.html" %}
-  {% include "web/containers/counters.html" %}
-  {% include "web/containers/projects.html" %}
-  {% include "web/containers/reviews.html" %}
-  {% include "web/containers/rates.html" %}
-  {% include "web/containers/news.html" %}
-  {% include "web/containers/clients.html" %}
-  {% include "web/containers/subscribe.html" %}
--->{% endcomment %}
+  {% include "web/components/breadcrumbs.html" %}
   {% block content %}{% endblock %}
 </div>
 
@@ -173,7 +165,7 @@ https://photoswipe.com/
 <script type="text/javascript" src="/static/js/feedback.js"></script>
 <script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
 <script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
-<script src="/media/js/main.js?v=8"></script>
+<script src="/media/js/main.js?v=10"></script>
 
 {% block extrascripts %}
 {% endblock %}

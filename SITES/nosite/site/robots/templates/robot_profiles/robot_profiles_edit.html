@@ -1,0 +1,125 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>{{ singular_obj }}<br /><small>{% if row.id %}{{ action_edit }}{% else %}{{ action_create }}{% endif %} {{ rp_singular_obj }}</small></h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+
+          {% include "core/forms/row_name.html" %}
+
+          <div class="form-group bordered">
+            <div class="col-lg-2">
+              <p class="text-right">Робот</p>
+            </div>
+            <div class="col-lg-10">
+              <select id="robot_select2" name="robot" autocomplete="off" data-parsley-required>
+                <option value="">Не выбрано</option>
+                {% if row.robot %}
+                  <option value="{{ row.robot.id }}" selected>{{ row.robot.server_name }} - {{ row.robot.ip }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Версия браузера</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Версия браузера" class="form-control" name="user_agent" autocomplete="off" value="{% if row.user_agent %}{{ row.user_agent }}{% endif %}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Разрешение экрана</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Разрешение экрана" class="form-control" name="resolution" autocomplete="off" value="{% if row.resolution %}{{ row.resolution }}{% endif %}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Yandex логин</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Yandex логин" class="form-control" name="yandex_login" autocomplete="off" value="{% if row.yandex_login %}{{ row.yandex_login }}{% endif %}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Yandex пароль</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Yandex пароль" class="form-control" name="yandex_passwd" autocomplete="off" value="{% if row.yandex_passwd %}{{ row.yandex_passwd }}{% endif %}" />
+            </div>
+          </div>
+
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#current_edit_form").parsley();
+    $("#current_edit_form").submit(function(e) {
+      var $form = $(this);
+      var msg = 'Произошла ошибка, обновите страничку';
+      var status = 'danger'; // success, warning, info, danger
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          //$("#current_edit_form").attr("action", r.redirect);
+          {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+        }
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+      //отмена действия по умолчанию для кнопки submit
+      e.preventDefault();
+    });
+    $("#robot_select2").select2({
+      placeholder: 'Выберите робота',
+      allowClear: true,
+      width: '100%',
+      ajax: {
+        url: "{% url 'robots:search_robots' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+  });
+</script>
+{% endblock %}

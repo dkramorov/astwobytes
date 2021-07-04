@@ -1,7 +1,9 @@
 {% load mtags %}
+
 {% comment %}<!--
 Приложение ws - чат
 -->{% endcomment %}
+
 {% settings_value 'WS_CHAT' as ws_chat_enabled %}
 {% if ws_chat_enabled %}
   <script type="text/javascript" src="/static/chat/fast_chat.js"></script>

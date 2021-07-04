@@ -32,15 +32,81 @@ class Robots(Standard):
     def save(self, *args, **kwargs):
         super(Robots, self).save(*args, **kwargs)
 
+class RobotProfiles(Standard):
+    """Профили роботов для yandex/google"""
+    robot = models.ForeignKey(Robots, on_delete=models.CASCADE,
+        blank=True, null=True)
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Название профиля (папки)')
+    user_agent = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Строка user_agent (браузер)')
+    resolution = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Разрешение экрана')
+    yandex_login = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    yandex_passwd = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Роботы - Профиль'
+        verbose_name_plural = 'Роботы - Профили'
+
+
+class Sites(Standard):
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Название сайта')
+    url = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Ссылка на главную страницу сайта')
+
+    class Meta:
+        verbose_name = 'Роботы - Сайт'
+        verbose_name_plural = 'Роботы - Сайты'
+
+    def fix_url(self, link: str):
+        """Обрабатываем ссылку до домена
+           :param link: ссылка
+        """
+        if not link:
+            return link
+        schema, url = link.split('//')
+        url = url.split('/')[0]
+        return '%s//%s' % (schema, url)
+
+    def save(self, *args, **kwargs):
+        #self.url = self.fix_url(self.url)
+        super(Sites, self).save(*args, **kwargs)
+
+
+class SearchQueries(Standard):
+    """Поисковые запросы для сайтов"""
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Поисковой запрос')
+    site = models.ForeignKey(Sites, on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name='Сайт')
+
+    class Meta:
+        verbose_name = 'Роботы - Поисковой запрос'
+        verbose_name_plural = 'Роботы - Поисковые запросы'
+
 
 class TestScenarios(Standard):
     """Сценарии, состоящие из команд
        для выполнения роботами
        список возможных команд
     """
-    robot = models.ForeignKey(Robots, blank=True, null=True,
-        on_delete=models.CASCADE,
+    robot = models.ForeignKey(Robots, on_delete=models.CASCADE,
+        blank=True, null=True,
         verbose_name='Робот')
+    site = models.ForeignKey(Sites, on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name='Сайт')
     name = models.CharField(max_length=255,
         blank=True, null=True, db_index=True)
     commands = models.TextField(blank=True, null=True,

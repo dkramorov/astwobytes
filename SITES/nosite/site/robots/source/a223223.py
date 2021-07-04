@@ -16,7 +16,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 from browser import Browser
-from plugins.utils import search_process, get_hd_space, get_ip
+from plugins.utils import search_process, get_hd_space
 from plugins.yandex_adv_info import get_yandex_adv_clicks
 
 from envparse import env
@@ -175,7 +175,9 @@ blya_bg.parentNode.removeChild(blya_bg);
         pass
 
 def visit_yandex(driver):
-    """Поиск на Яндексе, переход на сайт, по возможности на наш домен"""
+    """Поиск на Яндексе,
+       переход на сайт, по возможности на наш домен
+    """
     our_domain = '223-223.ru'
 
     if not driver.yandex.search_authorization():
@@ -677,7 +679,6 @@ def get_new_scenario(driver):
 # https://selenium-python.readthedocs.io/locating-elements.html
 # -------------------------------
 def test_main(original_driver):
-    logger.info('[STARTED]: %s' % (datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y'), ))
     driver = original_driver.instance
 
     # Проверка перехода со ссылки википедии
@@ -701,10 +702,14 @@ def test_main(original_driver):
         }
 
     balance = get_yandex_adv_clicks(proxies=proxies)
-    fbalance = list(filter(lambda x:x.get('partner_wo_nds', ''), balance))
-    if fbalance:
-        balance = fbalance[0]['partner_wo_nds']
-    ip = get_ip()
+    keys = list(balance.keys())
+    if keys:
+        balance_list = balance[keys[0]]
+        fbalance = list(filter(lambda x:'partner_wo_nds' in x, balance_list))
+        if fbalance:
+            balance = fbalance[0]['partner_wo_nds']
+
+    ip = driver.get_ip()
     driver.messages.append('%s - %s - %s' % (balance, driver.profile_name, ip))
     driver.messages.append('hd: %s' % get_hd_space()['percent'])
     # ---------------------------

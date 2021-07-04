@@ -135,7 +135,8 @@ def generate_user_agent():
     g = generate_ua()
     for i in range(rand):
         ua = next(g)
-    return ua
+    random.shuffle(ua)
+    return ua[0]
 
 def fill_screen_resolution(cur_profile: str):
     """Сформировать и записать в файл
@@ -166,6 +167,28 @@ def fill_screen_resolution(cur_profile: str):
     with open(screen_file, 'w+', encoding='utf-8') as f:
         f.write(json.dumps({'screen': screen}))
     return screen
+
+def pick_user_agent(cur_profile: str):
+    """Достаем или создаем user_agent
+       :param cur_profile: путь к профилю
+    """
+    profile_starts_counter = 0
+    ua_file = os.path.join(cur_profile, 'ua.json')
+    if os.path.exists(ua_file):
+        with open(ua_file, 'r', encoding='utf-8') as f:
+            ua_settings = json.loads(f.read())
+            user_agent = ua_settings['ua']
+            if isinstance(user_agent, list):
+                user_agent = user_agent[0]
+            profile_starts_counter = ua_settings.get('starts_counter', 0)
+    else:
+        user_agent = generate_user_agent()
+    with open(ua_file, 'w+', encoding='utf-8') as f:
+        f.write(json.dumps({
+            'ua': user_agent,
+            'starts_counter': profile_starts_counter + 1,
+        }))
+    return user_agent
 
 if __name__ == '__main__':
     #update_ua_in_all_profiles()

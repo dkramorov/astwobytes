@@ -38,6 +38,7 @@
     margin: 0 auto;
     position: relative;
   }
+
   #dynamic_portfolio_{{ container.id }} .swiper-navigation .next,
   #dynamic_portfolio_{{ container.id }} .swiper-navigation .prev {
     background-color: transparent;
@@ -51,7 +52,7 @@
   }
   #dynamic_portfolio_{{ container.id }} .primary-menu-menu {
     float: right;
-    padding-right: 70px;
+    padding-right: 58px;
   }
   @media (min-width: 1024px) {
     .portfolio_side_info:after {
@@ -86,7 +87,7 @@
     <div class="recent-case align-center">
       <div class="col-lg-12">
         {% with request|dynamic_portfolio as portfolio %}
-          <div class="container pt120">
+          <div class="container pt60">
             <div class="col-lg-4">
               <div class="portfolio_title_bg"></div>
               <div class="portfolio_title">

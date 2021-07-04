@@ -28,5 +28,10 @@ urlpatterns = [
     # Оформление заказа
     path('shop/cart/', views.show_cart, name='show_cart'),
     path('shop/checkout/', views.checkout, name='checkout'),
+
+    # Телефоны
+    url('^phones/$', views.phones_cat, name='phones_cat'),
+    url('^phones/(?P<link>.+)/$', views.phones_cat, name='phones_cat'),
+
 ]
 

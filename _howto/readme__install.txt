@@ -132,7 +132,14 @@ path = "/home/a/a223223/test_site/public_html"
 # -------------------------------
 if not path in sys.path:
   sys.path.append(path)
+
+sys.path.insert(0, '%s/env/lib/python3.4/site-packages' % path)
+
 os.environ['DJANGO_SETTINGS_MODULE'] = "conf.settings"
+
+import django
+django.setup()
+
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
 
@@ -179,3 +186,16 @@ django.setup()
 # положить нужную версию django в проект,
 # та же логика касается и разных версий django
 # -----------------------------------------------
+crontab -e редактировать
+crontab -l просматривать
+
+CONTENT_TYPE="text/plain; charset=UTF-8"
+CONTENT_TRANSFER_ENCODING=8bit
+PYTHONIOENCODING=utf-8
+LANG=ru_RU.UTF-8
+MAILTO='dkramorov@mail.ru'
+# старое django
+10 04 * * * /usr/bin/python /home/v/vallom/vallomsu/public_html/vallomcrm.py get_lots >/dev/null 2>&1
+# новое django
+*/2 * * * * /home/v/vallom/vallomcrm_new/public_html/env/bin/python /home/v/vallom/vallomcrm_new/public_html/manage.py jdocs_get_lots --get_lots
+

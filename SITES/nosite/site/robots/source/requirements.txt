@@ -4,4 +4,5 @@ selenium==3.141.0
 urllib3==1.24.3
 requests==2.21.0
 envparse
+python-memcached==1.59
 

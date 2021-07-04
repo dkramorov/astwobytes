@@ -88,11 +88,10 @@
         padding: 17px 40px; }
  }
 
-
 .c-primary {
-  color: #e53863; }
+  color: #582371; }
   .c-primary .semicircle:after {
-    border-color: #e53863; }
+    border-color: #582371; }
 
 .semicircle {
   display: block;
@@ -1490,7 +1489,6 @@ body.author .blog-details-author {
       .stunning-header .stunning-header-content .breadcrumbs .breadcrumbs-item {
         display: inline-block; }
         .stunning-header .stunning-header-content .breadcrumbs .breadcrumbs-item a {
-          text-transform: uppercase;
           color: white;
           opacity: .5;
           margin-right: 20px; }
@@ -1523,6 +1521,21 @@ body.author .blog-details-author {
 .stunning-header-custom i,
 .stunning-header-custom a {
   color: inherit !important; }
+
+#custom_breadcrumbs {
+  padding: 0;
+}
+
+#custom_breadcrumbs .stunning-header-content .stunning-header-title,
+#custom_breadcrumbs .stunning-header-content .breadcrumbs .breadcrumbs-item a,
+#custom_breadcrumbs .stunning-header-content .breadcrumbs .breadcrumbs-item i,
+.stunning-header .stunning-header-content .breadcrumbs .breadcrumbs-item.active span {
+  color: #582371;
+}
+#custom_breadcrumbs .stunning-header-content {
+  text-align: left;
+  max-width: none;
+}
 
 /*------------- #Any colors background --------------*/
 .stunning-header-bg-blue {
@@ -1696,7 +1709,6 @@ body.author .blog-details-author {
     padding: 20px 5px;
     border-radius: 0 50px 50px 0;
     font-size: 15px;
-    text-transform: uppercase;
     cursor: pointer;
     position: relative;
     color: #fff;

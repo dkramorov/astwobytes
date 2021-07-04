@@ -8,8 +8,8 @@ class Vocabulary(Standard):
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
     class Meta:
-        verbose_name = 'Promotion - семантический словарь'
-        verbose_name_plural = 'Promotion - семантический словарь'
+        verbose_name = 'Promotion - поисковый запрос'
+        verbose_name_plural = 'Promotion - поисковые запросы'
 
     def save(self, *args, **kwargs):
         analogs = Vocabulary.objects.filter(name=self.name)

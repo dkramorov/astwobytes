@@ -1,0 +1,8 @@
+{% if perms.phones.view_phones %}
+<li{% ifequal menu 'phones' %} class="active"{% endifequal %} id="left_menu_phones_app">
+  <a href="{% url 'phones:show_phones' %}">
+    <em class="fa fa-phone"></em>
+    <span class="item-text">Телефоны 8800</span>
+  </a>
+</li>
+{% endif %}

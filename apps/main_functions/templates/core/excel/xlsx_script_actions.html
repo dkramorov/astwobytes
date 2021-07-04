@@ -1,0 +1,37 @@
+<script type="text/javascript">
+$(document).ready(function(){
+  // В загружаемом файле такие же поля как и в основной таблице,
+  // исключаем только перетаскивание и actions
+  excel_table_columns = main_table_columns.map(function(el){
+    if(el.field == undefined || el.field == "actions"){
+      return null;
+    }
+    // Может быть тип поля тоже возвращать,
+    // чтобы правильно выбрать редактор?
+    el.editor = defaultInputEditor;
+    return el;
+  }).filter(el => el != null);
+  excel_table = new Tabulator("#excel-table", {
+    layout: "fitColumns",
+    columns: excel_table_columns,
+  });
+
+  // Настройка отправки формы (файла) через аякс
+  set_ajax_form("#import_excel_file_form", function(r){
+    // success callback
+    // Строим таблицу с данными
+    $("#excel-table").removeClass("hidden");
+    $("#save_excel_table").removeClass("hidden");
+    excel_table.clearData();
+    excel_table.addData(r.resp.data);
+  }, function(r){
+    // error callback
+    console.log(r);
+  }, true);
+  set_ajax_form_save_xlsx("#save_excel_table", excel_table, function(r){
+    // success callback
+  }, function(r){
+    // error callback
+  }, 'save');
+});
+</script>
