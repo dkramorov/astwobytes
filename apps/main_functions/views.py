@@ -132,6 +132,19 @@ def my_ip(request):
         logger.info(json_pretty_print(json.loads(request.body)))
     return JsonResponse(result, safe=False)
 
+@csrf_exempt
+def test_statuses(request):
+    """Апи-метод для тестирования ответов"""
+    status_code = request.GET.get('status_code')
+    if not status_code:
+        status_code = 400
+    status_code = int(status_code)
+    result = {
+        'status': status_code,
+        'msg': 'test_statuses',
+    }
+    return JsonResponse(result, safe=False, status=status_code)
+
 def DefaultFeedback(request, **kwargs):
     """Контакты и форма обратной связи
        kwargs['fv']:

@@ -16,8 +16,8 @@ logger.info(__file__)
 
 started = time.time()
 
-project_name = 'greenfarm'
-logger.info('Arguments: %s: %s', len(sys.argv), sys.argv)
+project_name = None
+#logger.info('Arguments: %s: %s', len(sys.argv), sys.argv)
 if len(sys.argv) > 1:
     project_name = sys.argv[1]
 
@@ -28,6 +28,13 @@ logger.info('root_dir: %s' % root_dir)
 # Сайт на который переключаемся
 # -----------------------------
 sites = os.path.join(root_dir, 'SITES')
+
+if not project_name:
+    logger.info('project not set')
+    for item in os.listdir(sites):
+        logger.info('[SITE]: %s' % item)
+    exit()
+
 active_site = os.path.join(sites, project_name)
 as_db = os.path.join(active_site, 'db.sql')
 as_media = os.path.join(active_site, 'media')
