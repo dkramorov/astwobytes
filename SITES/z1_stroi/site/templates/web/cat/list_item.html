@@ -3,10 +3,7 @@
   <div class="row">
     <div class="col-md-4">
       <div class="media">
-        <a class="media-link" href="{{ product.link }}">
-          <img src="{% imagine product.img '800x600' product.get_folder True %}" alt="{{ product.name|textize }}" alt="{{ product.name|textize }}"/>
-          <span class="icon-view"><strong><i class="fa fa-eye"></i></strong></span>
-        </a>
+        {% include "web/cat/product_img.html" %}
       </div>
     </div>
     <div class="col-md-8">
@@ -14,14 +11,7 @@
         <h4 class="caption-title product-title">
           <a href="{{ product.link }}">{{ product.name }}</a>
         </h4>
-        <div class="rating">
-          <span class="star"></span>
-          <span class="star active"></span>
-          <span class="star active"></span>
-          <span class="star active"></span>
-          <span class="star active"></span>
-        </div>
-        <a class="reviews" href="#">нет отзывов</a>
+        {% include "web/cat/product_review.html" %}
         <div class="overflowed">
           <div class="availability">
             Наличие: <strong>На складе</strong>

@@ -1,11 +1,14 @@
 {% load mtags %}
-<section class="page-section">
+<section class="page-section products_tabs">
   <div class="container">
     <div class="tabs">
       <ul id="tabs" class="nav nav-justified-off">
         {% for block in blocks %}
-          <li{% if forloop.first %} class="active"{% endif %}>
-            <a href="#tab-{{ block.id }}" data-toggle="tab">{{ block.name }}</a>
+          <li class="{% if forloop.first %}active{% endif %}{% if block.class_name %} {{ block.class_name }}{% endif %}">
+            <a href="#tab-{{ block.id }}" data-toggle="tab">
+              <span class="badge">{{ block.title }}</span>
+              <span class="tab_name">{{ block.name }}</span>
+            </a>
           </li>
         {% endfor %}
       </ul>
@@ -15,8 +18,9 @@
       <div class="tab-pane fade{% if forloop.first %} active in{% endif %}" id="tab-{{ block.id }}">
         <div class="row">
           {% for product in block.products %}
-            <div class="col-md-3 col-sm-6">
-              <div class="thumbnail no-border no-padding">
+            <div class="col-md-fifth col-sm-6 col-xs-12">
+              <div class="thumbnail{% if block.class_name %} active {{ block.class_name }}{% endif %}">
+                <div class="code">Код: {{ product.code }}<span class="badge">{{ block.title }}</span></div>
                 <div class="media">
                   <a class="media-link" data-gal="prettyPhoto" href="{{ product.imagine }}">
                     <img src="{% imagine product.img '600x600' product.get_folder True %}" alt="{{ product.name|textize }}"/>
@@ -25,17 +29,14 @@
                     </span>
                   </a>
                 </div>
-                <div class="caption text-center">
+                <div class="caption">
                   <h4 class="caption-title">
-                    <a href="{{ product.link }}">{{ product.name }}</a>
+                    <a href="{{ product.link }}" class="truncate-overflow">{{ product.name }}</a>
                   </h4>
-                  <div class="rating">
-                    <span class="star"></span>
-                    <span class="star active"></span>
-                    <span class="star active"></span>
-                    <span class="star active"></span>
-                    <span class="star active"></span>
-                  </div>
+                </div>
+
+                <div class="bottom">
+                  {% include "web/cat/product_review.html" %}
                   {% include "web/cat/product_price_row.html" %}
                   {% include "web/cat/product_buy_button.html" %}
                 </div>

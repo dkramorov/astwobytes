@@ -68,6 +68,7 @@ class TelegramBot:
     # можно воспользоваться parse_mode
     # parse_mode = 'HTML' (<b>123</b>)
     # parse_mode = 'Markdown'
+    # send_message('`Hello`') = RED
     # --------------------------------
     def send_message(self, text: str,
                      chat_id: int = None,

@@ -1,0 +1,24 @@
+<div class="header-cart jopacart">
+  <div class="cart-wrapper">
+    <a href="{{ containers.main.tags.phone.link }}" class="phone hidden-xs">
+      <i class="fa fa-{{ containers.main.tags.phone.icon }}"></i>
+      {{ containers.main.tags.phone.html|safe }}
+    </a>
+
+    <a class="ui-link compare-link" href="/shop/compare/">
+      <span class="compare-list-count compare-link__badge{% comment %} compare-link__badge_empty - Если пустой{% endcomment %}">0</span>
+      <span class="compare-link__icon"></span>
+    </a>
+
+    <a href="/shop/cart/" class="" id="stroi_cartpro">
+      <i class="fa fa-shopping-cart"></i>
+      <span class="hidden-xs">
+        <span class="count">0</span> шт -
+        <span class="price">0.00 ₽</span>
+      </span>
+    </a>
+    <a href="#" class="menu-toggle btn btn-theme-transparent">
+      <i class="fa fa-bars"></i>
+    </a>
+  </div>
+</div>

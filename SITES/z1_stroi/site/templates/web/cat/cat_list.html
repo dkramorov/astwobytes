@@ -65,6 +65,23 @@
       </aside>
       <div class="col-md-9 content" id="content">
         {% flatcontent request page 'slider2' %}
+
+        {% if subcats %}
+          <div class="col-md-12 rubrics">
+            {% for subcat in subcats %}
+              <div class="col-md-fifth col-sm-6 col-xs-6">
+                <a class="imga" href="{{ subcat.link }}">
+                  <img src="{% imagine subcat.img '600x400' subcat.get_folder True %}" alt="{{ subcat.name|quotes2apostrophe }}" />
+                </a>
+                <div class="rubric_link">
+                  <a href="{{ subcat.link }}">{{ subcat.name }}</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="clearfix"></div>
+        {% endif %}
+
         <div class="shop-sorting">
           <div class="row">
             <div class="col-sm-8">
@@ -88,7 +105,7 @@
 -->{% endcomment %}
             </div>
 
-            <div class="col-sm-4 text-right-sm">
+            <div class="col-sm-4 text-right-sm nomargin">
               <a class="btn btn-theme btn-theme-transparent btn-theme-sm active" id="listview" href="javascript:void(0);"><img src="/media/misc/icon-list.png" alt="Вид сеткой"/></a>
               <a class="btn btn-theme btn-theme-transparent btn-theme-sm" id="gridview" href="javascript:void(0);"><img src="/media/misc/icon-grid.png" alt="Вид списком"/></a>
             </div>

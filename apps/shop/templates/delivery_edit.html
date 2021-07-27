@@ -1,0 +1,186 @@
+{% extends "core/base.html" %}
+{% load mtags %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+
+<style type="text/css">
+  .mapContainer{
+    height:400px;
+    width: 100%;
+  }
+</style>
+
+<script src="//api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={{ yandex_maps_api_key }}" type="text/javascript"></script>
+<script type="text/javascript" src="/static/yandex_app/yandex_2_1.js"></script>
+
+<script type="text/javascript">
+  var myMapContainer = "mapContainer";
+  $(document).ready(function(){
+    var kwargs = {};
+    kwargs['default_town'] = "Иркутск"; // TODO Задать в настройках и передавать в шаблон
+    kwargs['search_address_by_click'] = 1;
+    kwargs['search_result_to_form'] = function(ind){
+      var myMap = get_map(myMapContainer);
+
+      console.log("search_result_to_form ", ind, myMap.search_results);
+
+      var meta_data = myMap.search_results[ind].properties.get("metaDataProperty.GeocoderMetaData");
+      var address = meta_data.Address.formatted || meta_data.text;
+      $("#address_text").val(address);
+      var coords = myMap.kwargs['click_coords'];
+      $("#address_latitude").val(coords[0]);
+      $("#address_longitude").val(coords[1]);
+    }
+
+    create_new_map(myMapContainer);
+    wait_for_result(myMapContainer, function(){
+      var myMap = get_map(myMapContainer);
+      disable_map_wheel(myMapContainer);
+      myMap.kwargs = kwargs;
+      {% if row.latitude and row.longitude %}
+        var coords = [{{ row.latitude }}, {{ row.longitude }}];
+        set_map_center(myMapContainer, coords, 16);
+        // ----------------------------------
+        // Вручную добавляем в object_manager
+        // нашей карты сохраненную точку
+        // ----------------------------------
+        var myPoint = {"type": "Feature", "id": (myMap.search_results.length + myMap.myPoints.length), "geometry": {"type": "Point", "coordinates": coords}, "properties": {"balloonContent": "<p>{{ row.address|quotes2apostrophe }}</p>", "clusterCaption": "Адрес", "hintContent": "<p>{{ row.address|quotes2apostrophe }}</p>"}};
+        myMap.myPoints.push(myPoint);
+        add_points_to_map(myMapContainer, [myPoint]);
+      {% endif %}
+    }, ["map"]);
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+
+{% include "core/title/page_title_edit.html" %}
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Заказ</label>
+            <div class="col-lg-10">
+              <select id="order_select2" name="order" autocomplete="off">
+                {% if row.order %}
+                  <option value="{{ row.order.id }}" selected>#{{ row.order.id }}{% if row.order.number %} №{{ row.order.number }}{% endif %}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Время доставки</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Время доставки" class="form-control" name="time" value="{% if row.time %}{{ row.time }}{% endif %}" id="delivery_time" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Адрес (комментарий)</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Адрес (комментарий)" class="form-control" name="address" value="{% if row.address %}{{ row.address }}{% endif %}" id="address_text" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-lg-12">
+              <div class="mapContainer" id="mapContainer"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Координаты - долгота</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Координаты - долгота" class="form-control" name="longitude" value="{% if row.longitude %}{{ row.longitude }}{% endif %}" id="address_longitude" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Координаты - широта</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Координаты - широта" class="form-control" name="latitude" value="{% if row.latitude %}{{ row.latitude }}{% endif %}" id="address_latitude" autocomplete="off">
+            </div>
+          </div>
+
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+      $("#order_select2").select2({
+        placeholder: 'Заказ',
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'shop:search_orders' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
+      $("#delivery_time").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+
+    });
+  </script>
+{% endblock %}

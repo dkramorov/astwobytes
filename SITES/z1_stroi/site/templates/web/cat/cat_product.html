@@ -22,7 +22,8 @@
 {% block content %}
 <section class="page-section">
   <div class="container">
-    <div class="row product-single">
+    <div class="row">
+      <div class="product-single">
       <div class="col-md-6">
 {% comment %}<!--
         <div class="badges">
@@ -45,7 +46,7 @@
         <div class="row product-thumbnails">
           <div class="col-xs-2 col-sm-2 col-md-3"><a href="#" onclick="jQuery('.img-carousel').trigger('to.owl.carousel', [0, 300]);"><img src="{{ product.thumb }}" alt="{{ product.name|textize }}"/></a></div>
           {% for photo in photos %}
-            <div class="col-xs-2 col-sm-2 col-md-3"><a href="#" onclick="jQuery('.img-carousel').trigger('to.owl.carousel', [1, 300]);"><img src="{{ photo.thumb }}" alt="{{ photo.name|textize }}"/></a></div>
+            <div class="col-xs-2 col-sm-2 col-md-3"><a href="#" onclick="jQuery('.img-carousel').trigger('to.owl.carousel', [{{ forloop.counter }}, 300]);"><img src="{{ photo.thumb }}" alt="{{ photo.name|textize }}"/></a></div>
           {% endfor %}
         </div>
       </div>
@@ -59,30 +60,47 @@
           </div>
         </div>
 -->{% endcomment %}
+        <div class="color-grey">Артикул: {{ product.code }}</div>
+        <br>
         <h2 class="product-title">{{ product.name }}</h2>
-        <div class="product-rating clearfix">
-          <div class="rating">
-            <span class="star"></span>
-            <span class="star active"></span>
-            <span class="star active"></span>
-            <span class="star active"></span>
-            <span class="star active"></span>
+        {% if product.mini_info %}
+          <div class="desc">
+            {{ product.mini_info|safe }}
           </div>
+        {% endif %}
+        <div class="product-rating clearfix">
+          {% include "web/cat/product_review.html" %}
+<!--
           <a class="reviews" href="#">нет отзывов</a> | <a class="add-review" href="#">Написать отзыв</a>
-        </div>
-        <div class="product-availability">
-          Доступоность: <strong>На складе</strong>
-        </div>
-        <hr class="page-divider small"/>
-        <div class="product-price">
-          {% include "web/cat/product_price_row.html" %}
+-->
         </div>
 
+
         <hr class="page-divider"/>
+
+<!--
         <div class="product-text">
-          {% if product.mini_info %}{{ product.mini_info|safe }}{% endif %}
           {% include "web/cat/product_main_attrs.html" %}
         </div>
+-->
+        <div class="delivery"><i class="fa fa-truck"></i> Доставка по городу</div>
+        <div class="pickup"><i class="fa fa-building-o"></i> Забрать в пункте самовывоза</div>
+
+        <div class="product-availability">
+          Доступность: <strong>На складе</strong>
+        </div>
+
+        <hr class="page-divider small"/>
+
+        <div class="col-md-6">
+          <div class="product-price">
+            {% include "web/cat/product_price_row.html" %}
+          </div>
+        </div>
+        <div class="col-md-6">
+          {% include "web/cat/product_buy_button.html" %}
+        </div>
+
         <hr class="page-divider"/>
 {% comment %}<!--
         <form action="#" class="row variable">
@@ -108,7 +126,7 @@
           </div>
         </form>
         <hr class="page-divider small"/>
--->{% endcomment %}
+
         <div class="buttons">
           <div class="quantity" id="qbuttons_{{ product.id }}">
             <button class="btn prod-minus"><i class="fa fa-minus"></i></button>
@@ -125,6 +143,11 @@
           <li><a href="#" class="twitter"><i class="fa fa-twitter"></i></a></li>
           <li><a href="#" class="instagram"><i class="fa fa-instagram"></i></a></li>
         </ul>
+
+-->{% endcomment %}
+
+      </div>
+
       </div>
     </div>
   </div>

@@ -1,6 +1,7 @@
 {% load mtags %}
-<div class="col-md-8">
-  <table class="table">
+<div class="col-md-9">
+  <table class="table purchases">
+{% comment %}<!--
     <thead>
       <tr>
         <th>Изображение</th>
@@ -10,27 +11,34 @@
         <th>Итого</th>
       </tr>
     </thead>
+-->{% endcomment %}
     <tbody>
       {% for purchase in cart.purchases %}
         <tr>
+          <td class="drop">
+            <a href="#" class="color-grey" id="purchase_drop_{{ purchase.id }}"><i class="fa fa-close"></i></a>
+          </td>
           <td class="image">
             <a class="media-link" href="{{ purchase.link }}"><i class="fa fa-plus"></i><img src="{{ purchase.thumb }}" alt="{{ purchase.product_name|textize }}"/></a>
           </td>
           <td class="description">
             <h4>
               <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
+              <div class="color-grey subtotal">Артикул {{ purchase.product_code }}</div>
             </h4>
           </td>
           <td class="total">
-            {{ purchase.cost|money_format }} ₽
-          </td>
-          <td class="quantity">
-            x<input type="text" id="quantity_{{ purchase.id }}" value="{{ purchase.count }}" />
-          </td>
-          <td class="total">
             {{ purchase.total|money_format }} ₽
-            <a href="#" id="purchase_drop_{{ purchase.id }}"><i class="fa fa-close"></i></a>
+            <div class="color-grey subtotal">{{ purchase.cost|money_format }} ₽ / шт</div>
           </td>
+          <td class="quantity" id="qbuttons_{{ purchase.id }}">
+
+            <button class="btn prod-minus"><i class="fa fa-minus"></i></button>
+            <input class="form-control qty" type="text" name="quantity" value="{{ purchase.count }}" title="Кол-во" id="quantity_{{ purchase.id }}" autocomplete="off">
+            <button class="btn prod-plus"><i class="fa fa-plus"></i></button>
+
+          </td>
+
         </tr>
       {% endfor %}
     </tbody>

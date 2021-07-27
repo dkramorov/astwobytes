@@ -1,6 +1,16 @@
 {% load mtags %}
-<div class="buttons">
+<div class="buttons with_quantity">
+
+  <div class="quantity" id="qbuttons_{{ product.id }}">
+    <button class="btn prod-minus"><i class="fa fa-angle-down"></i></button>
+    <input class="form-control qty" type="text" name="quantity" value="1" title="Кол-во" id="quantity_{{ product.id }}" autocomplete="off">
+    <button class="btn prod-plus"><i class="fa fa-angle-up"></i></button>
+  </div>
+<!--
   <a class="btn btn-theme btn-theme-transparent btn-wish-list" href="#"><i class="fa fa-heart"></i></a>
-  <a class="btn btn-theme btn-theme-transparent btn-icon-left add_to_cart_btn" href="javascript:void(0);" data-product_id="{{ product.id }}"><i class="fa fa-shopping-cart"></i>В корзину</a>
-  <a class="btn btn-theme btn-theme-transparent btn-compare" href="#"><i class="fa fa-exchange"></i></a>
+-->
+  <a class="btn btn-theme-dark btn-theme-transparent btn-icon-left add_to_cart_btn" href="javascript:void(0);" data-product_id="{{ product.id }}"><i class="fa fa-shopping-cart"></i>В корзину</a>
+
+  <a class="btn btn-theme btn-theme-transparent btn-compare add_to_compare_btn" href="javascript:void(0);" data-product_id="{{ product.id }}"><i class="fa fa-exchange"></i></a>
+
 </div>

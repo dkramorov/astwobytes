@@ -7,7 +7,6 @@
   font-size: 15px;
   line-height: 1;
   text-transform: uppercase;
-  font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif;
   color: #fff;
   border-radius: 50px;
   position: relative;
@@ -626,7 +625,7 @@
     color: #582371; }
   .offers .simple_article_text {
     color: #582371;
-    padding: 45px 5px 15px 5px;
+    padding: 25px 5px 15px 5px;
     font-size: 17px;
     line-height: 30px;
   }

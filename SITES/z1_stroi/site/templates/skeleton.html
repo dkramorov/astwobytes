@@ -12,8 +12,11 @@
 <link href="/media/css/owl.theme.default.min.css" rel="stylesheet">
 <link href="/media/css/animate.min.css" rel="stylesheet">
 
+<link href="/media/css/fonts.css" rel="stylesheet">
 <link href="/media/css/theme.css" rel="stylesheet">
 <link href="/media/css/custom.css" rel="stylesheet">
+<link href="/media/css/mobile.css" rel="stylesheet">
+
 <script src="/media/js/modernizr.custom.js"></script>
 <!--[if lt IE 9]><script src="/media/js/html5shiv.js"></script><script src="/media/js/respond.min.js"></script><![endif]-->
 <script type="text/javascript">
@@ -72,8 +75,10 @@ var cart_id = "#popup-cart";
             Каталог товаров
           </a>
         </div>
-
+{% comment %}<!--
         {% include "web/components/cart_icons.html" %}
+-->{% endcomment %}
+        {% include "web/components/shop_actions.html" %}
       </div>
     </div>
     {% flatmenu request "mainmenu" %}
@@ -96,7 +101,17 @@ var cart_id = "#popup-cart";
   </header>
 
   <div class="content-area">
-    {% include "web/components/breadcrumbs.html" %}
+    {% ifnotequal request.META.PATH_INFO '/' %}
+      <section class="page-section breadcrumbs">
+        <div class="container">
+          {% include "web/components/breadcrumbs.html" %}
+          {% block extracrumbs %}{% endblock %}
+          <div class="page-header">
+            <h1>{% block page_title %}{% if page.title %}{{ page.title }}{% else %}{{ page.name }}{% endif %}{% endblock %}</h1>
+          </div>
+        </div>
+      </section>
+    {% endifnotequal %}
     {% block content %}{% endblock %}
   </div>
   <footer class="footer">
@@ -120,7 +135,7 @@ var cart_id = "#popup-cart";
               </ul>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-3 only_desktop">
             <div class="widget">
               <h4 class="widget-title">Новости</h4>
               <p>Подпишитесь на новости</p>
@@ -178,6 +193,7 @@ var cart_id = "#popup-cart";
 <script src="/media/js/jquery.easing.min.js"></script>
 <script src="/media/js/jquery.smoothscroll.min.js"></script>
 <script src="/media/js/smooth-scrollbar.min.js"></script>
+{% include "check_feedback_form.html" %}
 <script src="/media/js/theme.js"></script>
 <script src="/media/js/jquery.cookie.js"></script>
 {% block extrascripts %}{% endblock %}

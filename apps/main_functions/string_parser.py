@@ -186,7 +186,7 @@ def get_request_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-def GenPasswd(length:int = 7, alphabet:str = None):
+def GenPasswd(length: int = 7, alphabet: str = None):
     """Генератор пароля"""
     passwd = []
     if not alphabet:

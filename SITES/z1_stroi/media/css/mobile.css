@@ -1,0 +1,37 @@
+.clearfix_desktop {
+  clear: both;
+}
+.clearfix_mobile {
+  clear: none;
+}
+
+@media (max-width: 799px) {
+  .only_desktop {
+    display: none;
+  }
+  .clearfix_desktop {
+    clear: none;
+  }
+  .clearfix_mobile {
+    clear: both;
+  }
+  .media img {
+    max-width: 100%;
+  }
+  /* products_tabs Вкладки с товарами */
+  .products_tabs .tab_name {
+    font-size: 16px;
+  }
+  .products_tabs .thumbnail {
+    height: auto;
+  }
+  /* services */
+  .services .block .media-heading {
+    font-size: 16px;
+  }
+  /* article2 */
+  .article2 .row .imga {
+    display: none;
+  }
+}
+

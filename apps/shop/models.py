@@ -169,6 +169,24 @@ class Orders(Standard):
 
         return result
 
+class OrdersDelivery(Standard):
+    """Доставка для заказа"""
+    order = models.ForeignKey(Orders, blank=True, null=True,
+        on_delete=models.CASCADE)
+    latitude = models.DecimalField(blank=True, null=True,
+        max_digits=30, decimal_places=25, db_index=True)
+    longitude = models.DecimalField(blank=True, null=True,
+        max_digits=30, decimal_places=25, db_index=True)
+    time = models.DateTimeField(blank=True, null=True,
+        db_index=True, verbose_name='Время доставки')
+    address = models.CharField(max_length=255,
+        blank=True, null=True,
+        verbose_name='Адрес строкой')
+
+    class Meta:
+        verbose_name = 'Магазин - Доставка заказа'
+        verbose_name_plural = 'Магазин - Доставки заказов'
+
 class Transactions(Standard):
     """Транзакция по онлайн оплате"""
     payment_choices = (

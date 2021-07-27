@@ -7,17 +7,22 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.conf import settings
 
-from apps.flatcontent.models import Blocks
+from apps.flatcontent.models import Containers, Blocks
 from apps.flatcontent.views import SearchLink
-from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
+from apps.flatcontent.flatcat import (get_cat_for_site,
+                                      get_product_for_site,
+                                      get_catalogue_lvl,
+                                      get_props_for_products, )
+from apps.main_functions.string_parser import q_string_fill
 from apps.main_functions.views import DefaultFeedback
 from apps.products.models import Products
+from apps.products.views import get_products_cats
 from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import save_user_to_request, remove_user_from_request
 from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
 from apps.shop.order import get_order
-from apps.shop.models import Orders
+from apps.shop.models import Orders, WishList
 
 CUR_APP = 'main'
 main_vars = {
@@ -72,6 +77,44 @@ cat_vars = {
     'show_urla': 'cat',
 }
 
+
+def main_rubrics(request):
+    """Страничка с рубриками каталога
+    """
+    mh_vars = cat_vars.copy()
+    context = {}
+    containers = {}
+    q_string = {}
+    breadcrumbs = []
+
+    q_string_fill(request, q_string)
+
+    root_catalogue = Containers.objects.filter(tag='catalogue').first()
+    breadcrumbs.append({'name': 'Все категории', 'link': '/rubrics/'})
+    top_level = root_catalogue.blocks_set.filter(parents='')
+
+    ids_top_level = {'_%s' % item.id: item for item in top_level}
+    sub_levels = root_catalogue.blocks_set.filter(parents__in=ids_top_level)
+    for sub_level in sub_levels:
+        parent = ids_top_level[sub_level.parents]
+        if not hasattr(parent, 'sub'):
+            parent.sub = []
+        parent.sub.append(sub_level)
+
+
+    context['catalogue'] = root_catalogue
+    context['top_level'] = top_level
+    context['breadcrumbs'] = breadcrumbs
+
+    page = SearchLink(q_string, request, containers)
+    if page:
+        context['page'] = page
+    else:
+        context['page'] = Blocks(name='Каталог товаров')
+    context['containers'] = containers
+    template = 'web/cat/%srubrics.html' % (mh_vars['template_prefix'], )
+    return render(request, template, context)
+
 def cat_on_site(request, link: str = None):
     """Странички каталога
        :param link: ссылка на рубрику (без /cat/ префикса)
@@ -82,6 +125,7 @@ def cat_on_site(request, link: str = None):
             'by': 30,
         },
     }
+
     context = get_cat_for_site(request, link, **kwargs)
     if not context.get(settings.DEFAULT_CATALOGUE_TAG):
         raise Http404
@@ -89,6 +133,11 @@ def cat_on_site(request, link: str = None):
 
     if request.is_ajax():
         return JsonResponse(context, safe=False)
+
+    page = context['page']
+    if not page.parents:
+        context['subcats'] = Blocks.objects.filter(parents='_%s' % page.id)
+
     template = 'web/cat/%slist.html' % (mh_vars['template_prefix'], )
 
     page = SearchLink(context['q_string'], request, containers)
@@ -134,7 +183,7 @@ def product_on_site(request, product_id: int):
 def feedback(request):
     """Страничка обратной связи"""
     kwargs = {
-        'force_send': 1, # Принудительная отправка
+        #'force_send': 1, # Принудительная отправка
         #'fv': [],
         #'dummy': 1, # Не возвращаем HttpResponse
         #'do_not_send': 1, # Не отправляем письмо
@@ -225,6 +274,37 @@ def show_profile(request):
     context['breadcrumbs'] = [{
         'name': 'Ваш аккаунт',
         'link': reverse('%s:%s' % (CUR_APP, 'show_profile')),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+    context['shopper'] = shopper
+
+    return render(request, template, context)
+
+def show_orders(request):
+    """История заказов пользователя"""
+    mh_vars = profile_vars.copy()
+    context = {}
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+    if not shopper:
+        return redirect(reverse('%s:%s' % (CUR_APP, 'registration')))
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/login/orders.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=mh_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Ваш аккаунт',
+        'link': reverse('%s:%s' % (CUR_APP, 'show_profile')),
+    }, {
+        'name': 'История заказов',
+        'link': reverse('%s:%s' % (CUR_APP, 'show_orders')),
     }]
 
     context['page'] = page
@@ -323,10 +403,14 @@ def checkout(request):
     if not page:
         page = Blocks(name=checkout_vars['singular_obj'])
     context['breadcrumbs'] = [{
+        'name': 'Корзина',
+        'link': reverse('%s:%s' % (CUR_APP, 'show_cart')),
+    }, {
         'name': 'Подтверждение заказа',
         'link': reverse('%s:%s' % (CUR_APP, 'checkout')),
     }]
 
+    context['yandex_maps_api_key'] = settings.YANDEX_MAPS_API_KEY
     context['page'] = page
     context['containers'] = containers
     cart = calc_cart(shopper, min_info=False)
@@ -372,6 +456,13 @@ def show_order(request, order_id: int):
     if not page:
         page = Blocks(name=mh_vars['singular_obj'])
     context['breadcrumbs'] = [{
+        'name': 'Ваш аккаунт',
+        'link': reverse('%s:%s' % (CUR_APP, 'show_profile')),
+    }, {
+        'name': 'История заказов',
+        'link': reverse('%s:%s' % (CUR_APP, 'show_orders')),
+    }, {
+
         'name': 'Заказ',
         'link': reverse('%s:%s' % (CUR_APP, 'show_order'),
                         kwargs={'order_id': order_id}),
@@ -383,5 +474,54 @@ def show_order(request, order_id: int):
     context['cart'] = result.get('cart', {})
     context['cart']['purchases'] = result.get('purchases', [])
     context['order'] = result.get('order')
+
+    return render(request, template, context)
+
+compare_vars = {
+    'singular_obj': 'Сравнение товаров',
+    'template_prefix': 'compare_',
+    'show_urla': 'compare',
+}
+
+def compare(request):
+    """Сравнение товаров"""
+    mh_vars = compare_vars.copy()
+    context = {}
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+    state = 2
+
+    if shopper:
+        compare_list = WishList.objects.select_related('product').filter(shopper=shopper, state=state)
+        compare_list = [item.product for item in compare_list if item.product]
+        context['products'] = compare_list
+
+        ids_products = {item.id: [] for item in compare_list}
+        get_products_cats(ids_products, 'catalogue')
+        get_props_for_products(compare_list)
+        all_props = {}
+        for item in compare_list:
+            if item.id in ids_products:
+                item.cats = ids_products[item.id]
+            if not hasattr(item, 'props'):
+                continue
+            for prop in item.props:
+                if not prop['prop']['id'] in all_props:
+                    all_props[prop['prop']['id']] = prop['prop']['name']
+        context['all_props'] = all_props
+
+    template = 'web/cat/compare.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=mh_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': 'Сравнение товаров',
+        'link': reverse('%s:%s' % (CUR_APP, 'compare')),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
 
     return render(request, template, context)

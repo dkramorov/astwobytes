@@ -1,0 +1,38 @@
+{% load mtags %}
+<section class="page-section mapa">
+  <div class="container">
+    <div class="row blocks shop-info-banners">
+      <div class="col-md-8">
+        {% for block in blocks %}
+          {% ifequal block.tag 'map' %}
+            {{ block.html|safe }}
+          {% endifequal %}
+        {% endfor %}
+      </div>
+      <div class="col-md-4">
+        <div class="block">
+          {% for block in blocks %}
+            {% if not block.tag %}
+              <div class="media">
+                {% if block.icon %}
+                  <div class="pull-right"><i class="fa fa-gift"></i></div>
+                {% endif %}
+                <div class="media-body">
+                  {% if block.name %}<h4 class="media-heading">{{ block.name }}</h4>{% endif %}
+                  {% if block.html %}
+                    <div class="desc">{{ block.html|safe }}</div>
+                  {% endif %}
+                  {% if block.link %}
+                    <div class="link">
+                      <a href="{{ block.link }}" class="btn btn-theme">{{ block.description }}</a>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

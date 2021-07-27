@@ -1,0 +1,10 @@
+<div class="col-lg-3 col-md-3 col-sm-12">
+  <div class="widget account-details">
+  <h2 class="widget-title">Ваш аккаунт</h2>
+    <ul>
+      <li{% ifequal request.META.PATH_INFO '/profile/' %} class="active"{% endifequal %}><a href="/profile/"> Изменение профиля </a></li>
+      <li{% ifequal request.META.PATH_INFO '/profile/orders/' %} class="active"{% endifequal %}><a href="/profile/orders/"> История заказов </a></li>
+      <li><a href="/logout/"> Выход </a></li>
+    </ul>
+  </div>
+</div>

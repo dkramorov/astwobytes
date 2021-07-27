@@ -126,6 +126,8 @@ function update_ajax_cart_info(){
   $(total_selector).html(total);
 }
 
+
+
 function purchase_quantity(id){
   /* Обновляем кол-во товара в корзине
      :param id: purchase_id
@@ -256,6 +258,67 @@ function quantity_listener(purchase_id, plus, minus, send_event){
     return false;
   });
 }
+function add_to_compare(id){
+  // Добавление id товара в сравнение товаров
+  // :param id: ид товара
+
+  jQuery.ajax({
+    type: "GET",
+    url: "/shop/compare/add/",
+    data: "product_id=" + id,
+    success: function(result){
+      if(result['error']){
+        //alert("Произошла ошибка");
+        Notification("Произошла ошибка: " + result['error'], "error");
+      }else{
+        //compare_details();
+        result['success'] += "<br><a href='/shop/compare/'>Перейти к сравнению товаров</a>";
+        Notification(result['success'], "success");
+      }
+    }
+  });
+  return 0;
+}
+function drop_from_compare(id){
+  // Удаление id товара из сравнения товаров
+  // :param id: ид товара
+  jQuery.ajax({
+    type: "GET",
+    url: "/shop/compare/drop/",
+    data: "product_id=" + id,
+    success: function(result){
+      if(result['error']){
+        //alert("Произошла ошибка");
+        Notification("Произошла ошибка: " + result['error'], "error");
+      }else{
+        //compare_details();
+        result['success'] += "<br><a href='/shop/compare/'>Перейти к сравнению товаров</a>";
+        Notification(result['success'], "success");
+      }
+      setTimeout(function(){
+        window.location.reload();
+      }, 1000);
+    }
+  });
+  return 0;
+}
+
+function show_compare_count(callback){
+  // Сколько товаров находится в сравнении товаров
+  // :param callback: функция,
+  // которую надо выполнить после получения результатов
+  if (callback == undefined){
+    return;
+  }
+  jQuery.ajax({
+    type: "GET",
+    url: "/shop/compare/show/",
+    success: function(result){
+      callback(result['count']);
+    }
+  });
+  return 0;
+}
 
 jQuery(document).ready(function($){
   if($("#notification").length){
@@ -276,6 +339,15 @@ jQuery(document).ready(function($){
   });
   // Обновление аякс корзинки (кол-во и сумма)
   update_ajax_cart_info();
+
+  $(".add_to_compare_btn").click(function(){
+    var product_id = $(this).attr("data-product_id");
+    add_to_compare(product_id);
+  });
+  $(".drop_from_compare_btn").click(function(){
+    var product_id = $(this).attr("data-product_id");
+    drop_from_compare(product_id);
+  });
 });
 function demo_fill_order(){
   $("#confirm_order input[name='name']").val("господин Денис");

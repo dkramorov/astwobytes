@@ -2,7 +2,17 @@
 {% load mtags flatcontent_tags %}
 
 {% block extrahead %}
+<script src="//api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={{ yandex_maps_api_key }}" type="text/javascript"></script>
+<script type="text/javascript" src="/static/yandex_app/yandex_2_1.js"></script>
+
 <style type="text/css">
+.mapContainer{
+  height:400px;
+  width: 100%;
+}
+#confirm_order {
+  padding-top: 30px;
+}
 .orders td.total,
 .orders td.description,
 .orders td.description h4 {
@@ -12,6 +22,12 @@
   white-space: nowrap;
 }
 </style>
+{% endblock %}
+
+{% block extracrumbs %}
+  {% with 2 as tab %}
+    {% include "web/order/cart_steps.html" %}
+  {% endwith %}
 {% endblock %}
 
 {% block content %}
@@ -24,121 +40,160 @@
 {% else %}
   <section class="page-section color">
     <div class="container">
-      {% for error in errors %}
-        <label class="error mistake">{{ error }}</label><br />
-      {% endfor %}
-      <form action="/shop/checkout/" method="post" class="form-delivery col-md-6" id="confirm_order">
-        {% csrf_token %}
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}" placeholder="Как к вам обращаться?">
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control" name="first_name" value="{% if shopper_data.first_name %}{{ shopper_data.first_name }}{% endif %}" placeholder="Ваше имя">
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control" name="last_name" value="{% if shopper_data.last_name %}{{ shopper_data.last_name }}{% endif %}" placeholder="Ваша фамилия">
-            </div>
-          </div>
+      <div class="row">
+        {% for error in errors %}
+          <label class="error mistake">{{ error }}</label><br />
+        {% endfor %}
+        <form action="/shop/checkout/" method="post" class="form-delivery col-md-9" id="confirm_order">
+          <input type="hidden" class="form-control" name="longitude" value="" id="address_longitude" autocomplete="off">
+          <input type="hidden" class="form-control" name="latitude" value="" id="address_latitude" autocomplete="off">
 
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control" name="middle_name" value="{% if shopper_data.middle_name %}{{ shopper_data.middle_name }}{% endif %}" placeholder="Ваше отчество">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}" placeholder="Как к вам обращаться?">
+              </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}" placeholder="Ваш email">
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control" name="first_name" value="{% if shopper_data.first_name %}{{ shopper_data.first_name }}{% endif %}" placeholder="Ваше имя">
+              </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}" placeholder="Ваш телефон">
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control" name="last_name" value="{% if shopper_data.last_name %}{{ shopper_data.last_name }}{% endif %}" placeholder="Ваша фамилия">
+              </div>
             </div>
-          </div>
-          <div class="col-md-12">
-            <div class="form-group">
-              <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}" placeholder="Ваш адрес">
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control" name="middle_name" value="{% if shopper_data.middle_name %}{{ shopper_data.middle_name }}{% endif %}" placeholder="Ваше отчество">
+              </div>
             </div>
-          </div>
-          <div class="col-md-12">
-            <div class="form-group">
-              <textarea class="form-control" placeholder="Комментарий к заказу" name="comment" id="id" cols="30" rows="5"></textarea>
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}" placeholder="Ваш email">
+              </div>
             </div>
-          </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}" placeholder="Ваш телефон">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}" placeholder="Ваш адрес" id="address_from_map">
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <div class="mapContainer" id="mapContainer"></div>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <textarea class="form-control" placeholder="Комментарий к заказу" name="comment" id="id" cols="30" rows="5"></textarea>
+              </div>
+            </div>
 {% comment %}<!--
-          <div class="col-md-12">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox"> Даю согласие на обработку персональных данных
-              </label>
+            <div class="col-md-12">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox"> Даю согласие на обработку персональных данных
+                </label>
+              </div>
+            </div>
+-->{% endcomment %}
+            <div class="col-md-12">
+              <div class="feedback_alerts"></div>
+            </div>
+            <div class="col-md-12">
+              <input type="submit" class="btn btn-theme btn-theme-dark btn-block" value="Оформить заказ" />
             </div>
           </div>
--->{% endcomment %}
-          <div class="col-md-12">
-            <div class="feedback_alerts"></div>
-          </div>
-          <div class="col-md-12">
-            <input type="submit" class="btn btn-theme btn-theme-dark btn-block" value="Оформить заказ" />
-          </div>
-        </div>
-      </form>
-      <div class="col-md-6 orders">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Наименование</th>
-              <th>Цена</th>
-              <th>Кол-во</th>
-              <th>Итого</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for purchase in cart.purchases %}
-              <tr>
-                <td class="description">
-                  <h4>
-                    <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
-                  </h4>
-                </td>
-                <td class="total">
-                  {{ purchase.cost|money_format }} ₽
-                </td>
-                <td class="quantity">
-                  x{{ purchase.count }}
-                </td>
-                <td class="total">
-                  {{ purchase.total|money_format }} ₽
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        </form>
+        <div class="col-md-3 orders">
 
-        <div class="shopping-cart">
           <table>
+            <tbody>
             <tr>
-                <td>Сумма:</td>
-                <td>{{ cart.total|money_format }} ₽</td>
-              </tr>
-              <tr>
-                <td>Доставка:</td>
-                <td>-</td>
-              </tr>
+              <td class="color-black">Итог:</td>
+              <td class="total">{{ cart.total_with_discount|money_format }} <span>₽</span></td>
+            </tr>
+            <tr>
+              <td colspan="2"><br>Общая стоимость без учета доставки<br><br></td>
+            </tr>
+            <tr>
+              <td>Всего товаров:</td>
+              <td>{{ cart.items_count }} шт</td>
+            </tr>
+            <tr>
+              <td>Вес товаров:</td>
+              <td class="order_weight"></td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <a href="javascript:void(0);">Бесплатная доставка *</a>
+              </td>
+            </tr>
             </tbody>
-            <tfoot>
-              <tr>
-                <td>Итого:</td>
-                <td>{{ cart.total_with_discount|money_format }} ₽</td>
-              </tr>
-            </tfoot>
           </table>
+<!--
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Наименование</th>
+                <th>Цена</th>
+                <th>Кол-во</th>
+                <th>Итого</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for purchase in cart.purchases %}
+                <tr>
+                  <td class="description">
+                    <h4>
+                      <a href="{{ purchase.link }}">{{ purchase.product_name }}</a>
+                    </h4>
+                  </td>
+                  <td class="total">
+                    {{ purchase.cost|money_format }} ₽
+                  </td>
+                  <td class="quantity">
+                    x{{ purchase.count }}
+                  </td>
+                  <td class="total">
+                    {{ purchase.total|money_format }} ₽
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+-->
+          <div class="shopping-cart">
+            <table>
+              <tr>
+                  <td>Сумма:</td>
+                  <td>{{ cart.total|money_format }} ₽</td>
+                </tr>
+                <tr>
+                  <td>Доставка:</td>
+                  <td>-</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Итого:</td>
+                  <td>{{ cart.total_with_discount|money_format }} ₽</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
+        <div class="clearfix clear"></div>
       </div>
     </div>
   </section>
@@ -171,6 +226,50 @@
         form.submit();
       }
     });
+  });
+</script>
+
+<script type="text/javascript">
+  var myMapContainer = "mapContainer";
+  $(document).ready(function(){
+    var kwargs = {};
+    kwargs['default_town'] = "Иркутск"; // TODO Задать в настройках и передавать в шаблон
+    kwargs['search_address_by_click'] = 1;
+    kwargs['after_search'] = function(placemark) {
+      placemark.balloon.open();
+    }
+    kwargs['search_result_to_form_title'] = 'Выбрать этот адрес';
+    kwargs['search_result_to_form'] = function(ind){
+      var myMap = get_map(myMapContainer);
+
+      console.log("search_result_to_form ", ind, myMap.search_results);
+
+      var meta_data = myMap.search_results[ind].properties.get("metaDataProperty.GeocoderMetaData");
+      var address = meta_data.Address.formatted || meta_data.text;
+      $("#address_text").val(address);
+      var coords = myMap.kwargs['click_coords'];
+      $("#address_latitude").val(coords[0]);
+      $("#address_longitude").val(coords[1]);
+      $("#address_from_map").val(address);
+    }
+
+    create_new_map(myMapContainer);
+    wait_for_result(myMapContainer, function(){
+      var myMap = get_map(myMapContainer);
+      disable_map_wheel(myMapContainer);
+      myMap.kwargs = kwargs;
+      {% if latitude and longitude %}
+        var coords = [{{ latitude }}, {{ longitude }}];
+        set_map_center(myMapContainer, coords, 16);
+        // ----------------------------------
+        // Вручную добавляем в object_manager
+        // нашей карты сохраненную точку
+        // ----------------------------------
+        var myPoint = {"type": "Feature", "id": (myMap.search_results.length + myMap.myPoints.length), "geometry": {"type": "Point", "coordinates": coords}, "properties": {"balloonContent": "<p>{{ address|quotes2apostrophe }}</p>", "clusterCaption": "Адрес", "hintContent": "<p>{{ address|quotes2apostrophe }}</p>"}};
+        myMap.myPoints.push(myPoint);
+        add_points_to_map(myMapContainer, [myPoint]);
+      {% endif %}
+    }, ["map"]);
   });
 </script>
 {% endblock %}

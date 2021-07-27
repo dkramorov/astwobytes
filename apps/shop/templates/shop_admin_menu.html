@@ -20,6 +20,13 @@
         </a>
       </li>
     {% endif %}
+    {% if perms.shop.view_ordersdelivery %}
+      <li{% ifequal submenu 'delivery' %} class="active"{% endifequal %} id="left_menu_shop_app_delivery">
+        <a class="no-submenu" data-toggle="" href="{% url 'shop:show_delivery' %}">
+          <span class="item-text">Доставки заказов</span>
+        </a>
+      </li>
+    {% endif %}
     {% if perms.shop.view_transactions %}
       <li{% ifequal submenu 'transactions' %} class="active"{% endifequal %} id="left_menu_shop_app_transactions">
         <a class="no-submenu" data-toggle="" href="{% url 'shop:show_transactions' %}">

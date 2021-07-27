@@ -1,0 +1,7 @@
+{% load mtags %}
+<a class="media-link" href="{{ product.link }}">
+  <img src="{% imagine product.img '800x600' product.get_folder True %}" alt="{{ product.name|textize }}"/>
+  <span class="icon-view">
+    <strong><i class="fa fa-eye"></i></strong>
+  </span>
+</a>

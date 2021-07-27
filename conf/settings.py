@@ -340,6 +340,11 @@ WS_SECRET = env('WS_SECRET', default='bugogashenki')
 # -------
 SMS_HUB_TOKEN = env('SMS_HUB_TOKEN', default='')
 
+# ----
+# XMPP
+# ----
+JABBER_DOMAIN = env('JABBER_DOMAIN', default='anhel.1sprav.ru')
+
 # ----------
 # FREESWITCH
 # ----------

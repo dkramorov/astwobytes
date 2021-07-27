@@ -1,0 +1,34 @@
+{% load mtags %}
+<section class="page-section products_slider">
+  <div class="container">
+    <div class="top-products-carousel">
+      <div class="owl-carousel" id="top-products-carousel">
+        {% for product in products %}
+        <div class="thumbnail no-border no-padding">
+          <div class="media">
+            <a class="media-link" data-gal="prettyPhoto" href="{{ product.imagine }}">
+              <img src="{% imagine product.img '800x600' product.get_folder True %}" alt="{{ product.name|textize }}" alt="{{ product.name|quotes2apostrophe }}"/>
+              <span class="icon-view"><strong><i class="fa fa-eye"></i></strong></span>
+            </a>
+          </div>
+
+          <div class="caption text-center">
+            <h4 class="caption-title">
+              <a href="{{ product.link }}">{{ product.name }}</a>
+            </h4>
+            <div class="rating">
+              <span class="star"></span>
+              <span class="star active"></span>
+              <span class="star active"></span>
+              <span class="star active"></span>
+              <span class="star active"></span>
+            </div>
+            {% include "web/cat/product_price_row.html" %}
+            {% include "web/cat/product_buy_button.html" %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

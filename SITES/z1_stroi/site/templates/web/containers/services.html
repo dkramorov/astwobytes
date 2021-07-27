@@ -3,11 +3,13 @@
   <div class="container">
     <div class="row blocks">
       {% for block in blocks %}
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 col-xs-6">
           <a class="block" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
             <div class="media text-center">
               <img src="{{ block.thumb }}" />
-              <div class="media-heading">{{ block.name }}</div>
+              <div class="media-heading">
+                <span class="dotted_link">{{ block.name }}</span>
+              </div>
             </div>
           </a>
         </div>

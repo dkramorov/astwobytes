@@ -1,0 +1,65 @@
+{% extends "skeleton.html" %}
+{% load flatcontent_tags mtags %}
+
+{% block extrahead %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-section">
+  <div class="wrap container">
+    <div class="row">
+      <div class="col-lg-9 col-md-9 col-sm-12">
+        <div class="information-title">История заказов</div>
+        <div class="details-wrap">
+          <div class="details-box orders">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Покупатель</th>
+                  <th>Сумма</th>
+                  <th>Дата</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in orders %}
+                <tr>
+                  <td class="quantity">{{ order.id }}</td>
+                  <td class="description">
+                    <h4>{{ order.shopper_name }}<h4>
+                  </td>
+                  <td class="total">{{ order.total|money_format }} ₽</td>
+                  <td class="diliver-date">
+                    {{ order.created|date:'d-m-Y H:i:s' }}
+                  </td>
+                  <td class="order-status">
+                    <a href="{% url 'main:show_order' order.id %}" class="btn btn-theme btn-theme-dark">Посмотреть</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div>
+              <a href="/profile/" class="btn btn-theme"> Назад </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% include "web/login/profile_menu.html" %}
+    </div>
+  </div>
+</section>
+
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block subscribe %}{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}

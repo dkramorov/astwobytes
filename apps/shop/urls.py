@@ -18,15 +18,27 @@ urlpatterns = [
     # аякс-поиск
     path('shop/search/orders/', views.search_orders, name='search_orders'),
 
-    # Незавершенные покупки
+    # Покупки
     path('admin/purchases/', views.show_purchases, name='show_purchases'),
     url('^admin/purchases/(?P<action>create)/$', views.edit_purchase, name='create_purchase'),
     url('^admin/purchases/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_purchase, name='edit_purchase'),
     path('admin/purchases/positions/', views.purchases_positions, name='purchases_positions'),
     # аякс-поиск
     path('shop/search/purchases/', views.search_purchases, name='search_purchases'),
-    # корзинка пользователя
+
+    # Корзинка пользователя
     url('^cart/(?P<action>show|add|quantity|drop|promocode)/', views.cart, name='cart'),
+
+    # Сравнение товаров
+    url('^compare/(?P<action>show|add|drop)/', views.compare, name='compare'),
+
+    # Доставки
+    path('admin/delivery/', views.show_delivery, name='show_delivery'),
+    url('^admin/delivery/(?P<action>create)/$', views.edit_delivery, name='create_delivery'),
+    url('^admin/delivery/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_delivery, name='edit_delivery'),
+    path('admin/delivery/positions/', views.delivery_positions, name='delivery_positions'),
+    # аякс-поиск
+    path('shop/search/delivery/', views.search_delivery, name='search_delivery'),
 
     # Транзакции
     path('admin/transactions/', views.show_transactions, name='show_transactions'),

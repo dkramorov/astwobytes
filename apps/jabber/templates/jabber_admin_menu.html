@@ -1,6 +1,16 @@
+{% if perms.jabber.view_registrations %}
 <li{% ifequal menu 'jabber' %} class="active"{% endifequal %} id="left_menu_jabber">
-  <a{% comment %} class="has-submenu" data-toggle="collapse-next"{% endcomment %} href="{% url 'jabber:show_jabber' %}">
-    <em class="fa fa-comments"></em>
-    <span class="item-text">Чат</span>
+  <a class="has-submenu" data-toggle="collapse-next" href="#">
+    <em class="fa fa-comments-o"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Чат Jabber</span>
   </a>
+  <ul class="nav collapse{% ifequal menu 'jabber' %} in{% endifequal %}">
+    <li{% ifequal submenu 'registrations' %} class="active"{% endifequal %} id="left_menu_jabber_registrations">
+      <a class="no-submenu" data-toggle="" href="{% url 'jabber:show_registrations' %}">
+        <span class="item-text">Регистрации</span>
+      </a>
+    </li>
+  </ul>
 </li>
+{% endif %}

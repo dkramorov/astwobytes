@@ -1,0 +1,152 @@
+{% extends "skeleton.html" %}
+{% load tags mtags %}
+
+{% block extrahead %}
+<style type="text/css">
+  .compare_list .product .media-link {
+    margin-right: 20px;
+  }
+</style>
+{% endblock %}
+
+{% block extracontent %}{% endblock %}
+
+{% block content %}
+<section class="page-section color compare_list">
+  <div class="container">
+    {% if not products %}
+      <h3 class="block-title alt">Вы ничего не добавили в сравнение товаров</h3>
+    {% else %}
+    <div class="compare-products">
+      <table class="table-bordered table-hover">
+        <thead>
+          <tr>
+            <td>Товар</td>
+            {% for product in products %}
+            <td>
+              <div class="product">
+                <a class="close drop_from_compare_btn" href="javascript:void(0);" data-product_id="{{ product.id }}"><i class="fa fa-close"></i></a>
+                <a class="media-link" data-gal="prettyPhoto" href="{{ product.imagine }}">
+                  <img src="{% imagine product.img '800x600' product.get_folder True %}" alt="{{ product.name|textize }}"/>
+                </a>
+                <div class="clear"></div>
+                <h4><a href="{{ product.link }}">{{ product.name }}</a></h4>
+                <strong>
+                  {% if product.cats %}
+                    {% for cat in product.cats %}
+                      <a href="{{ cat.link }}">{{ cat.name }}</a>
+                      {% if not forloop.last %}<br>{% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </strong>
+              </div>
+            </td>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Рейтинг</td>
+            {% for product in products %}
+              <td>
+                <div class="rating">
+                  <span class="star"></span>
+                  <span class="star active"></span>
+                  <span class="star active"></span>
+                  <span class="star active"></span>
+                  <span class="star active"></span>
+                </div>
+                <br>
+                <a class="reviews" href="#">нет отзывов</a>
+              </td>
+            {% endfor %}
+          </tr>
+          <tr class="price">
+            <td>Цена</td>
+            {% for product in products %}
+              <td>{% include "web/cat/product_price_row.html" %}</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td>Доставка</td>
+            {% for product in products %}
+              <td><strong class="text-color"></strong></td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td>Наличие</td>
+            {% for product in products %}
+              <td>
+                <strong class="text-color">На складе</strong>{% if product.count %}{{ product.count }}{% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td>Код</td>
+            {% for product in products %}
+              <td>{{ product.code }}</td>
+            {% endfor %}
+          </tr>
+          {% for prop_id, prop_name in all_props.items %}
+            <tr>
+              <td>{{ prop_name }}</td>
+              {% for product in products %}
+                <td>
+                  {% for pp in product.props %}
+                    {% if pp.prop.id == prop_id %}
+                      {% for pvalue in pp.values %}
+                        {{ pvalue.str_value }}
+                        {% if item.prop.measure %}{{ item.prop.measure }}{% endif %}
+                        <br>
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+{% comment %}<!--
+          <tr class="colors">
+            <td>Colors</td>
+            <td>
+              <ul>
+                <li><a href="#"><span style="background-color: #ffffff"></span></a></li>
+                <li><a href="#"><span style="background-color: #161618"></span></a></li>
+                <li><a href="#"><span style="background-color: #e74c3c"></span></a></li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li><a href="#"><span style="background-color: #783ce7"></span></a></li>
+                <li><a href="#"><span style="background-color: #3498db"></span></a></li>
+                <li><a href="#"><span style="background-color: #00a847"></span></a></li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li><a href="#"><span style="background-color: #3ce7d9"></span></a></li>
+                <li><a href="#"><span style="background-color: #fa17bc"></span></a></li>
+                <li><a href="#"><span style="background-color: #a87e00"></span></a></li>
+              </ul>
+            </td>
+          </tr>
+-->{% endcomment %}
+          <tr>
+            <td>Действия</td>
+            {% for product in products %}
+              <td>
+                <a class="btn btn-theme-dark btn-theme-transparent btn-icon-left add_to_cart_btn" href="javascript:void(0);" data-product_id="{{ product.id }}"><i class="fa fa-shopping-cart"></i>В корзину</a>
+              </td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extrascripts %}
+
+{% endblock %}

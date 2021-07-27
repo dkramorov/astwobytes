@@ -1,0 +1,43 @@
+{% load mtags %}
+<section class="page-section">
+  <div class="container">
+<!--
+    <a class="btn btn-theme btn-title-more btn-icon-left" href="#"><i class="fa fa-file-text-o"></i>Все новости</a>
+
+  <h2 class="block-title">
+    <span>{{ container.name }}</span>
+  </h2>
+-->
+  <div class="row">
+    {% for block in blocks %}
+      <div class="col-md-4">
+        <div class="recent-post alt">
+          <div class="media">
+            <a class="media-link" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+              <img class="media-object" src="{% imagine block.img '600x400' block.get_folder True %}" alt="{{ block.name|quotes2apostrophe }}">
+              <i class="fa fa-plus"></i>
+            </a>
+            <div class="media-body">
+{% comment %}<!--
+              <p class="media-category"><a href="#">Shoes</a> / <a href="#">Dress</a></p>
+-->{% endcomment %}
+              <h4 class="media-heading">
+                <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">{{ block.name }}</a>
+              </h4>
+              {% if block.html %}
+                {{ block.html|safe }}
+              {% endif %}
+              <div class="media-meta">
+                {{ block.created|date:'d/m' }}
+{% comment %}<!--
+                <span class="divider">/</span><a href="#"><i class="fa fa-comment"></i>27</a>
+                <span class="divider">/</span><a href="#"><i class="fa fa-heart"></i>18</a>
+-->{% endcomment %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>

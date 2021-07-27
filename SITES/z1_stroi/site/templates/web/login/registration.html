@@ -25,6 +25,10 @@
   .stylization button.close {
     padding: 5px;
   }
+
+  .register .col-md-12 {
+    margin-top: 0 !important;
+  }
 </style>
 {% if request.session.shopper %}
 <script type="text/javascript">
@@ -34,67 +38,113 @@
 {% endblock %}
 
 {% block content %}
-<div class="auth-wrap stylization">
-  <div class="auth-col">
-    <h2>Вход</h2>
+<section class="page-section color">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3 class="block-title"><span>Вход</span></h3>
+        <form action="/login/" class="form-login login" id="login_form">
+          {% csrf_token %}
+          <div class="row">
+{% comment %}<!--
+            <div class="col-md-12 col-lg-6">
+              <a class="btn btn-theme btn-block btn-icon-left facebook" href="#"><i class="fa fa-facebook"></i>Sign in with Facebook</a>
+            </div>
+            <div class="col-md-12 col-lg-6">
+              <a class="btn btn-theme btn-block btn-icon-left twitter" href="#"><i class="fa fa-twitter"></i>Sign in with Twitter</a>
+            </div>
+-->{% endcomment %}
 
+            <div class="col-md-12">
+              <div class="form-group">
+                <input class="form-control required" type="text" placeholder="Логин" data-msg="Введите логин">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <input class="form-control required" type="password" placeholder="Пароль" data-msg="Введите пароль">
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="feedback_alerts"></div>
+            </div>
+            <div class="col-md-6">
+              <button class="btn btn-theme btn-block btn-theme-dark" type="submit">Вход</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-sm-6">
+        <h3 class="block-title"><span>Регистрация</span></h3>
+        <form class="create-account register" action="/registration/" method="post" id="register_form">
+          {% csrf_token %}
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Ваше имя</label>
+              <input class="form-control required" type="text" placeholder="Ваше имя" name="name" data-msg="Введите ваше имя">
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Ваш Email</label>
+              <input class="form-control email" type="text" type="text" placeholder="Ваш Email" name="email" data-msg="Введите ваш Email">
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Логин</label>
+              <input class="form-control required" type="text" placeholder="Логин" name="login" data-msg="Введите логин">
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Ваш телефон</label>
+              <input class="form-control required phone" type="text" placeholder="Ваш телефон" name="phone" data-msg="Введите ваш телефон">
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Пароль</label>
+              <input class="form-control required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Повторите пароль</label>
+              <input class="form-control required" type="password" placeholder="Повторите пароль" name="passwd2" data-msg="Повторите пароль">
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="feedback_alerts"></div>
+          </div>
+
+          <div class="col-md-6">
+            <button class="btn btn-theme btn-block btn-theme-dark" type="submit">Регистрация</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% comment %}<!--
     <div class="social">
       <p>
         <a class="btn btn-default" href="{{ vk_link }}">Войти через <i class="fa fa-vk"></i></a>
         <a class="btn btn-default" href="{{ yandex_link }}">Войти через Yandex</a>
       </p>
     </div>
+-->{% endcomment %}
 
-    <p>или по паролю</p>
-    <form action="/login/" method="post" id="login_form" class="login">
-      {% csrf_token %}
-      <p>
-        <label>Логин <span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Ваш логин" name="login" data-msg="Введите логин">
-      </p>
-      <p>
-        <label for="password">Пароль <span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
-      </p>
-      <p class="feedback_alerts"></p>
-      <p class="auth-submit">
-        <input type="submit" value="Войти">
-        <input type="checkbox" id="rememberme" value="forever">
-        <label for="rememberme">Запомнить меня</label>
-      </p>
-      <p class="auth-lost_password">
-        <a href="#">Забыли пароль?</a>
-      </p>
-    </form>
-  </div>
-  <div class="auth-col">
-    <h2>Регистрация</h2>
-    <form action="/registration/" method="post" id="register_form" class="register">
-      {% csrf_token %}
-      <p>
-        <label>Ваше имя<span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Ваше имя" name="name" data-msg="Введите ваше имя">
-      </p>
-      <p>
-        <label>Ваш Email</label><input class="mb-0 email" type="text" placeholder="Ваш Email" name="email" data-msg="Введите ваш Email">
-      </p>
-      <p>
-        <label>Логин<span class="required">*</span></label><input class="mb-0 required" type="text" placeholder="Логин" name="login" data-msg="Введите логин">
-      </p>
-      <p>
-        <label>Телефон<span class="required">*</span></label><input class="mb-0 required phone" type="text" placeholder="Ваш телефон" name="phone" data-msg="Введите ваш телефон">
-      </p>
-      <p>
-        <label>Пароль<span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Пароль" name="passwd" data-msg="Введите пароль">
-      </p>
-      <p>
-        <label>Повторите пароль<span class="required">*</span></label><input class="mb-0 required" type="password" placeholder="Повторите пароль" name="passwd2" data-msg="Повторите пароль">
-      </p>
-
-      <p class="feedback_alerts"></p>
-      <p class="auth-submit">
-        <input type="submit" value="Регистрация">
-      </p>
-    </form>
-  </div>
-</div>
 
   {% for container in page.containers %}
     {% flatcontent request page container.container.tag %}
@@ -109,6 +159,7 @@
 <script src="/static/js/feedback.js"></script>
 <script type="text/javascript">
   $(document).ready(function(){
+    $("input.phone").mask("8(999)9 999-999");
     function redirect_to_profile(result){
       setTimeout(function(){
           window.location.href = result['redirect'];

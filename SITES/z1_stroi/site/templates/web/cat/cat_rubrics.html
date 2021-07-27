@@ -1,0 +1,39 @@
+{% extends "skeleton.html" %}
+{% load tags mtags flatcontent_tags %}
+
+{% block extracontent %}{% endblock %}
+
+{% block content %}
+<section class="page-section rubrics">
+  <div class="container">
+    <div class="row">
+      {% for cat in top_level %}
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+          <a class="imga" href="{{ cat.link }}">
+            <img src="{% imagine cat.img '600x400' cat.get_folder True %}" alt="{{ cat.name|quotes2apostrophe }}" />
+          </a>
+          <div class="rubric_link">
+            <a href="{{ cat.link }}">{{ cat.name }}</a>
+          </div>
+          <ul class="subrubrics">
+            {% for subcat in cat.sub %}
+              {% if forloop.counter < 4 %}
+                <li>
+                  <a href="{{ subcat.link }}"> - {{ subcat.name }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+          {% if cat.sub|length > 3 %}
+            <a class="color-grey" href="{{ cat.link }}"> - Все подкатегории</a>
+          {% endif %}
+        </div>
+        {% cycle '' '<div class="clearfix_mobile"></div>' '' '<div class="clearfix"></div>' %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}

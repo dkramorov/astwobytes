@@ -12,13 +12,61 @@
 .table > tbody > tr > td.total {
   width: 115px;
 }
+.orders .shopping-cart table td {
+  color: #999;
+}
+.orders .shopping-cart table td.total {
+  font-size: 1.6em;
+  color: #000;
+}
+.orders .shopping-cart table td.total span{
+  font-size: 14px;
+  color: #999;
+}
+.orders table.purchases .quantity {
+  white-space: nowrap;
+}
+.orders table.purchases .quantity button,
+.orders table.purchases .quantity input {
+  display: inline;
+}
 .quantity input {
-  width: 30px;
+  width: 40px;
+  padding: 5px;
+  text-align: center;
+}
+.orders table.purchases tr {
+  border: 1px solid #ccc;
+}
+.orders table.purchases tr td {
+  padding: 30px 10px;
+}
+.orders table.purchases tr td .subtotal {
+  font-size: 0.8em;
+  padding-top: 10px;
+}
+.orders table.purchases tr td {
+  vertical-align: middle;
+}
+.orders table.purchases tr td.drop {
+  background-color: #eee;
 }
 </style>
 {% endblock %}
 
+{% block extracrumbs %}
+  {% with 1 as tab %}
+    {% include "web/order/cart_steps.html" %}
+  {% endwith %}
+{% endblock %}
+
+{% block page_title %}
+  {% if page.title %}{{ page.title }}{% else %}{{ page.name }}{% endif %}
+  <a class="color-grey compare_link" href="javascript:void(0);">Сравнивали (0)</a>
+{% endblock %}
+
 {% block content %}
+
 {% if not cart %}
   <section class="page-section color">
     <div class="container">
@@ -65,25 +113,34 @@
 
       <div class="row orders">
         {% include "web/order/purchases.html" %}
-        <div class="col-md-4">
-          <h3 class="block-title"><span>Корзина</span></h3>
+        <div class="col-md-3">
           <div class="shopping-cart">
             <table>
+              <tbody>
               <tr>
-                <td>Сумма:</td>
-                <td>{{ cart.total|money_format }} ₽</td>
+                <td class="color-black">Итог:</td>
+                <td class="total">{{ cart.total_with_discount|money_format }} <span>₽</span></td>
               </tr>
               <tr>
-                <td>Доставка:</td>
-                <td>-</td>
+                <td colspan="2"><br>Общая стоимость без учета доставки<br><br></td>
               </tr>
-              <tfoot>
-                <tr>
-                  <td>Итого:</td>
-                  <td>{{ cart.total_with_discount|money_format }} ₽</td>
-                </tr>
-              </tfoot>
+              <tr>
+                <td>Всего товаров:</td>
+                <td>{{ cart.items_count }} шт</td>
+              </tr>
+              <tr>
+                <td>Вес товаров:</td>
+                <td class="order_weight"></td>
+              </tr>
+
+              <tr>
+                <td colspan="2">
+                  <a href="javascript:void(0);">Бесплатная доставка *</a>
+                </td>
+              </tr>
+              </tbody>
             </table>
+            <br>
 {% comment %}<!--
             <div class="form-group">
               <textarea class="form-control" placeholder="Комментарий к заказу"></textarea>
@@ -93,7 +150,8 @@
             </div>
             <button class="btn btn-theme btn-theme-dark btn-block">Apply Coupon</button>
 -->{% endcomment %}
-            <a href="/shop/checkout/" class="btn btn-theme btn-theme-dark btn-block">Оформить заказ</a>
+            <a href="/shop/checkout/" class="btn btn-theme btn-block">Оформить заказ</a>
+            <a href="/shop/checkout/" class="btn btn-block btn-theme-transparent">Купить в 1 клик</a>
           </div>
         </div>
       </div>
@@ -226,8 +284,8 @@
   $(document).ready(function(){
     {% for purchase in cart.purchases %}
       quantity_listener("{{ purchase.id }}",
-                        $("#qbuttons_{{ purchase.id }} .cart-plus"),
-                        $("#qbuttons_{{ purchase.id }} .cart-minus"),
+                        $("#qbuttons_{{ purchase.id }} .prod-plus"),
+                        $("#qbuttons_{{ purchase.id }} .prod-minus"),
                         true // сразу обновить
       );
       purchase_drop_listener("{{ purchase.id }}",

@@ -1,0 +1,25 @@
+{% load mtags %}
+<section class="page-section article">
+  <div class="container">
+    <div class="row">
+      {% for block in blocks %}
+        <div class="col-md-12">
+          <div class="info">
+            {% if block.name %}<h4>{{ block.name }}</h4>{% endif %}
+            {% if block.html %}
+              <div class="description">
+                {{ block.html|safe }}
+              </div>
+            {% endif %}
+            {% if block.link %}
+              <div class="form-group">
+                <a class="btn btn-theme" href="{{ block.link }}">{{ block.description }}</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

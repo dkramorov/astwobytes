@@ -7,6 +7,7 @@ from django.urls import reverse, reverse_lazy, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.db.models import Count
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
@@ -16,8 +17,14 @@ from apps.main_functions.views_helper import (show_view,
                                               search_view, )
 from apps.products.models import Products, CostsTypes, Costs
 
-from .models import Orders, Purchases, Transactions, PromoCodes
-from .cart import calc_cart, get_shopper, create_shopper, get_purchase
+from apps.shop.models import (
+    Orders,
+    Purchases,
+    OrdersDelivery,
+    Transactions,
+    PromoCodes,
+    WishList, )
+from apps.shop.cart import calc_cart, get_shopper, create_shopper, get_purchase
 
 CUR_APP = 'shop'
 orders_vars = {
@@ -334,6 +341,136 @@ def search_purchases(request, *args, **kwargs):
                        cur_app = CUR_APP,
                        sfields = ('product_id', 'product_name', 'product_code'), )
 
+delivery_vars = {
+    'singular_obj': 'Доставка',
+    'plural_obj': 'Доставки',
+    'rp_singular_obj': 'доставки',
+    'rp_plural_obj': 'доставок',
+    'template_prefix': 'delivery_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'shop',
+    'submenu': 'delivery',
+    'show_urla': 'show_delivery',
+    'create_urla': 'create_delivery',
+    'edit_urla': 'edit_delivery',
+    'model': OrdersDelivery,
+}
+
+@login_required
+def show_delivery(request, *args, **kwargs):
+    """Вывод доставок
+       :param request: HttpRequest
+    """
+    mh_vars = delivery_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP)
+    mh.select_related_add('order')
+    context = mh.context
+
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        rows = mh.standard_show()
+        result = []
+        for row in rows:
+            item = object_fields(row)
+            item['actions'] = row.id
+            item['order__id'] = '%s #%s' % (row.order.number or '', row.order.id) if row.order else ''
+            result.append(item)
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+@login_required
+def edit_delivery(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование доставки
+       :param request: HttpRequest
+       :param action: действие над объектом (создание/редактирование/удаление)
+       :param row_id: ид записи
+    """
+    mh_vars = delivery_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, action)
+    mh.select_related_add('order')
+    row = mh.get_row(row_id)
+    context = mh.context
+    context['yandex_maps_api_key'] = settings.YANDEX_MAPS_API_KEY
+    if mh.error:
+        return redirect('%s?error=not_found' % (mh.root_url, ))
+    if request.method == 'GET':
+        if action == 'create':
+            mh.breadcrumbs_add({
+                'link': mh.url_create,
+                'name': '%s %s' % (mh.action_create, mh.rp_singular_obj),
+            })
+        elif action == 'edit' and row:
+            mh.breadcrumbs_add({
+                'link': mh.url_edit,
+                'name': '%s %s' % (mh.action_edit, mh.rp_singular_obj),
+            })
+        elif action == 'drop' and row:
+            if mh.permissions['drop']:
+                row.delete()
+                mh.row = None
+                context['success'] = '%s удален' % (mh.singular_obj, )
+            else:
+                context['error'] = 'Недостаточно прав'
+    elif request.method == 'POST':
+        pass_fields = ()
+        mh.post_vars(pass_fields=pass_fields)
+        if action == 'create' or (action == 'edit' and row):
+            if action == 'create':
+                if mh.permissions['create']:
+                    mh.row = mh.model()
+                    mh.save_row()
+                    context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+            if action == 'edit':
+                if mh.permissions['edit']:
+                    mh.save_row()
+                    context['success'] = 'Данные успешно записаны'
+                else:
+                    context['error'] = 'Недостаточно прав'
+    if mh.row:
+        context['row'] = object_fields(mh.row, pass_fields=('password', ))
+        context['row']['folder'] = mh.row.get_folder()
+        context['row']['thumb'] = mh.row.thumb()
+        context['row']['imagine'] = mh.row.imagine()
+        context['redirect'] = mh.get_url_edit()
+    if request.is_ajax() or action == 'img':
+        return JsonResponse(context, safe=False)
+    template = '%sedit.html' % (mh.template_prefix, )
+    return render(request, template, context)
+
+@login_required
+def delivery_positions(request, *args, **kwargs):
+    """Изменение позиций покупок
+       :param request: HttpRequest
+    """
+    result = {}
+    mh_vars = delivery_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)
+
+def search_delivery(request, *args, **kwargs):
+    """Поиск покупок
+       :param request: HttpRequest
+    """
+    return search_view(request,
+                       model_vars = delivery_vars,
+                       cur_app = CUR_APP,
+                       sfields = ('address', ), )
+
+
 transactions_vars = {
     'singular_obj': 'Транзакция',
     'plural_obj': 'Транзакции',
@@ -635,4 +772,57 @@ def cart(request, action):
     else:
         result['error'] = 'Произошла ошибка'
 
+    return JsonResponse(result, safe=False)
+
+def compare(request, action):
+    """Взаимодействие со списком сравнения
+       :param request: HttpRequest
+       :param action: действие
+    """
+    result = {}
+    shopper = get_shopper(request)
+
+    method = request.GET
+    if request.method == 'POST':
+        method = request.POST
+    product_id = method.get('product_id')
+
+    state = 2
+    if action == 'show':
+        if not shopper:
+            return JsonResponse(result, safe=False)
+        compare_count = WishList.objects.select_related('product').filter(shopper=shopper, state=state).aggregate(Count('id'))['id__count']
+        result = {
+            'count': compare_count,
+        }
+    elif action == 'add' and product_id.isdigit():
+        # Добавление товара в список сравнения
+        product = Products.objects.filter(pk=product_id).first()
+
+        if not shopper or not shopper.id:
+            shopper = create_shopper(request)
+        analog = WishList.objects.filter(shopper=shopper, product=product, state=state).first()
+        if not analog:
+            WishList.objects.create(shopper=shopper, product=product, state=state)
+            result['success'] = 'Добавлено в сравнение товаров'
+        else:
+            result['success'] = 'Уже в сравнении товаров'
+    elif shopper and action == 'drop' and product_id.isdigit():
+        if not shopper:
+            return JsonResponse(result, safe=False)
+
+        not_found = 'Товар не найден'
+        product = Products.objects.filter(pk=product_id).first()
+
+        if product:
+            compare_item = WishList.objects.filter(shopper=shopper, product=product, state=state).first()
+            if compare_item:
+                compare_item.delete()
+                result['success'] = 'Товар удален из сравнения товаров'
+            else:
+                result['error'] = not_found
+        else:
+            result['error'] = not_found
+    else:
+        result['error'] = 'Произошла ошибка'
     return JsonResponse(result, safe=False)

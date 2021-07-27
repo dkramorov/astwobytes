@@ -1,5 +1,6 @@
 {% load mtags %}
-<div class="container article pt60">
+<div class="{% if container.class_name %}{{ container.class_name }}{% endif %}">
+<div class="container article">
   <div class="row">
 
     <div class="col-lg-12 mobile">
@@ -14,7 +15,7 @@
       <div class="offers">
         {% for block in blocks %}
           <div class="row">
-            <div class="col-lg-{% if block.img %}5{% else %}12{% endif %} col-md-12 col-sm-12 col-xs-12">
+            <div class="{% if block.img %}col-lg-5 col-md-5{% else %}col-lg-12 col-md-12{% endif %} col-sm-12 col-xs-12">
               <div class="simple_article_text">
                 {{ block.html|safe }}
               </div>
@@ -26,9 +27,9 @@
               {% endif %}
             </div>
             {% if block.img %}
-              <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
+              <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12 only_desktop">
                 <div class="offers-thumb simple_article_img">
-                  <img loading="lazy" src="{{ block.imagine }}" alt="{{ block.name|textize }}">
+                  <img loading="lazy" src="{{ block.imagine }}" alt="{{ block.name|quotes2apostrophe }}">
                 </div>
               </div>
             {% endif %}
@@ -37,4 +38,14 @@
       </div>
     </div>
   </div>
+</div>
+{% for block in blocks %}
+  {% if block.img %}
+    <div class="only_mobile">
+      <div class="offers-thumb simple_article_img">
+        <img loading="lazy" src="{{ block.imagine }}" alt="{{ block.name|quotes2apostrophe }}">
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
 </div>

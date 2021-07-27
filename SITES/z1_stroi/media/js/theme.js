@@ -529,6 +529,35 @@ jQuery(window).load(function () {
         $("#sidebar_cats_products_count_" + item[0]).html(item[1]);
       }
     }
+
+
+  var z = 0;
+  $("form.contact-form").each(function(){
+    z += 1;
+    if($(this).attr("id") == undefined){
+      $(this).attr("id", "form_" + z);
+    }
+    var pk = $(this).attr("id");
+    $("#" + pk + " input.phone").mask("8(999)9 999-999");
+
+    var order_any = new FeedBack(pk, {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Спасибо, сообщение отправлено",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": "",
+      "callback_error": "",
+      "dont_reset_on_submit": 0, // or 1
+      //"errorClass": "invalid",
+    });
+  });
+
+  show_compare_count(function (count) {
+    $(".compare-list-count").html(count);
+  });
+
 });
 
 jQuery(window).resize(function () {

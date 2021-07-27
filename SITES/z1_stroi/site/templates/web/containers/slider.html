@@ -1,11 +1,12 @@
 {% load mtags %}
 <section class="page-section no-padding slider">
-  <div class="container full-width">
+  <div class="container{% comment %} full-width{% endcomment %}">
     <div class="main-slider">
       <div class="owl-carousel" id="main-slider">
         {% for block in blocks %}
           <div class="item slide2 alt">
             <img class="slide-img" src="{% imagine block.img '1920x1080' block.get_folder True %}" alt="{{ block.title|textize }}"/>
+{% comment %}<!--
             <div class="caption">
               <div class="container">
                 <div class="div-table">
@@ -27,6 +28,7 @@
                 </div>
               </div>
             </div>
+-->{% endcomment %}
           </div>
         {% endfor %}
       </div>

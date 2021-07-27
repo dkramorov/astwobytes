@@ -251,6 +251,7 @@ function init_new_map(){
     // -------------------------------
     "search_result_to_form": null,
     "search_result_to_form_by_click": null,
+    "search_result_to_form": "Подставить координаты этой точки в адрес",
   };
 
   myMaps.push(myMap);
@@ -468,7 +469,7 @@ CustomSearchProvider.prototype.geocode = function (request, options) {
       }
 
       if(myMap.kwargs['search_result_to_form'] != null){
-        search_result_to_form += "<p><a href='javascript:void(0);' onclick='search_result_to_form_callback(\""+mapContainer+"\", " + (myMap.search_results.length - 1) + ",\"" + coords_str + "\")'>Подставить кооридинаты этой точки в адрес</a></p>";
+        search_result_to_form += "<p><a href='javascript:void(0);' onclick='search_result_to_form_callback(\""+mapContainer+"\", " + (myMap.search_results.length - 1) + ",\"" + coords_str + "\")'>"  + myMap.kwargs['search_result_to_form_title'] + "</a></p>";
       }
 
       // --------------------------------------
@@ -488,7 +489,6 @@ CustomSearchProvider.prototype.geocode = function (request, options) {
         },
       };
       add_points_to_map(mapContainer, [myPoint]);
-
     }
     geoObjects.add(new ymaps.Placemark(coords, {
       name: point.properties.get("name"),
@@ -516,7 +516,7 @@ CustomSearchProvider.prototype.geocode = function (request, options) {
       }
     });
     if(myMap.kwargs['after_search'] != null){
-      myMap.kwargs['after_search']();
+      myMap.kwargs['after_search'](point);
     }
   }, ["search_by_geocoder"]);
 
@@ -554,7 +554,7 @@ function search_by_coords(mapContainer, coords) {
         search_result_to_form_callback(mapContainer, myMap.search_results.length - 1, coords_str);
       }
 
-      search_result_to_form += "<p><a href='javascript:void(0);' onclick='search_result_to_form_callback(\""+mapContainer+"\", " + (myMap.search_results.length - 1) + ",\"" + coords_str + "\")'>Подставить кооридинаты этой точки в адрес</a></p>";
+      search_result_to_form += "<p><a href='javascript:void(0);' onclick='search_result_to_form_callback(\""+mapContainer+"\", " + (myMap.search_results.length - 1) + ",\"" + coords_str + "\")'>" + myMap.kwargs['search_result_to_form_title'] + "</a></p>";
     }
 
     placemark.properties.set({
@@ -562,6 +562,9 @@ function search_by_coords(mapContainer, coords) {
       iconCaption: firstGeoObject.properties.get('name'),
       balloonContent: firstGeoObject.properties.get('text')
     });
+    if(myMap.kwargs['after_search'] != null){
+      myMap.kwargs['after_search'](placemark);
+    }
   });
 }
 

@@ -3,7 +3,7 @@
   <li>
     {% if menu.sub %}
       <span class="arrow">
-        <i class="fa fa-angle-down"></i>
+        <i class="fa {% if menu.link in request.META.PATH_INFO %}fa-angle-up{% else %}fa-angle-down{% endif %}"></i>
       </span>
     {% endif %}
     <a href="{{ menu.link }}"{% ifequal menu.link request.META.PATH_INFO %} class="active"{% endifequal %}>{{ menu.name }}</a>
@@ -13,7 +13,7 @@
           <li>
             {% if submenu.sub %}
               <span class="arrow">
-                <i class="fa fa-angle-down"></i>
+                <i class="fa {% if submenu.link in request.META.PATH_INFO %}fa-angle-up{% else %}fa-angle-down{% endif %}"></i>
               </span>
             {% endif %}
             <a href="{{ submenu.link }}"{% ifequal submenu.link request.META.PATH_INFO %} class="active"{% endifequal %}>{{ submenu.name }}</a>

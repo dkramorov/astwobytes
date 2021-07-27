@@ -156,6 +156,8 @@
             status: status,
           });
         });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
       });
       $("#costs_types_select2").select2();
       $("#shopper_select2").select2({

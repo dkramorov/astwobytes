@@ -64,6 +64,10 @@
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
+.hidden {
+  display: none;
+}
+
 body {
   position: relative;
   background: #fff;

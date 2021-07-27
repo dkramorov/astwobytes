@@ -126,11 +126,11 @@
 /* Global properties (body, common classes, structure etc)
 /* ========================================================================== */
 body {
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
+  font-family: "GillSans", sans-serif;
+    font-size: 15px;
     line-height: 1.72;
     background: #ffffff;
-    color: #737475;
+    color: #444;
     -webkit-font-kerning: auto;
     -webkit-font-smoothing: antialiased;
     -webkit-backface-visibility: visible !important;
@@ -572,7 +572,7 @@ textarea:focus:-ms-input-placeholder {
 .btn.active {
     -webkit-box-shadow: none;
     box-shadow: none;
-    border-radius: 0;
+    border-radius: 4px;
 }
 .btn-theme {
     color: #ffffff;
@@ -742,8 +742,8 @@ p.btn-row .text {
     box-shadow: none;
     height: 40px;
     border-radius: 0;
-    border: 3px solid #e9e9e9;
-    color: #737475;
+    border: 2px solid #dadada;
+    border-radius: 8px;
 }
 .form-control:focus {
     -webkit-appearance: none;
@@ -882,21 +882,21 @@ input[type=checkbox] {
     border-bottom: solid 1px #232323;
 }
 .form-login ::-webkit-input-placeholder {
-    color: #232323 !important;
+    color: #ccc !important;
     font-weight: 700 !important;
     font-size: 11px;
     text-transform: uppercase;
     line-height: 22px;
 }
 .form-login :-moz-placeholder {
-    color: #232323 !important;
+    color: #ccc !important;
     font-weight: 700 !important;
     font-size: 11px;
     text-transform: uppercase;
     line-height: 22px;
 }
 .form-login ::-moz-placeholder {
-    color: #232323 !important;
+    color: #ccc !important;
     font-weight: 700 !important;
     font-size: 11px;
     text-transform: uppercase;
@@ -941,7 +941,7 @@ input[type=checkbox] {
 .top-bar {
     padding: 5px 0;
     font-size: 13px;
-    background-color: #d80018;
+    background-color: #FC2622;
     color: #ffffff;
 }
 .top-bar ul {
@@ -1011,6 +1011,7 @@ input[type=checkbox] {
     padding: 0 0 0 10px;
     margin: 0 0 0 9px;
 }
+/*
 .top-bar .top-bar-right > ul > li + li:before {
     content: '';
     display: block;
@@ -1021,6 +1022,7 @@ input[type=checkbox] {
     height: 8px;
     background-color: #ffffff;
 }
+*/
 .top-bar .icon-user img {
     margin-top: -3px;
     margin-right: 5px;
@@ -2595,14 +2597,18 @@ input[type=checkbox] {
 /* Breadcrumbs
 /* ========================================================================== */
 .page-section.breadcrumbs {
+/*
     background-color: #f9fafb;
+*/
     padding-top: 0;
     padding-bottom: 0;
     z-index: 1;
 }
+/*
 .page-section.breadcrumbs > .container {
     text-align: center;
 }
+*/
 .page-section.breadcrumbs .breadcrumb {
     position: relative;
     padding: 20px 0 0 0;
@@ -2612,7 +2618,7 @@ input[type=checkbox] {
     background-color: transparent;
 }
 .page-section.breadcrumbs .breadcrumb a {
-    color: #232323;
+    color: #a3a3a3;
 }
 .page-section.breadcrumbs .breadcrumb a:hover {
     border-bottom: solid 1px #232323;
@@ -2629,19 +2635,18 @@ input[type=checkbox] {
 }
 .page-section.breadcrumbs .page-header {
     padding: 0;
-    margin: 40px 0 0 0;
+    margin: 20px 0 0 0;
     border: none;
 }
 .page-section.breadcrumbs .page-header h1,
 .page-section.breadcrumbs .page-header h1 small {
     color: #232323;
-    text-transform: uppercase;
 }
 .page-section.breadcrumbs .page-header h1 {
     margin: 0;
     padding: 0;
-    font-size: 48px;
-    font-weight: 300;
+    font-size: 30px;
+    font-weight: bold;
 }
 /* 5.2 */
 /* Pagination
@@ -3440,10 +3445,8 @@ input[type=checkbox] {
 /* ========================================================================== */
 .tabs {
     margin-bottom: 25px;
-    font-size: 24px;
-    font-weight: 300;
+    font-size: 18px;
     line-height: 20px;
-    text-transform: uppercase;
     text-align: center;
     overflow: hidden;
     position: relative;
@@ -4357,6 +4360,7 @@ input[type=checkbox] {
     line-height: 22px;
     text-transform: uppercase;
 }
+/*
 .product-single .buttons {
     margin-top: -10px;
     overflow: hidden;
@@ -4441,6 +4445,7 @@ input[type=checkbox] {
 .dropdown-menu > .active > a:focus {
     background-color: #00b16a;
 }
+*/
 /* Products list view
 /* ========================================================================== */
 .products.list .thumbnail + .thumbnail {
@@ -5156,7 +5161,6 @@ input[type=checkbox] {
     font-size: 14px;
     font-weight: 400;
     line-height: 15px;
-    text-transform: uppercase;
 }
 .widget.shop-categories ul li {
     padding: 10px 15px;
@@ -5775,7 +5779,6 @@ input[type=checkbox] {
 }
 .orders td.total {
     font-size: 18px;
-    font-weight: 900;
     color: #232323;
     vertical-align: middle;
 }
@@ -5840,8 +5843,6 @@ input[type=checkbox] {
     padding: 3px;
     width: 50%;
     font-size: 15px;
-    text-transform: uppercase;
-    text-align: right;
     padding-right: 10px;
     color: #232323;
 }
@@ -6059,37 +6060,15 @@ input[type=checkbox] {
 }
 .form-delivery .bootstrap-select .selectpicker > .filter-option {
     color: #232323 !important;
-    font-weight: 700 !important;
     font-size: 11px;
     text-transform: uppercase;
     line-height: 22px;
 }
-.form-delivery ::-webkit-input-placeholder {
-    color: #232323 !important;
-    font-weight: 700 !important;
-    font-size: 11px;
-    text-transform: uppercase;
-    line-height: 22px;
-}
-.form-delivery :-moz-placeholder {
-    color: #232323 !important;
-    font-weight: 700 !important;
-    font-size: 11px;
-    text-transform: uppercase;
-    line-height: 22px;
-}
-.form-delivery ::-moz-placeholder {
-    color: #232323 !important;
-    font-weight: 700 !important;
-    font-size: 11px;
-    text-transform: uppercase;
-    line-height: 22px;
-}
+.form-delivery ::-webkit-input-placeholder,
+.form-delivery :-moz-placeholder,
+.form-delivery ::-moz-placeholder,
 .form-delivery :-ms-input-placeholder {
-    color: #232323 !important;
-    font-weight: 700 !important;
     font-size: 11px;
-    text-transform: uppercase;
     line-height: 22px;
 }
 .payments-options {
@@ -6163,6 +6142,8 @@ input[type=checkbox] {
     width: 100%;
     border: solid 3px #e9e9e9;
     color: #232323;
+    display: block;
+    overflow: auto;
 }
 .compare-products table td {
     position: relative;
@@ -6181,6 +6162,7 @@ input[type=checkbox] {
     position: absolute;
     top: 15px;
     right: 20px;
+  z-index: 2;
 }
 .compare-products .product .media-link {
     float: left;
@@ -6334,12 +6316,6 @@ input[type=checkbox] {
     background-color: #232323;
     color: #ffffff;
 }
-@media (max-width: 767px){
-    .compare-products table{
-        display: block;
-        overflow: auto;
-    }
-}
 /* Error page
 /* ========================================================================== */
 .error-page {
@@ -6379,6 +6355,7 @@ input[type=checkbox] {
 #contact-form textarea.form-control {
     height: 180px;
 }
+/*
 #contact-form .alert {
     margin-left: 15px;
     margin-right: 15px;
@@ -6387,6 +6364,7 @@ input[type=checkbox] {
     background-color: #00b16a;
     color: #ffffff;
 }
+*/
 #contact-form .tooltip {
     left: 15px !important;
 }

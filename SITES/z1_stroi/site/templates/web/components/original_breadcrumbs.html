@@ -1,0 +1,19 @@
+{% ifnotequal request.META.PATH_INFO '/' %}
+<section class="page-section breadcrumbs">
+  <div class="container">
+    <div class="page-header">
+      <h1>{% block page_title %}{% if page.title %}{{ page.title }}{% else %}{{ page.name }}{% endif %}{% endblock %}</h1>
+    </div>
+    <ul class="breadcrumb">
+      <li><a href="/">Главная</a></li>
+      {% for crumb in breadcrumbs %}
+        {% if forloop.last %}
+          <li class="active">{{ crumb.name }}</li>
+        {% else %}
+          <li><a href="{{ crumb.link }}">{{ crumb.name }}</a></li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endifnotequal %}

@@ -198,7 +198,7 @@ def get_catalogue_lvl(request,
        :param force_new: получить каталог без кэша
     """
     result = []
-    if not container_id or not container_id.isdigit():
+    if not container_id or not isinstance(container_id, int):
         return []
     if not cat_id:
         menus = Blocks.objects.filter(container=container_id, parents='').order_by('position')
@@ -490,7 +490,6 @@ def get_cat_for_site(request,
     facet_filters = get_facet_filters(request)
     if facet_filters:
         query = query.filter(**{'%sid__in' % (prefix, ): facet_filters['ids_products']})
-
 
     breadcrumbs.append({'name': page.name, 'link': page.link})
     total_records = query.aggregate(Count('id'))['id__count']

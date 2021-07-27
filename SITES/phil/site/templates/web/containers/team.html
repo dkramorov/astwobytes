@@ -9,9 +9,9 @@
         </div>
       </div>
 
-      <div class="row pb30">
+      <div class="row">
         {% for block in blocks %}
-          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6{% if forloop.last %} last{% endif %}">
             <div class="features-item">
               <div class="features-item__thumb">
                 <img loading="lazy" src="{% imagine block.img '300x300' block.get_folder True %}" alt="{{ block.name|textize }}">
@@ -37,7 +37,7 @@
         {% endfor %}
 
         {% if blocks.0.link %}
-          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 only_desktop">
             <div class="features-item">
               <a class="read-more" href="{{ blocks.0.link }}">
                 <span>{{ blocks.0.title }}</span>
