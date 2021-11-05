@@ -1,0 +1,35 @@
+
+Процессор Apple
+
+    Выключите компьютер Mac.
+    Нажмите кнопку питания, чтобы включить компьютер Mac, и продолжайте удерживать ее нажатой, пока не отобразится окно с параметрами запуска.
+    Выберите загрузочный диск, затем нажмите и удерживайте кнопку Shift, одновременно нажимая «Продолжить в безопасном режиме».
+    Войдите в систему на компьютере Mac. Возможно, вам придется выполнить вход повторно.
+
+
+
+Постоянное решение
+
+command + r while reboot
+csrutil disable
+
+then
+sudo mount -uw /
+
+ln -s /Users /home
+
+
+
+
+Времнное решение - на один сеанс:
+
+sudo ln -s /Users /home will work with additional configuration, but I don't think that is a good idea as you should access home via ~ in shell or $HOME. Also /home might be a Linux standard and often used in Unix but not always so better to rely on information that is guaranteed to work not something that works only most of the time if everyone has kept to a convention.
+
+To make sudo ln -s /Users /home work, follow these steps (from the comments):
+
+EDITOR=nano sudo -e /etc/auto_master
+# add a "#" at the start of the line beginning with /home
+# save changes
+sudo automount -cv
+sudo ln -s /Users /home
+

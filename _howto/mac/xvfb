@@ -1,0 +1,9 @@
+
+Xvfb is not "Linux's", it's X11.
+
+Mac OS X includes X11 support, called XQuartz (aka X11.app), installed with the system by default since version 10.5. 
+
+It includes Xvfb (/usr/X11/bin/xvfb).
+
+imac-jocker:tmp jocker$ which xvfb
+/opt/X11/bin/xvfb

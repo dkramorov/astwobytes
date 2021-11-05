@@ -1,0 +1,385 @@
+$ brew reinstall kibana@5.6 elasticsearch@5.6
+Warning: You are using macOS 10.11.
+We (and Apple) do not provide support for this old version.
+You will encounter build failures with some formulae.
+Please create pull requests instead of asking for help on Homebrew's GitHub,
+Discourse, Twitter or IRC. You are responsible for resolving any issues you
+experience while you are running this old version.
+
+==> Reinstalling kibana@5.6
+Warning: Your Xcode (7.3.1) is outdated.
+Please update to Xcode 8.2.1 (or delete it).
+Xcode can be updated from the App Store.
+
+==> Cloning https://github.com/elastic/kibana.git
+Updating /Users/jocker/Library/Caches/Homebrew/kibana@5.6--git
+==> Checking out tag v5.6.16
+HEAD is now at e4c8b3e [5.6] Bump node to 6.17.0 (#32201)
+HEAD is now at e4c8b3e [5.6] Bump node to 6.17.0 (#32201)
+==> Downloading https://nodejs.org/dist/v6.17.0/node-v6.17.0.tar.xz
+Already downloaded: /Users/jocker/Library/Caches/Homebrew/downloads/aed741149398a36a2711e0e4c0257de522b8f728a1a62b8a61d44beebe1c27d5--node-v6.17.0.tar.xz
+==> ./configure --prefix=/usr/local/Cellar/kibana@5.6/5.6.16/libexec/node
+==> make install
+==> npm install -ddd --build-from-source --cache=/Users/jocker/Library/Caches/Ho
+==> npm run build -- --release --skip-os-packages --skip-archives
+==> Caveats
+Config: /usr/local/etc/kibana/
+If you wish to preserve your plugins upon upgrade, make a copy of
+/usr/local/opt/kibana@5.6/plugins before upgrading, and copy it into the
+new keg location after upgrading.
+
+kibana@5.6 is keg-only, which means it was not symlinked into /usr/local,
+because this is an alternate version of another formula.
+
+If you need to have kibana@5.6 first in your PATH run:
+  echo 'export PATH="/usr/local/opt/kibana@5.6/bin:$PATH"' >> ~/.bash_profile
+
+
+To have launchd start kibana@5.6 now and restart at login:
+  brew services start kibana@5.6
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/kibana@5.6/bin/kibana
+==> Summary
+🍺  /usr/local/Cellar/kibana@5.6/5.6.16: 36,162 files, 201MB, built in 16 minutes 9 seconds
+==> Reinstalling elasticsearch@5.6
+==> Downloading https://artifacts.elastic.co/downloads/elasticsearch/elasticsear
+Already downloaded: /Users/jocker/Library/Caches/Homebrew/downloads/3d7cc028f605699065bd403b0a2383db8d7413c570df57e26fc87a735126c96c--elasticsearch-5.6.16.tar.gz
+==> Caveats
+Data:    /usr/local/var/elasticsearch/elasticsearch_jocker/
+Logs:    /usr/local/var/log/elasticsearch/elasticsearch_jocker.log
+Plugins: /usr/local/opt/elasticsearch@5.6/libexec/plugins/
+Config:  /usr/local/etc/elasticsearch/
+plugin script: /usr/local/opt/elasticsearch@5.6/libexec/bin/elasticsearch-plugin
+
+elasticsearch@5.6 is keg-only, which means it was not symlinked into /usr/local,
+because this is an alternate version of another formula.
+
+If you need to have elasticsearch@5.6 first in your PATH run:
+  echo 'export PATH="/usr/local/opt/elasticsearch@5.6/bin:$PATH"' >> ~/.bash_profile
+
+
+To have launchd start elasticsearch@5.6 now and restart at login:
+  brew services start elasticsearch@5.6
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/elasticsearch@5.6/bin/elasticsearch
+==> Summary
+🍺  /usr/local/Cellar/elasticsearch@5.6/5.6.16: 106 files, 36.0MB, built in 10 seconds
+==> Caveats
+==> kibana@5.6
+Config: /usr/local/etc/kibana/
+If you wish to preserve your plugins upon upgrade, make a copy of
+/usr/local/opt/kibana@5.6/plugins before upgrading, and copy it into the
+new keg location after upgrading.
+
+kibana@5.6 is keg-only, which means it was not symlinked into /usr/local,
+because this is an alternate version of another formula.
+
+If you need to have kibana@5.6 first in your PATH run:
+  echo 'export PATH="/usr/local/opt/kibana@5.6/bin:$PATH"' >> ~/.bash_profile
+
+
+To have launchd start kibana@5.6 now and restart at login:
+  brew services start kibana@5.6
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/kibana@5.6/bin/kibana
+==> elasticsearch@5.6
+Data:    /usr/local/var/elasticsearch/elasticsearch_jocker/
+Logs:    /usr/local/var/log/elasticsearch/elasticsearch_jocker.log
+Plugins: /usr/local/opt/elasticsearch@5.6/libexec/plugins/
+Config:  /usr/local/etc/elasticsearch/
+plugin script: /usr/local/opt/elasticsearch@5.6/libexec/bin/elasticsearch-plugin
+
+elasticsearch@5.6 is keg-only, which means it was not symlinked into /usr/local,
+because this is an alternate version of another formula.
+
+If you need to have elasticsearch@5.6 first in your PATH run:
+  echo 'export PATH="/usr/local/opt/elasticsearch@5.6/bin:$PATH"' >> ~/.bash_profile
+
+
+To have launchd start elasticsearch@5.6 now and restart at login:
+  brew services start elasticsearch@5.6
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/elasticsearch@5.6/bin/elasticsearch
+
+
+# Символические ссылки на кибану и эластик
+ln -s /usr/local/opt/elasticsearch@5.6/bin/elasticsearch /usr/local/bin/elasticsearch
+ln -s /usr/local/opt/kibana@5.6/bin/kibana /usr/local/bin/kibana
+
+#########################
+# УСТАНОВКА elasticsearch
+#########################
+imac-jocker:server jocker$ brew search elasticsearch
+==> Formulae
+elasticsearch              elasticsearch@2.4          elasticsearch@5.6
+imac-jocker:server jocker$ brew install elasticsearch
+==> Downloading https://artifacts.elastic.co/downloads/elasticsearch/elasticsear
+######################################################################## 100.0%
+==> Caveats
+Data:    /usr/local/var/lib/elasticsearch/elasticsearch_jocker/
+Logs:    /usr/local/var/log/elasticsearch/elasticsearch_jocker.log
+Plugins: /usr/local/var/elasticsearch/plugins/
+Config:  /usr/local/etc/elasticsearch/
+
+To have launchd start elasticsearch now and restart at login:
+  brew services start elasticsearch
+Or, if you don't want/need a background service you can just run:
+  elasticsearch
+==> Summary
+🍺  /usr/local/Cellar/elasticsearch/6.2.4: 112 files, 30.8MB, built in 28 seconds
+imac-jocker:server jocker$
+
+##################
+# Установка Kibana
+##################
+imac-jocker:server jocker$ brew install kibana
+Updating Homebrew...
+==> Auto-updated Homebrew!
+Updated 1 tap (homebrew/cask).
+No changes to formulae.
+
+==> Downloading https://homebrew.bintray.com/bottles/kibana-6.2.4.el_capitan.bot
+==> Downloading from https://akamai.bintray.com/05/057d166935aa00f6564b4ca6ee4eb
+######################################################################## 100.0%
+==> Pouring kibana-6.2.4.el_capitan.bottle.tar.gz
+==> Caveats
+Config: /usr/local/etc/kibana/
+If you wish to preserve your plugins upon upgrade, make a copy of
+/usr/local/opt/kibana/plugins before upgrading, and copy it into the
+new keg location after upgrading.
+
+To have launchd start kibana now and restart at login:
+  brew services start kibana
+Or, if you don't want/need a background service you can just run:
+  kibana
+==> Summary
+🍺  /usr/local/Cellar/kibana/6.2.4: 49,501 files, 294.0MB
+imac-jocker:server jocker$
+
+
+# ---------------------
+# INSTALL X-PACK MAC OS
+# ELASTICSEARCH, KIBANA
+# ---------------------
+$ elasticsearch-plugin install x-pack
+-> Downloading x-pack from elastic
+[=================================================] 100%   
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@     WARNING: plugin requires additional permissions     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+* java.io.FilePermission \\.\pipe\* read,write
+* java.lang.RuntimePermission accessClassInPackage.com.sun.activation.registries
+* java.lang.RuntimePermission getClassLoader
+* java.lang.RuntimePermission setContextClassLoader
+* java.lang.RuntimePermission setFactory
+* java.net.SocketPermission * connect,accept,resolve
+* java.security.SecurityPermission createPolicy.JavaPolicy
+* java.security.SecurityPermission getPolicy
+* java.security.SecurityPermission putProviderProperty.BC
+* java.security.SecurityPermission setPolicy
+* java.util.PropertyPermission * read,write
+See http://docs.oracle.com/javase/8/docs/technotes/guides/security/permissions.html
+for descriptions of what these permissions allow and the associated risks.
+
+Continue with installation? [y/N]y
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@        WARNING: plugin forks a native controller        @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+This plugin launches a native controller that is not subject to the Java
+security manager nor to system call filters.
+
+Continue with installation? [y/N]y
+Elasticsearch keystore is required by plugin [x-pack-security], creating...
+-> Installed x-pack with: x-pack-core,x-pack-deprecation,x-pack-graph,x-pack-logstash,x-pack-ml,x-pack-monitoring,x-pack-security,x-pack-upgrade,x-pack-watcher
+
+$ /usr/local/Cellar/kibana/6.2.4/bin/kibana-plugin install x-pack
+Attempting to transfer from x-pack
+Attempting to transfer from https://artifacts.elastic.co/downloads/kibana-plugins/x-pack/x-pack-6.2.4.zip
+Transferring 264988487 bytes....................
+Transfer complete
+Retrieving metadata from plugin archive
+Extracting plugin archive
+Extraction complete
+Optimizing and caching browser bundles...
+Plugin installation complete
+
+# ------------------
+# GENERATE PASSWORDS
+# ------------------
+/usr/local/Cellar/elasticsearch/6.2.4/libexec/bin/x-pack/setup-passwords
+
+$ ./setup-passwords auto
+Initiating the setup of passwords for reserved users elastic,kibana,logstash_system.
+The passwords will be randomly generated and printed to the console.
+Please confirm that you would like to continue [y/N]y
+
+Changed password for user kibana
+PASSWORD kibana = 0nR756lqEUhkIkDUaFZQ
+
+Changed password for user logstash_system
+PASSWORD logstash_system = OdSJJtgCEwYObhG7gr0q
+
+Changed password for user elastic
+PASSWORD elastic = SJw2p0YDxZYjqy2TKZZm
+
+
+###################################
+# Использование elasticsearc с curl
+# ---------------------------------
+# 1) теперь нужно добавлять
+# -H 'Content-Type: application/json'
+# 2) type: string теперь нет, теперь
+# "type" => "text",
+###################################
+
+wget http://media.sundog-soft.com/es/shakes-mapping.json
+curl -XPUT localhost:9200/shakespeare --data-binary @shakes-mapping.json
+
+wget http://media/sundog-soft.com/es/shakespeare.json
+curl -XPOST 127.0.0.1:9200/shakespeare/_bulk --data-binary @shakespeare.json
+
+curl -XGET 127.0.0.1:9200/shakespeare/_search?pretty -d '
+{
+  "query":{
+    "match_phrase": {
+      "text_entry": "to be or not to be"
+    }
+  }
+}
+'
+
+curl -XGET 127.0.0.1:9200/tags/_search?pretty
+
+
+curl -XPUT localhost:9200/_bulk?pretty -H 'Content-Type: application/json' -d '
+  {"create": {"_index":"movies", "_type":"movie", "_id":"135569"} }
+  {"id":"135569", "title":"Star Trek Beyond", "year":2016, "genre":["Action", "Adventure", "Sci-Fi"]}
+
+  {"create":{"_index":"movies", "_type":"movie", "_id":"1924"} }
+  {"id":"1924", "title":"Plan 9 from Outer Space", "year":1959, "genre":["Horror", "Sci-Fi"]}
+'
+
+curl -XPUT 127.0.0.1:9200/series -H 'Content-Type: application/json' -d '
+{
+  "mappings":{
+    "franchise":{},
+    "film":{
+      "_parent":{
+       "type":"franchise"
+      }
+    }
+  }
+}'
+
+##################
+# ВСТАВКА ИЗ ФАЙЛА
+##################
+wget http://media.sundog-soft.com/es/movies.json
+curl -XPUT localhost:9200/_bulk?pretty -H 'Content-Type: application/json' --data-binary @movies.json
+curl -XGET localhost:9200/movies/_search?pretty
+
+#####################
+# ПОЛУЧИТЬ ИНФОРМАЦИЮ
+#####################
+curl -XGET localhost:9200/movies/movie/109487?pretty
+
+#######
+# ПОИСК
+#######
+curl -XGET 'localhost:9200/movies/_search?pretty&q=Dark'
+
+curl -XGET 127.0.0.1:9200/movies/movie/_search?pretty -H 'Content-Type: application/json' -d '
+  {
+    "query":{
+      "match":{
+        "title":"Star Trek"
+      }
+    }
+  }
+'
+
+curl -XGET localhost:9200/movies/movie/_search?pretty -H 'Content-Type: application/json' -d '
+  {
+    "query":{
+      "match_phrase":{
+        "genre":"sci"
+      }
+    }
+  }
+'
+
+############
+# ОБНОВЛЕНИЕ
+############
+curl -XPOST 127.0.0.1:9200/movies/movie/109487/_update?pretty -H 'Content-Type: application/json' -d '
+{
+  "doc":{
+    "title":"Interstellar"
+  }
+}
+'
+curl -XPUT localhost:9200/movies/movie/109487?pretty -H 'Content-Type: application/json' -d '
+{
+  "genres":["IMAX", "Sci-Fi"],
+  "title":"Interstellar",
+  "year":2014
+}
+'
+######################
+# ОБНОВЛЕНИЕ ПО ВЕРСИИ
+######################
+curl -XPUT 'localhost:9200/movies/movie/109487?pretty&version=3' -H 'Content-Type: application/json' -d '
+{
+  "genres":["IMAX", "Sci-Fi"],
+  "title":"Interstellar",
+  "year":2014
+}
+'
+curl -XPOST 'localhost:9200/movies/movie/109487_update?pretty&version=3' -H 'Content-Type: application/json' -d '
+{
+  "doc":{
+    "title":"Interstellar FooBar"
+  }
+}
+'
+##########
+# УДАЛЕНИЕ
+##########
+curl -XDELETE 127.0.0.1:9200/movies/movie/109487?pretty
+
+
+##########
+# FILTERS:
+##########
+term: filter by exact values
+{"term":{"year":2014}}
+
+terms: match if any exact values in a list match
+{"terms":{"genre":["Sci-Fi", "Adventure"]}}
+
+range: find numbers of dates in a given range
+{"range":{"year":{"gte":2010}}} gt,gte,lt,lte
+
+exists: find documents where a field exists
+{"exists":{"field":"tags"}}
+
+missing: find documents where a field missing
+{"missing":{"field":"tags"}}
+
+bool: Combine filters with Boolean logic (must, must_not, should)
+
+
+##########
+# QUERIES:
+##########
+match_all: returns all documents and is the default
+{"match_all":{}}
+
+match: searches analyzed results, such as full text search
+{"match":{"title":"star"}}
+
+multi_match: run the same query on multiple fields
+{"mutli_match":{"query":"star", "fields":["title", "sinopsis"]}}
+
+bool: Works like a bool filter, but results are scord by relevance
+

@@ -1,0 +1,42 @@
+mysql.server restart
+arch -x86_64 /usr/local/bin/brew services start mysql@5.7
+arch -x86_64 /usr/local/bin/brew services stop mysql@5.7
+
+базы в /usr/local/var/mysql
+
+
+If you installed mysql via homebrew, you can have launchd start mysql at login by:
+ln -sfv /usr/local/opt/mysql/*.plist ~/Library/LaunchAgents
+launchctl load -w ~/Library/LaunchAgents/*mysql*.plist
+
+
+In case of Mac OS X Maverick when MySQL is installed via Homebrew it's located at 
+/usr/local/opt/mysql/my.cnf
+
+Table 'performance_schema.session_variables' doesn't exist
+mysql_upgrade -u root -p --force
+
+mysql --verbose --help|grep cnf
+
+[mysqld]
+general_log=1
+general_log_file=/Users/wdb/mysql.log
+
+mysql> show variables like '%general_log%';
++------------------+----------------------+
+| Variable_name    | Value                |
++------------------+----------------------+
+| general_log      | ON                   |
+| general_log_file | /Users/wdb/mysql.log |
++------------------+----------------------+
+2 rows in set (0.01 sec)
+
+
+> cd ~
+> touch mysql.log
+> sudo chown _mysql:wheel mysql.log
+
+mysql> SET GLOBAL general_log = 'ON';
+ERROR 29 (HY000): File '/var/log/mysqld.log' not found (Errcode: 13 - Permission denied)
+
+

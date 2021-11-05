@@ -1,0 +1,598 @@
+The Homebrew package manager includes launchctl plists to start automatically. For more information run brew info postgres.
+
+Start manually:
+
+pg_ctl -D /usr/local/var/postgres start
+
+Stop manually:
+
+pg_ctl -D /usr/local/var/postgres stop
+
+Start automatically:
+
+"To have launchd start postgresql now and restart at login:"
+
+brew services start postgresql
+
+What is the result of pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start?
+
+What is the result of pg_ctl -D /usr/local/var/postgres status?
+
+Показать hstore (extension) расширения
+\dx
+
+Включить время выполнения (длительность - как долго) запроса
+\timing
+
+Показать полный запрос - без перелистывания, постраночной навигации
+\pset pager off
+
+Анализ запроса, скорость выполнения, ожидаемая и реальная
+EXPLAIN ANALYZE SELECT *
+FROM tenk1 t1, tenk2 t2
+WHERE t1.unique1 < 10 AND t1.unique2 = t2.unique2;
+===
+cur.execute(cur.mogrify('explain analyze ' + sql_query, vals))
+analyze_fetched = cur.fetchall()
+print(analyze_fetched)
+
+
+Выключить поточный/быстрый/краткий вывод инфы
+I just needed to spend more time staring at the documentation. This command:
+\x on
+will do exactly what I wanted. Here is some sample output:
+
+select * from dda where u_id=24 and dda_is_deleted='f';
+-[ RECORD 1 ]------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+dda_id             | 1121
+u_id               | 24
+ab_id              | 10304
+dda_type           | CHECKING
+dda_status         | PENDING_VERIFICATION
+dda_is_deleted     | f
+dda_verify_op_id   | 44938
+version            | 2
+created            | 2012-03-06 21:37:50.585845
+modified           | 2012-03-06 21:37:50.593425
+c_id               |
+dda_nickname       |
+dda_account_name   |
+cu_id              | 1
+abd_id             |
+
+# ----
+# JSON
+# ----
+https://postgrespro.ru/docs/postgrespro/9.5/functions-json
+
+PostgreSQL returns a result set in the form of JSON.
+PostgreSQL provides two native operators -> and ->> to help you query JSON data.
+    The operator -> returns JSON object field by key.
+    The operator ->> returns JSON object field by text.
+The following query uses the operator -> to get all customers in form of JSON:
+SELECT
+   info -> 'customer' AS customer
+FROM
+   orders;
+And the following query uses operator ->> to get all customers in form of text:
+SELECT
+   info ->> 'customer' AS customer
+FROM
+   orders;
+Because -> operator returns a JSON object, you can chain it with the operator ->> to retrieve a specific node. For example, the following statement returns all products sold:
+SELECT
+   info -> 'items' ->> 'product' as product
+FROM
+   orders
+ORDER BY
+   product;
+
+SELECT
+   info ->> 'customer' AS customer
+FROM
+   orders
+WHERE
+   info -> 'items' ->> 'product' = 'Diaper'
+
+SELECT
+   info ->> 'customer' AS customer,
+   info -> 'items' ->> 'product' AS product
+FROM
+   orders
+WHERE
+   CAST (
+      info -> 'items' ->> 'qty' AS INTEGER
+   ) = 2
+
+настройки
+/usr/local/var/postgres/postgresql.conf
+SELECT * FROM pg_settings WHERE
+    category IN( 'Reporting and Logging / Where to Log' , 'File Locations') ORDER BY category, name;
+# -------------------
+# Для логов в консоль
+# -------------------
+log_min_messages = info
+log_min_error_statement = info
+log_min_duration_statement = 0
+
+
+\d показывает и материализованные представления
+\dm показывает только материализованные представления
+
+landing_pages=# show config_file;
+               config_file
+-----------------------------------------
+ /usr/local/var/postgres/postgresql.conf
+(1 row)
+# show log_destination ;
+
+
+Итак прежде всего нам понадобится homebrew (Установка Homebrew).
+
+Открываем Terminal.app и запускаем команды:
+brew update
+brew install postgresql
+
+К сожалению установка на этом не закончена, необходимо выполнить еще пару шагов.
+
+Инициализируем БД:
+initdb /usr/local/var/postgres
+
+Добавляем сервис в автозагрузку:
+cp /usr/local/Cellar/postgresql/ВЕРСИЯ POSTGRESQL(в моем случае 9.2.4)/homebrew.mxcl.postgresql.plist ~/Library/LaunchAgents/
+launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
+
+Загружаем дам из sql в базу
+psql databasename < data_base_dump
+
+Запускаем PostgreSQL:
+imac-jocker:sbin jocker$ psql postgres
+psql (10.1)
+Type "help" for help.
+
+postgres=# create database catalog_hierarchy;
+CREATE DATABASE
+postgres=# create user postgres with password 'postgres';
+CREATE ROLE
+postgres=# grant all on database catalog_hierarchy to postgres;
+GRANT
+
+delete/remove ROLE:
+DROP ROLE demorole1;
+
+# -------------------------
+# PGAdmin permission denied
+# -------------------------
+-- For all privileges
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO user;
+
+-- For viewing privileges
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO user;
+
+\q - ВЫХОД
+
+# ----------------
+Если создавать так
+postgres=# create ROLE _PUBLISH_HIERARCHY_;
+ERROR:  role "_publish_hierarchy_" already exists
+imac-jocker:~ jocker$ psql -U_publish_hierarchy_ catalog_hierarchy
+
+Создает в нижнем регистре, надо писать в кавычках
+postgres=# create ROLE "_PUBLISH_HIERARCHY_";
+CREATE ROLE
+ALTER ROLE "_PUBLISH_HIERARCHY_" WITH LOGIN;
+$ psql -U_PUBLISH_HIERARCHY_ catalog_hierarchy
+# ----------------
+
+FATAL:  role "postgres" is not permitted to log in
+ALTER ROLE "postgres" WITH LOGIN;
+
+От только что созданного юзера запускаем базень
+imac-jocker:sbin jocker$ psql -h localhost catalog_hierarchy postgres
+psql (10.1)
+iMac-Jocker:server jocker$ psql catalog_hierarchy postgres
+psql (10.4)
+Type "help" for help.
+
+catalog_hierarchy=> \dt
+                 List of relations
+ Schema |          Name          | Type  |  Owner
+--------+------------------------+-------+----------
+ public | _yoyo_migration        | table | postgres
+ public | actionlog              | table | postgres
+ public | genericproduct         | table | postgres
+ public | gpnode                 | table | postgres
+ public | node                   | table | postgres
+ public | node_backup_2018_01_11 | table | postgres
+ public | nodeowners             | table | jocker
+ public | redirectqueue          | table | jocker
+ public | redirects              | table | jocker
+ public | tree                   | table | postgres
+ public | user                   | table | postgres
+
+# create database test_rubricator owner postgres;
+# alter database test_rubricator OWNER to postgres;
+
+ALTER TABLE login OWNER TO test;
+ALTER SEQUENCE login_id_seq OWNER TO test;
+
+
+show full processlist => SELECT * from pg_stat_activity  [where datname='sdvorcatalog'];
+чтобы убить процесс -
+SELECT pg_cancel_backend(__pid__);
+SELECT pg_terminate_backend(__pid__); жестко похерить
+
+В pg_stat_activity запрос обрезается - делаем
+ALTER SYSTEM SET track_activity_query_size = 16384;
+если show track_activity_query_size; показывает, например, 1024
+SELECT
+    pg_terminate_backend(pid)
+FROM
+    pg_stat_activity
+WHERE
+    pid <> pg_backend_pid()
+    AND datname = 'bestoffers'
+    AND state_change < current_timestamp - INTERVAL '1' MINUTE;
+
+SELECT pid, now() - pg_stat_activity.query_start AS duration from pg_stat_activity where datname='bestoffers';
+
+
+------------ Подключиться к database (like use db) -----------
+\c testdb;
+postgres=# \c catalog_hierarchy
+You are now connected to database "catalog_hierarchy" as user "jocker".
+
+Иногда нужно давать привелегии на каждую таблицу
+GRANT ALL PRIVILEGES ON TABLE side_adzone TO jerry;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO jerry;
+
+Postgresql: error “must be owner of relation” when changing a owner object
+grant userB to userA;
+
+Got an error recreating the test database: must be owner of database test_sdvorcatalog
+ALTER DATABASE name OWNER TO new_owner
+
+###permission denied to create database
+alter user sdvordev createdb;
+# alter user postgres createdb;
+
+# -------------------------------
+django.db.utils.ProgrammingError:
+permission denied for relation django_migrations
+# -------------------------------
+$ psql sdvor -c "GRANT ALL ON ALL TABLES IN SCHEMA public to sdvordev;"
+$ psql sdvor -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to sdvordev;"
+$ psql sdvor -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to sdvordev;"
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to postgres;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public to postgres;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public to postgres;
+
+
+Посмотреть таблицы
+From the psql command line interface, this shows all tables in the current schema:
+\dt
+Programmatically (or from the psql interface too, of course):
+SELECT * FROM pg_catalog.pg_tables;
+
+\l is the equivalent of show databases in MySQL.
+\dt is show tables
+
+
+
+Почти все, осталось лишь уточнить пару ньюансов.
+1) При установке с помощью homebrew, PostgreSQL не создает системной учетной записи postgres, поэтому все действия над БД производятся в контексте пользователя, из под которого был запущен brew. Нам это не принипиально, поскольку это сервер для разработки, а если Вы настраиваете production сервер, то создайте системную запись postgres вручную.
+
+2) После установки при попытке запустить psql из консоли он невнятно сругнется на отсутствие сокета. Лечится это добавлением в ~/.bash_profile одной строчки:
+export PGHOST=localhost
+
+
+Запуск psql postgres
+
+https://www.postgresql.org/docs/9.2/static/app-psql.html
+
+
+postgres=# create table phones (phone varchar, users int[]);
+CREATE TABLE
+postgres=# create table items (id serial, user_id int, status smallint);
+CREATE TABLE
+postgres=# \d phones
+         Table "public.phones"
+ Column |       Type        | Modifiers
+--------+-------------------+-----------
+ phone  | character varying |
+ users  | integer[]         |
+
+postgres=# \d items
+                          Table "public.items"
+ Column  |   Type   |                     Modifiers
+---------+----------+----------------------------------------------------
+ id      | integer  | not null default nextval('items_id_seq'::regclass)
+ user_id | integer  |
+ status  | smallint |
+
+# -----------------------------------
+# show all sequences Показать все seq
+# -----------------------------------
+SELECT c.relname FROM pg_class c WHERE c.relkind = 'S';
+SELECT last_value FROM integrator_run_seq;
+
+\quit - ВЫХОД
+
+
+ДЕМОНСТРАЦИЯ ANY
+select * from sales_sales as e where '6528' = ANY(e.hier_ids);
+
+postgres=# insert into phones values('81234567890', '{4}');
+INSERT 0 1
+
+postgres=# insert into items values('1', '1', '3');
+INSERT 0 1
+
+postgres=# select phone from items inner join phones on items.user_id=ANY(phones.users);
+
+postgres=# select phone, count(status) as sold from items inner join phones on items.user_id=ANY(phones.users) where status=7 and phone IN('81234567890', '81234567897') group by 1;
+
+postgres=# select phone, count(*) as sold from phones left outer join items on items.user_id=ANY(phones.users) where status=7 and phone IN('7924445544', '8985545444') group by 1;
+
+postgres=# select * from phones;
+    phone    | users 
+-------------+-------
+ 81234567890 | {4}
+ 81234567899 | {1}
+ 81234567898 | {2}
+ 81234567897 | {3}
+ 7924445544  | {1,2}
+ 8985545444  | {3}
+(6 rows)
+postgres=# select * from items;
+ id | user_id | status 
+----+---------+--------
+  1 |       1 |      3
+  2 |       2 |      5
+  4 |       4 |      3
+  5 |       4 |      5
+  6 |       4 |      5
+  7 |       4 |      7
+  8 |       4 |      7
+  9 |       1 |      7
+ 11 |       1 |      7
+ 13 |       1 |      7
+(10 rows)
+postgres=# select phone, count(id) as sold from phones left join items ON items.user_id=ANY(phones.users) where phone IN('7924445544', '8985545444') group by phone;
+   phone    | sold 
+------------+------
+ 7924445544 |    6
+ 8985545444 |    0
+(2 rows)
+
+postgres=# select phone, count(1) filter(where items.status=7) as sold, count(1) filter(where items.status=3) as notsold from phones left join items ON items.user_id=ANY(phones.users) where phone IN('7924445544', '8985545444') group by phone;
+   phone    | sold | notsold 
+------------+------+---------
+ 7924445544 |    3 |       1
+ 8985545444 |    0 |       0
+(2 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+PostgreSQL — это кроссплатформенная объектно-реляционная СУБД с открытым исходным кодом. Из этой статьи вы узнаете, как установить PostgreSQL в Ubuntu Linux, подключиться к нему и выполнить пару простых SQL-запросов, а также о том, как настроить резервное копирование.
+
+Чтобы установить PostgreSQL 9.2 в Ubuntu 12.10, выполните следующие команды:
+sudo apt-add-repository ppa:pitti/postgresql
+sudo apt-get update
+sudo apt-get install postgresql-9.2
+
+Дополнение: Для других версий PostgreSQL, версий Ubuntu, а также других дистрибутивов Linux, последовательность шагов аналогичная. Только вместо приведенного PPA я бы все же рекомендовал использовать официальные репозитории пакетов, приведенные на postgresql.org. Также вас могут заинтересовать заметки Потоковая репликация в PostgreSQL и пример фейловера, Некоторые интересные отличия PostgreSQL от MySQL и Как спроектировать схему базы данных.
+
+Попробуем поработать с СУБД через оболочку:
+sudo -u postgres psql
+
+Создадим тестовую базу данных и тестового пользователя:
+CREATE DATABASE test_database;
+CREATE USER test_user WITH password 'qwerty';
+GRANT ALL ON DATABASE test_database TO test_user;
+
+Для выхода из оболочки введите команду \q.
+
+Теперь попробуем поработать с созданной базой данных от имени test_user:
+psql -h localhost test_database test_user
+
+Создадим новую таблицу:
+CREATE SEQUENCE user_ids;
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY DEFAULT NEXTVAL('user_ids'),
+  login CHAR(64),
+  password CHAR(64));
+
+Обратите внимание, что в отличие от некоторых других СУБД, в PostgreSQL нет столбцов со свойством auto_increment. Вместо этого в постгресе используются последовательности (sequences). На данный момент достаточно знать, что с помощью функции nextval мы можем получать уникальные числа для заданной последовательности:
+SELECT NEXTVAL('user_ids');
+
+Прописав в качестве значения по умолчанию для поля id таблицы users значение NEXTVAL('user_ids'), мы добились того же эффекта, что дает auto_increment. При добавлении новых записей в таблицу мы можем не указывать id, потому что уникальный id будет сгенерирован автоматически. Несколько таблиц могут использовать одну и ту же последовательность. Таким образом мы сможем гарантировать, что значения некоторых полей у этих таблиц не пересекаются. В этом смысле последовательности более гибки, чем auto_increment.
+
+Точно такую же таблицу можно создать и при помощи всего лишь одной команды:
+CREATE TABLE users2 (
+  id SERIAL PRIMARY KEY,
+  login CHAR(64),
+  password CHAR(64));
+
+В этом случае последовательность для поля id создается автоматически.
+
+describe table bm2rc / show create table bm2rc
+# \d+ bm2rc
+
+Теперь с помощью команды \d можно ознакомиться со списком всех доступных таблиц, а с помощью \d users — увидеть описание таблицы users. Если вы не получили интересующую вас информацию, попробуйте \d+ вместо \d. Список баз данных можно получить командой \l, а переключиться на конкретную БД — командой \c dbname. Для отображения справки по командам скажите \?.
+
+Важно отметить, что в PostgreSQL по умолчанию имена таблиц и столбцов приводятся к нижнему регистру. Если это поведение нежелательно, можно воспользоваться двойными кавычками:
+CREATE TABLE "anotherTable" ("someValue" VARCHAR(64));
+
+Еще одна особенность PostgreSQL, с которой могут возникнуть сложности в начале работы с этой СУБД — так называемые «схемы». Схема представляет собой что-то вроде пространства имен для таблиц, как бы каталог с таблицами внутри базы данных.
+
+Создание схемы:
+CREATE SCHEMA bookings;
+
+Переключение на схему:
+SET search_path TO bookings;
+
+Просмотреть список существующих схем можно командой \dn. По умолчанию используется схема с именем public. В принципе, можно успешно использовать PostgreSQL, и не зная про существование схем. Но при работе с унаследованным кодом, а также в некоторых граничных случаях, знание о схемах может очень пригодиться.
+
+В остальном работа с PostgreSQL мало чем отличается от работы с любой другой реляционной СУБД:
+INSERT INTO users (login, password)
+  VALUES ('afiskon', '123456');
+SELECT * FROM users;
+
+Если сейчас вы попытаетесь подключиться к постгресу с другой машины, то потерпите неудачу:
+psql -h 192.168.0.1 test_database test_user
+
+psql: could not connect to server: Connection refused
+  Is the server running on host "192.168.0.1" and accepting
+  TCP/IP connections on port 5432?
+
+Чтобы исправить это, добавьте строку:
+listen_addresses = 'localhost,192.168.0.1'
+
+… в файл /etc/postgresql/9.2/main/postgresql.conf, а также:
+host    all    all    192.168.0.1/16    md5
+
+… в файл /etc/postgresql/9.2/main/pg_hba.conf и скажите:
+sudo service postgresql restart
+
+Теперь все должно работать.
+
+Резервное копирование в PostgreSQL выглядит примерно так:
+pg_dump -c -h 192.168.0.1 -U test_user test_database > ./dump.sql
+# Резервное копирование бекап(backup) специфических таблиц
+$ pg_dump -c -U postgres -t generic_products sdvorcatalog> ./gp.sql
+
+iMac-Jocker:catalog-hierarchy jocker$ pg_dump -c -h 10.0.29.107 -U catalog_hier catalog_hierarchy > ./catalog_hierarchy.sql
+(catalog_hier:c2ZLSMskDwR49lWv)
+
+Если у вас большая база данных, обратите также внимание на поддержку утилитой pg_dump флага -Fc.
+
+Восстановление из резервной копии:
+cat dump.sql | psql -h 192.168.0.1 test_database test_user
+
+Во время создания резервной копии вы можете получить ошибку вроде такой:
+pg_dump: server version: 9.2.4; pg_dump version: 9.1.9
+pg_dump: aborting because of server version mismatch
+
+Насколько мне известно, единственное нормальное решение этой проблемы — честно держать всюду одну и ту же версию PostgreSQL.
+
+
+Дамп / бекап таблицы
+Если нужно сразу передать парольку PGPASSWORD="..." pg_dump ...
+
+pg_dump --host localhost --port 5432 --username postgres --format plain --ignore-version --verbose --file "C:\temp\filename.backup" --table public.tablename dbname
+
+pg_dump --host 35.242.200.116 --port 5432 --username landing_pages --format plain --verbose --file "/home/jocker/Downloads/landing_pages.sql" --db seo-landing-pages
+
+
+To drop the database and recreate it from the dump:
+$ dropdb mydb
+$ pg_restore -C -d postgres db.dump
+
+
+Из дампа восстановить
+pg_restore -d sdvorcatalog sdvorcatalog_v2.dump
+
+# ---------------------
+# Если возникает ошибка
+# ---------------------
+iMac-Jocker:rest-api jocker$ pg_restore -d sdvorcatalog sdvorcatalog_v2.dump
+pg_restore: [archiver] unsupported version (1.13) in file header
+
+то обновлять -
+brew upgrade postgresql brew postgresql-upgrade-database
+
+это решит проблему
+
+The data directory was initialized by PostgreSQL version 10, which is not compatible with this version 11.2
+
+brew postgresql-upgrade-database
+brew info postgres
+
+
+
+jsonb поле
+
+sdvorcatalog=# select id, rt_filters, pg_column_size(rt_filters) from hier_hierarchy where pg_column_size(rt_filters)> 5 limit 10;
+
+
+REFRESH MATERIALIZED VIEW [ CONCURRENTLY ] name
+    [ WITH [ NO ] DATA ]
+
+# ----------
+# для тестов
+# ----------
+Got an error recreating the test database: database "test_sdvorcatalog" does not exist
+ALTER USER django CREATEDB;
+
+
+
+
+SELECT table_schema, table_name FROM information_schema.columns;
+SHOW search_path;
+SET search_path TO my_schema;
+
+
+test_rubricator=# \du
+                                         List of roles
+      Role name      |                         Attributes                         | Member of  
+---------------------+------------------------------------------------------------+------------
+ _PUBLISH_HIERARCHY_ |                                                            | {postgres}
+ _publish_hierarchy_ |                                                            | {postgres}
+ catalog_hier        |                                                            | {}
+ cataloguser         | Create DB                                                  | {postgres}
+ dml_only            |                                                            | {}
+ jocker              | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ postgres            | Create DB                                                  | {}
+ rubricator          |                                                            | {}
+ sdvordev            | Create DB                                                  | {postgres}
+
+
+test_rubricator=# alter role postgres superuser;
+ALTER ROLE
+
+Показать размер таблиц
+select pg_size_pretty(pg_relation_size('table_name'));
+
+sdvorcatalog=#    SELECT relname AS name, relfilenode AS oid, (relpages * 8192 / (1024*1024))::int as size_mb, reltuples  as count
+      FROM pg_class
+      WHERE relname NOT LIKE 'pg%'
+      ORDER BY relpages DESC;
+                              name                               |   oid   | size_mb |    count
+-----------------------------------------------------------------+---------+---------+-------------
+ prices_fo_es_idx                                                | 3265379 |    1320 | 1.61264e+06
+
+# ---------------------------------------
+# Занимаемое место таблицами в мегабайтах
+# ---------------------------------------
+SELECT relname AS name, (relpages * 8192 / (1024*1024))::int as size_mb FROM pg_class WHERE relname NOT LIKE 'pg%' ORDER BY relpages DESC;
+
+# ----------------
+# Показать индексы
+# ----------------
+SELECT
+    tablename,
+    indexname,
+    indexdef
+FROM
+    pg_indexes
+WHERE
+    schemaname = 'public'
+ORDER BY
+    tablename,
+    indexname;
+
+
+
+UPDATE table_name SET column_name = REPLACE(column,old_text,new_text) WHERE condition

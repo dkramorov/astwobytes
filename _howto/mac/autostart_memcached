@@ -1,0 +1,46 @@
+Create a file in the /Library/LaunchDaemons/ directory with name memcached.plist having below content.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<key>Label</key>
+<string>com.danga.memcached</string>
+<key>ProgramArguments</key>
+<array>
+<string>/usr/bin/memcached</string>
+<string>-d</string>
+<string>-u</string>
+<string>root</string>
+<string>-p</string>
+<string>11211</string>
+<string>-m</string>
+<string>64</string>
+</array>
+<key>RunAtLoad</key>
+<true/>
+</dict>
+</plist>
+
+
+Installation
+$ brew install memcached
+
+The following command will show all memcached options.
+$ memcached -h
+There are several options to run memcached after the initial installation.
+
+Run memcached from a terminal session.
+$ memcached
+Run memcached as a daemon.
+$ memcached -d
+Use launchctl to start memcached at login and keep it running.
+Copy the provided launchctl plist file to ~/Library/LaunchAgents. I like keeping all of my launchctl plist files together.
+$ cp /usr/local/Cellar/memcached/1.4.15/homebrew.mxcl.memcached.plist ~/Library/LaunchAgents/
+Load the memcached plist file.
+$ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.memcached.plist
+You can stop the memcached service with the following command.
+$ launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.memcached.plist
+If you drop the “-w” from the previous two commands, memcache will not load automatically when you restart your Mac. This may be the way you want to run memcached so it doesn’t take up system resources when you don’t need it.
+The following command will show you if the memcached service is loaded in the launchd system. If you get a line returned, it is running.
+$ launchctl list | grep memcached

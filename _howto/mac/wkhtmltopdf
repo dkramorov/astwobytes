@@ -1,0 +1,1 @@
+$ wkhtmltopdf --dpi 300 --orientation landscape --viewport-size 1280x1024 --javascript-delay 2000 http://localhost:8002/sdvor_constructor/ /home/jocker/tmp/constructor_simple_template.pdf

@@ -1,8 +1,10 @@
 pytest==4.4.1
 psutil==5.6.7
-selenium==3.141.0
-urllib3==1.24.3
-requests==2.21.0
+#selenium==3.141.0 # undetected-chromedriver 3.0.3 requires selenium==4.0.0b4
+selenium==4.0.0b4
+requests==2.26.0
 envparse
 python-memcached==1.59
+selenium-wire==4.5.2
+undetected-chromedriver==3.0.3
 

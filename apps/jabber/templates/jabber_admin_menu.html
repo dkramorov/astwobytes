@@ -11,6 +11,11 @@
         <span class="item-text">Регистрации</span>
       </a>
     </li>
+    <li{% ifequal submenu 'tokens' %} class="active"{% endifequal %} id="left_menu_jabber_tokens">
+      <a class="no-submenu" data-toggle="" href="{% url 'jabber:show_tokens' %}">
+        <span class="item-text">Токены FCM</span>
+      </a>
+    </li>
   </ul>
 </li>
 {% endif %}

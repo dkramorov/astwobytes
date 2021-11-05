@@ -1,0 +1,8 @@
+Mac-mini-Den:jocker root# mc
+common.c: unimplemented subshell type 1
+read (subshell_pty...): No such file or directory (2)
+Mac-mini-Den:jocker root# dscl . -read /Users/root UserShell
+UserShell: /bin/sh
+Mac-mini-Den:jocker root# dscl . -change /Users/root UserShell /bin/sh /bin/bash
+Mac-mini-Den:jocker root# dscl . -read /Users/root UserShell
+UserShell: /bin/bash

@@ -1,6 +1,6 @@
 persistentLayout: true,
 persistentSort: true,
-persistenceID: "{{ root_url }}",
+persistenceID: window.tabulatorAjaxURL || "{{ root_url }}",
 persistentFilter: false,
 
 ajaxURL: window.tabulatorAjaxURL || "{{ root_url }}",
@@ -40,7 +40,7 @@ renderComplete:function(){
   }
 },
 
-initialHeaderFilter: [
+initialHeaderFilter: window.tabulatorInitialHeaderFilter || [
   {% for k, v in fas.filters.items %}
     {field: "{{ k }}", value: "{{ v }}"},
   {% endfor %}
@@ -82,7 +82,7 @@ rowMoved:function(row){
   var msg = 'Произошла ошибка, обновите страничку';
   $.ajax({
     type: 'POST',
-    url: '{{ root_url }}positions/',
+    url: (window.tabulatorAjaxURL + 'positions/') || '{{ root_url }}positions/',
     data: {csrfmiddlewaretoken: getCookie('csrftoken'), positions: rows},
   }).done(function(r) {
     if(r.error){

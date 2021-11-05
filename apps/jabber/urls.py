@@ -15,5 +15,13 @@ urlpatterns = [
     url('^admin/registrations/(?P<action>create)/$', views.edit_registration, name='create_registration'),
     url('^admin/registrations/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_registration, name='edit_registration'),
 
+    # tokens
+    path('admin/tokens/', views.show_tokens, name='show_tokens'),
+    url('^admin/tokens/(?P<action>create)/$', views.edit_token, name='create_token'),
+    url('^admin/tokens/(?P<action>edit|drop)/(?P<row_id>[0-9]{1,11})/$', views.edit_token, name='edit_token'),
+
     path('register_user/', views.register_user, name='register_user'),
+    path('test_notification/', views.test_notification, name='test_notification'),
+    path('vcard/', views.vcard, name='vcard'),
+    url('^notification/(?P<app_id>[0-9]{1,11})/$', views.notification, name='notification'),
 ]

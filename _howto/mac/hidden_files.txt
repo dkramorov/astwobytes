@@ -1,0 +1,4 @@
+defaults write com.apple.finder AppleShowAllFiles YES
+defaults write com.apple.finder AppleShowAllFiles NO
+
+альт держим на файндере и перезапустить (нижний пункт)

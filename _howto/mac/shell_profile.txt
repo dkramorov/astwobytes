@@ -1,0 +1,50 @@
+>>> from MySQLdb import _mysql
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/jocker/astwobytes/env/lib/python3.7/site-packages/MySQLdb/__init__.py", line 18, in <module>
+    import _mysql
+ImportError: dlopen(/Users/jocker/astwobytes/env/lib/python3.7/site-packages/_mysql.cpython-37m-darwin.so, 2): Symbol not found: _mysql_affected_rows
+  Referenced from: /Users/jocker/astwobytes/env/lib/python3.7/site-packages/_mysql.cpython-37m-darwin.so
+  Expected in: flat namespace
+ in /Users/jocker/astwobytes/env/lib/python3.7/site-packages/_mysql.cpython-37m-darwin.so
+
+
+arch -x86_64 brew install mysql-client@5.7
+To install under x86_64, install Homebrew into /usr/local
+
+
+без env
+iMac:astwobytes jocker$ echo $SHELL
+/bin/bash
+
+bash-3.2$ cat .bash_profile
+export PATH="/usr/local/sbin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+
+export HOMEBREW_NO_AUTO_UPDATE=1
+
+export LC_ALL="en_US.UTF-8"
+
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+
+# Setting PATH for Python 3.7
+export PATH="/Library/Frameworks/Python.framework/Versions/3.7/bin:$PATH"
+# Setting PATH for Python 3.6
+export PATH="/Library/Frameworks/Python.framework/Versions/3.6/bin:$PATH"
+
+export PATH="/usr/local/opt/mysql-client@5.7/bin:$PATH"
+
+export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
+export PATH="$PATH:/home/jocker/archive/flutter/bin"
+# Setting PATH for Python 3.9
+# The original version is saved in .bash_profile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/3.9/bin:${PATH}"
+export PATH
+
+# Setting PATH for Python 3.8
+# The original version is saved in .bash_profile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}"
+export PATH

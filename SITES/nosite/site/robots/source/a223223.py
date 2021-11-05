@@ -1,4 +1,7 @@
 # -*- coding:utf-8 -*-
+
+# mac os start agent
+# launchctl start my.a223223.tests
 import os
 import json
 import time
@@ -8,10 +11,8 @@ import sys
 import logging
 import pytest
 import requests
-from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
+
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
@@ -158,21 +159,21 @@ def alt_yandex_adv(driver):
 def remove_fucking_noisy_popup(driver):
     """Закрыть ибучие окна всплывашки"""
     driver.log('def %s\n' % (remove_fucking_noisy_popup.__name__, ))
-    try:
-        driver.wait(EC.presence_of_element_located((By.CSS_SELECTOR, '.b24-widget-button-shadow')))
-        driver.driver.execute_script("""
+    time.sleep(1)
+    driver.driver.execute_script("""
 var b24 = document.querySelector('.b24-widget-button-shadow');
-b24.parentNode.parentNode.removeChild(b24.parentNode);
-        """)
-        driver.wait(EC.presence_of_element_located((By.CSS_SELECTOR, '.white-saas-generator')))
-        driver.driver.execute_script("""
+if (b24) {
+    b24.parentNode.parentNode.removeChild(b24.parentNode);
+}
 var blya = document.querySelector('.white-saas-generator');
-blya.parentNode.removeChild(blya);
+if (blya) {
+    blya.parentNode.removeChild(blya);
+}
 var blya_bg = document.querySelector('.cbk-window-bgr');
-blya_bg.parentNode.removeChild(blya_bg);
+if (blya_bg) {
+    blya_bg.parentNode.removeChild(blya_bg);
+}
         """)
-    except Exception as e:
-        pass
 
 def visit_yandex(driver):
     """Поиск на Яндексе,
@@ -197,6 +198,7 @@ def a223_goto_search_page(driver, page: str = None):
     """Переход в раздел каталог/товары/работу/афишу"""
     driver.log('def %s, page %s\n' % (a223_goto_search_page.__name__, page))
 
+    goto223(driver)
     links_classes = ['all', 'cat', 'prices', 'work', 'afisha']
     search_form = driver.find_element_by_id('search_mini_form')
     driver.scroll_to_element(search_form)
@@ -238,6 +240,7 @@ def a223_do_search(driver):
     """Выполнить поиск на страничке"""
     driver.log('def %s\n' % (a223_do_search.__name__, ))
 
+    goto223(driver)
     search_field = driver.find_element_by_id('autocomplete_search')
     driver.scroll_to_element(search_field)
     driver.emulate_mouse_move()
@@ -260,6 +263,8 @@ def a223_do_search(driver):
 def company_bustling_on_listing(driver):
     """Суета в компании после поиска"""
     driver.log('def %s\n' % (company_bustling_on_listing.__name__, ))
+    goto223(driver)
+    a223_do_search(driver)
 
     companies = find_companies(driver)
     if companies:
@@ -306,145 +311,106 @@ def company_bustling_on_listing(driver):
             time.sleep(0.30)
 
 def check_yandex_adv(driver):
-    """Проверка, что контекстная реклама отображается"""
+    """Проверка, что яндекс реклама включена"""
     driver.log('def %s\n' % (check_yandex_adv.__name__, ))
-    try:
-        driver.wait(EC.presence_of_element_located((By.ID, 'show_yandex_direct')))
-        show_yandex_direct = driver.find_element_by_id('show_yandex_direct')
-    except:
-        show_yandex_direct = None
+    show_yandex_direct = driver.find_elements_by_css_selector('#show_yandex_direct')
+    if show_yandex_direct:
+        show_yandex_direct = show_yandex_direct[0]
+
     if show_yandex_direct:
         driver.scroll_to_element(show_yandex_direct)
         driver.move_to_element(show_yandex_direct, do_click=True)
         time.sleep(1)
         driver.refresh()
         time.sleep(2)
-    try:
-        driver.wait(EC.presence_of_element_located((By.ID, 'hide_yandex_direct')))
-        hide_yandex_direct = driver.find_element_by_id('hide_yandex_direct')
-    except:
-        hide_yandex_direct = None
-    if hide_yandex_direct:
-        driver.scroll_to_element(hide_yandex_direct)
-        driver.move_to_element(hide_yandex_direct)
     else:
-        msg = '[BAD]: hide_yandex_direct not found %s' % (driver.profile_name, )
-        logger.info(msg)
-        driver.messages.append(msg)
-        return False
-    try:
-        driver.wait(EC.presence_of_element_located((By.ID, 'yandex_ad')))
-        yandex_ad = driver.find_element_by_id("yandex_ad")
-    except Exception as e:
-        msg = '[BAD]: yandex_ad not found %s' % (driver.profile_name, )
-        logger.info(msg)
-        driver.messages.append(msg)
-        time.sleep(20)
-        return False
-    driver.scroll_to_element(yandex_ad)
-    adv_links = yandex_ad.find_elements_by_tag_name("a")
-    if len(adv_links) < 1:
-        msg = '- YANDEX ADV LINKS'
-        logger.info(msg)
-        #driver.messages.append(msg)
-        driver.pretend_user()
-        return False
-    else:
-        msg = '+ YANDEX ADV LINKS, %s' % driver.get_current_url(unquote=True)
-        logger.info(msg)
-        driver.messages.append(msg)
-
-    time.sleep(2)
-    driver.emulate_mouse_move()
-    return True
+        hide_yandex_direct = driver.find_elements_by_css_selector('#hide_yandex_direct')
+        if hide_yandex_direct:
+            hide_yandex_direct = hide_yandex_direct[0]
+            driver.scroll_to_element(hide_yandex_direct)
+        else:
+            msg = '[BAD]: hide_yandex_direct not found %s' % (driver.profile_name, )
+            logger.info(msg)
+            driver.messages.append(msg)
+            return
 
 def goto_yandex_adv(driver):
     """Поиск контекстной рекламы и жмак на нее"""
     driver.log('def %s\n' % (goto_yandex_adv.__name__, ))
-
     window_handles_before = len(driver.window_handles())
 
     remove_fucking_noisy_popup(driver)
-    is_yandex_adv = check_yandex_adv(driver)
-    if not is_yandex_adv:
-        return False
+    check_yandex_adv(driver)
 
     yandex_ad = driver.find_element_by_id('yandex_ad')
+    if yandex_ad and yandex_ad.find_elements_by_tag_name('iframe'):
+        driver.scroll_to_element(yandex_ad)
+        for i in range(3):
+            driver.move_to_element(yandex_ad)
+            driver.blind_click()
+            if len(driver.window_handles()) > window_handles_before:
+                time.sleep(1)
+                driver.switch_to_window(driver.window_handles()[-1])
+                time.sleep(1)
 
-    driver.scroll_to_element(yandex_ad)
-    driver.move_to_element(yandex_ad)
-    adv_links = yandex_ad.find_elements_by_tag_name('a')
-    random.shuffle(adv_links)
-    for adv_link in adv_links:
-        driver.scroll_to_element(adv_link)
-        driver.move_to_element(adv_link)
-        if adv_link.is_displayed():
-            href = driver.get_attribute(adv_link, 'href')
-            if 'direct.yandex.ru' in href:
-                continue
-            # ------------------
-            # Кликаем по паренту
-            # ------------------
-            ya_link = adv_link.find_element_by_xpath('..')#.find_element_by_xpath('..')
-            driver.scroll_to_element(ya_link)
-            driver.emulate_mouse_move()
-            driver.move_to_element(ya_link, do_click=True)
-            break
-    if len(driver.window_handles()) > window_handles_before:
-        time.sleep(1)
-        driver.switch_to_window(driver.window_handles()[-1])
-        time.sleep(1)
+                for i in range(random.randint(2, 3)):
+                    time.sleep(3)
+                    driver.pretend_user()
+                return True
 
-        # Пока закомментируем если уже посещение было
-        #already_visited = check_visited_adv(driver)
-        #if already_visited:
-            #time.sleep(3)
-            #return True
-
-        for i in range(random.randint(2, 3)):
-            time.sleep(5)
-            driver.pretend_user()
-        return True
-    else:
         msg = 'Не удалось открыть яндекс-рекламу'
         logger.error(msg)
         driver.messages.append(msg)
-        #goto_google_adv(driver)
+        driver.screenshot2telegram(msg)
+
+    goto_google_adv(driver)
     return False
 
 def goto_google_adv(driver):
     """Поиск контекстной рекламы и жмак на нее"""
     driver.log('def %s\n' % (goto_google_adv.__name__, ))
 
-    time.sleep(1)
-    yandex_ad = driver.find_element_by_id('yandex_ad')
-    driver.scroll_to_element(yandex_ad)
+    # Чтобы не каждый раз тыкать на гугль,
+    percent = 45
+    if not (random.randrange(100) > (100 - percent)):
+        return
 
     window_handles_before = len(driver.window_handles())
-    css_selector = 'ins.adsbygoogle[data-ad-slot=\'5726774098\']'
-
-    google_ad = driver.find_element_by_css_selector(css_selector)
-    adv_props = driver.get_element_props(google_ad)
-    driver.scroll_to_element(google_ad)
     remove_fucking_noisy_popup(driver)
-    driver.move_to_element(google_ad, do_click=True)
 
-    if len(driver.window_handles()) > window_handles_before:
-        time.sleep(1)
-        driver.switch_to_window(driver.window_handles()[-1])
-        time.sleep(1)
+    google_ad = None
+    google_ads = driver.find_elements_by_css_selector('ins.adsbygoogle iframe')
+    if google_ads:
+        for item in google_ads:
+            adv_props = driver.get_element_props(item)
+            if not adv_props['size']['height'] > 0:
+                continue
+            google_ad = item
 
-        msg = '+ GOOGLE ADV LINKS %s' % (driver.profile_name, )
-        logger.info(msg)
+    if google_ad:
+        driver.scroll_to_element(google_ad)
+        for i in range(3):
+            driver.move_to_element(google_ad)
+            driver.blind_click()
+
+            if len(driver.window_handles()) > window_handles_before:
+                time.sleep(1)
+                driver.switch_to_window(driver.window_handles()[-1])
+                time.sleep(1)
+
+                msg = '+ GOOGLE ADV LINKS %s' % (driver.profile_name, )
+                logger.info(msg)
+                driver.messages.append(msg)
+
+                for i in range(random.randint(2, 3)):
+                    time.sleep(3)
+                    driver.pretend_user()
+                return
+
+        msg = 'Не удалось открыть google-рекламу'
+        logger.error(msg)
         driver.messages.append(msg)
-
-        for i in range(random.randint(2, 3)):
-            time.sleep(5)
-            driver.pretend_user()
-    else:
-        msg = '- GOOGLE ADV LINKS %s' % (driver.profile_name, )
-        logger.info(msg)
-        driver.messages.append(msg)
+        driver.screenshot2telegram(msg)
 
 def check_visited_adv(driver):
     """Записываем запрос в файл,
@@ -475,13 +441,9 @@ def check_visited_adv(driver):
 
 def a223_goto_main_menu(driver):
     """Переход по главному меню"""
-    #mobile_menu = driver.find_element_by_id('show-megamenu')
-    #driver.scroll_to_element(mobile_menu)
-    #is_mobile_menu = driver.find_element_by_id('remove-megamenu')
-    #if driver.is_element_visible(mobile_menu) and not driver.is_element_visible(is_mobile_menu):
-    #    driver.move_to_element(mobile_menu, do_click=True)
-    #    time.sleep(1)
     driver.log('def %s\n' % (a223_goto_main_menu.__name__, ))
+
+    goto223(driver)
     remove_fucking_noisy_popup(driver)
     dest = None
     mega_menus = driver.find_elements_by_css_selector('#header .navbar-default .container>ul>li')
@@ -547,6 +509,12 @@ def a223_goto_random_company(driver):
     """Переход в случайную компанию"""
     driver.log('def %s\n' % (a223_goto_random_company.__name__, ))
 
+    while True:
+        if not '223-223.ru' in driver.get_current_url():
+            goto223(driver)
+            continue
+        return
+
     company = find_random_company(driver)
     if not company:
         return
@@ -562,6 +530,7 @@ def a223_goto_cat_or_prices(driver):
     """Переход в раздел каталог/товары"""
     driver.log('def %s\n' % (a223_goto_cat_or_prices.__name__, ))
 
+    goto223(driver)
     links_classes = ['all', 'cat', 'prices']
     random.shuffle(links_classes)
     a223_goto_search_page(driver, links_classes[0])
@@ -571,10 +540,22 @@ def goto223(driver):
     if not '223-223.ru' in driver.get_current_url():
         driver.goto('https://223-223.ru/')
         driver.emulate_mouse_move()
-    alt_yandex_adv(driver)
+
+    goto_google_adv(driver)
+
+    if not '223-223.ru' in driver.get_current_url():
+        driver.goto('https://223-223.ru/')
+        driver.emulate_mouse_move()
+
+    #alt_yandex_adv(driver)
 
 def auth223(driver):
     """Авторизация на сайте 223-223.ru"""
+    goto223(driver)
+    time.sleep(1)
+    return
+    # Пока не используем
+
     signin = driver.find_elements_by_css_selector('li.signin a')
     if signin:
         signin = signin[0]
@@ -663,11 +644,11 @@ def get_new_scenario(driver):
        для потрахивания яндекс рекламы
     """
     scenarios = [
-        (visit_yandex, goto223, auth223, a223_goto_search_page, a223_do_search, goto_yandex_adv),
-        (visit_yandex, goto223, auth223, a223_goto_main_menu, a223_goto_cat_or_prices, a223_do_search, goto_yandex_adv),
-        (visit_yandex, goto223, auth223, a223_goto_bottom_menu, a223_goto_cat_or_prices, a223_do_search, goto_yandex_adv),
-        (visit_yandex, goto223, auth223, a223_goto_cat_or_prices, a223_do_search, a223_goto_random_company, goto_yandex_adv),
-        (visit_yandex, goto223, auth223, a223_goto_cat_or_prices, a223_do_search, company_bustling_on_listing, goto_yandex_adv),
+        (visit_yandex, auth223, a223_goto_search_page, a223_do_search, goto_yandex_adv),
+        (visit_yandex, auth223, a223_goto_main_menu, a223_goto_cat_or_prices, a223_do_search, goto_yandex_adv),
+        (visit_yandex, auth223, a223_goto_bottom_menu, a223_goto_cat_or_prices, a223_do_search, goto_yandex_adv),
+        (visit_yandex, auth223, a223_goto_cat_or_prices, a223_do_search, a223_goto_random_company, goto_yandex_adv),
+        (visit_yandex, auth223, a223_goto_cat_or_prices, a223_do_search, company_bustling_on_listing, goto_yandex_adv),
     ]
     random.shuffle(scenarios)
     scenario = scenarios[0]
@@ -715,8 +696,10 @@ def test_main(original_driver):
     # ---------------------------
     # Сценарий переход по рекламе
     # ---------------------------
+
     #driver.goto('https://223-223.ru/prices/')
     #goto_yandex_adv(driver)
+    #return
 
     # ------------------------
     # Сценарий переход по меню
@@ -774,6 +757,16 @@ def test_main(original_driver):
     #driver.goto('https://223-223.ru')
     #auth223(driver)
     #return
+
+    # Проверка на бота
+    if not driver.check_me_not_bot():
+        time.sleep(1)
+        err = 'Определился как бот'
+        logger.error(err)
+        driver.messages.append(err)
+        # Продолжаем, возможно, в следующий раз определится правильно
+        #driver.success = True # Завершение без ошибок
+        #return
 
     adv_visited = False
     for i in range(SEARCH_YANDEX_ADV_TRIES):

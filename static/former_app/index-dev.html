@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bootstrap Form Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/lib/bootstrap.min.css" rel="stylesheet">
+    <link href="css/lib/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+>
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="row clearfix">
+        <!-- Building Form. -->
+        <div class="span6">
+          <div class="clearfix">
+            <h2>Your Form</h2>
+            <hr>
+            <div id="build">
+              <form id="target" class="form-horizontal">
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- / Building Form. -->
+
+        <!-- Components -->
+        <div class="span6">
+          <h2>Drag & Drop components</h2>
+          <hr>
+          <div class="tabbable">
+            <ul class="nav nav-tabs" id="formtabs">
+              <!-- Tab nav -->
+            </ul>
+            <form class="form-horizontal" id="components">
+              <fieldset>
+                <div class="tab-content">
+                  <!-- Tabs of snippets go here -->
+                </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <!-- / Components -->
+
+      </div>
+
+    </div> <!-- /container -->
+<!--
+    <script data-main="scripts/main.js" src="scripts/lib/require.js" ></script>
+-->
+    <script type="text/javascript" src="scripts/lib/underscore.js"></script>
+    <script type="text/javascript" src="scripts/lib/jquery.js"></script>
+    <script type="text/javascript" src="scripts/lib/backbone.js"></script>
+  </body>
+</html>

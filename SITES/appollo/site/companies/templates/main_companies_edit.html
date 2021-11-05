@@ -1,0 +1,181 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
+<link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
+{% endblock %}
+
+{% block content %}
+
+{% include "core/title/page_title_edit.html" %}
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+
+          {% include "core/forms/row_name.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Код</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Код" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Резюме</label>
+            <div class="col-lg-10">
+              <textarea placeholder="Резюме" class="form-control" id="resume_redactor" name="resume" autocomplete="off">{% if row.resume %}{{ row.resume }}{% endif %}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Рубрики</label>
+            <div class="col-lg-10">
+              <select id="maincompany2category_select2" name="maincompany2category" autocomplete="off" multiple>
+                {% for item in cats %}
+                  <option value="{{ item.cat.id }}" selected>
+                    {{ item.cat.container.name }} #{{ item.cat.container.id }} >{% for parent in item.parents %} {{ parent.name }} #{{ parent.id }} >{% endfor %} {{ item.cat.name }} #{{ item.cat.id }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          {% include "core/forms/row_image.html" %}
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+
+
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+  <script type="text/javascript">
+    window.disableMovableRows = true;
+    window.tabulatorAjaxURL = "{% url 'companies:show_companies' %}";
+    window.tabulatorInitialHeaderFilter = [{
+      field: "main_company__id",
+      value: "{{ row.id }}",
+    }];
+  </script>
+  {% include "companies_table_view.html" %}
+
+  <script src="/static/redactor/jquery.browser.js"></script>
+  <script src="/static/redactor/redactor.js"></script>
+
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+
+      $("#current_edit_form").parsley();
+
+      $("#resume_redactor").redactor({
+        //air: true,
+      });
+
+
+      $('#maincompany2category_select2').select2({
+        placeholder: 'Выберите рубрики',
+        width: '100%',
+        ajax: {
+          delay: 150,
+          url: "{% url 'flatcontent:search_blocks' %}",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              only_cats: 1,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        },
+      });
+
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+          // Обновление ссылок
+          update_links(r);
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+      function update_links(r){
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      {% if row %}
+        var progressbar = $('#progressbar-files'),
+          bar         = progressbar.find('.progress-bar-files'),
+          settings    = {
+            action: '{% url "companies:edit_main_company" "img" row.id %}', // upload url
+            allow : '*.*',
+            param: 'img',
+            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+            loadstart: function() {
+              bar.css('width', '0%').text('0%');
+              progressbar.removeClass('hidden');
+            },
+            progress: function(percent) {
+              percent = Math.ceil(percent);
+              bar.css('width', percent+'%').text(percent+'%');
+            },
+            allcomplete: function(response) {
+              bar.css('width', '100%').text('100%');
+              setTimeout(function(){
+                progressbar.addClass('hidden');
+              }, 750);
+              // Upload Completed
+              //alert(response);
+
+              // Обновление ссылок
+              var r = JSON.parse(response);
+              update_links(r);
+            }
+          };
+        var select = new $.upload.select($('#upload-select-files'), settings),
+        drop   = new $.upload.drop($('#upload-drop-files'), settings);
+      {% endif %}
+    });
+  </script>
+{% endblock %}

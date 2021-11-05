@@ -33,7 +33,7 @@ def extract_archs():
         os.system('tar -xf %s' % path)
 
 def xcore():
-    """Уставновка ксапиана"""
+    """Уставновка xapian"""
     os.system('cd %s && ./configure --prefix=%s' % (xapian_core_path, xapian_path))
     os.system('cd %s && %s' % (xapian_core_path, gmake))
     os.system('cd %s && %s install' % (xapian_core_path, gmake))
@@ -49,10 +49,13 @@ def xbindings():
     os.system("cd %s && %s install" % (xapian_bindings_path, gmake))
 
 def xhunspell():
-    """Установка hunspell"""
+    """Установка hunspell
+       т/к мы в виртуальном окружении,
+       TOO: передалать на setup.py install
+    """
     os.system('cd %s && ./configure --prefix=%s' % (hunspell_path, xapian_path))
-    os.system('cd '+hunspell_path+' && '+gmake)
-    os.system('cd '+hunspell_path+' && '+gmake+' install && ldconfig')
+    os.system('cd '+hunspell_path+' && '+ gmake)
+    os.system('cd '+hunspell_path+' && '+ gmake + ' install && ldconfig')
     os.system('ln -s %s/lib/libhunspell-1.2.a %s/lib/libhunspell.a' % (xapian_path, xapian_path))
     os.system('chmod +x '+hunspell_bindings_path+'/setup.py')
     os.environ['LD_LIBRARY_PATH']=xapian_path+'/lib'
@@ -68,8 +71,46 @@ def drop_archs():
         os.system('rm -R %s' % item)
 
 extract_archs()
-xcore()
-xbindings()
-xhunspell()
+#xcore()
+#xbindings()
+#xhunspell()
 #xcpulimit()
 drop_archs()
+
+"""
+/usr/local/bin/virtualenv -p python3.7 env
+source env/bin/activate
+arch -x86_64 bash
+cd /Users/jocker/astwobytes/xapian64
+pip install sphinx
+tar -xzf xapian-core-1.4.15.tar.gz && cd xapian-core-1.4.15
+./configure --prefix=/Users/jocker/astwobytes/xapian64 && make && make install
+cd ..
+tar -xzf xapian-bindings-1.4.15.tar.gz && cd xapian-bindings-1.4.15
+./configure --with-python3 --prefix=/Users/jocker/astwobytes/xapian64 XAPIAN_CONFIG=/Users/jocker/astwobytes/xapian64/bin/xapian-config PYTHON_LIB=/Users/jocker/astwobytes/xapian64/site-packages
+make && make install
+
+import xapian
+
+
+arch -x86_64 bash
+cd /Users/jocker/django/xapian64
+tar -xzf xapian-core-1.2.12.tar.gz && cd xapian-core-1.2.12
+./configure --prefix=/Users/jocker/django/xapian64 && make && make install
+cd ..
+tar -xzf xapian-bindings-1.2.12.tar.gz && cd xapian-bindings-1.2.12
+
+
+Python2
+
+arch -x86_64 /usr/local/bin/brew install xapian
+Устанавливается в /usr/local/Cellar/xapian/1.4.18
+arch -x86_64 /usr/local/bin/brew install sphinx-doc
+
+arch -x86_64 /usr/local/bin/brew install virtualenv
+/usr/local/Cellar/virtualenv/20.10.0/bin/virtualenv
+/usr/local/Cellar/virtualenv/20.10.0/bin/virtualenv -p python2 env
+
+./configure --prefix=/Users/jocker/django/xapian64 XAPIAN_CONFIG=/usr/local/Cellar/xapian/1.4.18/bin/xapian-config PYTHON_LIB=/Users/jocker/django/xapian64/site-packages --with-python
+make && make install
+"""

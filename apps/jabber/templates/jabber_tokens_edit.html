@@ -1,0 +1,90 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+
+{% include "core/title/page_title_edit.html" %}
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Логин (телефон)</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Логин (телефон)" class="form-control phone" name="login" value="{% if row.login %}{{ row.login }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">IP</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="IP" class="form-control" name="ip" value="{% if row.ip %}{{ row.ip }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Токен</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Токен" class="form-control" name="token" value="{% if row.token %}{{ row.token }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,3 @@
+memcache-top
+
+memcache-top displays statistics about items usage, hit rates, connections, wait times, evicts, commands and read/writes in a top-like interface.

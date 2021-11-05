@@ -1,0 +1,16 @@
+
+
+Since PostgreSQL 8.2 you have to use:
+
+GRANT USAGE, SELECT ON SEQUENCE cities_id_seq TO www;
+
+GRANT USAGE - For sequences, this privilege allows the use of the currval and nextval functions.
+
+Also you can grant permissions to all the sequences in the schema with:
+
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO www;
+
+
+
+postgres=# GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO postgres;
+GRANT

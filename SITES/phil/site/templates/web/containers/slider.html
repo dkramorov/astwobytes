@@ -29,10 +29,12 @@
                           <div class="slider-thumb" data-swiper-parallax="-400" data-swiper-parallax-duration="600">
                             <img loading="lazy" src="{% imagine item.img '1200x768' item.get_folder True %}" alt="{{ item.name|quotes2apostrophe }}">
                             <div class="hidden description">
-                              <h6>{{ item.custom_block.name }}</h6>
-                              {% if item.custom_block.html %}
-                                {{ item.custom_block.html|safe }}
-                              {% endif %}
+                              <a href="{{ item.custom_block.link }}">
+                                <h6>{{ item.custom_block.name }}</h6>
+                                {% if item.custom_block.html %}
+                                  {{ item.custom_block.html|safe }}
+                                {% endif %}
+                              </a>
                             </div>
                           </div>
                         </div>

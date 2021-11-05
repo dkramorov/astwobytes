@@ -1,0 +1,14 @@
+https://pytest-docs-ru.readthedocs.io/ru/latest/example/markers.html
+
+Маркировка тестовых функций и отбор маркированных тестов для запуска
+
+@pytest.mark.webtest
+def test_send_http():
+
+Теперь вы можете запускать тесты только с меткой webtest:
+
+$ pytest -v -m webtest
+
+Можно и наоборот - запустить все тесты, кроме помеченных webtest:
+
+$ pytest -v -m "not webtest"

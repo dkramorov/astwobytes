@@ -1,0 +1,132 @@
+brew cask install launchcontrol - устанавливаем графический интерфейс для запуска скриптов
+$ brew search launchcontrol
+==> Casks
+launchcontrol ✔
+
+(env) imac-jocker:selenium jocker$ launchctl unload /home/jocker/Library/LaunchAgents/my.a223.tests.plist
+(env) imac-jocker:selenium jocker$ launchctl load /home/jocker/Library/LaunchAgents/my.a223.tests.plist
+(env) imac-jocker:selenium jocker$ launchctl list|grep a223
+-	0	my.a223.tests
+
+
+
+$ sudo launchctl load -w /System/Library/LaunchDaemons/ssh.plist
+
+
+    /System/Library/LaunchDaemons for native macOS processes
+    /Library/LaunchDaemons for installed third-party apps
+
+
+
+    /Library/LaunchAgents for all user accounts
+    ~/Library/LaunchAgents for a specific user account
+    /System/Library/LaunchAgents for macOS only
+
+
+launchctl list
+launchctl remove name
+launchctl remove com.annoying.service
+
+launchctl unload -w /System/Library/LaunchDaemons/com.apple.photolibraryd
+
+
+# ----------------------------------
+# Демо для запуска питонячьего файла
+# из ~/Library/LaunchAgents/
+# каждую минуту
+# ----------------------------------
+(env) imac-jocker:selenium jocker$ launchctl load /home/jocker/Library/LaunchAgents/my.a223.tests.plist
+(env) imac-jocker:selenium jocker$ launchctl unload /home/jocker/Library/LaunchAgents/my.a223.tests.plist
+(env) imac-jocker:selenium jocker$ cat /home/jocker/Library/LaunchAgents/my.a223.tests.plist
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Disabled</key>
+    <false/>
+    <key>EnvironmentVariables</key>
+    <dict>
+	<key>PATH</key>
+	<string>/Users/jocker/selenium/env/bin</string>
+	<key>PYTHONPATH</key>
+	<string>/Users/jocker/selenium/env/lib/python3.6/site-packages</string>
+    </dict>
+    <key>Label</key>
+    <string>my.a223.tests</string>
+    <key>Nice</key>
+    <integer>1</integer>
+    <key>ProgramArguments</key>
+    <array>
+	<string>/Users/jocker/selenium/env/bin/pytest</string>
+	<string>--cache-clear</string>
+	<string>/Users/jocker/selenium/a223.py</string>
+	<string>-s</string>
+    </array>
+    <key>StandardErrorPath</key>
+    <string>/Users/jocker/my_a223_err.txt</string>
+    <key>StandardOutPath</key>
+    <string>/Users/jocker/my_a223_out.txt</string>
+    <key>StartInterval</key>
+    <integer>2500</integer>
+</dict>
+</plist>
+
+
+
+# Выгружаем нахер всякое говно
+
+ls -l /System/Library/LaunchAgents/|grep stud
+-rw-r--r--  1 root  wheel  1579 Jun 17  2020 com.apple.macos.studentd.plist
+launchctl unload -w /System/Library/LaunchAgents/com.apple.macos.studentd.plist
+
+ls -l /System/Library/LaunchDaemons/|grep air
+-rw-r--r--  1 root  wheel     553 Aug 28  2020 com.apple.airport.wps.plist
+-rw-r--r--  1 root  wheel    1184 Aug 28  2020 com.apple.airportd.plist
+-rw-r--r--  1 root  wheel     553 Jun  6  2020 com.apple.remotepairtool.plist
+
+
+
+sudo launchctl remove com.apple.AddressBook.abd
+sudo launchctl remove com.apple.CallHistoryPluginHelper
+sudo launchctl remove com.apple.DiagnosticReportCleanup.plist
+sudo launchctl remove com.apple.ReportCrash
+sudo launchctl remove com.apple.ReportCrash.Self
+sudo launchctl remove com.apple.ReportPanic
+sudo launchctl remove com.apple.Safari.SafeBrowsing.Service
+sudo launchctl remove com.apple.SafariCloudHistoryPushAgent
+sudo launchctl remove com.apple.SafariHistoryServiceAgent
+sudo launchctl remove com.apple.SafariLaunchAgent
+sudo launchctl remove com.apple.SafariNotificationAgent
+sudo launchctl remove com.apple.SafariPlugInUpdateNotifier
+sudo launchctl remove com.apple.SafariPlugInUpdateNotifier
+sudo launchctl remove com.apple.TrustEvaluationAgent
+sudo launchctl remove com.apple.ap.adprivacyd
+sudo launchctl remove com.apple.ap.adprivacyd
+sudo launchctl remove com.apple.appstoreagent
+sudo launchctl remove com.apple.familycircled
+sudo launchctl remove com.apple.gamed.plist
+sudo launchctl remove com.apple.helpd
+sudo launchctl remove com.apple.iTunesHelper.launcher
+sudo launchctl remove com.apple.mobiledeviceupdater
+sudo launchctl remove com.apple.safaridavclient
+sudo launchctl remove com.apple.screensharing.MessagesAgent
+sudo launchctl remove com.apple.siriknowledged
+sudo launchctl remove com.apple.softwareupdate_notify_agent
+
+# disable sending of crash reports to Apple (SubmitDiagInfo)
+sudo launchctl remove com.apple.SubmitDiagInfo.plist
+
+
+# disable photolibraryd
+# com.apple.photomoments.xpc tries to access the internet without any reason and authorisation
+# photos.app stops working after this
+sudo launchctl remove com.apple.photolibraryd
+sudo launchctl remove com.apple.cloudphotosd
+# after restart they show up here
+sudo launchctl remove com.apple.photolibraryd.plist
+sudo launchctl remove com.apple.cloudphotosd.plist
+
+# disable Apple Push Notification Service (apsd)
+# FaceTime could complain
+sudo launchctl remove com.apple.apsd.plist

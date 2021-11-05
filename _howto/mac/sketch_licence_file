@@ -1,0 +1,23 @@
+So here are the steps:
+
+Download the latest trial version of Sketch.
+Close Sketch. Even if it shows the Trial Expired screen it will ease any hassles of this trick not working.
+
+Don’t open Sketch up until you’ve followed Steps 3 to 6.
+
+Opening Terminal (If you don’t know how to do this, then it’s best you don’t continue).
+
+Copy and paste text in red into your the terminal window, then press enter:
+sudo rm -rf ~/Library/Application Support/com.bohncoding.sketch3; echo '185.27.174.169\tlocalhost' | sudo tee -a /etc/hosts > /dev/null
+Note: You will need to enter in your password, but don’t worry if you don’t see anything on the screen. Just be sure to press enter after you’ve typed it in.
+
+Copy and paste text in red into your the terminal window, then press enter again:
+cat /etc/hosts
+
+If you see 185.27.174.169 localhost on your screen then it means you can continue to Step 8, if not try Step 5 and 6 again, else drop me a comment.
+
+Open up Sketch, and you shouldn’t see any trial window, or even the days remaining if you press OK on the Welcome to Sketch screen.
+
+If Sketch has helped you out, and you can afford it, it’s just $99 for a tool that saves you a whole lot of time and money compared to other solutions on the market.
+
+Enjoy using Sketch!

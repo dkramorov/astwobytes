@@ -657,7 +657,14 @@ class ModelHelper:
                 # -----------------------------------
                 if isinstance(item, dict):
                     key, value = item.popitem()
-                    if key in types:
+                    if key == 'img':
+                        # Фильтр по изображению media/link
+                        if value == 'media':
+                            query = query.filter(img__isnull=False).exclude(img__startswith='http')
+                        elif value == 'link':
+                            query = query.filter(img__startswith='http')
+                        continue
+                    elif key in types:
                         query = self.cond_for_query(key, value, types, query)
                     elif '__' in key:
                         key_arr = key.split('__')

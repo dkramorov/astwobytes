@@ -519,7 +519,8 @@ def search_personal_users(request, *args, **kwargs):
 def is_phone_in_white_list(request):
     """Апи-метод, чтобы узнать,
        находится ли телефон в белом списке
-       для динамического диалплана"""
+       для динамического диалплана
+    """
     result = {}
     phone = request.GET.get('phone', '')
     if not phone:

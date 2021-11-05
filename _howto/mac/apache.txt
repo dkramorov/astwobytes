@@ -1,0 +1,47 @@
+$ sudo apachectl restart
+$ sudo apachectl configtest
+$ sudo vi /etc/apache2/httpd.conf
+
+$ sudo apachectl -t
+Syntax OK
+
+Если происходит ошибка
+
+imac-jocker:django jocker$ sudo apachectl configtest
+AH00526: Syntax error on line 20 of /private/etc/apache2/extra/httpd-mpm.conf:
+Invalid command 'LockFile', perhaps misspelled or defined by a module not included in the server configuration
+
+то надо
+
+$ sudo mcedit /etc/apache2/extra/httpd-mpm.conf
+
+<IfModule !mpm_winnt_module>
+<IfModule !mpm_netware_module>
+#LockFile "/private/var/log/apache2/accept.lock"
+Mutex file:/home/jocker/tmp/apache2 default
+</IfModule>
+</IfModule>
+
+
+Виртуальные хосты:
+
+$ sudo apachectl -S
+
+imac-jocker:django jocker$ sudo apachectl -S
+VirtualHost configuration:
+ServerRoot: "/usr"
+
+
+imac-jocker:apache2 jocker$ find . -name httpd-vhosts.conf
+./extra/httpd-vhosts.conf
+./original/extra/httpd-vhosts.conf
+
+
+$ cat httpd.conf|grep httpd-vhosts
+#Include /private/etc/apache2/extra/httpd-vhosts.conf
+
+
+PHP:
+
+$ cat httpd.conf|grep "LoadModule php"
+#LoadModule php5_module libexec/apache2/libphp5.so

@@ -85,7 +85,10 @@ class Standard(models.Model):
             os.rmdir(parent_folder_fp)
 
     def upload_img(self, img):
-        """Загрузка изображения"""
+        """Загрузка изображения
+           :param img: изображение
+                      (например, request.FILES - InMemoryUploadedFile)
+        """
         new_img = None
         if self.img:
             self.drop_img()
@@ -98,7 +101,7 @@ class Standard(models.Model):
                 media_folder = self.get_folder()
                 if check_path(media_folder):
                     make_folder(media_folder)
-                new_img = "%s%s" % (self.id, ext)
+                new_img = '%s%s' % (self.id, ext)
                 path = os.path.join(media_folder, new_img)
                 if catch_file(img, path):
                     imageThumb(path, 1920, 1280)

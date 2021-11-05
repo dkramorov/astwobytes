@@ -1,0 +1,24 @@
+install command line tools in android studio for accept licence
+
+
+    /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54:in `require': dlopen(/Library/Ruby/Gems/2.6.0/gems/ffi-1.15.4/lib/ffi_c.bundle, 9): no suitable image found.  Did find: (LoadError)
+    	/Library/Ruby/Gems/2.6.0/gems/ffi-1.15.4/lib/ffi_c.bundle: mach-o, but wrong architecture
+
+#use this if you are using m1
+arch -x86_64 sudo gem install ffi
+
+sudo gem install ffi if you are intel Macs
+
+
+
+---
+iOS Simulator scrolls too fast on Apple M1
+---
+
+I experienced a similar issue but the problem, in my case, is not related to speed but something different.
+
+Specifically, if you force your iOS Simulator to run under Rosetta you'll see that it works as expected. Not sure why, but this is what I'm experiencing. Always reproducible with 1.22.5 (stable).
+
+To run in Rosetta, right click on Xcode and choose "Show Package Contents", from there you navigate to "Contents > Developer > Applications," There you'll find the Simulator app. If you right click on it and choose "Show info", you'll find an option to run it using Rosetta.
+
+Update 14/9/2021: Xcode 12.5.1 no longer needs the above workaround. Scrolling is working fine out-of-the-box.

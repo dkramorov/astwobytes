@@ -1,0 +1,120 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+{% include "core/title/page_title_table.html" %}
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+$(document).ready(function(){
+
+  var catFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var data = cell.getRow().getData();
+    if(!data['cat']){
+      return "";
+    }
+    var result = "<div class='padding-rl5'>";
+    var cat;
+    for(var i=0; i<data['cat'].length; i++){
+      cat = data['cat'][i];
+      result += " <a class='btn' target='_blank'>" + cat['name'] + "</a><br />";
+    }
+    result += "</div>";
+    return result;
+  };
+
+  var catFilterEditor = function(cell, onRendered, success, cancel, editorParams){
+    var container = document.createElement("select");
+    container.id = "main_companies_cat_filter";
+
+    function buildValues(e){
+      console.log("searching companies by cat", container.value);
+      success(container.value);
+    }
+    // changed - custom event (instead of change)
+    container.addEventListener("changed", buildValues);
+    //container.addEventListener("blur", buildValues);
+    //container.addEventListener("keydown", keypress);
+
+    return container;
+  };
+
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {% include "core/tabulator_cell/name.html" %}
+    {
+      title: "Код",
+      field: "tag",
+      headerFilterPlaceholder: "Код",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "Категория",
+      field: "cat",
+      headerSort: false,
+      headerFilterPlaceholder: "Категория",
+      headerFilter: catFilterEditor,
+      headerFilterFunc: "=",
+      formatter: catFormatter,
+      width: 80,
+    },
+    {% include "core/tabulator_cell/image.html" %}
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
+
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "cat"){
+      $("#main_companies_cat_filter").select2({
+        placeholder: 'Выберите категорию',
+        width: '100%',
+        //tags: true,
+        allowClear: true,
+        ajax: {
+          delay: 150,
+          url: "{% url 'flatcontent:search_blocks' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              only_cats: 1,
+              page: params.page || 1,
+            }
+            return query;
+          },
+
+          //data: "only_cats=1",
+          cache: false,
+          dataType: 'json',
+        }
+      }).change(function(){
+        //console.log('cat', $(this).val());
+        var select = document.querySelector("#main_companies_cat_filter");
+        select.value = $(this).val();
+        // changed - custom event (instead of change)
+        select.dispatchEvent(new Event('changed'));
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

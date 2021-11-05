@@ -1,0 +1,32 @@
+iMac-Jocker:masterme_chat jocker$ git push
+remote: Support for password authentication was removed on August 13, 2021. Please use a personal access token instead.
+remote: Please see https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/ for more information.
+fatal: Authentication failed for 'https://github.com/dkramorov/masterme_chat.git/'
+
+iMac-Jocker:masterme_chat jocker$ ssh-keygen -t ed25519 -C "dkramorov@mail.ru"
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/Users/jocker/.ssh/id_ed25519):/Users/jocker/.ssh/id_dkramorov_mail_ru
+Enter passphrase (empty for no passphrase): Ну тут рыбкакобычно
+Enter same passphrase again:
+Your identification has been saved in /Users/jocker/.ssh/id_dkramorov_mail_ru.
+Your public key has been saved in /Users/jocker/.ssh/id_dkramorov_mail_ru.pub.
+The key fingerprint is:
+SHA256:kHtE4iwdiHAd5wf0XqpLqV31VMSmV7BOoCy0VOay2V0 dkramorov@mail.ru
+The key's randomart image is:
++--[ED25519 256]--+
+|...o.+* +.o ..o. |
+| .. o* X = . oo..|
+|    . B B =  oE. |
+|     . * O ..=.  |
+|      . S o o..  |
+|       + . o     |
+|      + .   .    |
+|     + o         |
+|    . o          |
++----[SHA256]-----+
+
+Дальше идем в джитхаб и копируем Your public key has been saved in /Users/jocker/.ssh/id_dkramorov_mail_ru.pub. в ssh ключи
+
+
+# обновляем, чтобы не спрашивал парольку
+git remote set-url origin git@github.com:dkramorov/masterme_chat.git

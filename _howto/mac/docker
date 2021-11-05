@@ -1,0 +1,106 @@
+https://grafana.com/docs/grafana/latest/installation/docker/
+
+
+
+
+1) билдим образ из докер-файла
+$ pwd
+/Users/jocker/sdvor
+$ docker build -t sdvor-desktop devops
+
+2) docker images - посмотреть собранные образы
+
+
+1) Версия докера
+$ docker version
+Client:
+ Version:	18.03.0-ce ...
+
+2) Список виртуальных машин
+$ docker-machine ls
+NAME      ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER     ERRORS
+default   *        virtualbox   Running   tcp://192.168.99.100:2376           v18.09.5
+
+3) если есть ошибка при docker-machine ls нужно скопировать окружение
+$ docker-machine env default
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://192.168.99.100:2376"
+export DOCKER_CERT_PATH="/Users/jocker/.docker/machine/machines/default"
+export DOCKER_MACHINE_NAME="default"
+# Run this command to configure your shell:
+# eval $(docker-machine env default)
+
+4) Информация о конфигурации
+$ docker info
+Containers: 0
+ Running: 0
+ Paused: 0
+ Stopped: 0
+Images: 0
+Server Version: 18.09.5
+
+$ docker
+Management Commands:
+  config      Manage Docker configs
+  container   Manage containers
+  image       Manage images
+  network     Manage networks
+  node        Manage Swarm nodes
+  plugin      Manage plugins
+  secret      Manage Docker secrets
+  service     Manage services
+  swarm       Manage Swarm
+  system      Manage Docker
+  trust       Manage trust on Docker images
+  volume      Manage volumes
+
+5) Запуск nginx контейнера
+$ docker container run --publish 81:81 nginx
+...
+загрузит образ и запусти контейнер
+
+6) Переход nginx контейнера в фоновый режим
+$ docker container run --publish 81:81 --detach nginx
+
+7) Просмотр запущенных контейнеров
+$ docker container ls
+
+# ----------------
+# Установка докера
+# ----------------
+$ brew install docker docker-compose
+$ brew cask install docker (скачивает Docker.dmg)
+
+To have launchd start docker-machine now and restart at login:
+  brew services start docker-machine
+Or, if you don't want/need a background service you can just run:
+  docker-machine start
+
+$ touch docker-compose.yml
+database:
+  image: postgres:9.4
+  ports:
+    - "5432:5432"
+
+$ docker-machine ls
+NAME   ACTIVE   DRIVER   STATE   URL   SWARM   DOCKER   ERRORS
+
+$ docker-machine create default
+To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: docker-machine env default
+
+$ docker-machine ip default
+$ sudo mcedit /etc/hosts - и поместить туда адрес + имя хоста
+
+$ docker-machine start default
+
+$ docker --version
+Docker version 18.06.0-ce, build 0ffa825
+$ docker info
+$ docker ps
+
+$ docker-compose up (скачает всю галиматью)
+
+
+$ docker attach docker-compose_database_1
+
+

@@ -1,0 +1,17 @@
+This is because the gradlew file has Windows file-endings.
+
+You can install dos2unix with apt-get or yum by running:
+
+sudo apt-get install dos2unix
+
+sudo yum install -y dos2unix
+and then use dos2unix to convert the line-endings
+
+from CRLF Windows CarriageReturn + LineFeed
+
+to LF Linux LineFeed only:
+
+dos2unix ./gradlew
+Then run your gradlew for a test:
+
+./gradlew clean -d

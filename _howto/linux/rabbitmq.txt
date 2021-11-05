@@ -1,0 +1,17 @@
+https://www.rabbitmq.com/rabbitmqctl.8.html#User_Management
+
+rabbitmq-server
+
+This adds a new user and password
+rabbitmqctl add_user username password
+rabbitmqctl add_user guest guest
+
+This makes the user a administrator
+rabbitmqctl set_user_tags username administrator
+
+This sets permissions for the user
+rabbitmqctl set_permissions -p / username ".*" ".*" ".*"
+
+rabbitmqadmin delete queue name=name_of_queue
+
+

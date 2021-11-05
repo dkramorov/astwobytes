@@ -1,0 +1,16 @@
+{% if perms.former.view_former %}
+<li{% ifequal menu 'former' %} class="active"{% endifequal %} id="left_menu_former">
+  <a{% comment %} class="has-submenu" data-toggle="collapse-next"{% endcomment %} href="{% url 'former:show_former' %}">
+    <em class="fa fa-file"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Конструктор форм</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'former' %} in{% endifequal %}">
+    <li{% ifequal submenu 'former' %} class="active"{% endifequal %} id="left_menu_former_objects">
+      <a class="no-submenu" data-toggle="" href="{% url 'former:show_former' %}">
+        <span class="item-text">Объекты</span>
+      </a>
+    </li>
+  </ul>
+</li>
+{% endif %}

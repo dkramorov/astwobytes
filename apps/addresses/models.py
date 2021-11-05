@@ -40,6 +40,9 @@ class Address(Standard):
         max_digits=30, decimal_places=25, db_index=True)
     place = models.CharField(max_length=255,
         blank=True, null=True, db_index=True)
+    tag = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Потенциально уникальный идентификатор')
 
     class Meta:
         verbose_name = 'Адреса - адрес объекта'

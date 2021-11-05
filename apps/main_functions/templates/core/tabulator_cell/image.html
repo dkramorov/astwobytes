@@ -1,7 +1,14 @@
 {
     title: "Изображение",
     field: "img",
-    headerFilter: false,
+    headerFilterPlaceholder: "Путь",
+    headerFilter: true,
+    headerFilterFunc: "=",
+    headerFilterParams: {
+        values: {"": "Без фильтра", link: "Ссылкой", media: "Локально"},
+    },
+    editable: false,
+    editor: "select",
     formatter: imgFormatter,
     minWidth: 120,
     downloadTitle: "img",

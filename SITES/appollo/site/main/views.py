@@ -428,7 +428,13 @@ def prepare_session(request, phone: str = None):
             'phone': phone,
             'digit': request.session['confirm_phone'],
         }
-        r = requests.get('%s/freeswitch/sms_service/say_code/' % settings.FREESWITCH_DOMAIN, params=params)
+
+        # Не ждем, завершаем запрос сразу,
+        # запрос будет долгий, пока не завершится звонок
+        try:
+            r = requests.get('%s/freeswitch/sms_service/say_code/' % settings.FREESWITCH_DOMAIN, params=params, verify=False, timeout=(5, 0.1))
+        except Exception as e:
+            return JsonResponse(result, safe=False, status=status_code)
 
         result = r.json()
     return result
@@ -453,7 +459,7 @@ def calls_history(request):
         headers = {
             'token': '%s-%s' % (settings.FS_USER, shopper.id),
         }
-        r = requests.get('%s/freeswitch/cdr_csv/api/' % settings.FREESWITCH_DOMAIN, params=params, headers=headers)
+        r = requests.get('%s/freeswitch/cdr_csv/api/' % settings.FREESWITCH_DOMAIN, params=params, headers=headers, verify=False)
         result = r.json()
 
     return JsonResponse(result, safe=False)
@@ -476,7 +482,7 @@ def fs_shopper(request):
     headers = {
         'token': token,
     }
-    r = requests.post('%s%s' % (settings.FREESWITCH_DOMAIN, endpoint), data=params, headers=headers)
+    r = requests.post('%s%s' % (settings.FREESWITCH_DOMAIN, endpoint), data=params, headers=headers, verify=False)
 
 phones_vars = {
     'singular_obj': 'Телефоны 8800',

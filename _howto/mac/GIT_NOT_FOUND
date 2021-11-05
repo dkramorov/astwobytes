@@ -1,0 +1,13 @@
+
+
+The problem is that Xcode is unable to find its own Command Line Tools for some reason:
+
+sh: line 1:  1549 Abort trap: 6      /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -sdk / -find clang 2> /dev/null
+clang: error: unable to find utility "clang", not a developer tool or in PATH
+
+Check out xcode-select --print-path in your Terminal.
+
+If it's /Applications/Xcode.app/Contents/Developer then run sudo xcode-select --switch /Library/Developer/CommandLineTools to set xcode-select to non-Xcode Command Line Tools.
+
+In case you don't have /Library/Developer/CommandLineTools directory, you can get them at https://developer.apple.com/downloads/ for your current Xcode version.
+

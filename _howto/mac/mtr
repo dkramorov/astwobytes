@@ -1,0 +1,3 @@
+imac-jocker:server jocker$ sudo PATH='/usr/local/sbin/' /usr/local/sbin/mtr 223-223.ru
+
+imac-jocker:server jocker$ sudo PATH='/usr/local/sbin/' /usr/local/sbin/mtr google.com

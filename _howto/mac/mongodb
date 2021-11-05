@@ -1,0 +1,81 @@
+
+CONF /usr/local/etc/mongod.conf
+
+db_path /usr/local/var/mongodb
+
+/home/jocker/sdvor_DISTR/sd-mongo-backup-20181002-0030/octopus
+
+
+
+
+brew tap mongodb/brew
+brew install mongodb-community@4.0
+
+mongod --config /usr/local/etc/mongod.conf
+
+brew services start mongodb-community@4.0
+
+mongo
+
+
+# Удаленное подключение к базе
+$ mongo cli --host=10.0.29.55
+MongoDB shell version v4.0.6
+
+# show dbs
+Print a list of all databases on the server.
+
+# use <db>
+Switch current database to <db>
+
+# show collections
+Print a list of all collections for current database.
+
+# show databases
+Print a list of all available databases.
+
+> use tracking-api-dev
+switched to db tracking-api-dev
+> show collections
+status
+
+# Вытащить данные
+db.status.find( {} )
+
+# Вытащить названия коллекций
+> db.getCollectionNames()
+[ "priceplans" ]
+
+# Показать привелегии пользователей
+> use accounts
+switched to db accounts
+> db.getRole("readWrite", {showPrivileges: true})
+
+# -----------------------------
+# Чтобы залить коллекции в базу
+# -----------------------------
+делаем dump папку в папке с базами монги
+$ pwd
+/usr/local/var/mongodb
+$ mkdir dump
+копируем в папку dump нужные базы - например, deliveryPricer и затем выполняем компнду mongorestore
+$ mongorestore
+базы восстановятся
+
+
+
+
+db.priceplans.find({"isPromo": true, "poligon": "ИМКЦ_ТМН1"})
+
+
+db.priceplans.find({'cityId':1, 'poligon': 'мск13', 'weightFrom':{$lte:1143}, 'weightTo':{$gte:1143}})
+
+db.priceplans.find({'cityId':1, 'poligon': 'мск13', 'weightFrom':{$lte:1143}, 'weightTo':{$gte:1143}, 'orderPriceFrom':{$lte:49715}, 'orderPriceTo':{$gte:49715}})
+
+
+> use messenger-api-production
+switched to db messenger-api-production
+> db.dropDatabase()
+{ "dropped" : "messenger-api-production", "ok" : 1 }
+
+

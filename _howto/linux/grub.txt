@@ -1,0 +1,74 @@
+root@223223:~# find /mnt -name grub-install
+/mnt/usr/lib/grub/i386-pc/grub-install
+/mnt/usr/sbin/grub-install
+
+
+root@223223:~# grub-probe -t device /mnt/boot/grub
+/dev/vda1
+root@223223:~# grub-probe -t fs_uuid /mnt/boot/grub
+9c8eb6b6-782f-4f95-bcf6-d23f4fd7094e
+
+
+root@223223:~# cat /mnt/etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc            /proc           proc    nodev,noexec,nosuid 0       0
+# / was on /dev/vda1 during installation
+UUID=b96601ba-7d51-4c5f-bfe2-63815708aabd /               ext4    noatime,errors=remount-ro 0       1
+
+sudo mount /dev/sda1 /mnt
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /proc /mnt/proc
+sudo mount --bind /sys  /mnt/sys
+sudo chroot /mnt
+
+grub-install /dev/sda
+
+
+root@223223:~# umount /lib/live/mount/overlay
+
+
+root@223223:/# mount
+/dev/vda1 on / type ext4 (rw,noatime,errors=remount-ro)
+proc on /proc type proc (rw,noexec,nosuid,nodev)
+sysfs on /sys type sysfs (rw,noexec,nosuid,nodev)
+none on /sys/fs/fuse/connections type fusectl (rw)
+none on /sys/kernel/debug type debugfs (rw)
+none on /sys/kernel/security type securityfs (rw)
+udev on /dev type devtmpfs (rw,mode=0755)
+devpts on /dev/pts type devpts (rw,noexec,nosuid,gid=5,mode=0620)
+tmpfs on /run type tmpfs (rw,noexec,nosuid,size=10%,mode=0755)
+none on /run/lock type tmpfs (rw,noexec,nosuid,nodev,size=5242880)
+none on /run/shm type tmpfs (rw,nosuid,nodev)
+
+
+root@223223:/# update-grub
+Generating grub.cfg ...
+Found linux image: /boot/vmlinuz-3.8.0-29-generic
+Found initrd image: /boot/initrd.img-3.8.0-29-generic
+Found memtest86+ image: /boot/memtest86+.bin
+done
+
+
+
+
+root@223223:/# cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc            /proc           proc    nodev,noexec,nosuid 0       0
+# / was on /dev/vda1 during installation
+UUID=b96601ba-7d51-4c5f-bfe2-63815708aabd /               ext4    noatime,errors=remount-ro 0       1
+root@223223:/# blkid
+/dev/loop0: TYPE="squashfs" 
+/dev/sr0: LABEL="DORescue" TYPE="iso9660" 
+/dev/vda1: LABEL="DOROOT" UUID="9c8eb6b6-782f-4f95-bcf6-d23f4fd7094e" TYPE="ext4" 

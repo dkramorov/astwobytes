@@ -15,7 +15,8 @@
       <div class="offers">
         {% for block in blocks %}
           <div class="row">
-            <div class="{% if block.img %}col-lg-5 col-md-5{% else %}col-lg-12 col-md-12{% endif %} col-sm-12 col-xs-12">
+            <div class="{% if block.img %}col-lg-4 col-md-5{% else %}col-lg-12 col-md-12{% endif %} col-sm-12 col-xs-12">
+              <div class="only_desktop"><br><br></div>
               <div class="simple_article_text">
                 {{ block.html|safe }}
               </div>
@@ -27,7 +28,7 @@
               {% endif %}
             </div>
             {% if block.img %}
-              <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12 only_desktop">
+              <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12 only_desktop">
                 <div class="offers-thumb simple_article_img">
                   <img loading="lazy" src="{{ block.imagine }}" alt="{{ block.name|quotes2apostrophe }}">
                 </div>

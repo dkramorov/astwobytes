@@ -1,0 +1,1 @@
+ffmpeg -i input.flac -acodec libmp3lame output.mp3

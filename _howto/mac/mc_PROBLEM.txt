@@ -1,0 +1,8 @@
+dscl . -read /Users/root UserShell
+
+Скорей всего увидим /bin/sh. Меняем это все на bash и проверяем:
+
+sudo dscl . -change /Users/root UserShell /bin/sh /bin/bash
+dscl . -read /Users/root UserShell
+
+Видим, что все сменилось на /bin/bash. Проблема решена, спасибо за внимание ^_~

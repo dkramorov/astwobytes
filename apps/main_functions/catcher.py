@@ -14,6 +14,7 @@ REGA_A = re.compile('<a href=[\'"]([^\'"]+)', re.I)
 
 def json_pretty_print(json_obj, pass_fields: list = None):
     """Вывести json в человеческом виде
+       :parm json_obj: джисонина
        :param pass_fields: пропустить поля (верхний уровень словаря пока)
     """
     if pass_fields and isinstance(json_obj, dict):
@@ -33,9 +34,7 @@ def defiz_phone(phone):
     phone = kill_quotes(phone, 'int')
     phone_len = len(phone)
 
-    if phone_len == 5:
-        phone = '%s-%s' % (phone[:3], phone[3:])
-    elif phone_len == 6:
+    if phone_len == 5 or phone_len == 6:
         phone = '%s-%s' % (phone[:3], phone[3:])
     elif phone_len == 7:
         phone = '%s-%s-%s' % (phone[:1], phone[1:4], phone[4:])

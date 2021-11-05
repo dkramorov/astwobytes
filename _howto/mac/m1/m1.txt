@@ -1,0 +1,38 @@
+With Rosetta 2 installed, you can use the arch command to run commands under Rosetta 2:
+
+$ arch
+arm64
+
+arch -x86_64 bash
+
+Под питоньчиком 2 надо переключаться (и предварительно собирать все пакеты для x86_64 архитектуры)
+bin/vallomcrm runserver
+
+
+arch -x86_64 /usr/local/bin/brew install virtualenv
+arch -x86_64 /usr/local/bin/brew install xapian
+/usr/local/Cellar/xapian/1.4.18
+
+arch -x86_64 /usr/local/bin/brew install sphinx-doc
+
+
+clang: warning: include path for libstdc++ headers not found; pass '-stdlib=libc++' on the command line to use the libc++ standard library instead [-Wstdlibcxx-not-found]
+
+arch -x86_64 /usr/local/bin/brew install gawk
+arch -x86_64 /usr/local/bin/brew install glibc
+
+
+
+
+Python2
+
+arch -x86_64 /usr/local/bin/brew install xapian
+Устанавливается в /usr/local/Cellar/xapian/1.4.18
+arch -x86_64 /usr/local/bin/brew install sphinx-doc
+
+arch -x86_64 /usr/local/bin/brew install virtualenv
+/usr/local/Cellar/virtualenv/20.10.0/bin/virtualenv
+/usr/local/Cellar/virtualenv/20.10.0/bin/virtualenv -p python2 env
+
+./configure --prefix=/Users/jocker/django/xapian64 XAPIAN_CONFIG=/usr/local/Cellar/xapian/1.4.18/bin/xapian-config PYTHON_LIB=/Users/jocker/django/xapian64/site-packages --with-python
+make && make install

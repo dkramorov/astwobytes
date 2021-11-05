@@ -1,0 +1,111 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+{% include "core/title/page_title_table.html" %}
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+$(document).ready(function(){
+  var ctype_choices = {
+    "": "Без фильтра",
+    {% for ctype in ctypes %}
+      {{ ctype.0 }}: "{{ ctype.1 }}",
+    {% endfor %}
+  };
+  var ctypeFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return ctype_choices[pk];
+  };
+  var accessor_ctype = function(value, data, type, params, column){
+    return ctype_choices[value];
+  }
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+
+    {
+      title: "Тип контакта",
+      field: "ctype",
+      headerFilterPlaceholder: "Тип контакта",
+      headerFilter: true,
+      headerFilterFunc: "=",
+      headerFilterParams: {
+        values: ctype_choices,
+      },
+      editable: false,
+      editor: "select",
+      formatter: ctypeFormatter,
+      width: 90,
+      accessorDownload: accessor_ctype,
+    },
+    {
+      title: "Значение",
+      field: "indexed_value",
+      headerFilterPlaceholder: "Значение",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "Комментарий",
+      field: "comment",
+      headerFilterPlaceholder: "Комментарий",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "Ид компании",
+      field: "main_company__id",
+      headerFilterPlaceholder: "Ид компании",
+      headerFilter: "input",
+      headerFilterFunc: "=",
+      width: 150,
+    },
+    {
+      title: "Название компании",
+      field: "main_company__name",
+      headerFilterPlaceholder: "Название компании",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "Ид филиала",
+      field: "company__id",
+      headerFilterPlaceholder: "Ид филиала",
+      headerFilter: "input",
+      headerFilterFunc: "=",
+      width: 150,
+    },
+    {
+      title: "Филиал",
+      field: "company__name",
+      headerFilterPlaceholder: "Филиал",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {% include "core/tabulator_cell/image.html" %}
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
+});
+</script>
+{% endblock %}

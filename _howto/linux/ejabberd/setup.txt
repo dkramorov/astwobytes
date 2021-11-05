@@ -1,0 +1,45 @@
+./autogen.sh
+./configure --enable-user=ejabberd --enable-stun --enable-sip --enable-debug --enable-mysql --enable-zlib
+make
+
+
+Create ejabberd user and database
+
+MySQL admins should use that schema and grant right to a dedicated 'ejabberd' user (replace password with your desired password):
+
+echo "GRANT ALL ON ejabberd.* TO 'ejabberd'@'localhost' IDENTIFIED BY 'password';" | mysql -h localhost -u root
+Select Code
+
+You can then create a dedicated 'ejabberd' database (use password created earlier):
+
+echo "CREATE DATABASE ejabberd;" | mysql -h localhost -u ejabberd -p
+
+
+
+mysql -h localhost -D ejabberd -u ejabberd -p < mysql.sql
+
+
+
+In ejabberd.yml, define your database parameters:
+sql_type: mysql
+sql_server: "localhost"
+sql_database: "ejabberd"
+sql_username: "ejabberd"
+sql_password: "password"
+## If you want to specify the port:
+sql_port: 3306
+
+
+# reg user
+ejabberdctl register admin1 example.org password
+
+
+
+api_permissions:
+  "http_api commands":
+    who:
+      - ip: "127.0.0.1"
+    from:
+      - mod_http_api
+    what:
+      - "register"

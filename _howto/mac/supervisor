@@ -1,0 +1,54 @@
+See: https://docs.brew.sh/Homebrew-and-Python
+==> supervisor
+To have launchd start supervisor now and restart at login:
+  brew services start supervisor
+Or, if you don't want/need a background service you can just run:
+  supervisord -c /usr/local/etc/supervisord.ini
+
+
+Я поставил супервизор, но сначала он неправильно запустился, я снес его и удали /var/run/supervisor.pid (или sock) - и переуставноил, затем он запустился правильно
+
+apt-get install supervisor
+
+root@223223:/etc/supervisor/conf.d# pwd
+/etc/supervisor/conf.d
+
+root@223223:/etc/supervisor/conf.d# cat tcp*
+[program:tcp_server]
+directory=/home/jocker/sites/
+command=/home/jocker/sites/env/bin/python3 tcp_async_server.py
+stderr_logfile=/var/log/tcp_server.log
+stdout_logfile=/var/log/tcp_server.log
+autostart=true
+autorestart=true
+
+root@223223:/var/log# service supervisor status
+ is running
+
+root@223223:/var/log# supervisorctl status
+tcp_server                       RUNNING    pid 19136, uptime 0:00:26
+
+#pstree -p
+├─supervisord(19131)───python3(19136)
+
+
+
+# перезапуск всех отслеживаемых приложений, без обновления конфигов
+service supervisor restart
+
+# перезапуск приложения <app>, без обновления конфига
+supervisorctl restart <app>
+
+# обновление конфигов всех приложений, без перезапуска
+supervisorctl reread
+
+# перезапуск приложений для которых обновился конфиг
+supervisorctl update
+
+
+Supervisor также включает пользовательский веб-интерфейс supervisorctl, который включается при помощи файла конфигурации. Для этого нужно изменить секцию [inet_http_server], вписав туда верные имя пользователя и пароль:
+
+[inet_http_server]
+port=127.0.0.1:9001
+;username=some_user_name
+;password=some_password

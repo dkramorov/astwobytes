@@ -1,0 +1,172 @@
+#python3.7
+
+---
+Ошибка Symbol not found: _mysql_affected_rows
+
+    raise ImproperlyConfigured("Error loading MySQLdb module: %s" % e)
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: dlopen(/Library/Python/2.7/site-packages/_mysql.so, 2): Symbol not found: _mysql_affected_rows
+
+
+Homebrew для arch x86_64 установлено в
+/usr/local/var/homebrew
+/usr/local/opt/
+
+
+
+Проверить можно так:
+
+
+symbols /usr/local/opt/mysql-client@5.7/lib/libmysqlclient.dylib -arch x86_64 | grep mysql_affected_rows
+
+iMac:~ jocker$ symbols /usr/local/opt/mysql-client@5.7/lib/libmysqlclient.dylib -arch x86_64 | grep mysql_affected_rows
+                0x0000000000003ec0 (     0xd) mysql_affected_rows [FUNC, EXT, NameNList, MangledNameNList, Merged, NList, FunctionStarts] 
+
+Ну и раз _mysql_affected_rows найденны
+
+MYSQLCLIENT_CFLAGS="-I/usr/local/opt/mysql-client@5.7/include/mysql"
+
+MYSQLCLIENT_LDFLAGS="-L/usr/local/opt/mysql-client@5.7/lib -lmysqlclient" arch -x86_64
+
+pip install -I -vvv mysqlclient
+
+
+LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib" CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include" MYSQLCLIENT_CFLAGS="-I/usr/local/opt/mysql-client@5.7/include/mysql" MYSQLCLIENT_LDFLAGS="-L/usr/local/opt/mysql-client@5.7/lib -lmysqlclient" arch -x86_64 pip install -I -vvv mysqlclient
+
+Successfully installed mysqlclient-1.4.6
+
+
+---
+Под M1 надо ставить все через arch -x86_64
+потому что ибать её в сраку rosetta
+/usr/sbin/softwareupdate --install-rosetta --agree-to-license
+
+(env) iMac:astwobytes jocker$ file $(which mysql)
+/usr/local/opt/mysql-client@5.7/bin/mysql: Mach-O 64-bit executable x86_64
+(env) iMac:astwobytes jocker$ file $(which python)
+/Users/jocker/astwobytes/env/bin/python: Mach-O 64-bit executable x86_64
+
+arch -x86_64 /usr/local/bin/brew install mysql@5.7
+arch -x86_64 /usr/local/bin/brew install mysql-client@5.7
+arch -x86_64 /usr/local/bin/brew install mysql-connector-python
+
+arch -x86_64 /usr/local/bin/brew services start mysql@5.7
+arch -x86_64 /usr/local/bin/brew services stop mysql@5.7
+
+If you need to have mysql@5.7 first in your PATH, run:
+  echo 'export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"' >> /Users/jocker/.bash_profile
+
+For compilers to find mysql@5.7 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/mysql@5.7/lib"
+  export CPPFLAGS="-I/usr/local/opt/mysql@5.7/include"
+
+To restart mysql@5.7 after an upgrade:
+  brew services restart mysql@5.7
+
+If you need to have mysql-client@5.7 first in your PATH, run:
+  echo 'export PATH="/usr/local/opt/mysql-client@5.7/bin:$PATH"' >> ~/.profile
+
+For compilers to find mysql-client@5.7 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/mysql-client@5.7/lib"
+  export CPPFLAGS="-I/usr/local/opt/mysql-client@5.7/include"
+
+
+>>> from MySQLdb import _mysql
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/jocker/astwobytes/env/lib/python3.7/site-packages/MySQLdb/__init__.py", line 18, in <module>
+    import _mysql
+ImportError: dlopen(/Users/jocker/astwobytes/env/lib/python3.7/site-packages/_mysql.cpython-37m-darwin.so, 2): Symbol not found: _mysql_affected_rows
+  Referenced from: /Users/jocker/astwobytes/env/lib/python3.7/site-packages/_mysql.cpython-37m-darwin.so
+  Expected in: flat namespace
+ in /Users/jocker/astwobytes/env/lib/python3.7/site-packages/_mysql.cpython-37m-darwin.so
+
+---
+
+Когда пишет что-то типа
+ld: library not found for -lssl
+надо сразу
+  export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
+mysql@5.7 ✔
+mysql-client@5.7 ✔
+mysql-connector-python ✔ 
+
+Когда пишет что-то типа
+ld: library not found for -lzstd
+надо сразу
+  export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix zstd)/lib/
+
+
+xcode-select --install
+brew install mysql@5.7
+brew link mysql@5.7
+If you need to have mysql@5.7 first in your PATH, run:
+  echo 'export PATH="/opt/homebrew/opt/mysql@5.7/bin:$PATH"' >> ~/.profile
+
+For compilers to find mysql@5.7 you may need to set:
+  export LDFLAGS="-L/opt/homebrew/opt/mysql@5.7/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/mysql@5.7/include"
+
+  echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> ~/.profile
+
+For compilers to find openssl@3 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
+  export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
+
+
+
+
+
+
+brew install openssl
+For compilers to find openssl@3 you may need to set:
+  export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
+
+echo 'export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"' >> ~/.profile
+
+pip install MySQL-python
+
+
+# Вариант с новой версией mysql
+
+!!! brew install zstd
+export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix zstd)/lib/
+
+If you need to have mysql-client first in your PATH, run:
+  echo 'export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"' >> ~/.profile
+
+For compilers to find mysql-client you may need to set:
+  export LDFLAGS="-L/opt/homebrew/opt/mysql-client/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/mysql-client/include"
+(env) iMac:astwobytes jocker$ export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix zstd)/lib/
+(env) iMac:astwobytes jocker$ pip install mysqlclient==1.3.13
+Collecting mysqlclient==1.3.13
+  Using cached mysqlclient-1.3.13.tar.gz (90 kB)
+  Preparing metadata (setup.py) ... done
+Building wheels for collected packages: mysqlclient
+  Building wheel for mysqlclient (setup.py) ... done
+  Created wheel for mysqlclient: filename=mysqlclient-1.3.13-cp36-cp36m-macosx_10_9_x86_64.whl size=61310 sha256=97b052d6cb1f26a18951f85da9349c35a15c4737d0babf121d089733c3feb3fe
+  Stored in directory: /Users/jocker/Library/Caches/pip/wheels/47/a7/1a/35f96960579333ed07955b305afec39cd826297c9b7932dd07
+Successfully built mysqlclient
+Installing collected packages: mysqlclient
+  Attempting uninstall: mysqlclient
+    Found existing installation: mysqlclient 2.0.3
+    Uninstalling mysqlclient-2.0.3:
+      Successfully uninstalled mysqlclient-2.0.3
+Successfully installed mysqlclient-1.3.13
+
+# Вариант с 5.7
+(env) iMac:astwobytes jocker$ echo $LDFLAGS
+-L/opt/homebrew/opt/openssl@3/lib
+(env) iMac:astwobytes jocker$ echo $CPPFLAGS
+-I/opt/homebrew/opt/openssl@3/include
+
+$ brew install mysql-client@5.7
+If you need to have mysql-client@5.7 first in your PATH, run:
+  echo 'export PATH="/opt/homebrew/opt/mysql-client@5.7/bin:$PATH"' >> ~/.profile
+
+For compilers to find mysql-client@5.7 you may need to set:
+  export LDFLAGS="-L/opt/homebrew/opt/mysql-client@5.7/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/mysql-client@5.7/include"
+

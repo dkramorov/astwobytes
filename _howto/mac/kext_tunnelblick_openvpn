@@ -1,0 +1,24 @@
+kextstat
+
+sudo kextunload -b com.viscosityvpn.Viscosity.tun
+
+В моем случае блочили впн
+net.sf.tuntaposx.tun
+net.sf.tuntaposx.tap
+
+sudo kextunload -b net.sf.tuntaposx.tun && sudo kextunload -b net.sf.tuntaposx.tap
+
+https://github.com/saittam/tuntaposx/tree/master/tuntap
+Uninstalling
+============
+
+The installer packages for OS X currently don't have support for uninstall as
+the installer doesn't provide it. Remove the following files and directories if
+you want to completely remove all the files installed:
+
+/Library/Extensions/tap.kext
+/Library/Extensions/tun.kext
+/Library/LaunchDaemons/net.sf.tuntaposx.tap.plist
+/Library/LaunchDaemons/net.sf.tuntaposx.tun.plist
+
+Unload the the kernel extensions or reboot and you're done.

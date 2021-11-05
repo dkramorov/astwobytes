@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     # USAGE:
-    # python manage.py telegram_get_updates --proxy='10.10.9.1:3128' --token='' --chat_id='-478220379'
+    # python manage.py telegram_get_updates --token='...'
+    # python manage.py telegram_get_updates --proxy='10.10.9.1:3128' --token='...' --chat_id='-478220379'
     def add_arguments(self, parser):
         parser.add_argument('--token',
             action = 'store',

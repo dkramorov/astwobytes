@@ -24,16 +24,31 @@ class GenericBrowser():
     run_script_results = {}
     run_script_result = None
 
+    check_me_bot_url = 'https://datadome.co/customers-stories/toppreise-ends-web-scraping-and-content-theft-with-datadome/'
+
     def get_driver(self):
         return self.driver
+
+    def sleep(self, seconds: float = 0.9):
+        """Ожидание
+           :param seconds: количество секунд
+        """
+        try:
+            seconds = float(seconds)
+        except Exception as e:
+            print(e)
+            seconds = 0.9
+        time.sleep(seconds)
+
+    def json_pretty_print(self, json_obj):
+        """Вывести json в человеческом виде"""
+        print(json.dumps(json_obj, sort_keys=True, indent=2, separators=(',', ': '), ensure_ascii=False))
 
     def get_attribute(self, el, attr):
         """Получение атрибута элемента
            :param el: элемент DOM
            :param attr: название атрибута
         """
-        if isinstance(el, str):
-            el = self.get_run_script_result(el)
         return el.get_attribute(attr)
 
     def run_script(self, script):
@@ -51,6 +66,8 @@ class GenericBrowser():
         """
         if not self.check_script(script):
             exit()
+
+        rvars_prefix = 'rvars_'
         for item in script:
             cmd, params, result_var = item[0], item[1], None
             if len(item) > 2:
@@ -58,10 +75,34 @@ class GenericBrowser():
 
             func = self.find_cmd(cmd)
             if isinstance(params, (str, int, float)):
+                # Нужные параметры могут находиться в run_script_results,
+                # надо достать их оттуда, если:
+                # params типа str, начинается с rvars_
+                if isinstance(params, str) and params.startswith(rvars_prefix):
+                    params = self.run_script_results[params.replace(rvars_prefix, '')]
                 result = func(params)
             elif isinstance(params, (list, tuple)):
+                # Нужные параметры могут находиться в run_script_results,
+                # надо достать их оттуда, если:
+                # params типа str, начинается с rvars_
+                new_params = []
+                for param in params:
+                    if isinstance(param, str) and param.startswith(rvars_prefix):
+                        param = self.run_script_results[param.replace(rvars_prefix, '')]
+                    new_params.append(param)
+                params = new_params
                 result = func(*params)
             elif isinstance(params, dict):
+                # Нужные параметры могут находиться в run_script_results,
+                # надо достать их оттуда, если:
+                # params типа str, начинается с rvars_
+                new_params = {}
+                for param_key, param_value in params.items():
+                    if isinstance(param_key, str) and param_key.startswith(rvars_prefix):
+                        param_key = param_key.replace(rvars_prefix, '')
+                        param_value = self.run_script_results[param_key]
+                    new_params[param_key] = param_value
+                params = new_params
                 result = func(**params)
             else:
                 result = func()
@@ -69,8 +110,22 @@ class GenericBrowser():
             self.run_script_result = result
             if result_var:
                 self.run_script_results[result_var] = result
-
             self.debug_run_script('%s(%s)' % (cmd, params))
+
+    def check_me_not_bot(self, inform: bool = False):
+        """Проверка на бота"""
+        self.goto(self.check_me_bot_url)
+        time.sleep(1)
+        iframes = self.find_elements_by_tag_name('iframe')
+        for iframe in iframes:
+            iframe_src = self.get_attribute(iframe, 'src')
+            if iframe_src and 'captcha' in iframe_src:
+                if inform:
+                    msg = 'Да вы батенька бот!'
+                    print(msg)
+                    self.screenshot2telegram(msg)
+                return False
+        return True
 
     def debug_run_script(self, func_name: str = None):
         """Вывод результатов после выполнения run_script"""
@@ -119,33 +174,25 @@ class GenericBrowser():
             return cur_func
         return getattr(self, cmd) if hasattr(self, cmd) else None
 
-    def shuffle_list(self, arr: list =  None):
+    def shuffle_list(self, arr: list):
         """Перемешивание списка,
            :param arr: список, который надо перемешать
         """
-        if not arr or isinstance(arr, str):
-            arr = self.get_run_script_result(arr)
-        if isinstance(arr, list):
-            random.shuffle(arr)
-            return arr
+        random.shuffle(arr)
+        return arr
 
-    def pick_from_list(self, arr: list = None, ind: int = 0):
-        """Взять ind элемент из списка
-           :param arr: список c элементами
-           :param ind: индекс из списка
+    def just_scroll_to(self, el):
+        """Подскролливание к элементу
+           Можно альтернативно подскролить через скрипт
+           driver.execute_script("arguments[0].scrollIntoView();", el)
+           :param el: dom - элемент
         """
-        if not arr or isinstance(arr, str):
-            arr = self.get_run_script_result(arr)
-        if isinstance(arr, list) and len(arr) > ind:
-            return arr[ind]
+        el.location_once_scrolled_into_view
 
-    def scroll_to_element(self, el = None):
+    def scroll_to_element(self, el):
         """Движение до элемента прокруткой экрана
            :param el: dom - элемент
         """
-        if not el or isinstance(el, str):
-            el = self.get_run_script_result(el)
-
         self.track_mouse()
         window_size = self.get_window_size()
         scrolly = self.get_scrolly()
@@ -155,7 +202,7 @@ class GenericBrowser():
         while el_props['location']['y'] > scrolly + window_size['height']/2:
             self.scroll(count=2)
             scrolly = self.get_scrolly()
-            time.sleep(0.1)
+            self.sleep(0.1)
             if scrolly == old_scrolly:
                 break
             old_scrolly = scrolly
@@ -163,11 +210,11 @@ class GenericBrowser():
         while el_props['location']['y'] < scrolly + window_size['height']/2:
             self.scroll(direction='up', count=2)
             scrolly = self.get_scrolly()
-            time.sleep(0.1)
+            self.sleep(0.1)
             if scrolly == old_scrolly:
                 break
             old_scrolly = scrolly
-        time.sleep(1)
+        self.sleep(1)
         return el
 
     def scroll(self, direction:str = 'down', count: int = 1):
@@ -230,17 +277,17 @@ class GenericBrowser():
            selenium.common.exceptions.InvalidSessionIdException:
              Message: invalid session id
         """
-        time.sleep(2)
+        self.sleep(2)
         self.driver.close()
-        time.sleep(2)
+        self.sleep(2)
 
     def switch_to_window(self, window_handle):
         """Переключает на окно/вкладку
            :param window_handle: handler из window_handles()
         """
-        time.sleep(0.5)
+        self.sleep(0.5)
         self.driver.switch_to.window(window_handle)
-        time.sleep(0.5)
+        self.sleep(0.5)
 
     def close_other_tabs(self):
         """Закрыть все вкладки, кроме активной"""
@@ -358,6 +405,12 @@ class GenericBrowser():
            :param el: DOM-элемент
         """
         return el.find_element_by_xpath('..')
+
+    def get_dom_element(self, el):
+        """Получить dom-элемент на основе WebElement
+           :param el: WebElement
+        """
+        return self.driver.execute_script('return arguments[0];', el)
 
     def get_element_props(self, el):
         """Узнать позицию и размер элемента
@@ -605,7 +658,7 @@ return false;
            :param do_click: нажатие
         """
         self.track_mouse()
-        time.sleep(1) # т/к до него scroll_to_element может спутать карты
+        self.sleep(1) # т/к до него scroll_to_element может спутать карты
 
         fromx = kwargs.get('fromx', 1)
         tox = kwargs.get('tox', 1)
@@ -648,8 +701,7 @@ return false;
             logger.info('[ELEMENT]: %s props %s' % (el, el_props))
             logger.info('[MOVE TO OFFSET]: %s, %s' % (diffx, diffy))
             logger.info('[ATTRIBUTES]: %s' % (self.get_attribute(el, 'href'), ))
-        time.sleep(1)
-
+        self.sleep(1)
 
     def emulate_mouse_move(self, count: int = None):
         """Эмулировать движение мыши
@@ -671,7 +723,6 @@ return false;
             except Exception as e:
                 logger.error('%s: coords: %s %s, to %s %s, scroll %s, offset %s %s' % (e, coords['x'], coords['y'], rand['x'], rand['y'], self.get_scrolly(), point[0], point[1]))
                 break
-
 
     def pretend_user_helper(self, do_click=False, **kwargs):
         """Вспомогательная функция,
@@ -714,15 +765,15 @@ return false;
                     break
         if do_click and not clicked:
             self.refresh()
-            time.sleep(5)
+            self.sleep(5)
 
     def pretend_user(self):
         """Притвориться пользователем на ТЕКУЩЕМ сайте и кликнуть на случайную ссыль"""
-        time.sleep(1)
+        self.sleep(1)
         self.pretend_user_helper(do_click=True)
-        time.sleep(1)
+        self.sleep(1)
         self.pretend_user_helper(do_click=False)
-        time.sleep(1)
+        self.sleep(1)
 
 
     def test_mode(self, mc_servers: list = ['localhost:11211'],
@@ -737,7 +788,6 @@ return false;
            :param mc_servers: memcached адреса серверов
            :param cmd_key: ключ в кэше, который мониторим на команды
         """
-        import json
         import memcache
         mc = memcache.Client(mc_servers)
         while True:
@@ -750,6 +800,149 @@ return false;
                         self.run_script(json.loads(command))
                     except Exception as e:
                         print(e)
-                time.sleep(1)
+                self.sleep(1)
             except KeyboardInterrupt:
                 break
+
+    # -------------------------------------------
+    # Вспомогательные функции для run_script
+    # -------------------------------------------
+
+    def parse_elements(self, elements_arr: list, attr_conds: dict):
+        """Парсим массив с элементами,
+           находим по нужным условиям
+           :param elements_arr: массив с элементами
+           :param attr_conds: массив с условиями отбора элементов по свойствам
+        """
+        result = []
+        for el in elements_arr:
+            match = True
+            for attr_key, attr_value in attr_conds.items():
+                el_attr_value = self.get_attribute(el, attr_key)
+                if attr_value != el_attr_value:
+                    match = False
+            if match:
+                result.append(el)
+        return result
+
+    def elements_count(self, elements_arr: list):
+        """Вспомогательная функция для получения кол-ва элементов
+           для run_script
+           :param elements_arr: массив с элементами
+        """
+        return len(elements_arr) if elements_arr else 0
+
+    def pick_element(self, elements_arr: list, ind: int):
+        """Вспомогательная функция для выбора элемента по индексу
+           для run_script
+           :param elements_arr: массив с элементами
+           :param ind: индекс элемента
+        """
+        return elements_arr[ind]
+
+    def blind_click(self):
+        """Жмакнуть на мышь, например, когда мы на фрейме,
+           тогда только этот вариант
+        """
+        actions = ActionChains(self.driver)
+        actions.click()
+        actions.perform()
+
+    def just_click(self, element):
+        """Вспомогательная функция для клика по элементу
+           для run_script
+           :param element: элемент
+        """
+        element.click()
+
+    # Depricated, используем selenium-wire
+    # https://pypi.org/project/selenium-wire/
+    # driver.requests list
+    # from seleniumwire import webdriver
+    def get_logs(self):
+        """Показываем все логи"""
+        raw_logs = self.driver.get_log('performance')
+        logs = [json.loads(rl['message'])['message'] for rl in raw_logs]
+        #self.json_pretty_print(logs)
+        for log in logs:
+            if not 'method' in log:
+                continue
+            if not log['method'] == 'Network.responseReceived':
+                continue
+            if not 'params' in log:
+                continue
+            if not 'response' in log['params']:
+                continue
+            if not 'json' in log['params']['response']['mimeType']:
+                continue
+            #self.json_pretty_print(log)
+            request_id = log['params']['requestId']
+            resp_url = log['params']['response']['url']
+            print(f'--------> {resp_url}')
+            try:
+                body = self.driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': request_id})['body']
+                meta = json.loads(body)
+                self.json_pretty_print(meta)
+            except Exception as e:
+                print('[ERROR]', e)
+
+    def get_user_agent(self):
+        """Получение user-agent"""
+        return self.driver.execute_script('return navigator.userAgent;')
+
+    def set_user_agent(self, user_agent: str, platform: str):
+         """Изменение user-agent на лету
+            TODO: проверить
+            {"userAgent":"Mozilla/5.0 (Linux; Android 8.1.0; Pixel Build/OPM4.171019.021.D1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.109 Mobile Safari/537.36 EdgA/42.0.0.2057", "platform":"Windows"}
+         """
+         driver.execute_cdp_cmd('Network.setUserAgentOverride', {'userAgent': user_agent, 'platform': platform})
+
+    def get_requests(self,
+                     url_filter: str = None,
+                     with_body: bool = False,
+                     with_decode_body: bool = False,
+                     is_json_body: bool = True):
+        """Показываем запросы, https://pypi.org/project/selenium-wire/
+           :param url_filter: фильтруем по url
+           :param with_body: в ответ отдавать с body
+           :param with_decode_body: декодировать ответ
+                                    (можно сразу просить сервер не кодировать)
+           :param is_json_body: сразу декодировать b'body' в джисонину
+        """
+        def decode_body(body, headers):
+            """Если сообщение от сервера пожато,
+               можно распаковать
+               :param body: response.body
+               :param headers: response.headers
+            """
+            from seleniumwire.utils import decode
+            body = decode(body, headers.get('Content-Encoding', 'identity'))
+            return body
+
+        result = []
+        for request in self.driver.requests:
+            if request.response:
+                # url_filter
+                if url_filter and not request.url.startswith(url_filter):
+                    continue
+                item = {
+                    'url': request.url,
+                    'status_code': request.response.status_code,
+                    'content_type': request.response.headers['Content-Type'],
+                }
+                if with_body and request.response.body:
+                    body = request.response.body
+                    item['body'] = body
+                    if with_decode_body:
+                        item['body'] = decode_body(body, request.response.headers)
+                    item['body'] = item['body'].decode('utf-8')
+                    if is_json_body and 'application/json' in request.response.headers['Content-Type']:
+                        item['body'] = json.loads(item['body'])
+                result.append(item)
+        return result
+
+    def clear_requests(self):
+        """Очистить запросы"""
+        del self.driver.requests
+
+

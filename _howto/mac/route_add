@@ -1,0 +1,152 @@
+Mac-mini-Alexandr:~ root# route add 10.1.250.6/32 192.168.1.6
+add net 10.1.250.6: gateway 192.168.1.6
+Mac-mini-Alexandr:~ root# ping 10.1.250.6
+PING 10.1.250.6 (10.1.250.6): 56 data bytes
+64 bytes from 10.1.250.6: icmp_seq=0 ttl=63 time=2.706 ms
+
+Mac-mini-Alexandr:routes root# route delete 10.1.250.6/32
+delete net 10.1.250.6
+
+
+Прописываем маршрут по выполнению задачи в планировщике
+
+/Library/LaunchDaemons/my.check.route.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>my.check.route</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/nick/check_route.py</string>
+    </array>
+    
+    <key>Nice</key>
+    <integer>1</integer>
+
+    <key>StartInterval</key>
+    <integer>120</integer>
+    
+    <key>StandardErrorPath</key>
+    <string>/Users/nick/my_check_route.err</string>
+
+    <key>StandardOutPath</key>
+    <string>/Users/nick/my_check_route.out</string>
+</dict>
+</plist>
+
+-rw-------  1 root  staff   635 11 окт 12:55 my.check.route.plist
+
+ПЕРЕЗАГРУЗКА
+
+
+Mac-mini-maca3:LaunchDaemons user$ sudo plutil my.check.route.plist
+my.check.route.plist: OK
+
+Mac-mini-maca3:LaunchDaemons user$ sudo launchctl load -w my.check.route.plist
+
+Mac-mini-maca3:LaunchDaemons user$ sudo launchctl list|grep route
+-	0	my.check.route
+
+Mac-mini-maca3:LaunchDaemons user$ launchctl start my.check.route
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Mac-mini-Alexandr:LaunchDaemons root# cat /Users/nick/check_route.py
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+################################################# 
+# Скрип проверки и создания простого маршрута до хоста 
+# !TODO добавить создание маршрута на сеть
+#################################################
+import os
+import re
+
+rega_spaces = re.compile("\s+", re.I+re.U+re.DOTALL)
+
+#################################################
+# Находим все маршруты (включая ipv6)
+# Создаем словарь gw:dest
+#################################################
+def read_netstat(isMac=None):
+  titles = None
+  dest_index = None
+  gw_index = None
+
+  result = []
+  f = os.popen("netstat -nr")
+  routes = f.readlines()
+  f.close()
+  for route in routes:
+    route1space = rega_spaces.sub(" ", route)
+    route_array = route1space.split(" ")
+    if "Destination" in route_array and "Gateway" in route_array:
+      if isMac:
+        # ---------------------------------
+        # Переигровка пробелов в заголовках 
+        # ---------------------------------
+        route1space = route1space.strip()
+        route_array = route1space.split(" ")
+      titles = route_array
+      dest_index = titles.index("Destination")
+      gw_index = titles.index("Gateway")
+    if titles:
+      if len(titles) == len(route_array):
+        #print route_array[dest_index], "\t\t", route_array[gw_index]
+        result.append((route_array[gw_index], route_array[dest_index]))
+  #print result
+  return result
+
+#################################################
+# Поиск маршрута в словаре 
+#################################################
+def search_route(gateway, destination, routes=None, isMac=None):
+  if not routes:
+    routes = read_netstat(isMac)
+  for route in routes:
+    #print "ROUTE", route
+    if route[0] == gateway and route[1] == destination:
+      return (gw, dest)
+  return None
+
+#################################################
+# Добавление маршрута
+#################################################
+def route_add(gw, dest, isMac=None):
+  if isMac == 1:
+    os.system("/sbin/route add %s %s" % (dest, gw))
+  else:
+    os.system("/sbin/route add %s gw %s" % (dest, gw))
+
+def route_del(gw, dest, isMac=None):
+  if isMac == 1:
+    os.system("/sbin/route delete %s %s" % (dest, gw))
+  else:
+    os.system("/sbin/route delete %s gw %s" % (dest, gw))
+
+isMac = 1
+gw = "192.168.1.6"
+dest = "10.1.250.6"
+gw_exist = search_route(gw, dest, isMac=isMac)
+#print "RESULT", gw_exist
+if not gw_exist:
+  #print "route does not exist, trying create"
+  route_add(gw, dest, isMac)
+#else:
+#  print "route exist, trying drop"
+#  route_del(gw, dest, isMac)

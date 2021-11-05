@@ -1,0 +1,3 @@
+diskutil list
+
+sudo diskutil eraseDisk FAT32 SA MBRFormat /dev/disk3

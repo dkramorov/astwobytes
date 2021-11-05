@@ -1,0 +1,12 @@
+echo insecure >> ~/.curlrc
+git config --global http.sslVerify false
+
+или
+
+качаем вручную
+bash-3.2$ wget https://download.gnome.org/sources/glib/2.64/glib-2.64.1.tar.xz
+--2020-04-01 13:35:56--  https://download.gnome.org/sources/glib/2.64/glib-2.64.1.tar.xz
+затем отправляем в кэш
+bash-3.2$ mv glib-2.64.1.tar.xz $(brew --cache -s glib)
+и затем ставим
+brew install glib - поставится с кэша

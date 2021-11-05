@@ -1,0 +1,8 @@
+CHECK
+iMac-Jocker:~ jocker$ smbclient -L //192.168.56.101/Downloads -U jocker
+
+CONNECT
+iMac-Jocker:~ jocker$ smbclient //192.168.56.101/Downloads -U jocker
+
+mount_smbfs //jocker:reabhxbr@192.168.56.101/Downloads tmp
+

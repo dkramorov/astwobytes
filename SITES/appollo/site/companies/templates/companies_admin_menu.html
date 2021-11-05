@@ -1,0 +1,26 @@
+{% if perms.companies.view_companies %}
+<li{% ifequal menu 'companies' %} class="active"{% endifequal %} id="left_menu_companies">
+  <a class="has-submenu" data-toggle="collapse-next" href="{% url 'companies:show_companies' %}">
+    <em class="fa fa-building"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Компании</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'companies' %} in{% endifequal %}">
+    <li{% ifequal submenu 'companies' %} class="active"{% endifequal %} id="left_menu_companies_objects">
+      <a class="no-submenu" data-toggle="" href="{% url 'companies:show_companies' %}">
+        <span class="item-text">Филиалы</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'main_companies' %} class="active"{% endifequal %} id="left_menu_main_companies_objects">
+      <a class="no-submenu" data-toggle="" href="{% url 'companies:show_main_companies' %}">
+        <span class="item-text">Компании</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'contacts' %} class="active"{% endifequal %} id="left_menu_contacts_objects">
+      <a class="no-submenu" data-toggle="" href="{% url 'companies:show_contacts' %}">
+        <span class="item-text">Контакты</span>
+      </a>
+    </li>
+  </ul>
+</li>
+{% endif %}

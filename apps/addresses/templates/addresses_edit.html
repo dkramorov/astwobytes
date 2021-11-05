@@ -24,6 +24,7 @@
 */
       kwargs['default_town'] = "Иркутск"; // TODO Задать в настройках и передавать в шаблон
       kwargs['search_address_by_click'] = 1;
+      kwargs['search_result_to_form_title'] = 'Подставить данные в форму';
       kwargs['search_result_to_form'] = function(ind){
         var myMap = get_map(myMapContainer);
         console.log("search_result_to_form ", ind, myMap.search_results);
@@ -133,12 +134,10 @@ ymaps.ready(function () {
         <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
-
-          <!-- TODO авто-определение индекса -->
           <div class="form-group">
-            <label class="col-lg-2 control-label">Индекс</label>
+            <label class="col-lg-2 control-label">Код (тег)</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="Индекс" class="form-control" name="postalCode" value="{% if row.postalCode %}{{ row.postalCode }}{% endif %}" autocomplete="off">
+              <input type="text" placeholder="Код" class="form-control" name="tag" value="{% if row.tag %}{{ row.tag }}{% endif %}" autocomplete="off">
             </div>
           </div>
           <div class="form-group">

@@ -1,0 +1,74 @@
+Выполняется всегда
+/Library/LaunchDaemons
+
+LaunchAgents - выполняется только при авторизации пользователя
+
+Hi launchctl(8) is your friend. Just keep in mind that some of the services (sshd for example) are disabled in the configuration file so you will need to use the '-w'switch when loading them. Here is a sshd example:
+
+   $sudo launchctl load -w /System/Library/LaunchDaemons/ssh.plist
+You can stop the service using the 'unload' subcommand.
+
+   $sudo launchctl unload  /System/Library/LaunchDaemons/ssh.plist
+
+launchctl list
+launchctl start com.openssh.sshd
+
+launchctl start my.test.backup
+
+chmod +x !!!
+chmod o-w /Library/LaunchDaemons/*
+
+Проверка на корретность
+Mac-mini-Alexandr:LaunchAgents root# plutil my.check.route.plist
+my.check.route.plist: Encountered unexpected EOF
+
+/Users/jocker/Library/LaunchAgents
+
+imac-jocker:LaunchAgents jocker$ cat my.test.backup.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>my.test.backup</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/home/jocker/drop_torrents.py</string>
+    </array>
+
+    <key>Nice</key>
+    <integer>1</integer>
+
+    <key>StartInterval</key>
+    <integer>60</integer>
+
+    <key>StandardErrorPath</key>
+    <string>/home/jocker/my_test_backup.err</string>
+
+    <key>StandardOutPath</key>
+    <string>/home/jocker/my_test_backup.out</string>
+
+</dict>
+
+imac-jocker:~ jocker$ cat drop_torrents.py
+#!/usr/bin/env python
+
+import os
+
+path = "/home/jocker/Downloads"
+dirs = os.listdir(path)
+for folder in dirs:
+  fname = os.path.join(path, folder)
+  if os.path.isfile(fname):
+    if fname.endswith(".torrent"):
+      try:
+        os.unlink(fname)
+        print folder, "dropped"
+      except:
+        print "[ERROR]:can not unlink", fname
+
+-rw-------  1 root  staff  633 28 авг 11:58 my.check.route.plist
+
+
+
+

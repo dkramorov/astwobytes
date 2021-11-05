@@ -39,11 +39,12 @@ class APIJDOCS():
         params = self.default_params.copy()
         params['start_date'] = start_date
         params['end_date'] = end_date
-        r = requests.get(urla, params=params)
+        r = requests.get(urla, params=params, verify=False)
         result = {}
         try:
             result = r.json()
         except Exception as e:
+            logger.info('[URL]: %s' % r.url)
             logger.info('[ERROR]: %s, %s' % (e, r.text))
         if result:
             with open_file('jdocs_get_lots.json', 'w+', encoding='utf-8') as f:
@@ -114,6 +115,7 @@ class APIJDOCS():
             'tracking_no': 'nrotpravka',
             'export_date': 'data_livrare',
             'weight': 'ves',
+            'order_number': 'order_number',
         }
         for lot in lots:
             lot_old_format = {}

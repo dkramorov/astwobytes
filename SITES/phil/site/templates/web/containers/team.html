@@ -11,7 +11,7 @@
 
       <div class="row">
         {% for block in blocks %}
-          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6{% if forloop.last %} last{% endif %}">
+          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6{% comment %}{% if forloop.last %} last{% endif %}{% endcomment %}">
             <div class="features-item">
               <div class="features-item__thumb">
                 <img loading="lazy" src="{% imagine block.img '300x300' block.get_folder True %}" alt="{{ block.name|textize }}">
@@ -33,7 +33,8 @@
 -->{% endcomment %}
             </div>
           </div>
-          {% cycle '' '<div class="clearfix_mobile"></div>' '<div class="clearfix_desktop"></div>' %}
+          {% cycle '' '' '<div class="clearfix_desktop"></div>' %}
+          {% cycle '' '<div class="clearfix_mobile"></div>' %}
         {% endfor %}
 
         {% if blocks.0.link %}

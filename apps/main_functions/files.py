@@ -134,9 +134,14 @@ def move_file(fname, dest):
         return 0
 
 def open_file(fname, mode: str = 'rb', encoding: str = 'utf-8'):
-    """Функция открытия файла, после использования надо f.close()"""
+    """Функция открытия файла, после использования надо f.close()
+       :param fname: имя файла (или относительный путь)
+       :param mode: режим открытия (r/w)
+       :param encoding: кодировка
+    """
+    modes = ['r', 'r+', 'rb', 'rb+', 'w', 'w+', 'wb', 'wb+', 'a', 'ab', 'a+', 'ab+']
     path = os.path.join(DEFAULT_FOLDER, fname)
-    if not mode in ['r', 'r+', 'rb', 'rb+', 'w', 'w+', 'wb', 'wb+', 'a', 'ab', 'a+', 'ab+']:
+    if not mode in modes:
         mode = 'rb'
     kwargs = {}
     if not 'b' in mode:
@@ -409,27 +414,30 @@ def make_folder(fname):
         return 0
 
 def extension(fname, mime='image'):
-    """Узнаем расширение"""
+    """Узнаем расширение
+       :param fname: имя файла изображения
+       :param mime: указываем миме тип
+    """
     result = None
     if not '.' in fname:
         return result
     part = fname.rsplit('.', 1)[-1]
     if 'image' in mime:
-        if part in ('jpg', 'jpeg', 'gif', 'png', 'bmp'):
+        if part in ('jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg'):
             result = '.%s' % part
-    elif "flash" in mime:
+    elif 'flash' in mime:
         if part in ('swf', 'flv'):
             result = '.%s' % part
-    elif "movie" in mime:
+    elif 'movie' in mime:
         if part in ('mp4', ):
             result = '.%s' % part
-    elif "excel" in mime:
+    elif 'excel' in mime:
         if part in ('xls', 'csv', 'xlsx'):
             result = '.%s' % part
-    elif "xml" in mime:
+    elif 'xml' in mime:
         if part in ('xml', 'yml', 'yaml'):
             result = '.%s' % part
-    elif mime == "any":
+    elif mime == 'any':
         result = '.%s' % part
     return result
 

@@ -334,48 +334,50 @@ def edit_product(request, action: str, row_id: int = None, *args, **kwargs):
             # ------------------------------
             # Сохраняем категории для товара
             # ------------------------------
-            ids_cats = request.POST.getlist('cats')
-            mh.row.productscats_set.filter(cat__container__state=7).delete()
-            if ids_cats:
-                cats = Blocks.objects.select_related('container').filter(pk__in=ids_cats)
-                for cat in cats:
-                    ProductsCats.objects.create(
-                        product=mh.row,
-                        cat=cat,
-                        container=cat.container)
+            if mh.permissions['edit']:
+                ids_cats = request.POST.getlist('cats')
+                mh.row.productscats_set.filter(cat__container__state=7).delete()
+                if ids_cats:
+                    cats = Blocks.objects.select_related('container').filter(pk__in=ids_cats)
+                    for cat in cats:
+                        ProductsCats.objects.create(
+                            product=mh.row,
+                            cat=cat,
+                            container=cat.container)
             # ------------------
             # Сохраняем типы цен
             # ------------------
-            product_costs = Costs.objects.filter(product=mh.row).values('id', 'cost_type')
-            ids_costs = {
-                cost['cost_type']: cost['id'] for cost in product_costs
-            }
-
-            for cost_type in all_costs_types:
-                cur_price = request.POST.get('price_%s' % cost_type.id)
-                if cost_type.id in ids_costs:
-                    if cur_price:
-                        Costs.objects.filter(pk=ids_costs[cost_type.id]).update(cost=cur_price)
-                    else:
-                        Costs.objects.filter(product=mh.row, cost_type=cost_type).delete()
-                elif cur_price:
-                    Costs.objects.create(product=mh.row, cost_type=cost_type, cost=cur_price)
+            if mh.permissions['edit']:
+                product_costs = Costs.objects.filter(product=mh.row).values('id', 'cost_type')
+                ids_costs = {
+                    cost['cost_type']: cost['id'] for cost in product_costs
+                }
+                for cost_type in all_costs_types:
+                    cur_price = request.POST.get('price_%s' % cost_type.id)
+                    if cost_type.id in ids_costs:
+                        if cur_price:
+                            Costs.objects.filter(pk=ids_costs[cost_type.id]).update(cost=cur_price)
+                        else:
+                            Costs.objects.filter(product=mh.row, cost_type=cost_type).delete()
+                    elif cur_price:
+                        Costs.objects.create(product=mh.row, cost_type=cost_type, cost=cur_price)
 
             # ------------
             # SEO/articles
             # ------------
-            seo = {k: request.POST.get(k) for k in ('seo_title', 'seo_description', 'seo_keywords')}
-            seo['linkcontainer'] = request.POST.getlist('linkcontainer')
-            mh.row.fill_seo(**seo)
+            if mh.permissions['edit']:
+                seo = {k: request.POST.get(k) for k in ('seo_title', 'seo_description', 'seo_keywords')}
+                seo['linkcontainer'] = request.POST.getlist('linkcontainer')
+                mh.row.fill_seo(**seo)
 
             # Загрузка в галерею,
             # причем только по ссылке, т/к
             # обработчик request.FILES работает через action='img'
-            if request.POST.get('2gallery') and request.POST.get('grab_img_by_url') and mh.row:
+            if request.POST.get('2gallery') and request.POST.get('grab_img_by_url') and mh.row and mh.permissions['edit']:
                 context['row'] = object_fields(mh.row)
                 add_photo2gallery(request.POST.get('grab_img_by_url'), mh.row, context)
 
-        elif action == 'img' and request.FILES:
+        elif action == 'img' and request.FILES and mh.permissions['edit']:
             # Загрузка в галерею
             if request.POST.get('2gallery'):
                 add_photo2gallery(request.FILES.get('img'), mh.row, context)

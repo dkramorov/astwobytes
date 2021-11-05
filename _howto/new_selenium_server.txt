@@ -2,7 +2,8 @@ passwd
 
 dpkg-reconfigure tzdata
 
-apt install net-tools virtualenv python3-dev mc python3-pip -y
+apt-get update
+apt install net-tools virtualenv python3-dev mc python3-pip mc -y
 
 hostnamectl set-hostname victoria.1sprav.ru
 mcedit /etc/hosts
@@ -10,9 +11,11 @@ mcedit /etc/ssh/sshd_config
 service ssh restart
 
 adduser jocker
+mcedit /etc/sudoers
 
 cd /home/jocker
 mkdir selenium && cd selenium
+mkdir distr
 virtualenv -p python3 env
 source env/bin/activate
 pip install -r requirements.txt
@@ -21,23 +24,25 @@ mcedit .env
 mkdir profiles
 mkdir profiles/chrome
 mkdir profiles/chrome/test1
-mcedit test.py
 
-scp -P 9022 root@havasu.1sprav.ru:/home/jocker/selenium/google-chrome-stable_current_amd64.deb .
-dpkg -i google-chrome-stable_current_amd64.deb
+#scp -P 9022 root@havasu.1sprav.ru:/home/jocker/selenium/google-chrome-stable_current_amd64.deb .
+
+dpkg -i distr/google-chrome-stable_current_amd64.deb
 apt --fix-broken install -y
 
-python plugins/updater.py
+dpkg -i distr/google-chrome-stable_current_amd64.deb
+rm distr/google-chrome-stable_current_amd64.deb
 
-pytest -s --cache-clear test.py
+#python plugins/updater.py
+#pytest -s --cache-clear test.py
 
 
 mcedit /etc/cron.d/selenium
 SHELL=/bin/bash
 */3  * * * * root source /home/jocker/selenium/env/bin/activate && pytest -s --cache-clear /home/jocker/selenium/a223223.py >/dev/null 2>&1
-*/15 * * * * root source /home/jocker/selenium/env/bin/activate && python /home/jocker/selenium/plugins/updater.py >/dev/null 2>&1
+#*/15 * * * * root source /home/jocker/selenium/env/bin/activate && python /home/jocker/selenium/plugins/updater.py >/dev/null 2>&1
 
-
+pytest -s --cache-clear a223223.py
 
 Для мака руками накатываем обновление
 source /Users/jocker/selenium/env/bin/activate && python /Users/jocker/selenium/plugins/updater.py

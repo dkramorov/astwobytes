@@ -98,8 +98,10 @@ body {
   position: relative;
   text-align: center;
 }
-.main-slider-container .slider-slides .slider-slides-text {
+.main-slider-container .slider-slides .slider-slides-text,
+.main-slider-container .slider-slides .slider-slides-text a {
   font-size: 18px;
+  color: #fff;
 }
 .main-slider-container .slider-slides .content h6 {
   color: #fff;

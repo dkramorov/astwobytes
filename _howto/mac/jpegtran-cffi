@@ -1,0 +1,5 @@
+#    LDFLAGS:  -L/usr/local/opt/jpeg-turbo/lib
+#    CPPFLAGS: -I/usr/local/opt/jpeg-turbo/include
+# sudo CFLAGS=-I/usr/local/opt/jpeg-turbo/include LDFLAGS=-L/usr/local/opt/jpeg-turbo/lib pip install jpegtran-cffi
+# https://pypi.python.org/pypi/jpegtran-cffi/0.3.1
+# $ pip install jpegtran-cffi

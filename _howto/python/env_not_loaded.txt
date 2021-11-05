@@ -1,0 +1,4 @@
+
+TO env/bin/activate add
+
+export $(grep -v '^#' .env | xargs)
