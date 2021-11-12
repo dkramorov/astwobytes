@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Entertainment / Celebrations</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-584.000000, -1184.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#FF8D00" stroke-width="2">
+                <g id="Entertainment-" transform="translate(22.000000, 1093.000000)">
+                    <g id="Celebrations" transform="translate(514.000000, 50.000000)">
+                        <path d="M18,9 C18,16 13.971,23 9,23 C4.029,23 0,16 0,9 C0,4.029 4.029,0 9,0 C13.971,0 18,4.029 18,9 Z" id="Stroke-1"></path>
+                        <path d="M16.1891,3.5872 C17.0491,3.2092 18.0001,3.0002 19.0001,3.0002 C22.8661,3.0002 26.0001,6.1342 26.0001,10.0002 C26.0001,15.4442 22.8661,20.8892 19.0001,20.8892 C17.5781,20.8892 16.2561,20.1532 15.1521,18.9512" id="Stroke-3"></path>
+                        <polyline id="Stroke-5" points="5 26 8 23 10 23 13 26"></polyline>
+                        <path d="M20,21 L23,24" id="Stroke-7"></path>
+                        <path d="M9,26 C9,28 8.5,29.264 8,30" id="Stroke-9"></path>
+                        <path d="M19,24 C19,26 19.364,27.108 20,28" id="Stroke-11"></path>
+                        <path d="M9,5 C6.791,5 5,6.791 5,9" id="Stroke-13"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Services / finances</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-284.000000, -1984.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#8345FE" stroke-width="2">
+                <g id="Services" transform="translate(22.000000, 1894.000000)">
+                    <g id="Finances" transform="translate(214.000000, 49.609985)">
+                        <path d="M19.5,13.3867 L26,13.3867 C27.104,13.3867 28,14.2827 28,15.3867 L28,18.3867 C28,19.4907 27.104,20.3867 26,20.3867 L19.5,20.3867 C17.567,20.3867 16,18.8197 16,16.8867 C16,14.9537 17.567,13.3867 19.5,13.3867 Z" id="Stroke-1"></path>
+                        <path d="M3,6.3867 L24,6.3867 C25.104,6.3867 26,7.2827 26,8.3867 L26,10.3867" id="Stroke-3"></path>
+                        <path d="M20,2.3867 L24,2.3867" id="Stroke-5"></path>
+                        <path d="M26,23.3867 L26,25.3867 C26,26.4907 25.104,27.3867 24,27.3867 L3,27.3867 C1.343,27.3867 0,26.0437 0,24.3867 L0,5.3867 C0,3.7297 1.343,2.3867 3,2.3867 L5,2.3867" id="Stroke-7"></path>
+                        <polyline id="Stroke-9" points="7 6.3867 11 0.3867 20 6.3867"></polyline>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

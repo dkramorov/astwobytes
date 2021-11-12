@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metacategory / Pharmacies</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-184.000000, -84.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#DA0000" stroke-width="2">
+                <g id="Meta" transform="translate(28.000000, 0.000000)">
+                    <g id="Pharmacies" transform="translate(107.000000, 44.000000)">
+                        <path d="M11.0962,25.0962 C8.5582,27.6342 4.4422,27.6342 1.9042,25.0962 C-0.6348,22.5582 -0.6348,18.4422 1.9042,15.9042 L15.9042,1.9042 C18.4422,-0.6348 22.5582,-0.6348 25.0962,1.9042 C27.6342,4.4422 27.6342,8.5582 25.0962,11.0962" id="Stroke-1"></path>
+                        <path d="M8.9038,8.9038 L12.9998,12.9998" id="Stroke-3"></path>
+                        <path d="M4.7322,22.2678 C3.7562,21.2918 3.7562,19.7088 4.7322,18.7318 L6.7322,16.7318" id="Stroke-5"></path>
+                        <path d="M13,20 C13,16.134 16.134,13 20,13 C23.866,13 27,16.134 27,20 C27,23.866 23.866,27 20,27 C16.134,27 13,23.866 13,20 Z" id="Stroke-7"></path>
+                        <path d="M13,20 L27,20" id="Stroke-9"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -168,7 +168,7 @@ def product_on_site(request, product_id: int):
     if not context.get('product'):
         raise Http404
     q_string = {}
-    containers = {}
+    containers = {'main': None, 'services2': None, 'products_tabs': None}
 
     if request.is_ajax():
         return JsonResponse(context, safe=False)
@@ -176,6 +176,9 @@ def product_on_site(request, product_id: int):
 
     page = SearchLink(q_string, request, containers)
     context['page'] = page
+    if not page:
+        context['page'] = Blocks()
+        context['page'].containers = containers.values()
     context['containers'] = containers
 
     return render(request, template, context)

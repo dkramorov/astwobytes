@@ -1,4 +1,51 @@
-#python3.7
+#python3.8
+
+symbols /opt/homebrew/opt/mysql-client@5.7/lib/libmysqlclient.dylib | grep mysql_affected_rows
+
+LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib" CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include" MYSQLCLIENT_CFLAGS="-I/opt/homebrew/opt/mysql-client@5.7/include/mysql" MYSQLCLIENT_LDFLAGS="-L/opt/homebrew/opt/mysql-client@5.7/lib -lmysqlclient" pip install -I -vvv mysqlclient==1.3.13
+
+
+удаляем кэш если там x86_64 наставили /Users/jocker/Library/Caches/pip
+(pip cache dir)
+MYSQLCLIENT_CFLAGS="-I/opt/homebrew/opt/mysql-client@5.7/include/mysql" MYSQLCLIENT_LDFLAGS="-L/opt/homebrew/opt/mysql-client@5.7/lib -lmysqlclient" pip install -I -vvv mysqlclient==1.3.13
+
+
+
+
+
+
+python2.7 тут подробнее
+
+Сначала собираем в систему для x86_64
+arch -x86_64 /usr/local/bin/brew install --build-from-source xapian
+
+переключаемся arch -x86_64 bash
+и идем собирать биндинги xapian
+
+configure: error: Couldn't import sphinx module for Python3 - try package python3-sphinx
+$ which pip
+/usr/local/bin/pip
+/usr/local/bin/pip3 install sphinx
+
+arch -x86_64 /usr/local/bin/brew install --build-from-source xapian
+
+
+arch -x86_64 /usr/local/bin/brew install zlib
+
+homebrew для x86_64
+LDFLAGS="-L/usr/local/opt/zlib/lib" CPPFLAGS="-I/usr/local/opt/zlib/include" pip install Pillow
+
+homebrew для x86_64 и openssl для него же, тогда ставится mysqlclient
+LDFLAGS="-L/usr/local/opt/openssl@3/lib" CPPFLAGS="-I/usr/local/opt/openssl@3/include" pip install mysqlclient
+
+
+
+
+
+
+
+
+
 
 ---
 Ошибка Symbol not found: _mysql_affected_rows
@@ -24,9 +71,7 @@ iMac:~ jocker$ symbols /usr/local/opt/mysql-client@5.7/lib/libmysqlclient.dylib 
 Ну и раз _mysql_affected_rows найденны
 
 MYSQLCLIENT_CFLAGS="-I/usr/local/opt/mysql-client@5.7/include/mysql"
-
 MYSQLCLIENT_LDFLAGS="-L/usr/local/opt/mysql-client@5.7/lib -lmysqlclient" arch -x86_64
-
 pip install -I -vvv mysqlclient
 
 
@@ -36,6 +81,21 @@ Successfully installed mysqlclient-1.4.6
 
 
 ---
+brew install pkg-config
+echo $(pkg-config --libs hunspell)
+echo $(pkg-config --cflags hunspell)
+
+ln -s /opt/homebrew/Cellar/hunspell/1.7.0_2/lib/libhunspell-1.7.a /opt/homebrew/Cellar/hunspell/1.7.0_2/lib/libhunspell.a
+ln -s /opt/homebrew/Cellar/hunspell/1.7.0_2/lib/libhunspell-1.7.dylib /opt/homebrew/Cellar/hunspell/1.7.0_2/lib/libhunspell.dylib
+
+CFLAGS=$(pkg-config --cflags hunspell) LDFLAGS=$(pkg-config --libs hunspell) pip install hunspell
+
+LDFLAGS="-L/opt/homebrew/Cellar/hunspell/1.7.0_2/lib" CPPFLAGS="-I/opt/homebrew/Cellar/hunspell/1.7.0_2/include" pip install -I -vvv hunspell
+
+
+
+
+
 Под M1 надо ставить все через arch -x86_64
 потому что ибать её в сраку rosetta
 /usr/sbin/softwareupdate --install-rosetta --agree-to-license

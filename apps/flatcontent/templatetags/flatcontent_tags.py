@@ -76,7 +76,8 @@ def flatcontent(request,
        :param request: HttpRequest
        :param page: меню с линковками контейнеров
        :param tag: тег, который надо вывести из page
-       :param template_position: позиция в шаблоне, куда выводим контент"""
+       :param template_position: позиция в шаблоне, куда выводим контент
+    """
     result = {}
     result['request'] = request
     if not page:

@@ -2841,7 +2841,8 @@ input[type=checkbox] {
 .rating span.star:hover:before,
 .rating span.star:hover ~ span.star:before {
     content: "\f005";
-    color: #3c3c3c;
+    /*color: #3c3c3c;*/
+    color: #ffd584;
 }
 /* 5.6 */
 /* Tabs

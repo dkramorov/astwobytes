@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Beauty / cosmetics</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-384.000000, -984.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#8345FE" stroke-width="2">
+                <g id="Beauty" transform="translate(0.000000, 893.000000)">
+                    <g id="Сosmetics" transform="translate(336.000000, 50.000000)">
+                        <path d="M17,12 L25,12 L25,21 L26,21 L26,28 C26,29.104 25.104,30 24,30 L18,30 C16.896,30 16,29.104 16,28 L16,21 L17,21 L17,12 Z" id="Stroke-1"></path>
+                        <polyline id="Stroke-3" points="24 12 24 0 22 0 18 2 18 12"></polyline>
+                        <path d="M5,13.5 C5,9.91 7.91,7 11.5,7" id="Stroke-5"></path>
+                        <path d="M16,28 L2,28 C0.896,28 0,27.104 0,26 L0,23 L12,23" id="Stroke-7"></path>
+                        <path d="M13.9971,2.2715 C13.1931,2.0935 12.3571,2.0005 11.5001,2.0005 C5.1481,2.0005 0.0001,7.1485 0.0001,13.5005 C0.0001,16.7185 1.3221,19.6285 3.4541,21.7165 C3.9371,22.1905 4.4671,22.6175 5.0281,23.0005" id="Stroke-9"></path>
+                        <path d="M21,21 L26,21" id="Stroke-11"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

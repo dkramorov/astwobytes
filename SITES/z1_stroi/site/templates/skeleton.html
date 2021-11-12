@@ -70,10 +70,7 @@ var cart_id = "#popup-cart";
         </div>
 
         <div class="header-search hidden-xs">
-          <a class="btn btn-catalogue btn-theme-lg" href="/cat/">
-            <i class="fa fa-bars"></i>
-            Каталог товаров
-          </a>
+          {% catalogue_button request %}
         </div>
 {% comment %}<!--
         {% include "web/components/cart_icons.html" %}

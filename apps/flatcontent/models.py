@@ -198,7 +198,7 @@ class Containers(Standard):
         return '/cat/'
 
     def __str__(self):
-        return 'pk=%s, %s, state=%s' % (self.pk, self.name, self.state)
+        return 'pk=%s, %s, tag=%s, state=%s' % (self.pk, self.name, self.tag, self.state)
 
 class Blocks(Standard):
     """Блоки - динамический контент

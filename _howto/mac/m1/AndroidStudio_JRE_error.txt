@@ -1,0 +1,8 @@
+after install arctic fox
+
+[!] Android Studio (version 2020.3)
+    ✗ Unable to find bundled Java version.
+
+
+iMac:~ jocker$ cd /Applications/Android\ Studio.app/Contents/jre
+iMac:jre jocker$ ln -s ../jre jdk

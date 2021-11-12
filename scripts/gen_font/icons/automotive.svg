@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Main / Automotive</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-584.000000, -284.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#319CFE" stroke-width="2">
+                <g id="1st-Lvl" transform="translate(20.000000, 200.000000)">
+                    <g id="Automotive" transform="translate(513.289978, 44.829987)">
+                        <path d="M15.7071,0.1716 L20.7071,5.1716" id="Stroke-2"></path>
+                        <path d="M14.7071,6.1716 L17.7071,3.1716" id="Stroke-1"></path>
+                        <path d="M9.7071,3.1716 L4.1211,8.7576 C3.3401,9.5386 3.3401,10.8046 4.1211,11.5856 L12.7051,20.1696 L29.7071,20.1716 L29.7071,19.3486 C29.7071,18.6216 29.3131,17.9526 28.6781,17.5996 L20.7071,13.1716 L8.1211,0.5856 C7.3401,-0.1954 6.0741,-0.1954 5.2931,0.5856 L0.7071,5.1716" id="Stroke-4"></path>
+                        <path d="M29.7071,23.1716 L29.7071,28.1716" id="Stroke-6"></path>
+                        <path d="M8.7071,11.1716 L18.7071,11.1716" id="Stroke-9"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

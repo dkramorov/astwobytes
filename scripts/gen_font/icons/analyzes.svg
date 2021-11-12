@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Medicine / Analyzes</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-384.000000, -1384.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#DA0000" stroke-width="2">
+                <g id="Medicine" transform="translate(27.000000, 1295.000000)">
+                    <g id="Analyzes" transform="translate(312.000000, 47.000000)">
+                        <path d="M12.6592,15.6826 L9.4472,22.1056 C9.2002,22.5996 8.5992,22.7996 8.1052,22.5526 L3.8942,20.4476 C3.4002,20.2006 3.2002,19.5996 3.4472,19.1056 L11.5532,2.8946 C11.8002,2.4006 12.4002,2.2006 12.8942,2.4476 L17.1052,4.5526 C17.5992,4.7996 17.8002,5.4006 17.5532,5.8946 L16.5002,7.9996 L15.3412,10.3176" id="Stroke-1"></path>
+                        <path d="M15,3.5 L16.5,0.5" id="Stroke-3"></path>
+                        <path d="M17,13 C17,11.343 15.657,10 14,10 C12.343,10 11,11.343 11,13 C11,14.657 12.343,16 14,16 C15.657,16 17,14.657 17,13 Z" id="Stroke-5"></path>
+                        <path d="M5,16 L11,19" id="Stroke-7"></path>
+                        <path d="M0,32 L0,30 C0,28.896 0.896,28 2,28 L18,28 C19.104,28 20,28.896 20,30 L20,32" id="Stroke-9"></path>
+                        <path d="M12.5,28 C16.643,28 20,24.643 20,20.5 C20,18.812 19.442,17.253 18.5,16 C18.003,15.337 17.398,14.76 16.712,14.294" id="Stroke-11"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

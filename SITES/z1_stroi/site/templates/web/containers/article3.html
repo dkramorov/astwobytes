@@ -1,0 +1,30 @@
+{% load mtags %}
+<section class="page-section article3">
+  <div class="container">
+    <div class="row">
+      {% for block in blocks %}
+        {% if block.img %}
+          <div class="col-md-4">
+           {% imagine block.img '800x600' block.get_folder %}
+          </div>
+        {% endif %}
+        <div class="col-md-{% if block.img %}8 imga{% else %}12{% endif %}">
+          <div class="info">
+            {% if block.name %}<h4>{{ block.name }}</h4>{% endif %}
+            {% if block.html %}
+              <div class="description">
+                {{ block.html|safe }}
+              </div>
+            {% endif %}
+            {% if block.link %}
+              <div class="form-group">
+                <a class="btn btn-theme" href="{{ block.link }}">{{ block.description }}</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

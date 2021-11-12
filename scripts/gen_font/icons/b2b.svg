@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / B2B / b2b</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-384.000000, -3784.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke-width="2" stroke="#8345FE">
+                <g id="B2B" transform="translate(12.000000, 3693.000000)">
+                    <g transform="translate(322.349998, 50.679932)">
+                        <polyline id="Stroke-1" points="12.6508 9.3171 9.6508 23.3171 14.6508 28.3171 19.6508 23.3171 16.6508 9.3171"></polyline>
+                        <path d="M17.6508,17.3171 L13.6508,17.3171" id="Stroke-3"></path>
+                        <polyline id="Stroke-4" points="0.6508 0.3171 7.6508 6.3171 14.6508 0.3171 21.6508 6.3171 28.6508 0.3171"></polyline>
+                        <path d="M19.5492,4.3176 C18.2862,5.5546 16.5582,6.3176 14.6512,6.3176 C12.7442,6.3176 11.0162,5.5546 9.7532,4.3186" id="Stroke-6"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

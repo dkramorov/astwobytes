@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Education / development</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-284.000000, -2984.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#8345FE" stroke-width="2">
+                <g id="Education" transform="translate(28.000000, 2895.000000)">
+                    <g id="Development" transform="translate(206.000000, 50.000000)">
+                        <path d="M18,20 C18,16.687 20.687,14 24,14 C27.313,14 30,16.687 30,20 C30,23.313 27.313,26 24,26 C20.687,26 18,23.313 18,20 Z" id="Stroke-1"></path>
+                        <path d="M7,22.5 C7,20.567 5.433,19 3.5,19 C1.567,19 0,20.567 0,22.5 C0,24.433 1.567,26 3.5,26 C5.433,26 7,24.433 7,22.5 Z" id="Stroke-3"></path>
+                        <path d="M1,9 L5.343,9 C6.404,9 7.421,9.422 8.171,10.172 L10.286,12.286" id="Stroke-5"></path>
+                        <path d="M24,20 L24,5" id="Stroke-7"></path>
+                        <path d="M12,0 L14.825,0 C15.578,0 16.299,0.299 16.831,0.831 L19.636,3.636 C20.51,4.51 21.693,5 22.929,5 L25,5 C26.657,5 28,3.657 28,2 C28,0.896 27.104,0 26,0 L23,0" id="Stroke-9"></path>
+                        <path d="M5.0259,19.3516 C7.3089,13.3016 13.1519,8.9996 19.9999,8.9996" id="Stroke-11"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -27,6 +27,12 @@ The key's randomart image is:
 
 Дальше идем в джитхаб и копируем Your public key has been saved in /Users/jocker/.ssh/id_dkramorov_mail_ru.pub. в ssh ключи
 
+chmod -R 700 /Users/jocker/.ssh/*
 
 # обновляем, чтобы не спрашивал парольку
 git remote set-url origin git@github.com:dkramorov/masterme_chat.git
+
+
+git remote set-url origin git@github.com:dkramorov/astwobytes.git
+
+

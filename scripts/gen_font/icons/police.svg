@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Government / police</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-84.000000, -3184.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#8345FE" stroke-width="2">
+                <g id="Government" transform="translate(1.000000, 3093.000000)">
+                    <g id="Police" transform="translate(33.000000, 53.000000)">
+                        <path d="M15,19 L11,19" id="Stroke-1"></path>
+                        <path d="M15,14 L25,14 L25,19 C24,22 20,24 15,24 C10,24 6,22 5,19 L5,14 L15,14 Z" id="Stroke-2"></path>
+                        <path d="M15,19 L25,19" id="Stroke-4"></path>
+                        <path d="M25,14 L29.04,9.96 C29.654,9.346 30,8.512 30,7.643 C30,7.161 29.903,6.684 29.694,6.249 C28.309,3.375 24.186,0 15,0 C5.815,0 1.692,3.375 0.306,6.249 C0.097,6.684 0,7.161 0,7.643 C0,8.512 0.345,9.346 0.96,9.96 L5,14" id="Stroke-6"></path>
+                        <path d="M18,7 C18,5.343 16.657,4 15,4 C13.343,4 12,5.343 12,7 C12,8.657 13.343,10 15,10 C16.657,10 18,8.657 18,7 Z" id="Stroke-8"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

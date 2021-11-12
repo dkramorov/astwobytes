@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Carservice / Chopshop</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-384.000000, -784.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#319CFE" stroke-width="2">
+                <g id="Car-Service" transform="translate(14.000000, 697.000000)">
+                    <g id="Chopshop" transform="translate(322.000000, 46.000000)">
+                        <path d="M22.9996,23 L23.9996,23 C25.1046,23 25.9996,22.105 25.9996,21 L25.9996,9 L20.5936,0.891 C20.2226,0.334 19.5986,0 18.9296,0 L7.9996,0 L7.9996,13" id="Stroke-1"></path>
+                        <path d="M5,16 C11.195,16 16.191,16.6 18.594,17.335 C19.435,17.592 20,18.368 20,19.247 L20,24.004 C20,25.109 19.104,25.999 17.998,25.998 L16.658,25.997 C15.758,23.456 13.194,21.701 10.276,22.043 C7.223,22.4 5,25.134 5,28.208 L5,30 L0,30 L0,16 L5,16 Z" id="Stroke-3"></path>
+                        <path d="M8,9 L21,9" id="Stroke-5"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

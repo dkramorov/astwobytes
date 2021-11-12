@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Education / school</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-84.000000, -2984.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#8345FE" stroke-width="2">
+                <g id="Education" transform="translate(28.000000, 2895.000000)">
+                    <g id="School" transform="translate(9.000000, 49.000000)">
+                        <path d="M4,29 L16,29" id="Stroke-1"></path>
+                        <path d="M10,29 L10,25" id="Stroke-3"></path>
+                        <path d="M0.9209,19.0791 C0.0579,19.9421 0.1539,21.3831 1.1399,22.1041 C4.1029,24.2771 7.8939,25.3891 11.9499,24.8771 C18.6359,24.0341 24.0339,18.6361 24.8769,11.9501 C25.3879,7.8921 24.2769,4.1021 22.1049,1.1401 C21.3829,0.1541 19.9419,0.0581 19.0789,0.9211 L13.9999,6.0001" id="Stroke-5"></path>
+                        <path d="M19.168,6.001 C19.775,7.392 20.076,8.947 19.983,10.582 C19.69,15.744 15.305,19.931 10.135,19.999 C3.993,20.08 -0.897,14.624 0.14,8.306 C0.819,4.162 4.161,0.819 8.305,0.14 C10.347,-0.195 12.298,0.088 14.002,0.833 C15.153,1.336 16.191,2.05 17.068,2.927" id="Stroke-7"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

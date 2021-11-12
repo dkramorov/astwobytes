@@ -1,0 +1,13 @@
+<!-- custom.css catalogue button -->
+
+<div class="catalogue_dropdown">
+  <a class="catalogue_btn btn-catalogue btn-theme-lg btn">
+    <i class="fa fa-bars"></i>
+    Каталог товаров
+  </a>
+  <div class="catalogue_dropdown-content">
+    {% for menu in menus %}
+      <a href="{{ menu.link }}">{{ menu.name }}</a>
+    {% endfor %}
+  </div>
+</div> 

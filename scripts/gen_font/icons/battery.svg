@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Automotive / Battery</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-484.000000, -1584.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#319CFE" stroke-width="2">
+                <g id="Automotive" transform="translate(21.000000, 1494.000000)">
+                    <g id="Battery" transform="translate(413.000000, 51.000000)">
+                        <path d="M2,6 L28,6 C29.104,6 30,6.896 30,8 L30,11 L28,11 L28,24 C28,25.104 27.104,26 26,26 L4,26 C2.896,26 2,25.104 2,24 L2,11 L0,11 L0,8 C0,6.896 0.896,6 2,6 Z" id="Stroke-1"></path>
+                        <path d="M5,12 L11,12" id="Stroke-3"></path>
+                        <path d="M22,9 L22,15" id="Stroke-5"></path>
+                        <path d="M19,12 L25,12" id="Stroke-7"></path>
+                        <polyline id="Stroke-9" points="6 3 6 0 10 0 10 3"></polyline>
+                        <polyline id="Stroke-11" points="20 3 20 0 24 0 24 3"></polyline>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

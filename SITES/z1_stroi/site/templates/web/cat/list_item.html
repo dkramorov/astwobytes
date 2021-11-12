@@ -1,5 +1,5 @@
 {% load tags mtags %}
-<div class="thumbnail no-border no-padding">
+<div class="thumbnail{% comment %} no-border no-padding{% endcomment %}">
   <div class="row">
     <div class="col-md-4">
       <div class="media">
@@ -8,20 +8,22 @@
     </div>
     <div class="col-md-8">
       <div class="caption">
+        {% include "web/cat/product_review.html" %}
         <h4 class="caption-title product-title">
           <a href="{{ product.link }}">{{ product.name }}</a>
         </h4>
-        {% include "web/cat/product_review.html" %}
+
         <div class="overflowed">
-          <div class="availability">
-            Наличие: <strong>На складе</strong>
-          </div>
+          <div class="availability">Артикул: {{ product.code }} </div>
           {% include "web/cat/product_price_row.html" %}
         </div>
+
         <div class="caption-text">
           {% if product.mini_info %}{{ product.mini_info|safe }}{% endif %}
+
           {% include "web/cat/product_main_attrs.html" %}
         </div>
+
         {% include "web/cat/product_buy_button.html" %}
       </div>
     </div>

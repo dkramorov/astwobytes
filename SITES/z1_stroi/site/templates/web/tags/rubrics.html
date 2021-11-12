@@ -1,0 +1,30 @@
+{% load mtags %}
+<section class="page-section services rubrics">
+  <div class="container">
+    <div class="row blocks">
+      {% for menu in menus %}
+        <div class="col-md-3 col-sm-6 col-xs-6">
+          <a class="block" href="{{ menu.link }}">
+            <div class="media text-center">
+              <img src="{{ menu.thumb }}" />
+              <div class="media-heading">
+                <span class="dotted_link">{{ menu.name }}</span>
+              </div>
+            </div>
+          </a><br>
+          {% for submenu in menu.sub %}
+            {% if forloop.counter < 4 %}
+              <div class="subrubric">
+                <a href="{{ submenu.link }}">{{ submenu.name }}</a>
+              </div>
+            {% endif %}
+          {% endfor %}
+          {% if menu.sub|length >= 4 %}
+            <a class="all_subcats" href="{{ menu.link }}">Все подкатегории</a>
+          {% endif %}
+        </div>
+        {% cycle '' '' '' '<div class="clearfix clear"></div>' %} 
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,49 @@
+https://tunnelblick.net/cKextsInstallation.html#m1-big-sur
+
+
+Installing Kexts on an M1 Mac Running macOS Big Sur 11.1
+
+On an Apple Silicon (M1) Mac, the process of installing Tunnelblick's system extensions requires three restarts of your computer.
+
+    Use the button on Tunnelblick's "Utilities" panel to install Tunnelblick's Tun and Tap system extensions.
+    After authorizing Tunnelblick to install the kexts, you will be prompted by macOS to open the Security & Privacy preference pane to allow the kexts to be loaded:
+
+    screenshot of a window with headline 'System Extension Blocked', text 'A program tried to load new system extension(s) signed by Jonathan Bullard but your security settings do not allow system extensions. To enable them, open the Security & Privacy preference pane', a button labelled 'ignore', and a button labelled 'open security preferences'
+    After opening the Security & Privacy preference pane, click the "Enable system extensions…" button:
+
+    screenshot of the 'Security & Privacy' preference pane, with text 'Your current security settings prevent the installation of system extensions' and a button labelled 'enable system extensions…'.
+    You'll see the following instructions:
+
+    screenshot of a window with headline 'to enable system extensions, you need to modify your security settings in the recovery environment', text 'to do this, shut down your system. then press and hold the Touch ID or power button to launch Startup Security Utility. In Startup Security Utility, enable kernel extensions from the Security Policy Button.', a button labelled 'not now', and a button labelled 'shutdown'
+    Shut down your computer, then start it up by pressing the power button and holding it down until your system starts in [macOS Recovery](https://support.apple.com/guide/mac-help/macos-recovery-a-mac-apple-silicon-mchl82829c17/mac) and you see the startup options page.
+    Select "Options".
+    Select Utilities > Startup Security Utility.
+    Select the system you want to use to set the security policy.
+    If the disk is encrypted with FileVault, click Unlock, enter the password, then click Unlock.
+    Click Security Policy.
+    Click to select the “Allow user management of kernel extensions from identified developers” checkbox.
+    Click OK.
+    Restart your Mac for the changes to take effect.
+    Go to the Security & Privacy preference pane; click on the "Allow" button:
+
+    screenshot of the 'Security & Privacy' preference pane, with text 'System software from developer Jonathan Bullard was blocked from loading.' and a button labelled 'allow'.
+    After authorizing the software, you will be prompted to restart your computer to be able to use the new system extensions:
+
+    screenshot of a window with text 'A restart is required before new system extensions can be used', a button labelled 'not now', and a button labelled 'restart'
+    Restart your computer. You should now be able to use Tun and Tap configurations.
+
+Installing Kexts on an Intel Mac running macOS Big Sur
+
+On an Intel Mac, the process of installing Tunnelblick's system extensions requires one restart of your computer.
+
+    Use the button on Tunnelblick's "Utilities" panel to install Tunnelblick's Tun and Tap system extensions.
+    After authorizing Tunnelblick to install the kexts, you will be prompted by macOS to open the Security & Privacy preference pane to allow the kexts to be loaded:
+
+    screenshot of a window with headline 'System Extension Blocked', text 'A program tried to load new system extension(s) signed by Jonathan Bullard but your security settings do not allow system extensions. To enable them, open the Security & Privacy preference pane', a button labelled 'ignore', and a button labelled 'open security preferences'
+    After opening the Security & Privacy preference pane, click the "Allow" button:
+
+    screenshot of the 'Security & Privacy' preference pane, with text 'System software from developer Jonathan Bullard was blocked from loading.' and a button labelled 'allow'.
+    After authorizing the software, you will be prompted to restart your computer to be able to use the new system extensions:
+
+    screenshot of a window with text 'A restart is required before new system extensions can be used', a button labelled 'not now', and a button labelled 'restart'
+    Restart your computer. You should now be able to use Tun and Tap configurations

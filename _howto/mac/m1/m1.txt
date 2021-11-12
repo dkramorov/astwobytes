@@ -24,7 +24,7 @@ arch -x86_64 /usr/local/bin/brew install glibc
 
 
 
-Python2
+Python2 arch -x86_64 bash
 
 arch -x86_64 /usr/local/bin/brew install xapian
 Устанавливается в /usr/local/Cellar/xapian/1.4.18

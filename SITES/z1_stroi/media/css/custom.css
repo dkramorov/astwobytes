@@ -400,7 +400,6 @@ a:hover .btn-play,
   line-height: 24px;
   margin-top: 15px;
 }
-
 .header-wrapper .search_field {
   margin-right: 20px;
 }
@@ -714,4 +713,64 @@ section.links ul li.active a {
 /* contact-form */
 .feedback_alerts button.close {
   font-family: sans-serif !important;
+}
+
+/* catalogue button */
+.catalogue_btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+.catalogue_dropdown {
+  position: relative;
+  display: inline-block;
+}
+.catalogue_dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 99;
+}
+.catalogue_dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.catalogue_dropdown-content a:hover {
+  background-color: #f1f1f1
+}
+.catalogue_dropdown:hover .catalogue_dropdown-content {
+  display: block;
+}
+.catalogue_dropdown:hover .catalogue_btn {
+  background-color: #FC2622;
+}
+/* Общий каталог */
+.rubrics a.block .media img {
+  max-height: 100px;
+}
+.rubrics a.block .media-heading,
+.rubrics .subrubric {
+  text-align: left;
+}
+.rubrics a.block .dotted_link,
+.rubrics .subrubric a {
+  color: #333;
+}
+.rubrics .all_subcats {
+  color: #999;
+}
+/* Листинг товаров */
+.products.listview .caption-title {
+  margin-top: 10px;
+  font-size: 22px;
+}
+.products.listview .availability {
+  color: #999;
 }

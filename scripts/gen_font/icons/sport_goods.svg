@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Goods / sport_goods</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-184.000000, -1784.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Goods" transform="translate(21.000000, 1694.000000)">
+                    <g id="Sport" transform="translate(113.070007, 52.000000)">
+                        <path d="M27.4309,12 L23.9849,1.66 C23.6539,0.669 22.7259,0 21.6809,0 C20.6359,0 19.7079,0.669 19.3769,1.66 L17.9309,6 L13.9309,6" id="Stroke-1"></path>
+                        <path d="M10.9309,2 L6.9309,14 L0.9999,21.01 C0.9619,23.755 3.1769,26 5.9219,26 L9.0419,26 C10.2849,26 11.5089,25.711 12.6199,25.155 L27.6369,17.647 C28.4299,17.251 28.9309,16.439 28.9309,15.553 C28.9309,15.189 28.8459,14.831 28.6839,14.506 L27.9309,13 L27.4309,12 L11.1169,20.157 C10.0079,20.712 8.7849,21.001 7.5459,21.002 L1.9309,21.008" id="Stroke-3"></path>
+                        <path d="M6.9309,14 L11.9309,14" id="Stroke-5"></path>
+                        <path d="M8.9309,10 L13.9309,10" id="Stroke-7"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

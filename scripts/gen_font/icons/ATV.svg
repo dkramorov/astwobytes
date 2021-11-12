@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metacategory / atv</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-384.000000, -84.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#8345FE" stroke-width="2">
+                <g id="Meta" transform="translate(28.000000, 0.000000)">
+                    <g id="ATV" transform="translate(306.000000, 45.000000)">
+                        <path d="M3,6 L2,6 C0.895,6 0,5.105 0,4 L0,2 C0,0.895 0.895,0 2,0 L28,0 C29.105,0 30,0.895 30,2 L30,4 C30,5.105 29.105,6 28,6 L27,6" id="Stroke-1"></path>
+                        <polyline id="Stroke-3" points="6 3 6 22 20 22 20 3"></polyline>
+                        <polyline id="Stroke-5" points="9 26 24 26 24 5"></polyline>
+                        <path d="M9,18 L12,18" id="Stroke-7"></path>
+                        <path d="M16,9 C16,10.657 14.657,12 13,12 C11.343,12 10,10.657 10,9 C10,7.343 11.343,6 13,6 C14.657,6 16,7.343 16,9 Z" id="Stroke-9"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

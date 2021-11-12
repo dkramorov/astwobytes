@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Renovation / doors</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-384.000000, -3384.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Renovation" transform="translate(12.000000, 3294.000000)">
+                    <g id="Doors" transform="translate(327.000000, 49.000000)">
+                        <path d="M9,28.7422 L9,1.2582 C9,0.5632 8.437,0.0002 7.742,0.0002 C7.582,0.0002 7.424,0.0302 7.275,0.0902 L0,3.0002 L0,27.0002 L7.275,29.9102 C7.424,29.9702 7.582,30.0002 7.742,30.0002 C8.437,30.0002 9,29.4362 9,28.7422 Z" id="Stroke-1"></path>
+                        <path d="M9,15 L6,15" id="Stroke-3"></path>
+                        <polyline id="Stroke-5" points="13 3 20 3 20 27 13 27"></polyline>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

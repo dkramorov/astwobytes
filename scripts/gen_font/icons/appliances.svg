@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Goods / appliances</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-484.000000, -1784.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Goods" transform="translate(21.000000, 1694.000000)">
+                    <g id="Appliances" transform="translate(417.000000, 50.000000)">
+                        <path d="M20,26 L2,26 C0.896,26 0,25.104 0,24 L0,2 C0,0.896 0.896,0 2,0 L20,0 C21.104,0 22,0.896 22,2 L22,24 C22,25.104 21.104,26 20,26 Z" id="Stroke-1"></path>
+                        <path d="M18,4 L15,4" id="Stroke-3"></path>
+                        <path d="M17,15 C17,11.687 14.313,9 11,9 C7.687,9 5,11.687 5,15 C5,18.313 7.687,21 11,21 C14.313,21 17,18.313 17,15 Z" id="Stroke-5"></path>
+                        <path d="M11,13 C9.896,13 9,13.896 9,15" id="Stroke-7"></path>
+                        <path d="M4,4 L13,4" id="Stroke-9"></path>
+                        <path d="M3,26 L3,29" id="Stroke-11"></path>
+                        <path d="M19,26 L19,29" id="Stroke-13"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

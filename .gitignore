@@ -125,4 +125,5 @@ xapian64/bin
 xapian64/include
 xapian64/lib
 xapian64/share
+xapian64/site-packages/xapian
 

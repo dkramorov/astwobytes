@@ -1,3 +1,7 @@
+(env) iMac:astwobytes jocker$ pip cache dir
+/Users/jocker/Library/Caches/pip
+
+
 curl https://bootstrap.pypa.io/get-pip.py | python
 
 wget https://bootstrap.pypa.io/pip/2.7/get-pip.py

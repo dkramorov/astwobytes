@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Shops / jewelry</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-484.000000, -2384.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Shops" transform="translate(27.000000, 2294.000000)">
+                    <g id="Jewelry" transform="translate(407.690002, 50.000000)">
+                        <path d="M14.3061,7 L7.3651,7 C6.0731,7 4.8611,7.624 4.1101,8.675 L0.3061,14 L8.3081,22.002 L12.5991,26.293 C13.0521,26.746 13.6651,27 14.3061,27 C14.9471,27 15.5601,26.746 16.0131,26.293 L20.3061,22 L28.3061,14 L24.5021,8.675 C23.7511,7.624 22.5391,7 21.2471,7 L14.3061,7 Z" id="Stroke-1"></path>
+                        <path d="M6.3061,14 L22.3061,14" id="Stroke-3"></path>
+                        <path d="M14.3061,4 L14.3061,0" id="Stroke-5"></path>
+                        <path d="M19.3061,4 L21.3061,1" id="Stroke-7"></path>
+                        <path d="M9.3061,4 L7.3061,1" id="Stroke-9"></path>
+                        <polyline id="Stroke-11" points="14.3061 22 10.3061 14 11.3061 10"></polyline>
+                        <path d="M17.3061,10 L18.3061,14" id="Stroke-13"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

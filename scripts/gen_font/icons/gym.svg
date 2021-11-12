@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Sport / Gym</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-184.000000, -2784.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#DA0000" stroke-width="2">
+                <g id="Sport" transform="translate(7.000000, 2695.000000)">
+                    <g id="Gym" transform="translate(126.289993, 47.290039)">
+                        <path d="M0.7071,30.7071 L3.7071,27.7071" id="Stroke-1"></path>
+                        <path d="M11.879,28.879 L2.535,19.535 C2.005,19.005 1.707,18.285 1.707,17.535 C1.707,15.974 2.974,14.707 4.535,14.707 C5.285,14.707 6.005,15.005 6.535,15.535 L15.879,24.879 C16.409,25.409 16.707,26.129 16.707,26.879 C16.707,28.441 15.441,29.707 13.879,29.707 C13.129,29.707 12.409,29.409 11.879,28.879 Z" id="Stroke-3"></path>
+                        <path d="M0.7071,23.7071 L7.7071,30.7071" id="Stroke-5"></path>
+                        <path d="M30.7071,0.7071 L27.7071,3.7071" id="Stroke-7"></path>
+                        <path d="M19.5352,2.5352 L28.8792,11.8792 C29.4092,12.4092 29.7072,13.1292 29.7072,13.8792 C29.7072,15.4402 28.4402,16.7072 26.8792,16.7072 C26.1292,16.7072 25.4092,16.4092 24.8792,15.8792 L15.5352,6.5352 C15.0052,6.0052 14.7072,5.2852 14.7072,4.5352 C14.7072,2.9732 15.9732,1.7072 17.5352,1.7072 C18.2852,1.7072 19.0052,2.0052 19.5352,2.5352 Z" id="Stroke-9"></path>
+                        <path d="M30.7071,7.7071 L23.7071,0.7071" id="Stroke-11"></path>
+                        <path d="M9.7071,18.7071 L18.7071,9.7071" id="Stroke-13"></path>
+                        <path d="M12.7071,21.7071 L21.7071,12.7071" id="Stroke-15"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

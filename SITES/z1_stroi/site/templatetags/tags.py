@@ -43,6 +43,28 @@ def catalogue(request):
     result['request'] = request
     return result
 
+@register.inclusion_tag('web/tags/catalogue_button.html')
+def catalogue_button(request):
+    """Кнопка каталога"""
+    result = get_catalogue(
+        request,
+        tag = get_default_catalogue(),
+        cache_time = 60,
+        force_new = False)
+    result['request'] = request
+    return result
+
+@register.inclusion_tag('web/tags/rubrics.html')
+def rubrics(request):
+    """Общий каталог"""
+    result = get_catalogue(
+        request,
+        tag = get_default_catalogue(),
+        cache_time = 60,
+        force_new = False)
+    result['request'] = request
+    return result
+
 @register.inclusion_tag('web/tags/best_cats.html')
 def best_cats(request):
     """Каталог в виде слайдера - центральный блок"""

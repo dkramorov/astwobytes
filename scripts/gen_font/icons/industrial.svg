@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Main / industrial</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-584.000000, -384.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke-width="2" stroke="#52B311">
+                <g id="1st-Lvl" transform="translate(20.000000, 200.000000)">
+                    <g id="Industrial" transform="translate(515.900024, 144.000000)">
+                        <polygon id="Stroke-1" points="0.0998 27 2.0998 6 6.0998 6 8.0998 27"></polygon>
+                        <path d="M10.0998,13 L24.0998,13 C25.2038,13 26.0998,13.896 26.0998,15 L26.0998,27 L8.0998,27" id="Stroke-3"></path>
+                        <path d="M22.0998,18 L13.0998,18" id="Stroke-5"></path>
+                        <path d="M4.0998,2 C5.5998,1 7.3498,0 9.0998,0 C10.8498,0 12.5998,1 14.0998,2 C15.5998,3 17.3498,4 19.0998,4 C20.8498,4 22.5998,3 24.0998,2" id="Stroke-7"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

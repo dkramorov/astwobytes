@@ -1,5 +1,5 @@
 {% extends "skeleton.html" %}
-{% load tags mtags %}
+{% load tags mtags flatcontent_tags %}
 
 {% block extrahead %}
 <style type="text/css">
@@ -12,6 +12,35 @@
   border: 1px solid #ccc;
   padding: 5px;
 }
+.ppage_main {
+  border: 1px solid #ccc;
+}
+.ppage .btn-compare {
+  display: none;
+}
+.ppage .nav-tabs {
+  bottom-border: 1px solid #ccc;
+}
+.ppage .content-tabs .nav-tabs > li > a {
+  color: #999;
+}
+.ppage .content-tabs .nav-tabs > li.active > a:after,
+.ppage .content-tabs .nav-tabs > li.active > a:before,
+.ppage .content-tabs .nav-tabs > li.active > a,
+.ppage .content-tabs .nav-tabs > li > a,
+.ppage .content-tabs .nav-tabs > li > a:focus {
+  background-color: transparent;
+  border: 0;
+}
+.ppage .content-tabs .nav-tabs > li.active > a {
+  border-bottom: 3px solid #999;
+}
+.ppage .content-tabs .nav-tabs > li.active > a {
+  color: #000;
+}
+.ppage .content-tabs .tab-content {
+  border: 0;
+}
 </style>
 {% endblock %}
 
@@ -23,7 +52,7 @@
 <section class="page-section">
   <div class="container">
     <div class="row">
-      <div class="product-single">
+      <div class="product-single ppage_main">
       <div class="col-md-6">
 {% comment %}<!--
         <div class="badges">
@@ -60,7 +89,13 @@
           </div>
         </div>
 -->{% endcomment %}
-        <div class="color-grey">Артикул: {{ product.code }}</div>
+        <div class="back-to-category">
+          <span class="link color-grey">Артикул: {{ product.code }}</span>
+          <div class="pull-right">
+            {% include "web/cat/product_review.html" %}
+          </div>
+        </div>
+
         <br>
         <h2 class="product-title">{{ product.name }}</h2>
         {% if product.mini_info %}
@@ -69,8 +104,8 @@
           </div>
         {% endif %}
         <div class="product-rating clearfix">
-          {% include "web/cat/product_review.html" %}
 <!--
+          {% include "web/cat/product_review.html" %}
           <a class="reviews" href="#">нет отзывов</a> | <a class="add-review" href="#">Написать отзыв</a>
 -->
         </div>
@@ -147,12 +182,12 @@
 -->{% endcomment %}
 
       </div>
-
+      <div class="clearfix clear"></div>
       </div>
     </div>
   </div>
 </section>
-<section class="page-section">
+<section class="page-section ppage">
   <div class="container">
     <div class="tabs-wrapper content-tabs">
       <ul class="nav nav-tabs">
@@ -217,6 +252,10 @@
   </div>
 </section>
 <div class="clearfix"></div>
+
+{% flatcontent request page 'products_tabs' %}
+{% flatcontent request page 'services2' %}
+
 {% endblock %}
 
 {% block extrascripts %}

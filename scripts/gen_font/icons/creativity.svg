@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Education / creativity</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-484.000000, -2984.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#8345FE" stroke-width="2">
+                <g id="Education" transform="translate(28.000000, 2895.000000)">
+                    <g id="art" transform="translate(410.000000, 47.000000)">
+                        <path d="M11,0 L11,4 L11,0 Z" id="Stroke-1"></path>
+                        <path d="M7,4 L15,4" id="Stroke-3"></path>
+                        <polygon id="Stroke-5" points="0 20 22 20 22 8 0 8"></polygon>
+                        <path d="M3,24 L19,24" id="Stroke-8"></path>
+                        <path d="M11,24 L11,32" id="Stroke-9"></path>
+                        <polyline id="Stroke-11" points="15 24 17 31 17 32"></polyline>
+                        <polyline id="Stroke-13" points="7 24 5 31 5 32"></polyline>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

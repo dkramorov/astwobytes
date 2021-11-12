@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Education / additional_education</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-384.000000, -2984.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke-width="2" stroke="#8345FE">
+                <g id="Education" transform="translate(28.000000, 2895.000000)">
+                    <g id="Page-1" transform="translate(308.000000, 50.000000)">
+                        <polyline id="Stroke-1" points="15 22 0 22 0 0 26 0 26 22 23 22"></polyline>
+                        <path d="M17.5,13 C19.433,13 21,14.567 21,16.5 C21,18.433 19.433,20 17.5,20 C15.567,20 14,18.433 14,16.5 C14,14.567 15.567,13 17.5,13 Z" id="Stroke-3"></path>
+                        <polyline id="Stroke-5" points="20 19 20 26 15 26 15 19"></polyline>
+                        <path d="M6,5 L20,5" id="Stroke-7"></path>
+                        <path d="M9,9 L17,9" id="Stroke-9"></path>
+                        <path d="M6,17 L9,17" id="Stroke-11"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

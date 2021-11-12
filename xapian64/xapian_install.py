@@ -9,6 +9,61 @@
 # python-dev (for bindings)
 #################################################
 
+
+"""
+M1 arm64 silicon
+
+pip cache dir - чистим, ставим только arm64
+/Users/jocker/Library/Caches/pip
+
+https://xapian.org/download
+macOS
+
+Python 3.9.7 (default, Oct 12 2021, 22:38:23) 
+[Clang 13.0.0 (clang-1300.0.29.3)] on darwin
+
+xapian-bindings-1.4.18.tar.xz
+
+Homebrew has xapian-core and the bindings for several languages packaged. For example, use
+brew install --build-from-source xapian
+
+error: Couldn't import sphinx module for Python3 - try package python3-sphinx
+=>pip3 install sphinx
+
+# Если поставить в систему, то все заработает,
+# но после, мы будем компилить в папку
+brew install --build-from-source xapian
+Напишут
+==> ./configure --prefix=/opt/homebrew/Cellar/xapian/1.4.18
+==> make install
+==> ./configure --prefix=/opt/homebrew/Cellar/xapian/1.4.18 --with-python3
+==> make install
+🍺  /opt/homebrew/Cellar/xapian/1.4.18: 584 files, 15.7MB, built in 51 seconds
+
+# компилим биндинг для питон в папке
+./configure --help
+./configure --with-python3 --prefix=/Users/jocker/astwobytes/xapian64/xapian-bindings-1.4.18 XAPIAN_CONFIG=/opt/homebrew/Cellar/xapian/1.4.18/bin/xapian-config PYTHON3_LIB=/Users/jocker/astwobytes/xapian64/site-packages
+make && make install
+
+import xapian
+
+# HUNSPELL WITH BINDINGS
+brew install pkg-config
+brew install --build-from-source hunspell
+/opt/homebrew/Cellar/hunspell/1.7.0_2
+
+/Users/jocker/astwobytes/xapian64/hunspell-0.3.5
+
+cd /opt/homebrew/Cellar/hunspell/1.7.0_2/lib
+(env) iMac:lib jocker$ ln -s libhunspell.dylib libhunspell-1.7.0.dylib
+(env) iMac:lib jocker$ ln -s libhunspell-1.7.0.dylib libhunspell.dylib
+
+./setup.py build_ext --build-lib=/Users/jocker/astwobytes/xapian64/lib --rpath=/Users/jocker/astwobytes/xapian64/lib --include-dirs=/opt/homebrew/Cellar/hunspell/1.7.0_2/include/hunspell --library-dirs=/opt/homebrew/Cellar/hunspell/1.7.0_2/lib
+
+import hunspell
+
+"""
+
 import os, sys
 
 gmake = 'make'
@@ -76,41 +131,3 @@ extract_archs()
 #xhunspell()
 #xcpulimit()
 drop_archs()
-
-"""
-/usr/local/bin/virtualenv -p python3.7 env
-source env/bin/activate
-arch -x86_64 bash
-cd /Users/jocker/astwobytes/xapian64
-pip install sphinx
-tar -xzf xapian-core-1.4.15.tar.gz && cd xapian-core-1.4.15
-./configure --prefix=/Users/jocker/astwobytes/xapian64 && make && make install
-cd ..
-tar -xzf xapian-bindings-1.4.15.tar.gz && cd xapian-bindings-1.4.15
-./configure --with-python3 --prefix=/Users/jocker/astwobytes/xapian64 XAPIAN_CONFIG=/Users/jocker/astwobytes/xapian64/bin/xapian-config PYTHON_LIB=/Users/jocker/astwobytes/xapian64/site-packages
-make && make install
-
-import xapian
-
-
-arch -x86_64 bash
-cd /Users/jocker/django/xapian64
-tar -xzf xapian-core-1.2.12.tar.gz && cd xapian-core-1.2.12
-./configure --prefix=/Users/jocker/django/xapian64 && make && make install
-cd ..
-tar -xzf xapian-bindings-1.2.12.tar.gz && cd xapian-bindings-1.2.12
-
-
-Python2
-
-arch -x86_64 /usr/local/bin/brew install xapian
-Устанавливается в /usr/local/Cellar/xapian/1.4.18
-arch -x86_64 /usr/local/bin/brew install sphinx-doc
-
-arch -x86_64 /usr/local/bin/brew install virtualenv
-/usr/local/Cellar/virtualenv/20.10.0/bin/virtualenv
-/usr/local/Cellar/virtualenv/20.10.0/bin/virtualenv -p python2 env
-
-./configure --prefix=/Users/jocker/django/xapian64 XAPIAN_CONFIG=/usr/local/Cellar/xapian/1.4.18/bin/xapian-config PYTHON_LIB=/Users/jocker/django/xapian64/site-packages --with-python
-make && make install
-"""

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Goods / industrial</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-584.000000, -1784.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Goods" transform="translate(21.000000, 1694.000000)">
+                    <g id="Industrial" transform="translate(521.000000, 51.000000)">
+                        <path d="M1,0 L1,3 L8,5 L15,5 L15,4 C15,1.791 13.209,0 11,0 L1,0 Z" id="Stroke-1"></path>
+                        <path d="M13,8 L13,23 C13,25.209 11.209,27 9,27 L4,27 C1.791,27 0,25.209 0,23 L0,18 L8,12 L8,5" id="Stroke-3"></path>
+                        <path d="M5,4 C5,6.762 2.761,9 0,9" id="Stroke-5"></path>
+                        <path d="M12,18 L6,18" id="Stroke-7"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

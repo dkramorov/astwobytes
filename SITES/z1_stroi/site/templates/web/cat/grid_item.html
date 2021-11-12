@@ -1,14 +1,14 @@
 {% load tags mtags %}
 <div class="col-md-4 col-sm-6">
-  <div class="thumbnail no-border no-padding">
+  <div class="thumbnail{% comment %} no-border no-padding{% endcomment %}">
     <div class="media">
       {% include "web/cat/product_img.html" %}
     </div>
     <div class="caption text-center">
+      {% include "web/cat/product_review.html" %}
       <h4 class="caption-title product-title">
         <a href="{{ product.link }}">{{ product.name }}</a>
       </h4>
-      {% include "web/cat/product_review.html" %}
       {% include "web/cat/product_price_row.html" %}
       {% include "web/cat/product_buy_button.html" %}
     </div>

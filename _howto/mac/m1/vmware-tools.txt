@@ -1,0 +1,67 @@
+https://www.virten.net/2020/10/vmware-tools-for-ubuntu-20-04-lts-arm64-on-esxi-arm/
+
+VMware Tools for Ubuntu 20.04 LTS arm64 on ESXi-Arm
+
+    by Florian GrehlOctober 31, 20208 Comments
+
+VMware Tools is a set of utilities and drivers that improve the performance and management of your Virtual Machines. They are essential when running VMs on ESXi. With the recently released ESXi Arm Edition Fling, you want to make sure that you have them installed.
+
+Ubuntu is a Linux distribution based on Debian. It is officially released in three editions: Desktop, Server, and Core. Ubuntu is released every six months, with long-term support (LTS) releases every two years. As of 22 October 2020, the most recent long-term support release is 20.04 ("Focal Fossa"), which is supported until 2025 under public support
+
+Unfortunately, a compiled version of open-vm-tools for arm64 is not available for many common Guest Operating Systems, so you have to compile them from VMwares Repository at GitHub.
+
+This article explains how to compile open-vm-tools for Ubuntu 20.04 LTS arm64.
+
+Prerequisites
+Ubuntu 20.04 LTS (arm64) installed as a Virtual Machine on ESXi-Arm Fling.
+Ubuntu Download: https://ubuntu.com/download/server/arm
+ESXi Arm Edition: https://flings.vmware.com/esxi-arm-edition
+open-vm-tools Documentation: https://github.com/vmware/open-vm-tools
+
+Installation
+
+    Open a Terminal or connect with SSH to your Ubuntu.
+    Install tools and libraries that are required to build open-vm-tools.
+
+    # apt install -y git automake make gobjc++ libtool pkg-config libmspack-dev libglib2.0-dev libpam0g-dev libssl-dev libxml2-dev libxmlsec1-dev libx11-dev libxext-dev libxinerama-dev libxi-dev libxrender-dev libxrandr-dev libxtst-dev libgdk-pixbuf2.0-dev libgtk-3-dev libgtkmm-3.0-dev
+
+    Clone VMware's official open-vm-tools repository from GitHub.
+
+    # git clone https://github.com/vmware/open-vm-tools.git
+    # cd open-vm-tools/open-vm-tools/
+
+    Compile open-vm-tools.
+
+    # autoreconf -i
+    # ./configure --disable-dependency-tracking
+    # make
+    # make install
+    # ldconfig
+
+    Create a unit file. The file is required to run vmtoolsd as service with systemd.
+
+    # cat > /etc/systemd/system/vmtoolsd.service << EOF
+    [Unit]
+    Description=Service for virtual machines hosted on VMware
+    Documentation=http://github.com/vmware/open-vm-tools
+    After=network-online.target
+
+    [Service]
+    ExecStart=/usr/local/bin/vmtoolsd
+    Restart=always
+    TimeoutStopSec=5
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+
+    Enable and start the open-vm-tools service.
+
+    # systemctl enable vmtoolsd.service
+    # systemctl start vmtoolsd.service
+
+    Verify that open-vm-tools are running
+
+    # systemctl status vmtoolsd.service
+
+You should now see that VMware Tools are running in the vSphere Client.

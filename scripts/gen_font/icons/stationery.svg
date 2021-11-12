@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Goods / stationery</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-384.000000, -1784.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Goods" transform="translate(21.000000, 1694.000000)">
+                    <g id="Stationery" transform="translate(314.179993, 50.829956)">
+                        <path d="M0.3217,26.6715 L0.3217,26.6715 C0.0167,26.3665 -0.0813,25.9125 0.0697,25.5095 L2.8217,18.1715 L18.1147,2.8785 C18.5057,2.4875 19.1377,2.4875 19.5287,2.8785 L24.1147,7.4645 C24.5057,7.8555 24.5057,8.4875 24.1147,8.8785 L8.8217,24.1715 L1.4837,26.9235 C1.0807,27.0745 0.6267,26.9765 0.3217,26.6715 Z" id="Stroke-1"></path>
+                        <path d="M19.8217,3.1715 L22.4077,0.5855 C23.1887,-0.1955 24.4547,-0.1955 25.2357,0.5855 L26.4077,1.7575 C27.1887,2.5385 27.1887,3.8045 26.4077,4.5855 L23.8217,7.1715" id="Stroke-3"></path>
+                        <path d="M8.8217,24.1715 L5.3217,20.6715" id="Stroke-5"></path>
+                        <path d="M5.3217,10.6715 L1.4077,6.7575 C0.6267,5.9765 0.6267,4.7105 1.4077,3.9295 L4.5797,0.7575 C5.3607,-0.0235 6.6267,-0.0235 7.4077,0.7575 L11.3217,4.6715" id="Stroke-7"></path>
+                        <path d="M16.3217,21.6715 L19.9077,25.2575 C20.6887,26.0385 22.2827,26.3665 23.0637,25.5855 L26.2357,22.4135 C27.0167,21.6325 27.0167,20.3665 26.2357,19.5855 L22.3217,15.6715" id="Stroke-9"></path>
+                        <path d="M20.8217,12.1715 L17.3217,8.6715" id="Stroke-11"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

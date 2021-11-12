@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Eat / Bar</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-284.000000, -584.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#FF8D00" stroke-width="2">
+                <g id="Eat" transform="translate(28.000000, 494.000000)">
+                    <g id="Bar" transform="translate(210.000000, 49.000000)">
+                        <path d="M11,20 L11,28" id="Stroke-1"></path>
+                        <path d="M3,28 L19,28" id="Stroke-3"></path>
+                        <path d="M14,8 C14,6.343 12.657,5 11,5 C9.343,5 8,6.343 8,8 C8,9.657 9.343,11 11,11 C12.657,11 14,9.657 14,8 Z" id="Stroke-5"></path>
+                        <path d="M12.3405,5.319 L14.9995,0" id="Stroke-7"></path>
+                        <path d="M8.1667,13.6667 L9.6587,10.6817" id="Stroke-9"></path>
+                        <path d="M17,5 L22,5 L22,5 C22,6.937 21.313,8.811 20.062,10.29 L11,21 L1.938,10.29 C0.687,8.811 0,6.937 0,5 L5,5" id="Stroke-11"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

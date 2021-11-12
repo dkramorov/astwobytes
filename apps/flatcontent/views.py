@@ -1264,14 +1264,6 @@ def SearchLink(q_string: dict = None,
 
     container_all_pages = Containers.objects.filter(tag__in=mcap.keys(), is_active=True).exclude(state__in=(99, 100))
     blocks = []
-    # Пересоздадим mcap по полученным данным
-    # а то вдруг нету такого контейнера, который мы передали
-    new_mcap = {}
-    for item in container_all_pages:
-        if item.id in new_mcap:
-            new_mcap[item.id] = None
-        elif item.tag and item.tag in new_mcap:
-            new_mcap[item.tag] = None
 
     # ------------------------------------------------------
     # Корректировка запроса, если в mcap запросили айдишники
@@ -1449,7 +1441,7 @@ def templar(ids_containers: dict, mcap: dict, block_with_content: Blocks,
 
         # MCAP (Main Content for All Pages)
         cur_tag = value['container'].tag
-        if cur_tag == 'main':
+        if cur_tag == 'main' or cur_tag in mcap:
             mcap[cur_tag] = value
         else:
             pk = value['container'].id

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Goods / pets</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-684.000000, -1784.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Goods" transform="translate(21.000000, 1694.000000)">
+                    <g id="Pets" transform="translate(613.000000, 51.000000)">
+                        <path d="M15,10 L12.414,10 C11.633,10 11,10.633 11,11.414 C11,11.789 11.149,12.149 11.414,12.414 L13.293,14.293 C13.746,14.746 14.36,15 15,15 C15.64,15 16.254,14.746 16.707,14.293 L18.586,12.414 C18.851,12.149 19,11.789 19,11.414 C19,10.633 18.367,10 17.586,10 L15,10 Z" id="Stroke-1"></path>
+                        <path d="M15,15 L15,15.865 C15,18.148 13.149,20 10.865,20 C9.142,20 7.599,18.931 6.994,17.317 L5.637,13.698 C5.216,12.575 5,11.386 5,10.187" id="Stroke-3"></path>
+                        <path d="M15,15 L15,15.865 C15,18.148 16.851,20 19.135,20 C20.858,20 22.401,18.931 23.006,17.317 L24.363,13.698 C24.784,12.575 25,11.386 25,10.187" id="Stroke-5"></path>
+                        <path d="M26,18 L26,18 C28.209,18 30,16.209 30,14 L30,9 C30,6.791 28.209,5 26,5 L25,5 C25,3.195 23.795,1.427 22.055,0.945 C20.316,0.464 17.89,0 15,0 C12.11,0 9.684,0.464 7.945,0.945 C6.205,1.427 5,3.195 5,5 L4,5 C1.791,5 0,6.791 0,9 L0,14 C0,16.209 1.791,18 4,18" id="Stroke-7"></path>
+                        <path d="M9,6 L12,6" id="Stroke-9"></path>
+                        <path d="M21,6 L18,6" id="Stroke-11"></path>
+                        <path d="M12,20 L12,23 C12,24.657 13.343,26 15,26 C16.657,26 18,24.657 18,23 L18,20" id="Stroke-13"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

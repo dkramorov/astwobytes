@@ -1,4 +1,5 @@
-# python3.7
+# python3.10
+
 redis==3.3.10
 python-memcached==1.59
 django==2.2.3
@@ -11,11 +12,11 @@ requests==2.22.0
 # apt-get install python3-dev
 # mysql_config not found when installing mysqldb =>
 # apt-get install libmysqlclient-dev
-mysqlclient==1.3.13 # from MySQLdb import _mysql # m1 error
-#mysqlclient==2.0.3
-#Pillow==6.1.0 # m1 error
+# под m1 надо втыкать mysql-client@5.7 в .profile
+mysqlclient==1.3.13 # from MySQLdb import _mysql
+#Pillow==6.1.0
 Pillow==8.4.0
-#lxml==4.4.0 # m1 error
+#lxml==4.4.0
 lxml==4.6.4
 PyJWT==1.7.1
 websockets==8.0.2 # if errors happens read next:
@@ -28,9 +29,13 @@ websockets==8.0.2 # if errors happens read next:
 plotly==4.4.1
 sentry-sdk==0.14.1
 django-boto==0.3.12
-sphinx==3.0.4
+sphinx==4.2.0
 
-#matplotlib==3.2.1 # m1 error
+matplotlib==3.2.1
 # xhtml2pdf==0.2.4 не пашет
 #mammoth==1.4.12 # docx2html
-#cairosvg==2.5.2 # m1 error
+cairosvg==2.5.2
+
+# brew install xapian
+# /opt/homebrew/Cellar/xapian/1.4.18
+# file /opt/homebrew/Cellar/xapian/1.4.18/lib/libxapian.30.dylib (arm64)

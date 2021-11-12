@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Eat / Restaurant</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-184.000000, -584.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#FF8D00" stroke-width="2">
+                <g id="Eat" transform="translate(28.000000, 494.000000)">
+                    <g id="Restaurant" transform="translate(105.000000, 52.000000)">
+                        <path d="M3,16 C3,8.82 8.82,3 16,3 C23.18,3 29,8.82 29,16" id="Stroke-1"></path>
+                        <path d="M0,19 L32,19" id="Stroke-3"></path>
+                        <path d="M3,19 L3,21 C3,22.657 4.343,24 6,24 L26,24 C27.657,24 29,22.657 29,21 L29,19" id="Stroke-5"></path>
+                        <path d="M16,3 L16,0" id="Stroke-7"></path>
+                        <path d="M16,8 C11.582,8 8,11.582 8,16" id="Stroke-9"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
