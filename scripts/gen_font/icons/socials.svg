@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Government / socials</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-184.000000, -3184.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#8345FE" stroke-width="2">
+                <g id="Government" transform="translate(1.000000, 3093.000000)">
+                    <g id="Socials" transform="translate(137.000000, 52.000000)">
+                        <path d="M7,0.2988 C4.123,0.6698 1.126,1.3348 0,1.9998 L0,13.5288 C0,16.3078 1.22,18.8868 3.222,20.3428 L11,25.9998 L18.778,20.3428 C20.78,18.8868 22,16.3078 22,13.5288 L22,1.9998 C20.308,0.9998 14.385,-0.0002 11,-0.0002 L11,3.9998" id="Stroke-1"></path>
+                        <path d="M15.9473,12.9971 C16.5953,12.3621 17.0003,11.4791 17.0003,10.5001 C17.0003,8.5671 15.4323,7.0001 13.5003,7.0001 C12.5193,7.0001 11.6353,7.4061 11.0003,8.0561 C10.3643,7.4061 9.4803,7.0001 8.5003,7.0001 C6.5673,7.0001 5.0003,8.5671 5.0003,10.5001 C5.0003,11.4761 5.4013,12.3571 6.0463,12.9921 L11.0003,17.9491 L15.9473,12.9971 Z" id="Stroke-3"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

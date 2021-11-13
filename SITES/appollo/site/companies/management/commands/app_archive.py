@@ -270,7 +270,7 @@ def fill_catalogue(json_obj: dict):
         rows = query[i*by:i*by+by]
 
         ids_cats = [cat.id for cat in rows]
-        orgs_cats = Company2Category.objects.filter(cat__in=ids_cats).values('cat').annotate(pcount=Count('company'))
+        orgs_cats = MainCompany2Category.objects.filter(cat__in=ids_cats).values('cat').annotate(pcount=Count('main_company'))
         orgs_count = {cat['cat']: cat['pcount'] for cat in orgs_cats}
         for cat in rows:
             if not cat.id in orgs_count:
@@ -284,6 +284,7 @@ def fill_catalogue(json_obj: dict):
             obj = {
                 'id': cat.id,
                 'name': cat.name,
+                'icon': cat.icon,
                 'count': orgs_count[cat.id],
                 'search_terms': search_terms,
             }

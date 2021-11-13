@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Renovation / building</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-184.000000, -3384.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Renovation" transform="translate(12.000000, 3294.000000)">
+                    <g id="Building" transform="translate(122.000000, 52.000000)">
+                        <path d="M28.4141,22.586 L28.5861,22.414 C29.3671,21.633 29.3671,20.367 28.5861,19.586 L25.0001,16 L22.0001,19 L25.5861,22.586 C26.3671,23.367 27.6331,23.367 28.4141,22.586 Z" id="Stroke-1"></path>
+                        <path d="M23,17 L20.414,14.414 C19.633,13.633 18.367,13.633 17.586,14.414 L17.414,14.586 C16.633,15.367 15.367,15.367 14.586,14.586 L10,10" id="Stroke-3"></path>
+                        <path d="M10.4541,14.7266 L6.5791,18.6016 C6.3241,18.8566 5.9771,18.9996 5.6171,18.9996 C5.0041,18.9996 4.4661,18.5896 4.3051,17.9976 L0.0681,2.4666 C-0.1149,1.7896 0.0761,1.0676 0.5721,0.5726 C1.0671,0.0766 1.7901,-0.1154 2.4671,0.0686 L17.9981,4.3046 C18.5901,4.4656 19.0001,5.0036 19.0001,5.6176 C19.0001,5.9776 18.8561,6.3246 18.6011,6.5796 L14.7261,10.4546" id="Stroke-5"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

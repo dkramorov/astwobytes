@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Industrial / equipment</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-184.000000, -3584.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Industrial" transform="translate(22.000000, 3494.000000)">
+                    <g id="Equipment" transform="translate(117.000000, 48.000000)">
+                        <path d="M20,31 L20,29 C20,27.896 19.104,27 18,27 L2,27 C0.896,27 0,27.896 0,29 L0,31 L20,31 Z" id="Stroke-1"></path>
+                        <path d="M14,4 L14,0" id="Stroke-3"></path>
+                        <path d="M14,27 L14,17" id="Stroke-5"></path>
+                        <path d="M5,23 L5,19" id="Stroke-7"></path>
+                        <polyline id="Stroke-9" points="2 15 2 17 5 20 8 17 8 15"></polyline>
+                        <path d="M10,14 L0,14 L0,6 C0,4.896 0.896,4 2,4 L18,4 C19.104,4 20,4.896 20,6 L20,9 L17,9 L17,14 L10,14 Z" id="Stroke-11"></path>
+                        <path d="M4,9 L13,9" id="Stroke-13"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

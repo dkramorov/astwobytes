@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Grocery / meat</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-584.000000, -2584.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Grocery" transform="translate(6.000000, 2493.000000)">
+                    <g id="Meat" transform="translate(528.109985, 53.000000)">
+                        <path d="M3.8889,7.5996 C4.9889,8.7996 6.0889,10.5996 6.8889,12.9996 C7.6889,15.2996 7.7889,18.9996 7.7889,18.9996" id="Stroke-1"></path>
+                        <path d="M6.8889,13 L3.8889,14" id="Stroke-3"></path>
+                        <path d="M18.3889,12.5 L22.0889,11.3 C22.5889,12.9 24.0889,14 25.8889,14 C28.0889,14 29.8889,12.2 29.8889,10 C29.8889,8.3 28.7889,6.8 27.1889,6.2 C27.5889,5.6 27.8889,4.8 27.8889,4 C27.8889,1.8 26.0889,-3.55271368e-15 23.8889,-3.55271368e-15 C21.6889,-3.55271368e-15 19.8889,1.8 19.8889,4 C19.8889,4.4 19.9889,4.9 20.0889,5.3 L16.3889,6.5 C13.9889,3.4 9.7889,2 5.8889,3.3 L0.8889,5 C0.8889,5 -1.1111,9 0.8889,15 C2.8889,21 6.8889,23 6.8889,23 L11.8889,21.3 C16.8889,19.6 19.5889,14.3 17.8889,9.3" id="Stroke-5"></path>
+                        <path d="M23.8889,8 C26.0889,8 27.8889,6.2 27.8889,4" id="Stroke-7"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

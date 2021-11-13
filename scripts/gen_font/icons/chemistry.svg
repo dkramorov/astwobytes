@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Metarubrick / Industrial / chemistry</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-meta-draft" transform="translate(-284.000000, -3584.000000)">
+            <g id="Slice" transform="translate(84.000000, 84.000000)"></g>
+            <g id="Icon" transform="translate(51.000000, 42.000000)" stroke="#52B311" stroke-width="2">
+                <g id="Industrial" transform="translate(22.000000, 3494.000000)">
+                    <g id="Chemistry" transform="translate(214.000000, 50.000000)">
+                        <path d="M7,0 L19,0" id="Stroke-1"></path>
+                        <path d="M10,3 L10,12 L1.242,20.758 C0.447,21.553 0,22.632 0,23.758 C0,26.101 1.899,28 4.242,28 L21.758,28 C24.101,28 26,26.101 26,23.758 C26,22.632 25.553,21.553 24.758,20.758 L16,12 L16,3" id="Stroke-3"></path>
+                        <path d="M24,20 C19.5,24.5 16,20 13,20 C10,20 6.5,24.5 2,20" id="Stroke-5"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
