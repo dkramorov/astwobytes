@@ -1,0 +1,43 @@
+РЕШЕНИЕ:
+install ca-certificates
+
+ПРОБЛЕМА:
+root@niagara:/home/jocker# certbot
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator nginx, Installer nginx
+Starting new HTTPS connection (1): acme-v02.api.letsencrypt.org
+An unexpected error occurred:
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 560, in urlopen
+    body=body, headers=headers)
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 346, in _make_request
+    self._validate_conn(conn)
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 787, in _validate_conn
+    conn.connect()
+  File "/usr/lib/python3/dist-packages/urllib3/connection.py", line 252, in connect
+    ssl_version=resolved_ssl_version)
+  File "/usr/lib/python3/dist-packages/urllib3/util/ssl_.py", line 305, in ssl_wrap_socket
+    return context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/usr/lib/python3.5/ssl.py", line 377, in wrap_socket
+    _context=self)
+  File "/usr/lib/python3.5/ssl.py", line 752, in __init__
+    self.do_handshake()
+  File "/usr/lib/python3.5/ssl.py", line 988, in do_handshake
+    self._sslobj.do_handshake()
+  File "/usr/lib/python3.5/ssl.py", line 633, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:645)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 376, in send
+    timeout=timeout
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 589, in urlopen
+    raise SSLError(e)
+requests.packages.urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:645)
+
+During handling of the above exception, another exception occurred:
+
+requests.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:645)
+Please see the logfiles in /var/log/letsencrypt for more details.

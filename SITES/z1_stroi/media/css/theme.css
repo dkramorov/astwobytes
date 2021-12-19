@@ -309,7 +309,7 @@ a:focus {
     color: #000000;
 }
 .footer a {
-    color: #232323;
+    color: #888;
 }
 .footer a:hover,
 .footer a:active,
@@ -1629,7 +1629,7 @@ input[type=checkbox] {
 .footer {
     border-top: solid 10px #00b16a;
     color: #232323;
-    background-color: #f9fafb;
+    background-color: #f2f2f2;
 }
 /* 3.1 */
 /* Footer widgets
@@ -1666,14 +1666,11 @@ input[type=checkbox] {
 /* ========================================================================== */
 .footer-meta {
     padding: 30px 0;
-    background-color: #ffffff;
-    border-top: solid 1px #a1b1bc;
+    background-color: #f2f2f2;
+    /*border-top: solid 1px #a1b1bc;*/
 }
 .footer-meta .copyright {
     color: #a1b1bc;
-}
-.footer-meta .payments {
-    text-align: right;
 }
 @media (max-width: 767px) {
     .footer-meta .payments {
@@ -2791,7 +2788,7 @@ input[type=checkbox] {
 /* Social icons line
 /* ========================================================================= */
 .social-icons {
-    margin: -15px 0 20px 0;
+    margin: 15px 0 20px 0;
     line-height: 30px;
     overflow: hidden;
 }
@@ -2806,9 +2803,10 @@ input[type=checkbox] {
     height: 30px;
     line-height: 30px;
     text-align: center;
-    background-color: transparent;
-    border: solid 1px #232323;
-    color: #232323;
+    background-color: #fff;
+    border: solid 0px #232323;
+    border-radius: 50px;
+    color: #999;
 }
 .social-icons a:hover {
     background-color: #00180e;
@@ -4475,8 +4473,9 @@ input[type=checkbox] {
     color: #00b16a;
 }
 .products.list .thumbnail .price {
-    float: right;
-    margin-bottom: 0;
+    /*float: right;*/
+    margin: 10px 0;
+    text-align: center;
 }
 .products.list .thumbnail .caption-text {
     font-size: 14px;
@@ -5590,11 +5589,12 @@ input[type=checkbox] {
     transition: all 0.3s ease-in-out;
 }
 .shop-info-banners .block .media-heading {
-    font-size: 24px;
+    /*font-size: 24px;*/
+	font-size: 20px;
     line-height: 24px;
     font-weight: 900;
     color: #3c3c3c;
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
 }
@@ -6252,6 +6252,7 @@ input[type=checkbox] {
 .compare-products .colors ul li a:hover {
     border-color: #232323;
 }
+/*
 .compare-products .buttons {
     margin-top: -10px;
     overflow: hidden;
@@ -6317,6 +6318,7 @@ input[type=checkbox] {
     background-color: #232323;
     color: #ffffff;
 }
+*/
 /* Error page
 /* ========================================================================== */
 .error-page {

@@ -26,7 +26,7 @@ class FreeswitchBackend(object):
        <action application="python" data="foo.bar"/>
 
        USAGE:
-       uri = "http://monitor:cnfylfhnysq@10.1.250.6:8080"
+       uri = "http://login:passwd@10.1.250.6:8080"
        fs = FreeswitchBackend(uri)
     """
 
@@ -142,7 +142,7 @@ class FreeswitchBackend(object):
            {
                "command": "callcenter_config",
                "format": "pretty",
-               "data": {"arguments":"agent list"}
+               "data": {"arguments": "agent list"}
            }
         """
         result = self.server.freeswitch.api('json', json.dumps(json_obj))
@@ -192,13 +192,20 @@ class FreeswitchBackend(object):
         """Получить активные звонки (бриджи)"""
         return self.do_json_request('bridged_calls as json')
 
+    def restart_profile(self, profile: str):
+        """Перезагрузить профиль
+           :param profile: имя профиля, который ребутим
+        """
+        cmd = 'profile %s restart' % profile
+        return self.server.freeswitch.api('sofia', cmd)
+
 class RemoteDB:
     """Класс для подключения к удаленной БД"""
     conn = None
 
     def connect(self):
-        login = 'jocker'
-        passwd = 'reabhxbr'
+        login = 'login'
+        passwd = 'passwd'
         host = '10.10.10.1'
         dbname = 'a223'
         self.conn = MySQLdb.connect(host=host, user=login, passwd=passwd, db=dbname)
@@ -261,9 +268,8 @@ class RemoteDB:
                     return {'id': row[0], 'name': row[1]}
 
 if __name__ == '__main__':
-    FREESWITCH_URI='http://monitor:cnfylfhnysq@192.168.1.3:8080'
-    logger.info(FREESWITCH_URI)
-    fs = FreeswitchBackend(FREESWITCH_URI)
+    logger.info(settings.FREESWITCH_URI)
+    fs = FreeswitchBackend(settings.FREESWITCH_URI)
     bridged_calls = fs.get_bridged_calls()
     logger.info('[BRIDGED CALLS]: %s' % bridged_calls)
     channels = fs.get_channels()

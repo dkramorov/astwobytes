@@ -111,71 +111,7 @@ var cart_id = "#popup-cart";
     {% endifnotequal %}
     {% block content %}{% endblock %}
   </div>
-  <footer class="footer">
-    <div class="footer-widgets">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-3">
-            <div class="widget">
-              <h4 class="widget-title">Контакты</h4>
-              <p><i class="fa fa-phone"></i> {{ containers.main.tags.phone.html|safe }}</p>
-              <p><i class="fa fa-map-marker"></i> {{ containers.main.tags.address.html|safe }}</p>
-              <p><i class="fa fa-envelope"></i> {{ containers.main.tags.email.html|safe }}</p>
-              <ul class="social-icons">
-                {% for block in containers.main.tags.social.sub %}
-                  <li>
-                    <a href="{{ block.link }}" target="_blank" class="{{ block.tag }}">
-                      <i class="fa fa-{{ block.tag }}"></i>
-                    </a>
-                  </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-3 only_desktop">
-            <div class="widget">
-              <h4 class="widget-title">Новости</h4>
-              <p>Подпишитесь на новости</p>
-              <form action="#">
-                <div class="form-group">
-                  <input class="form-control" type="text" placeholder="Введите email и получите купон в подарок"/>
-                </div>
-                <div class="form-group">
-                  <button class="btn btn-theme btn-theme-transparent">Подписаться</button>
-                </div>
-              </form>
-            </div>
-          </div>
-          {% flatmenu request "bottommenu" %}
-        </div>
-      </div>
-    </div>
-    <div class="footer-meta">
-      <div class="container">
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="copyright">{{ containers.main.tags.copyright.html|safe }}</div>
-            </div>
-            <div class="col-sm-6">
-              <div class="payments">
-                <ul>
-                  <li><img src="/media/misc/visa.jpg" /></li>
-                  <li><img src="/media/misc/mastercard.jpg" /></li>
-                  <li><img src="/media/misc/paypal.jpg" /></li>
-                  <li><img src="/media/misc/american-express.jpg" /></li>
-                  <li><img src="/media/misc/visa-electron.jpg" /></li>
-                  <li><img src="/media/misc/maestro.jpg" /></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-    <div id="to-top" class="to-top">
-      <i class="fa fa-angle-up"></i>
-    </div>
-  </div>
+  {% include "web/components/footer.html" %}
 {% endblock %}
 
 
@@ -190,7 +126,12 @@ var cart_id = "#popup-cart";
 <script src="/media/js/jquery.easing.min.js"></script>
 <script src="/media/js/jquery.smoothscroll.min.js"></script>
 <script src="/media/js/smooth-scrollbar.min.js"></script>
-{% include "check_feedback_form.html" %}
+
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/static/js/feedback.js"></script>
+
 <script src="/media/js/theme.js"></script>
 <script src="/media/js/jquery.cookie.js"></script>
 {% block extrascripts %}{% endblock %}

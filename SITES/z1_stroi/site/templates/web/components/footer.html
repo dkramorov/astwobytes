@@ -1,0 +1,115 @@
+{% load flatcontent_tags %}
+<footer class="footer">
+  <div class="footer-widgets">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="widget">
+            {% flatmenu request "footermenu" %}
+{% comment %}<!--
+            <h4 class="widget-title">Контакты</h4>
+            <p><i class="fa fa-phone"></i> {{ containers.main.tags.phone.html|safe }}</p>
+            <p><i class="fa fa-map-marker"></i> {{ containers.main.tags.address.html|safe }}</p>
+            <p><i class="fa fa-envelope"></i> {{ containers.main.tags.email.html|safe }}</p>
+-->{% endcomment %}
+            <ul class="social-icons">
+              {% for block in containers.main.tags.social.sub %}
+                <li>
+                  <a href="{{ block.link }}" target="_blank" class="{{ block.tag }}">
+                    <i class="fa fa-{{ block.tag }}"></i>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        {% flatmenu request "bottommenu" %}
+
+{% comment %}<!--
+        <div class="col-md-3 only_desktop">
+          <div class="widget">
+            <h4 class="widget-title">Новости</h4>
+            <p>Подпишитесь на новости</p>
+            <form action="#">
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Введите email и получите купон в подарок"/>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-theme btn-theme-transparent">Подписаться</button>
+              </div>
+            </form>
+          </div>
+        </div>
+-->{% endcomment %}
+        <div class="col-md-3">
+          <div class="widget">
+            {% flatmenu request "footermenu2" %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-meta">
+    <div class="container">
+      <div class="row">
+
+        <!--<div class="col-sm-4">
+          <div class="apps">
+            <ul>
+              <li><img src="/media/misc/apple.png" /></li>
+              <li><img src="/media/misc/google.png" /></li>
+            </ul>
+          </div>
+        </div>-->
+
+        <div class="col-sm-4">
+          <div class="copyright">{{ containers.main.tags.copyright.html|safe }}</div>
+        </div>
+        
+        <div class="col-sm-4">
+          <div class="payments">
+            <ul>
+              <li><img src="/media/misc/visa.jpg" /></li>
+              <li><img src="/media/misc/mastercard.jpg" /></li>
+              <li><img src="/media/misc/paypal.jpg" /></li>
+              <li><img src="/media/misc/american-express.jpg" /></li>
+              <li><img src="/media/misc/visa-electron.jpg" /></li>
+              <li><img src="/media/misc/maestro.jpg" /></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-md-4 only_desktop subscribe">
+          <div class="widget">
+            <p class="title">Подпишитесь на нашу рассылку</p>
+            <p>и будьте в курсе наших новостей</p>
+            <form action="#">
+              <table>
+                <tr>
+                  <td>
+                    <input class="form-control" type="text" placeholder="Введите email и получите купон в подарок"/>
+                  </td>
+                  <td>
+                    <button class="btn btn-theme">Подписаться</button>
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </div>
+        </div>
+
+      </div>
+     <!-- <div class="row">
+        <div class="col-sm-12">
+          <div class="copyright">{{ containers.main.tags.copyright.html|safe }}</div>
+        </div>
+      </div>-->
+
+    </div>
+  </div>
+</footer>
+<div id="to-top" class="to-top">
+  <i class="fa fa-angle-up"></i>
+</div>
+  </div>

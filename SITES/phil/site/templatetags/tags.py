@@ -31,6 +31,7 @@ def dynamic_portfolio(request):
         return inCache
 
     # Вытаскиваем менюшку portfolio
+    # Там лежат верхние разделы Identity, Illustration, Toys
     portfolio_menu = Blocks.objects.filter(tag='portfolio', link='/portfolio/', state=4).first()
     if not portfolio_menu:
         return {}
@@ -38,6 +39,7 @@ def dynamic_portfolio(request):
     parents = '%s_%s' % (portfolio_menu.parents, portfolio_menu.id)
     all_blocks = Blocks.objects.filter(state=4, is_active=True).filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents))
 
+    # Тут вытаскиваем все вложенные блоки, кроме All projects /portfolio/
     all_blocks = [block for block in all_blocks if not block.link == '/portfolio/']
     if domain:
         domains = [domain]
@@ -63,13 +65,13 @@ def dynamic_portfolio(request):
         ids_subblocks = {subblock.id: subblock.link for subblock in block.sub}
         # Для описания надо узнать какая стат.страничка
         # ссылается на subblock.link и взять от нее описание
-        #related_by_link = Blocks.objects.filter(container__state=3, link__in=ids_subblocks.values())
         related_by_link = []
         related_containers = block.linkcontainer_set.select_related('container').all()
         if related_containers:
             related_by_link = related_containers[0].container.blocks_set.filter(link__in=ids_subblocks.values())
 
         ids_desc = {related.link: related for related in related_by_link}
+
         # К каждому subblock надо докинуть описалово, чтобы получить его в картинках
         desc_arr = {}
         subblock_sorting = []

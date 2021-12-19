@@ -73,6 +73,10 @@ def search_process_created_time(process):
 
 def search_process(q: list):
     """Ищем процесс
+
+       Если возникает ошибка OSError: [Errno 5] Input/output error
+       pip3 install psutil --upgrade
+
        :param q: список строк для поиска
        Посмотреть все свойства можно get_psutil_attr_names()
     """
@@ -81,7 +85,12 @@ def search_process(q: list):
     mypid = os.getpid()
     myppid = os.getppid()
     for obj in psutil.process_iter():
-        process = obj.as_dict(attrs=['pid', 'cmdline', 'create_time', ])
+        try:
+            process = obj.as_dict(attrs=['pid', 'cmdline', 'create_time', ])
+        except OSError as e:
+            print(e)
+            print('pip3 install psutil --upgrade')
+            exit()
         if not process['cmdline']:
             continue
         if process['pid'] == mypid or process['pid'] == myppid:

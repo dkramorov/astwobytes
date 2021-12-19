@@ -3,11 +3,12 @@
 redis==3.3.10
 python-memcached==1.59
 django==2.2.3
-psutil==5.6.7
+psutil==5.8.0
 XlsxWriter==1.1.8
 openpyxl==2.6.2
 envparse
 requests==2.22.0
+curlify==2.2.1
 # OSError: mysql_config not found => apt-get install libmysqlclient-dev
 # apt-get install python3-dev
 # mysql_config not found when installing mysqldb =>

@@ -19,6 +19,9 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 env.read_envfile()
 
+# Полный набор настроек из env файла, чтобы каждую не писать здесь
+FULL_SETTINGS_SET = {k: v for k, v in os.environ.items()}
+
 # ------------------
 # Мультиязычный сайт
 # ------------------
@@ -261,7 +264,9 @@ CACHES = {
         ],
         'OPTIONS': {
             'server_max_value_length': 1024 * 1024 * 2, # 2Mb object size
-        }
+        },
+        # https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CACHES-KEY_PREFIX
+        'KEY_PREFIX': PROJECT_NAME,
     }
 }
 

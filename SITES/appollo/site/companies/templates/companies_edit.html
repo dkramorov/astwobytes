@@ -116,7 +116,7 @@
         allowClear: true,
         width: '100%',
         ajax: {
-          url: "{% url 'companies:search_companies' %}",
+          url: "{% url 'companies:search_main_companies' %}",
           data: function (params) {
             var query = {
               q: params.term,

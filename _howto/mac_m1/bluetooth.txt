@@ -1,0 +1,4 @@
+клавиатура начинает медленно реагировать на нажатия
+если подключить к usb - норм все, надо сбросить bluetooth
+
+Hold down on SHIFT and OPT then click on the bluetooth icon in the menu bar then select reset bluetooth module.

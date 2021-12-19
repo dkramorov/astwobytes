@@ -12,14 +12,16 @@ from django.views.decorators.csrf import csrf_exempt
 
 from apps.flatcontent.views import SearchLink
 from apps.main_functions.catcher import feedback_form, json_pretty_print
-from apps.main_functions.models import Tasks, Config
+from apps.main_functions.models import Tasks, Config, Captcha
 from apps.main_functions.model_helper import get_user_permissions
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
-from apps.main_functions.views_helper import (show_view,
-                                              edit_view,
-                                              search_view, )
+from apps.main_functions.views_helper import (
+    show_view,
+    edit_view,
+    search_view,
+)
 
 logger = logging.getLogger('main')
 
@@ -251,10 +253,15 @@ def DefaultFeedback(request, **kwargs):
         if feedback_vars['file']:
             mail.attach(feedback_vars['file']['name'], feedback_vars['file']['content'], feedback_vars['file']['content_type'])
         if not do_not_send:
+            # Удаляем в сессии капчу
+            if request.session.get('captcha'):
+                del request.session['captcha']
+
             try:
                 mail.send()
             except Exception as e:
                 result['error'] = str(e)
+
         else:
             logger.info(json_pretty_print(feedback_vars))
     # ---------------------------
@@ -355,3 +362,11 @@ def settings(request, app: str = 'flatcontent'):
         if row.attr and row.attr.startswith(app):
             row.attr = row.attr.split(app_label, 1)[1]
     return render(request, template, context)
+
+def get_captcha(request):
+    """Апи-метод для получения капчи
+       из javascript можно получить ид и по нему вывести капчу
+    """
+    result = {'captcha': Captcha().get_for_feedback()}
+    request.session['captcha'] = result['captcha']
+    return JsonResponse(result, safe=False)

@@ -44,6 +44,46 @@
             </div>
           </div>
           {% include "core/forms/row_image.html" %}
+
+{% if row %}
+  <div class="form-group">
+    <label class="col-lg-2 control-label">
+      <span>Вид для компании (изображение)</span>
+    </label>
+    <div class="col-lg-7 img_block">
+      <a href="{% if row.img_view %}{{ row.imagine_view }}{% else %}/static/img/empty.png{% endif %}" target="_blank" id="preview_img_view_full">
+        <img src="{% if row.img_view %}{{ row.thumb_view }}{% else %}/static/img/empty.png{% endif %}" class="img-responsive" id="preview_img_view">
+      </a>
+    </div>
+    <div class="col-lg-3">
+      <input type="text" class="bg-color-for-img" value="#fff" />
+    </div>
+  </div>
+  <fieldset>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">
+        <small>Загрузка вида для компании (изображение)</small>
+      </label>
+      <div class="col-sm-10">
+        <div id="upload-drop-files-2" class="box-placeholder text-center">
+          <p>
+            <em class="fa fa-cloud-upload fa-2x"></em>
+          </p>
+          <span>Перетащите файл сюда или</span>
+          <div class="btn-link form-file">
+            выберите файл для загрузки
+            <input id="upload-select-files-2" type="file" name="path">
+          </div>
+        </div>
+        <div id="progressbar-files-2" class="progress hidden">
+          <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar-files"></div>
+        </div>
+        <input type="text" placeholder="Загрузить по ссылке" class="form-control" name="grab_img_by_url_2" value="" autocomplete="off">
+      </div>
+    </div>
+  </fieldset>
+{% endif %}
+
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
         </div>
@@ -125,7 +165,7 @@
           });
           // Обновление ссылок
           update_links(r);
-
+          update_links2(r);
         }).fail(function() {
           $.notify({
             message: msg,
@@ -175,6 +215,61 @@
           };
         var select = new $.upload.select($('#upload-select-files'), settings),
         drop   = new $.upload.drop($('#upload-drop-files'), settings);
+
+
+
+
+
+
+
+
+
+
+
+
+      function update_links2(r){
+        var thumb = r['row']['thumb_view'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img_view").attr("src", thumb + "?_=" + Date.now());
+        var imagine = r['row']['imagine_view'];
+        if(imagine === ''){
+          imagine = '/static/img/empty.png';
+        }
+        $("#preview_img_view_full").attr("src", imagine + "?_=" + Date.now());
+      }
+
+        var progressbar = $('#progressbar-files-2'),
+          bar         = progressbar.find('.progress-bar-files'),
+          settings    = {
+            action: '{% url "companies:edit_main_company" "img_view" row.id %}', // upload url
+            allow : '*.*',
+            param: 'img_view',
+            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+            loadstart: function() {
+              bar.css('width', '0%').text('0%');
+              progressbar.removeClass('hidden');
+            },
+            progress: function(percent) {
+              percent = Math.ceil(percent);
+              bar.css('width', percent+'%').text(percent+'%');
+            },
+            allcomplete: function(response) {
+              bar.css('width', '100%').text('100%');
+              setTimeout(function(){
+                progressbar.addClass('hidden');
+              }, 750);
+              // Upload Completed
+              //alert(response);
+
+              // Обновление ссылок
+              var r = JSON.parse(response);
+              update_links2(r);
+            }
+          };
+        var select = new $.upload.select($('#upload-select-files-2'), settings),
+        drop   = new $.upload.drop($('#upload-drop-files-2'), settings);
       {% endif %}
     });
   </script>

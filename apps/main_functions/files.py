@@ -6,8 +6,9 @@ import os
 import re
 import shutil
 import time
+import random
 
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 
 from django.conf import settings
 
@@ -561,6 +562,11 @@ def grab_image_by_url(url, dest, name=None):
 
     img_name, ext = get_fname_from_url(url)
     img = '%s.%s' % (img_name, ext)
+    if name:
+        img = name
+        if not img.endswith(ext):
+            img = '%s.%s' % (img, ext)
+
     fname = os.path.join(dest, img)
     fname_path = full_path(fname)
 
@@ -710,3 +716,44 @@ def disk_usage(path, block_size='Mb'):
     else:
         result['block_size'] = 'bytes'
     return result
+
+def create_captcha(alphabet: list = None,
+                   captcha_size: int = 4,
+                   font: str = 'fonts/PerfoCone.ttf',
+                   font_size: int = 26, ) -> [str, Image]:
+    """Создание цифрового изображения,
+       например, капчи
+       :param alphabet: символы из которых будем делать капчу
+       :param captcha_size: количество символов в изображении
+       :param font: путь к шрифту в static
+       :param font_size: размер шрифта
+       :return [str, Image]: возвращаем сгенерированную строку и изображение
+    """
+    result = ''
+    if not alphabet:
+        alphabet = [i for i in range(10)]
+
+    ypos = 10
+    letter_width = 25 # надо высчитывать на основании шрифта и размера шрифта
+    # из расчета на то, что каждый глиф 25 пихалей при 26 кеге
+    img_size = [captcha_size * letter_width, 50]
+    # create WHITE image
+    img = Image.new('RGB', img_size, (255,255,255))
+
+    # create a drawing object that is used to draw on the new image
+    draw = ImageDraw.Draw(img)
+
+    # text color
+    color_black = (0,0,0)
+    font = ImageFont.truetype(os.path.join(settings.STATIC_ROOT, font), font_size)
+
+    alphabet_len = len(alphabet)
+    for i in range(captcha_size):
+        rand_int = random.randrange(0, alphabet_len)
+        letter_pos = (i * letter_width, ypos) # TODO: в параметры
+        letter = str(alphabet[rand_int])
+        result += letter
+        draw.text(letter_pos, letter, fill=color_black, font=font)
+    del draw
+
+    return [result, img]

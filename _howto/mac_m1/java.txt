@@ -1,0 +1,70 @@
+---
+можно азул взять жаву
+https://www.azul.com/downloads/?os=macos&architecture=arm-64-bit&package=jdk
+
+In $JRE/lib/security/java.security:
+у меня это /Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home/conf/security/java.security
+jdk.tls.disabledAlgorithms=SSLv3, TLSv1, RC4, DES, MD5withRSA, DH keySize < 1024, \
+EC keySize < 224, 3DES_EDE_CBC, anon, NULL
+
+This line is enabled, after I commented out this line, everything is working fine. Apparently after/in jre1.8.0_181 this line is enabled.
+
+The problem also appears with the latest openjdk 11 versions (11.0.11+9-0ubuntu2~18.04). What I don't understand is, why don't java and mysql just agree on using TLSv1.2, since both parties seem to support it? Also, just patching the java.security file isn't a long term solution, what's the way forward with this issue?
+
+-Djava.security.properties=${PATH_TO_FILE?}/custom.java.security
+jdk.tls.disabledAlgorithms=SSLv3, TLSv1.1, RC4, DES, MD5withRSA, \
+    DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
+    include jdk.disabled.namedCurves
+I removed TLSv1 from the list.
+
+
+
+LINUX
+In my case I am runnig Centos 8 and had the same issue with Imap/Java. Had to update the system-wide cryptographic policy level.
+    update-crypto-policies --set LEGACY
+    reboot machine.
+---
+
+Even though JRE 8 is installed on my MAC -" No Java Runtime present,requesting to install " gets displayed in terminal
+
+ДО:
+iMac:platform jocker$ /usr/libexec/java_home
+The operation couldn’t be completed. Unable to locate a Java Runtime.
+
+ПОСЛЕ:
+iMac:deploy-platform jocker$ /usr/libexec/java_home
+/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+
+mac os:
+echo $JAVA_HOME
+which java
+$(dirname $(readlink $(which javac)))/java_home
+/usr/libexec/java_home
+
+java -XshowSettings:properties -version
+java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'
+
+
+
+2021 solution
+TL;DR
+
+brew install temurin
+
+Details
+
+On an M1 Mac/Apple Silicon (running Big Sur), I had already openjdk installed. As signaled in a previous answer by Mohammed, openjdk is keg-only with brew, and hence requires adding a symlink.
+
+After following this, it solved the No Java Runtime present error, but rJava was complaining about missing libjvm.dylib and that existing libraries were for the wrong architecture:
+
+.onLoad failed in loadNamespace() for 'rJava', details:
+  call: dyn.load(jvm, FALSE)
+  error: unable to load shared object '/opt/homebrew/Cellar/openjdk/16.0.2/libexec/openjdk.jdk/Contents/Home/lib/server/libjvm.dylib':
+  dlopen(/opt/homebrew/Cellar/openjdk/16.0.2/libexec/openjdk.jdk/Contents/Home/lib/server/libjvm.dylib, 10): 
+    no suitable image found.  Did find:
+    /opt/homebrew/Cellar/openjdk/16.0.2/libexec/openjdk.jdk/Contents/Home/lib/server/libjvm.dylib: 
+    mach-o, but wrong architecture
+
+Installing Eclipse Temurin (previously AdoptOpenJDK) (and removing the previously created symlink in /Library/Java/JavaVirtualMachines/openjdk.jdk) immediately solved both issues seamlessly.
+
+Just run brew install temurin and everything should be OK.

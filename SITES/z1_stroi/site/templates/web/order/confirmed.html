@@ -30,6 +30,10 @@
     {% if not order.external_number %}
       <h3 class="link">Ссылка для этого заказа: <a href="{% url 'main:checkout' %}?order_id={{ order.id }}">Ссылка на заказ</a></h3>
       <p>Ссылка на заказ будет работать только для пользователя {{ request.session.shopper.name }}, {{ request.session.shopper.phone }}</p>
+      <h3>Вы можете оплатить заказ онлайн</h3>
+      <a class="btn btn-theme" href="{% url 'main:checkout' %}?order_id={{ order.id }}&pay=sbrf">Оплатить {{ order.total|money_format }} ₽</a>
+    {% else %}
+      <h3>Статус оплаты заказа: {{ order_status.status }}</h3>
     {% endif %}
 
   </div>

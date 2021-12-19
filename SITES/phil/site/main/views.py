@@ -13,6 +13,7 @@ from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
 from apps.main_functions.views import DefaultFeedback
 from apps.main_functions.catcher import json_pretty_print
+from apps.main_functions.models import Captcha
 #from apps.products.models import Products
 #from apps.personal.oauth import VK, Yandex
 #from apps.personal.utils import save_user_to_request, remove_user_from_request
@@ -134,6 +135,7 @@ def product_on_site(request, product_id: int):
 
 def feedback(request):
     """Страничка обратной связи"""
+
     kwargs = {
         #'force_send': 1, # Принудительная отправка
         #'fv': [],
@@ -146,6 +148,21 @@ def feedback(request):
             {'name': 'description', 'value': 'Описание проекта'},
         ],
     }
+    if request.method == 'POST':
+        captcha_user_value = request.POST.get('captcha')
+        captcha_value = '%s-' % captcha_user_value # ставим неверное значение
+
+        captcha_id = request.session.get('captcha')
+        if captcha_id and (isinstance(captcha_id, int) or captcha_id.isdigit()):
+            captcha = Captcha.objects.filter(pk=captcha_id).first()
+            if captcha.value == captcha_user_value:
+                captcha_value = captcha.value
+
+        kwargs['additional_conds'] = [{
+            'name': 'captcha',
+            'error': 'Неправильно введен проверочный код',
+            'value': captcha_value,
+        }]
     return DefaultFeedback(request, **kwargs)
 
 reg_vars = {

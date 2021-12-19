@@ -27,6 +27,9 @@ class Registrations(Standard):
     phone = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Телефон пользователя')
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Имя пользователя')
     passwd = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Пароль пользователя')

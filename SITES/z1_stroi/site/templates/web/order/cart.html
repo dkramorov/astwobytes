@@ -62,7 +62,7 @@
 
 {% block page_title %}
   {% if page.title %}{{ page.title }}{% else %}{{ page.name }}{% endif %}
-  <a class="color-grey compare_link" href="javascript:void(0);">Сравнивали (0)</a>
+  <!--<a class="color-grey compare_link" href="javascript:void(0);">Сравнивали (0)</a>-->
 {% endblock %}
 
 {% block content %}
@@ -135,7 +135,7 @@
 
               <tr>
                 <td colspan="2">
-                  <a href="javascript:void(0);">Бесплатная доставка *</a>
+                  <!--<a href="javascript:void(0);">Бесплатная доставка *</a>-->
                 </td>
               </tr>
               </tbody>
@@ -151,7 +151,7 @@
             <button class="btn btn-theme btn-theme-dark btn-block">Apply Coupon</button>
 -->{% endcomment %}
             <a href="/shop/checkout/" class="btn btn-theme btn-block">Оформить заказ</a>
-            <a href="/shop/checkout/" class="btn btn-block btn-theme-transparent">Купить в 1 клик</a>
+            <a data-toggle="modal" data-target="#popup-buy1click" href="/shop/checkout/" class="btn btn-block btn-theme-transparent">Купить в 1 клик</a>
           </div>
         </div>
       </div>
@@ -272,6 +272,53 @@
 -->{% endcomment %}
     </div>
   </section>
+
+
+<div class="modal fade popup-buy1click" id="popup-buy1click" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <h2>Купить в 1 клик</h2>
+        <form action="/shop/checkout/" method="post" class="form-delivery" id="confirm_order">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Имя</label>
+                <input type="text" class="form-control required" name="name" value="{% if shopper_data.name %}{{ shopper_data.name }}{% endif %}" placeholder="Ваше имя?">
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Телефон</label>
+                <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}" placeholder="Ваш телефон">
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="text" class="form-control required email" name="email" value="{% if shopper_data.email %}{{ shopper_data.email }}{% endif %}" placeholder="Ваш email">
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="feedback_alerts"></div>
+            </div>
+            <div class="col-md-12">
+              <input type="submit" class="btn btn-theme btn-block" value="Оформить заказ" style="max-width:100%;" />
+            </div>
+          </div>
+        </form>
+
+    <div class="oneclick_info">
+      <div>
+      Уважаемые клиенты! Обращаем ваше внимание на то, что НА заказы, совершенные через "Оформить в 1 клик", скидка постоянным клиентам НЕ РАСПРОСТРАНЯЕТСЯ. Для того, чтобы получить скидку, зарегистрийтесь или войдите под своим логином. Благодарим за покупку!
+      </div>
+    </div>
+
+
+  </div>
+</div>
 {% endif %}
 
 {% for container in page.containers %}
@@ -292,6 +339,21 @@
                              $("#purchase_drop_{{ purchase.id }}")
       );
     {% endfor %}
+
+    //demo_fill_order();
+    $("input[type='text'].phone").mask("8(999)9 999-999");
+    $("#confirm_order input[type='submit']").attr("disabled", false);
+    $("#confirm_order").validate({
+      messages: {
+        name: "Введите ваше имя, чтобы мы могли знать как к вам обращаться",
+        phone: "Введите телефон, чтобы мы связались с вами по заказу",
+        email: "Введите email, чтобы вы могли восстановить доступ к аккаунту",
+      },
+      submitHandler: function(form) {
+        $("#confirm_order button[type='submit']").html("Ждите...").attr("disabled", "disabled");
+        form.submit();
+      }
+    });
   });
 </script>
 {% endblock %}

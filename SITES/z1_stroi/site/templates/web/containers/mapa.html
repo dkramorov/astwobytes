@@ -24,7 +24,7 @@
                   {% endif %}
                   {% if block.link %}
                     <div class="link">
-                      <a href="{{ block.link }}" class="btn btn-theme">{{ block.description }}</a>
+                      <a data-toggle="modal" data-target="#popup-feedback" href="{{ block.link }}" class="btn btn-theme">{{ block.description }}</a>
                     </div>
                   {% endif %}
                 </div>
@@ -36,3 +36,9 @@
     </div>
   </div>
 </section>
+
+<div class="modal fade popup-feedback" id="popup-feedback" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    {% include "web/components/feedback_form.html" %}
+  </div>
+</div>

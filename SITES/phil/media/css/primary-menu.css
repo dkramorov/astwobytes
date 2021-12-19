@@ -1142,3 +1142,9 @@
 .headroom--top {
   background: transparent;
 }
+
+@media (min-width: 1199px) {
+  .primary-menu-menu {
+    white-space: nowrap;
+  }
+}

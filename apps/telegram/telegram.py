@@ -111,10 +111,11 @@ class TelegramBot:
     # USAGE:
     # передаем в f открытый дескриптор
     # fname = '/home/.../1.xlsx'
-    # with open(fname, "rb") as f:
+    # with open(fname, 'rb') as f:
     #   TelegramBot().send_document(f))
     # ---------------------------------
-    def send_file(self, input_file,
+    def send_file(self,
+                  input_file,
                   caption='',
                   chat_id=None,
                   file_type: str = 'doc',

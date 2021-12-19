@@ -1,7 +1,10 @@
 # -*- coding:utf-8 -*-
 import json
+import time
+import datetime
 
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
@@ -12,8 +15,10 @@ from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import (get_cat_for_site,
                                       get_product_for_site,
                                       get_catalogue_lvl,
+                                      get_filters_for_cat,
                                       get_props_for_products, )
 from apps.main_functions.string_parser import q_string_fill
+from apps.main_functions.date_time import date_plus_days, weekdayToStr, monthToStr
 from apps.main_functions.views import DefaultFeedback
 from apps.products.models import Products
 from apps.products.views import get_products_cats
@@ -23,6 +28,7 @@ from apps.personal.auth import register_from_site, login_from_site, update_profi
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
 from apps.shop.order import get_order
 from apps.shop.models import Orders, WishList
+from apps.shop.sbrf import SberPaymentProovider
 
 CUR_APP = 'main'
 main_vars = {
@@ -124,6 +130,7 @@ def cat_on_site(request, link: str = None):
         'q_string': {
             'by': 30,
         },
+        'with_filters': True,
     }
 
     context = get_cat_for_site(request, link, **kwargs)
@@ -132,6 +139,13 @@ def cat_on_site(request, link: str = None):
     containers = {}
 
     if request.is_ajax():
+        # Если запрос по фасетному поиску,
+        # отдаем отрендеренный шаблон
+        if request.GET.get('ff'):
+            context = {
+                'plp': render_to_string('web/cat/plp.html', context),
+                'my_paginator': context['my_paginator'],
+            }
         return JsonResponse(context, safe=False)
 
     page = context['page']
@@ -419,8 +433,18 @@ def checkout(request):
     cart = calc_cart(shopper, min_info=False)
     context['cart'] = cart
 
+    delivery_additional_fields = [
+        'up2floor',
+        'floor',
+        'elevator1',
+        'elevator2',
+        'elevator3',
+        'loaders',
+        'distance',
+    ]
+
     # Оформление заказа
-    context.update(**create_new_order(request, shopper, cart))
+    context.update(**create_new_order(request, shopper, cart, delivery_additional_fields=delivery_additional_fields))
     if 'order' in context and context['order']:
         template = 'web/order/confirmed.html'
 
@@ -434,7 +458,55 @@ def checkout(request):
             if order:
                 template = 'web/order/confirmed.html'
                 context['order'] = order
+                sber = SberPaymentProovider()
+                order_status = sber.get_order_status(order.external_number, order.id)
+                context['order_status'] = order_status
+    # -----------------------------------------
+    # Если пользователь пытается оплатить заказ
+    # -----------------------------------------
+    if 'order' in context and request.GET.get('pay') == 'sbrf':
+        order = context['order']
+        scheme = 'http://'
+        if request.is_secure():
+            scheme = 'https://'
+        host = '%s%s' % (scheme, request.META['HTTP_HOST'])
+        env = ''
+        if settings.DEBUG:
+            env = 'test_%s' % str(time.time())
+        params = {
+            'amount': int(order.total * 100),
+            'orderNumber': '%s%s' % (env, order.id),
+            'returnUrl': '%s/payment/sbrf/success/' % host,
+            'failUrl': '%s/payment/sbrf/fail/' % host,
+            #'description': 'Тестовый заказ',
+            'clientId': shopper.id,
+            'email': shopper.email,
+            'phone': shopper.phone,
+        }
+        sber = SberPaymentProovider()
+        register_order = sber.register_do(**params)
+        context.update(register_order)
+        # ------------------------
+        # Переадресация на форму и
+        # запись номера заказа
+        # ------------------------
+        if 'formUrl' in register_order:
+            Orders.objects.filter(pk=order.id).update(external_number=register_order['orderId'])
+            return redirect(register_order['formUrl'])
 
+    dates = []
+    today = datetime.datetime.now()
+    for i in range(5):
+        date = date_plus_days(today, days=i)
+        weekday = weekdayToStr(date, rp=1, socr=1)
+        month = monthToStr(date.month, rp=1, socr=0)
+        dates.append({
+          'time': date.strftime('%Y-%m-%d %H:%M:%S'),
+          'day': date.day,
+          'weekday': weekday,
+          'month': month,
+        })
+    context['dates'] = dates
     return render(request, template, context)
 
 order_vars = {
@@ -496,7 +568,12 @@ def compare(request):
     state = 2
 
     if shopper:
-        compare_list = WishList.objects.select_related('product').filter(shopper=shopper, state=state)
+        compare_list = []
+        if request.GET.get('drop_all'):
+            WishList.objects.filter(shopper=shopper, state=state).delete()
+        else:
+            compare_list = WishList.objects.select_related('product').filter(shopper=shopper, state=state)
+
         compare_list = [item.product for item in compare_list if item.product]
         context['products'] = compare_list
 
@@ -526,5 +603,57 @@ def compare(request):
 
     context['page'] = page
     context['containers'] = containers
+
+    return render(request, template, context)
+
+
+payment_vars = {
+    'singular_obj': 'Оплата заказа',
+    'template_prefix': 'order_',
+    'show_urla': 'payment',
+}
+
+def payment(request, provider: str, action: str):
+    """Оплата заказа
+       :param request: HttpRequest
+       :param provider: sbrf/
+       :param action: success/fail
+    """
+    mh_vars = payment_vars.copy()
+    context = {
+        'provider': provider,
+        'action': action,
+    }
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/order/payment.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=order_vars['singular_obj'])
+    kwargs = {
+      'provider': provider,
+      'action':action,
+    }
+    context['breadcrumbs'] = [{
+        'name': 'Оплата заказа',
+        'link': reverse('%s:%s' % (CUR_APP, 'payment'), kwargs=kwargs),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+
+    if request.GET.get('orderId'):
+        order_id = request.GET['orderId']
+        order = Orders.objects.filter(shopper=shopper, external_number=order_id).first()
+        if order:
+            sber = SberPaymentProovider()
+            order_status = sber.get_order_status(order.external_number, order.id)
+            context['order_status'] = order_status
+            context['order'] = order
 
     return render(request, template, context)

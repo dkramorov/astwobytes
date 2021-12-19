@@ -15,22 +15,44 @@
 <section class="page-section color compare_list">
   <div class="container">
     {% if not products %}
-      <h3 class="block-title alt">Вы ничего не добавили в сравнение товаров</h3>
+      <h3 class="block-title alt">Список сравнения товаров пуст</h3>
     {% else %}
     <div class="compare-products">
+      <label>
+        <input type="checkbox" value="1" id="show_only_difference">Показать разницу
+      </label>
       <table class="table-bordered table-hover">
         <thead>
           <tr>
-            <td>Товар</td>
             {% for product in products %}
             <td>
               <div class="product">
                 <a class="close drop_from_compare_btn" href="javascript:void(0);" data-product_id="{{ product.id }}"><i class="fa fa-close"></i></a>
+
+                <div class="overflowed">
+                  <div class="availability">Артикул: {{ product.code }} </div>
+                </div>
                 <a class="media-link" data-gal="prettyPhoto" href="{{ product.imagine }}">
                   <img src="{% imagine product.img '800x600' product.get_folder True %}" alt="{{ product.name|textize }}"/>
                 </a>
                 <div class="clear"></div>
+                <div class="rating">
+                  <span class="star"></span>
+                  <span class="star active"></span>
+                  <span class="star active"></span>
+                  <span class="star active"></span>
+                  <span class="star active"></span>
+                </div>
+                <div class="clearfix clear"></div>
                 <h4><a href="{{ product.link }}">{{ product.name }}</a></h4>
+                <div class="clearfix clear"></div>
+                {% include "web/cat/product_price_row.html" %}
+                <div class="clearfix clear"></div>
+                <br>
+                <div class="products listview">
+                  {% include "web/cat/product_buy_button.html" %}
+                </div>
+{% comment %}<!--
                 <strong>
                   {% if product.cats %}
                     {% for cat in product.cats %}
@@ -39,59 +61,34 @@
                     {% endfor %}
                   {% endif %}
                 </strong>
+-->{% endcomment %}
               </div>
             </td>
             {% endfor %}
           </tr>
         </thead>
         <tbody>
+{% comment %}<!--
           <tr>
-            <td>Рейтинг</td>
+            {% for product in products %}
+              <td>Доставка<br><strong class="text-color"></strong></td>
+            {% endfor %}
+          </tr>
+
+          <tr>
             {% for product in products %}
               <td>
-                <div class="rating">
-                  <span class="star"></span>
-                  <span class="star active"></span>
-                  <span class="star active"></span>
-                  <span class="star active"></span>
-                  <span class="star active"></span>
-                </div>
-                <br>
-                <a class="reviews" href="#">нет отзывов</a>
+                Наличие<br><strong class="text-color">На складе</strong>{% if product.count %}{{ product.count }}{% endif %}
               </td>
             {% endfor %}
           </tr>
-          <tr class="price">
-            <td>Цена</td>
-            {% for product in products %}
-              <td>{% include "web/cat/product_price_row.html" %}</td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <td>Доставка</td>
-            {% for product in products %}
-              <td><strong class="text-color"></strong></td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <td>Наличие</td>
-            {% for product in products %}
-              <td>
-                <strong class="text-color">На складе</strong>{% if product.count %}{{ product.count }}{% endif %}
-              </td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <td>Код</td>
-            {% for product in products %}
-              <td>{{ product.code }}</td>
-            {% endfor %}
-          </tr>
+-->{% endcomment %}
           {% for prop_id, prop_name in all_props.items %}
-            <tr>
-              <td>{{ prop_name }}</td>
+            <tr class="comparator" id="comparator_{{ prop_id }}">
               {% for product in products %}
                 <td>
+                  {% if forloop.first %}<strong>{{ prop_name }}</strong><br>{% else %}<br>{% endif %}
+                  <div class="raw_value">
                   {% for pp in product.props %}
                     {% if pp.prop.id == prop_id %}
                       {% for pvalue in pp.values %}
@@ -101,6 +98,7 @@
                       {% endfor %}
                     {% endif %}
                   {% endfor %}
+                  </div>
                 </td>
               {% endfor %}
             </tr>
@@ -131,16 +129,12 @@
             </td>
           </tr>
 -->{% endcomment %}
-          <tr>
-            <td>Действия</td>
-            {% for product in products %}
-              <td>
-                <a class="btn btn-theme-dark btn-theme-transparent btn-icon-left add_to_cart_btn" href="javascript:void(0);" data-product_id="{{ product.id }}"><i class="fa fa-shopping-cart"></i>В корзину</a>
-              </td>
-            {% endfor %}
-          </tr>
         </tbody>
       </table>
+      <br>
+      <div class="text-center">
+        <a class="btn btn-theme btn-theme-transparent" href="/shop/compare/?drop_all=1">Удалить все</a>
+      </div>
     </div>
     {% endif %}
   </div>
@@ -148,5 +142,45 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    {% for product in products %}
+      quantity_listener("{{ product.id }}",
+                        $("#qbuttons_{{ product.id }} .prod-plus"),
+                        $("#qbuttons_{{ product.id }} .prod-minus"),
+      );
+    {% endfor %}
 
+    function show_difference() {
+      if (!$("#show_only_difference").prop('checked')){
+        $(".comparator").removeClass("hidden");
+        return;
+      }
+
+      $(".comparator").each(function(){
+        var similar = true;
+        var value = null;
+        var pk = $(this).attr('id');
+        $("#" + pk + " .raw_value").each(function(){
+          var cur_value = $.trim($(this).html().replaceAll('\n', '').replaceAll(' ', ''));
+          console.log(pk, cur_value);
+          if (value == null) {
+            value = cur_value;
+          } else {
+            if (value != cur_value) {
+              similar = false;
+            }
+          }
+        });
+        if (similar) {
+          $("#" + pk).addClass("hidden");
+        }
+      });
+    }
+    $("#show_only_difference").change(function(){
+       show_difference();
+    });
+    show_difference();
+  });
+</script>
 {% endblock %}

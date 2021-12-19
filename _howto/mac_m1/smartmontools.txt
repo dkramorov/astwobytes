@@ -1,0 +1,3 @@
+https://www.smartmontools.org/
+
+smartctl -a disk0

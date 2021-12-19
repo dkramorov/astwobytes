@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.db.models import Q
+from django.core import management
 
 from apps.flatcontent.models import Blocks
 from apps.main_functions.functions import object_fields
@@ -402,6 +403,10 @@ def edit_main_company(request, action: str, row_id: int = None, *args, **kwargs)
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
+                if request.POST.get('grab_img_by_url_2') and row:
+                    gibu2 = request.POST['grab_img_by_url_2']
+                    if gibu2:
+                        row.upload_img_view(gibu2)
 
             # ----------------------------
             # Сохраняем категории компании
@@ -422,14 +427,18 @@ def edit_main_company(request, action: str, row_id: int = None, *args, **kwargs)
 
         elif action == 'img' and request.FILES:
             mh.uploads()
+        elif action == 'img_view' and request.FILES and mh.row:
+            mh.row.upload_img_view(request.FILES['img_view'])
     if mh.row:
         context['row'] = object_fields(mh.row, pass_fields=('password', ))
         context['row']['folder'] = mh.row.get_folder()
         context['row']['thumb'] = mh.row.thumb()
+        context['row']['thumb_view'] = mh.row.thumb_view()
         context['row']['imagine'] = mh.row.imagine()
+        context['row']['imagine_view'] = mh.row.imagine_view()
         context['redirect'] = mh.get_url_edit()
 
-    if request.is_ajax() or action == 'img':
+    if request.is_ajax() or action in ('img', 'img_view'):
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
     return render(request, template, context)
@@ -454,10 +463,10 @@ def search_main_companies(request, *args, **kwargs):
     mh_vars = main_companies_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
-    mh.search_fields = ('id', 'name')
+    mh.search_fields = ('id', 'name', 'tag')
     rows = mh.standard_show()
     for row in rows:
-        result['results'].append({'text': '%s (%s)' % (row.name, row.id), 'id': row.id})
+        result['results'].append({'text': '%s %s (%s)' % (row.name, row.id, row.tag), 'id': row.id})
     if mh.raw_paginator['cur_page'] == mh.raw_paginator['total_pages']:
         result['pagination'] = {'more': False}
     else:
@@ -619,5 +628,13 @@ def search_contacts(request, *args, **kwargs):
         result['pagination'] = {'more': False}
     else:
         result['pagination'] = {'more': True}
+    return JsonResponse(result, safe=False)
+
+def update_app(request, *args, **kwargs):
+    """Обновление базы
+       :param request: HttpRequest
+    """
+    result = {'results': []}
+    result['status'] = management.call_command('app_archive')
     return JsonResponse(result, safe=False)
 

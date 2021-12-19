@@ -1,12 +1,12 @@
 {% load tags mtags %}
 <div class="thumbnail{% comment %} no-border no-padding{% endcomment %}">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="media">
         {% include "web/cat/product_img.html" %}
       </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-6">
       <div class="caption">
         {% include "web/cat/product_review.html" %}
         <h4 class="caption-title product-title">
@@ -15,17 +15,21 @@
 
         <div class="overflowed">
           <div class="availability">Артикул: {{ product.code }} </div>
-          {% include "web/cat/product_price_row.html" %}
         </div>
-
+{% comment %}<!--
         <div class="caption-text">
           {% if product.mini_info %}{{ product.mini_info|safe }}{% endif %}
-
           {% include "web/cat/product_main_attrs.html" %}
         </div>
-
-        {% include "web/cat/product_buy_button.html" %}
+-->{% endcomment %}
       </div>
+    </div>
+    <div class="col-md-3">
+      {% include "web/cat/product_price_row.html" %}
+      <div class="clearfix clear"></div>
+      {% include "web/cat/product_buy_button.html" %}
+      <div class="clearfix clear"></div>
+      <a class="add_to_compare_btn line" data-product_id="{{ product.id }}"><i class="compare-link__icon" href="javascript:void(0);"></i> Добавить к сравнению</a>
     </div>
   </div>
 </div>

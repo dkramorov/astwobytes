@@ -21,6 +21,95 @@
 .orders td.total {
   white-space: nowrap;
 }
+
+#order_container {
+  border: 1px solid #ccc;
+}
+.order_tabs .taba {
+  border: 1px solid #ccc;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  text-align: center;
+  width: 150px;
+  display: inline-block;
+  color: #ccc;
+}
+.order_tabs .taba.active {
+  color: #000;
+  border-bottom: 0;
+}
+.infoblock {
+  margin-bottom: 10px;
+}
+.infoblock span {
+  border-radius: 50px;
+  border: 1px solid #ccc;
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  text-align: center;
+}
+
+.date {
+  padding: 10px 0;
+  border: 1px solid #ccc;
+  display: inline-block;
+  width: 90px;
+  text-align: center;
+  margin-right: -5px;
+}
+.date * {
+  font-weight: normal;
+}
+.date .weekday {
+  line-height: 12px;
+  font-size: 12px;
+}
+.date .day {
+  line-height: 22px;
+  font-size: 22px;
+}
+.date .month {
+  line-height: 13px;
+  font-size: 13px;
+}
+.bg_dark {
+  background-color: #ededed;
+}
+.fwidth {
+  width: 100%;
+}
+.additional_service {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+.up2floor {
+  padding: 5px 0 0 0;
+}
+.up2floor_price {
+  font-size: 18px;
+  text-align: right;
+}
+.floor_number input,
+.distance input {
+  width: 50px;
+  height: 35px;
+  border-radius: 0;
+}
+.elevators label {
+  display: block;
+}
+.floor_table td {
+  padding: 10px;
+}
+.distance input,
+.distance p{
+  display: inline-block;
+  margin: 0 10px;
+}
+
 </style>
 {% endblock %}
 
@@ -41,14 +130,25 @@
   <section class="page-section color">
     <div class="container">
       <div class="row">
+        <div class="col-md-12">
+          <div class="order_tabs">
+            <span class="taba tab_delivery active">Доставка</span>
+            <span class="taba tab_pickup">Самовывоз</span>
+          </div>
+        </div>
+
         {% for error in errors %}
           <label class="error mistake">{{ error }}</label><br />
         {% endfor %}
+        <div class="col-md-12" style="margin-top: 1px;">
+        <div id="order_container">
+
         <form action="/shop/checkout/" method="post" class="form-delivery col-md-9" id="confirm_order">
           <input type="hidden" class="form-control" name="longitude" value="" id="address_longitude" autocomplete="off">
           <input type="hidden" class="form-control" name="latitude" value="" id="address_latitude" autocomplete="off">
 
           {% csrf_token %}
+          <div class="infoblock"><span>1</span> Введите контактные данные</div>
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
@@ -81,13 +181,14 @@
                 <input type="text" class="form-control required phone" name="phone" value="{% if shopper_data.phone %}{{ shopper_data.phone }}{% endif %}" placeholder="Ваш телефон">
               </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 only_delivery">
               <div class="form-group">
                 <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}" placeholder="Ваш адрес" id="address_from_map">
               </div>
             </div>
 
-            <div class="col-md-12">
+            <div class="col-md-12 only_delivery">
+              <div class="infoblock"><span>2</span> Введите адрес доставки</div>
               <div class="form-group">
                 <div class="mapContainer" id="mapContainer"></div>
               </div>
@@ -107,11 +208,92 @@
               </div>
             </div>
 -->{% endcomment %}
+
+            <div class="col-md-12 only_delivery">
+              <div class="infoblock"><span>3</span> Введите дату доставки</div>
+              <div class="form-group">
+                {% for date in dates %}
+                  <label class="date">
+                    <input type="radio" name="time" value="{{ date.time }}" />
+                    <div class="weekday">{{ date.weekday }}</div>
+                    <div class="day">{{ date.day }}</div>
+                    <div class="month">{{ date.month }}</div>
+                  </label>
+                {% endfor %}
+              </div>
+              <p>Доставка осуществляется в течение дня</p>
+            </div>
+
+            <div class="col-md-12 only_delivery">
+              <div class="infoblock"><span>4</span> Дополнительные услуги</div>
+            </div>
+            <div class="col-md-12 only_delivery">
+              <div class="additional_service bg_dark">
+              <div class="form-group">
+                <table class="fwidth">
+                  <tr>
+                    <td class="up2floor">
+                      <label>
+                        <input type="checkbox" value="Подъем на этаж" id="up2floor" name="up2floor" /> Подъем на этаж
+                      </label>
+                    </td>
+                    <td class="up2floor_price">500 руб</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="form-group">
+                <table class="floor_table">
+                  <tr>
+                    <td class="floor_number">
+                      <input type="text" class="form-control" id="floor" name="floor" value="">
+                    </td>
+                    <td>Укажите номер этажа</td>
+                    <td class="elevators">
+                      <label>
+                        <input type="checkbox" name="elevator" id="elevator1" value="Лифт" />
+                        Лифт
+                      </label>
+                      <label>
+                        <input type="checkbox" name="elevator2" id="elevator2" value="Грузовой лифт" />
+                        Грузовой лифт
+                      </label>
+                      <label>
+                        <input type="checkbox" name="elevator3" id="elevator3" value="Технический лифт" />
+                        Технический лифт
+                      </label>
+                    </td>
+                  </tr>
+                </table>
+                <table class="floor_table">
+                  <tr>
+                    <td>
+                      <label>
+                        <input type="checkbox" name="loaders" id="loaders" value="Грузчикам нужно нести заказ от машины до вас дальше 50 метров"/> Грузчикам нужно нести заказ от машины до вас дальше 50 метров?
+                      </label>
+                    </td>
+                  </tr>
+                </table>
+                <table class="fwitdh floor_table">
+                  <tr>
+                    <td class="distance">
+                      <label>
+                        <input type="text" class="form-control" id="distance" value="" />
+                        <p>Укажите примерное количество метров</p>
+                      </label>
+                      <p>Отсчет времени подъема начинается с момента прибытия машины с заказом на ваш адрес</p>
+                    </td>
+                  </tr>
+                </table>
+
+              </div>
+              </div>
+            </div>
+
             <div class="col-md-12">
               <div class="feedback_alerts"></div>
             </div>
             <div class="col-md-12">
-              <input type="submit" class="btn btn-theme btn-theme-dark btn-block" value="Оформить заказ" />
+              <input type="submit" class="btn btn-theme btn-theme-dark btn-block" id="confirm_order_action" value="Подтвердить заказ" />
             </div>
           </div>
         </form>
@@ -136,7 +318,7 @@
             </tr>
             <tr>
               <td colspan="2">
-                <a href="javascript:void(0);">Бесплатная доставка *</a>
+                <!--<a href="javascript:void(0);">Бесплатная доставка *</a>-->
               </td>
             </tr>
             </tbody>
@@ -191,10 +373,15 @@
                 </tr>
               </tfoot>
             </table>
+
+            <a type="submit" class="btn btn-theme" id="confirm_order_button">Подтвердить заказ</a>
           </div>
         </div>
         <div class="clearfix clear"></div>
+        </div>
+        </div>
       </div>
+
     </div>
   </section>
 {% endif %}
@@ -222,6 +409,9 @@
         email: "Введите email, чтобы вы могли восстановить доступ к аккаунту",
       },
       submitHandler: function(form) {
+        $("#confirm_order_button").html("Ждите...").click(function(){
+          return false;
+        });
         $("#confirm_order button[type='submit']").html("Ждите...").attr("disabled", "disabled");
         form.submit();
       }
@@ -232,6 +422,9 @@
 <script type="text/javascript">
   var myMapContainer = "mapContainer";
   $(document).ready(function(){
+    $("#confirm_order_button").click(function(){
+      $("#confirm_order_action").click();
+    });
     var kwargs = {};
     kwargs['default_town'] = "Иркутск"; // TODO Задать в настройках и передавать в шаблон
     kwargs['search_address_by_click'] = 1;
@@ -270,6 +463,18 @@
         add_points_to_map(myMapContainer, [myPoint]);
       {% endif %}
     }, ["map"]);
+
+
+    $(".tab_delivery").click(function(){
+      $(".only_delivery").show();
+      $(this).addClass("active");
+      $('.tab_pickup').removeClass("active");
+    });
+    $(".tab_pickup").click(function(){
+      $(".only_delivery").hide();
+      $(this).addClass("active");
+      $('.tab_delivery').removeClass("active");
+    });
   });
 </script>
 {% endblock %}

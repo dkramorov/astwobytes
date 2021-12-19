@@ -1,0 +1,9 @@
+apparmor_status
+systemctl stop apparmor
+systemctl disable apparmor
+
+apt remove --assume-yes --purge apparmor
+
+swapoff -v /swap.img
+
+This will also remove snapd. Only proceed if you don't use snapd to manage your packages. Reinstalling snapd will also install AppArmor as dependency. 

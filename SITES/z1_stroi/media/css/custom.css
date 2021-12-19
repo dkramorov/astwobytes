@@ -554,6 +554,11 @@ a:hover .btn-play,
   margin: 0;
   padding: 0 0 30px 0;
 }
+@media (min-width: 768px) {
+    .footermenu ul {
+      padding-top: 56px;
+    }
+}
 /* jopacart */
 .cart_steps {
   margin-top: 20px;
@@ -773,4 +778,74 @@ section.links ul li.active a {
 }
 .products.listview .availability {
   color: #999;
+}
+.products.listview .add_to_compare_btn {
+  display: none;
+}
+.products.listview .add_to_compare_btn.line {
+  display: block;
+  font-size: 12px;
+  white-space: nowrap;
+  color: #000;
+}
+.footer-meta .apps ul {
+    display: inline-block;
+    padding: 0;
+    margin: -10px 0 0 0;
+    line-height: 1;
+}
+.footer-meta .apps ul li {
+    float: left;
+    display: block;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.subscribe p{
+  padding: 0;
+  margin: 0;
+}
+.subscribe .title {
+  font-weight: bold;
+  font-size: 120%;
+}
+.widget .ptype li {
+  float: none;
+  display: block;
+}
+.widget .price table {
+  width: 100%;
+}
+.widget .price td.spacer {
+  width: 20px;
+}
+.widget .price td.price {
+  border-bottom: 1px solid #ccc;
+}
+.widget .price_from,
+.widget .price_to {
+  border: 0;
+  width: 80px;
+}
+.widget .price,
+.widget .brand,
+.widget .availability {
+  margin: 30px 0;
+}
+.widget .price h4,
+.widget .brand h4,
+.widget .availability h4 {
+  color: #333;
+}
+#popup-feedback .modal-dialog,
+#popup-buy1click .modal-dialog {
+  background-color: #fff;
+  padding: 20px;
+}
+
+.oneclick_info {
+  border: 1px solid #ccc;
+}
+.oneclick_info div{
+  padding: 20px;
+  border-left: 3px solid #ffe187;
 }

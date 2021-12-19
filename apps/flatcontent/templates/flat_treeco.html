@@ -29,7 +29,7 @@ $(document).ready(function(){
   {% endfor %}
   var root_url = '{% url "flatcontent:tree_co" %}';
   var flat_tree = $("#flat_tree");
-  //$.jstree.defaults.search.ajax = true;
+  $.jstree.defaults.search.ajax = true;
 
   // Для ссылки на редактирование блока нужна ссылка
   var current_edit_form_link = '{% url "flatcontent:edit_block" ftype row.id "edit" "000" %}';
@@ -111,19 +111,22 @@ $(document).ready(function(){
         return true;
       }
     },
+
     "search": {
       "show_only_matches": false,
       "case_sensitive": false,
-/*
+/* AJAX SEARCH */
       ajax: {
         "url": root_url + "?container_id={{ row.id }}&operation=search",
         "type": "get",
         "data": function (str) {
-          return { "str": str };
+          return {
+            "str": str,
+          };
         }
       }
-*/
     },
+
     "contextmenu": {
       "items": function($node) {
         var tree = flat_tree.jstree(true);
@@ -394,6 +397,8 @@ $(document).ready(function(){
       $("#current_edit_form").attr("action", row['url_edit']);
     });
   });
+
+  /* Поиск offline/ajax */
   var searching = false;
   $("#flat_tree_search").keyup(function () {
     if (!searching) {
@@ -406,6 +411,7 @@ $(document).ready(function(){
       }, 500);
     }
   });
+
 
 /* Можно сделать, чтобы jstree ездило
    со скроллом, но надо учесть, что у нас он

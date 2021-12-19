@@ -1178,7 +1178,48 @@ def tree_co(request):
             else:
                 result = {'error': True}
 
+        if request.GET['operation'] == 'search':
+            q = request.GET['str']
+            cats = []
+            ids = []
+            result = []
+            if q and len(q) >= 2:
+                ids = jstree_search(q, container)
+
+            if ids:
+                cats = Blocks.objects.filter(pk__in=ids)
+                for cat in cats:
+                    if cat.parents:
+                        parents = cat.parents.split('_')
+                        for parent in parents:
+                            if parent and not parent == '1':
+                                if not parent in result:
+                                    result.append(parent)
+                if result:
+                    result.insert(0, 'container_%s' % container.id)
+
     return JsonResponse(result, safe=False)
+
+def jstree_search(q: str, container):
+    """Поиск id блоков по q для jstree ajax search
+       :param q: поисковая фраза
+       :param container: родительский контейнер
+    """
+    q_array = q.split(' ')
+    cond = Q()
+
+    for item in q_array:
+        if not item:
+            continue
+        cond.add(Q(Q(name__icontains=item)|Q(tag__icontains=item)), Q.AND)
+    query = Blocks.objects.filter(container=container)
+
+    if q.isdigit():
+        search_blocks = query.filter(Q(cond) | Q(pk=q)).values_list('id', flat=True)
+    else:
+        search_blocks = query.filter(cond).values_list('id', flat=True)
+    return [x for x in search_blocks]
+
 
 def head_fill(block, q_string):
     """Заполнение мета-тегов и заголовка в q_string"""

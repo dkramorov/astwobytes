@@ -762,6 +762,14 @@ find_active_sidebar_menu();
     "dont_reset_on_submit": 1, // or 1
     //"errorClass": "invalid",
   });
+
+  jQuery.ajax({
+    type: "GET",
+    url: "/get_captcha/",
+    success: function(result){
+      $("td.captcha_img").html("<img src='/media/captcha/" + result['captcha'] + ".png' />");
+    }
+  });
 /*
   if($("#portfolio_mini_menu_container").length > 0 && portfolio_mini_menu){
     var html = "<ul class='primary-menu-menu'>";

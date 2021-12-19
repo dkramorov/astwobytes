@@ -13,6 +13,8 @@ from apps.main_functions.files import make_folder, drop_folder, open_file
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.files import open_file, ListDir, check_path, copy_file
 from apps.main_functions.functions import object_fields
+from apps.main_functions.fortasks import search_process
+from apps.telegram.telegram import TelegramBot
 from apps.addresses.models import Address
 
 from djapian.forindex import hershin
@@ -31,6 +33,28 @@ default_folder = settings.MEDIA_ROOT
 MAX_VARCHAR = 250
 by = 250
 
+def build_slider_for_app(tag: str = 'app_slider'):
+    """Сформировать по ссылкам слайдер
+       берем только jpg,
+       ложим только 1.jpg, 2.jpg,
+       чтобы ничего не нарушать в приложении
+       :param tag: тег контейнера и по совместительству папка
+    """
+    if check_path(tag):
+        make_folder(tag)
+    blocks = Blocks.objects.filter(container__state__in=(3, ),
+                                   container__tag=tag,
+                                   img__isnull=False).exclude(img__startswith='http')
+    cur_ind = 0
+    for block in blocks:
+        if block.img and block.img.endswith('.jpg'):
+            source = os.path.join(block.get_folder(), block.img)
+            if check_path(source):
+                continue
+            cur_ind += 1
+            dest = os.path.join(tag, '%s.jpg' % cur_ind)
+            copy_file(source, dest)
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
         # Named (optional) arguments
@@ -45,9 +69,24 @@ class Command(BaseCommand):
             type = str,
             default = False,
             help = 'Set cat tag for update')
+        parser.add_argument('--only_slider',
+            action = 'store_true',
+            dest = 'only_slider',
+            default = False,
+            help = 'Build only slider images')
 
     def handle(self, *args, **options):
         started = time.time()
+
+        is_running = search_process(q = ('app_archive', 'manage.py'))
+        if is_running:
+            logger.info('Already running %s' % (is_running, ))
+            exit()
+
+        build_slider_for_app()
+        if options.get('only_slider'):
+            return
+
         app_json_folder = 'app_json'
 
         version = 1
@@ -55,9 +94,7 @@ class Command(BaseCommand):
         if not check_path(version_file):
             with open_file(version_file, 'r', encoding='utf-8') as f:
                 version = int(json.loads(f.read())['version'])
-
-        drop_folder(app_json_folder)
-        make_folder(app_json_folder)
+        TelegramBot().send_message('Обновление запущено, версия %s' % version)
 
         json_file = os.path.join(app_json_folder, 'companies_db_helper.json')
 
@@ -68,12 +105,16 @@ class Command(BaseCommand):
         fill_branches(json_obj)
         fill_contacts(json_obj)
 
+        drop_folder(app_json_folder)
+        make_folder(app_json_folder)
+
         with open_file(json_file, 'w+', encoding='utf-8') as f:
             f.write(json.dumps(json_obj))
         with open_file(version_file, 'w+', encoding='utf-8') as f:
             f.write(json.dumps({
                 'version': version + 1
             }))
+        TelegramBot().send_message('Обновление завершено, версия %s=>%s' % (version, version+1))
 
         #fp = full_path(app_folder)
         #tar = search_binary('tar')
@@ -177,10 +218,15 @@ def fill_orgs(json_obj: dict):
             if org.img and not org.img.startswith('http'):
                 logo = os.path.join(org.get_folder(), org.img)
 
+            imga = None
+            if org.img_view:
+                imga = os.path.join(org.get_folder(), org.img_view)
+
             obj = {
                 'id': org.id,
                 'name': org.name,
                 'logo': logo,
+                'img': imga,
                 'resume': org.resume,
                 'branches': branches_count.get(org.id),
                 'phones': phones_count.get(org.id),
@@ -287,6 +333,7 @@ def fill_catalogue(json_obj: dict):
                 'icon': cat.icon,
                 'count': orgs_count[cat.id],
                 'search_terms': search_terms,
+                'position': cat.position,
             }
             #print(json_pretty_print(obj))
             json_obj['catalogue'].append(obj)

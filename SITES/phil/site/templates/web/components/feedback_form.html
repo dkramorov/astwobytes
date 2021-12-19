@@ -1,24 +1,37 @@
 <form class="widget login" action="/feedback/" method="POST" id="feedback_form">
   {% csrf_token %}
   {% for block in containers.main.tags.right_panel.sub %}
+
     {% ifequal block.tag 'name' %}
-      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="name" data-msg="Enter your name" autocomplete="off">
+      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="name" data-msg="Enter your name">
     {% endifequal %}
     {% ifequal block.tag 'email' %}
-      <input class="input-standard-white email required" placeholder="{{ block.description }}" type="text" name="email" data-msg="Enter correct email" autocomplete="off">
+      <input class="input-standard-white email required" placeholder="{{ block.description }}" type="text" name="email" data-msg="Enter correct email">
     {% endifequal %}
     {% ifequal block.tag 'phone' %}
-      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="phone" data-msg="Enter your phone" autocomplete="off">
+      <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="phone" data-msg="Enter your phone">
     {% endifequal %}
     {% ifequal block.tag 'qq' %}
-      <input class="input-standard-white" placeholder="{{ block.description }}" type="text" name="qq" autocomplete="off">
+      <input class="input-standard-white" placeholder="{{ block.description }}" type="text" name="qq">
     {% endifequal %}
     {% ifequal block.tag 'contacts' %}
-      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="contacts" autocomplete="off"></textarea>
+      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="contacts"></textarea>
     {% endifequal %}
     {% ifequal block.tag 'description' %}
-      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="description" autocomplete="off"></textarea>
+      <textarea class="input-standard-white" placeholder="{{ block.description }}" name="description"></textarea>
     {% endifequal %}
+
+    {% ifequal block.tag 'captcha' %}
+      <table style='border:0;'>
+        <tr>
+          <td class="captcha_img"></td>
+          <td>
+            <input class="input-standard-white required" placeholder="{{ block.description }}" type="text" name="captcha" autocomplete="off">
+          </td>
+        </tr>
+      </table>
+    {% endifequal %}
+
     {% ifequal block.tag 'attach' %}
       <div class="upload_file_title">{{ block.description }}</div>
       <div class="upload_file_info">jpg, doc, png, pdf, xls</div>

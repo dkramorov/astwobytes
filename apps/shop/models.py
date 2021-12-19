@@ -182,6 +182,8 @@ class OrdersDelivery(Standard):
     address = models.CharField(max_length=255,
         blank=True, null=True,
         verbose_name='Адрес строкой')
+    additional_data = models.TextField(blank=True, null=True,
+        verbose_name='json ина с доп данными')
 
     class Meta:
         verbose_name = 'Магазин - Доставка заказа'

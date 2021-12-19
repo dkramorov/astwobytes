@@ -2,22 +2,26 @@
 import time
 import datetime
 import os
+import random
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 
-from apps.main_functions.files import (check_path,
-                                       make_folder,
-                                       full_path,
-                                       drop_folder,
-                                       drop_file,
-                                       imageThumb,
-                                       extension,
-                                       catch_file,
-                                       open_file,
-                                       imagine_image,
-                                       grab_image_by_url, )
+from apps.main_functions.files import (
+    check_path,
+    make_folder,
+    full_path,
+    drop_folder,
+    drop_file,
+    imageThumb,
+    extension,
+    catch_file,
+    open_file,
+    imagine_image,
+    grab_image_by_url,
+    create_captcha,
+)
 from apps.main_functions.problem32folders import get_smart_folder
 
 class Standard(models.Model):
@@ -268,3 +272,100 @@ class Tasks(Standard):
         else:
             super(Tasks, self).save(*args, **kwargs)
 
+class Captcha(models.Model):
+    """Капча от бота
+    """
+    value = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Сгенерированная строка')
+
+    def get_folder(self):
+        """Путь к папке с капчами,
+           капча всегда называется id.png
+        """
+        path_to_save = 'captcha'
+        if check_path(path_to_save):
+            make_folder(path_to_save)
+        return path_to_save
+
+    def get_captcha(self):
+        """Возращаем путь к капче
+           капча всегда называется id.png
+        """
+        if not self.id:
+            return None
+        return os.path.join(self.get_folder(), '%s.png' % self.id)
+
+    def time(self):
+        """Время, чтобы капча не кэшировалась"""
+        return str(time.time()).replace('.', '_')
+
+    def get_for_feedback(self):
+        """Получение ид капчи для проверки
+           на робота в форме обратной связи
+        """
+        enough = 30
+
+        query = Captcha.objects.all()
+        total_captchas = query.aggregate(models.Count('id'))['id__count']
+        if total_captchas > enough:
+            ids = query.values_list('id', flat=True)[:enough]
+            ids = list(ids)
+            random.shuffle(ids)
+            return ids[0]
+        else:
+            new_captcha = Captcha().gen_captcha()
+            return new_captcha.id
+
+    def gen_captcha(self,
+                    alphabet: list = None,
+                    captcha_size: int = 4,
+                    font: str = 'fonts/PerfoCone.ttf',
+                    font_size: int = 26):
+        """Генерирует капчу и возвращает (id, path_to_image)
+           либо, если их скажем больше какого-то количества,
+           можно сразу возвращать готовую
+           :param alphabet: символы из которых будем делать капчу
+           :param size: количество символов в изображении
+           :param font: путь к шрифту в static
+           :param font_size: размер шрифта
+        """
+        result = ''
+
+        value, img = create_captcha(
+            alphabet,
+            captcha_size,
+            font,
+            font_size,
+        )
+
+        new_captcha = Captcha.objects.create(value=value)
+        img_name = '%s.png' % new_captcha.id
+        fname = full_path(os.path.join(new_captcha.get_folder(), img_name))
+        img.save(fname, 'PNG')
+        return new_captcha
+
+    def check_captcha(self, captcha_id: str, user_value: str):
+        """Верификация проверочного кода
+           Например,
+           В POST должен прийти id капчи
+           В POST должен прийти digits,
+           введенный пользователем
+
+           :param captcha_id: ид каптчи
+           :param user_value: значение, переданное пользователем
+        """
+        captcha_id = '%s' % captcha_id
+        if not captcha_id.isdigit():
+            return False
+        captcha = Captchas.objects.filter(pk=captcha_id).first()
+        if captcha and captcha.value == user_value:
+            return True
+        return False
+
+    def delete(self, *args, **kwargs):
+        """OVERRIDE DELETE METHOD"""
+        path = self.get_captcha()
+        if path:
+            drop_file(path)
+        super(Captcha, self).delete(*args, **kwargs)

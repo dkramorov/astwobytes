@@ -1,0 +1,14 @@
+{% load mtags %}
+<div class="row products grid gridview">
+  {% for product in products %}
+    {% include "web/cat/grid_item.html" %}
+    {% cycle '' '' '<div class="clearfix"></div>' %}
+  {% endfor %}
+</div>
+
+<div class="products list hidden listview">
+  {% for product in products %}
+    {% include "web/cat/list_item.html" %}
+  {% endfor %}
+</div>
+{% if paginator %}{{ paginator|safe }}{% endif %}

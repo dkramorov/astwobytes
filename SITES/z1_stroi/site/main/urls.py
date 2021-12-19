@@ -33,5 +33,6 @@ urlpatterns = [
     path('shop/cart/', views.show_cart, name='show_cart'),
     path('shop/checkout/', views.checkout, name='checkout'),
     url('^shop/order/(?P<order_id>[0-9]{1,11})/$', views.show_order, name='show_order'),
+    url('payment/(?P<provider>sbrf)/(?P<action>success|fail)/$', views.payment, name='payment'),
 ]
 

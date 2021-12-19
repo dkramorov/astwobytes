@@ -22,46 +22,7 @@
             {% sidebar_cats request %}
           </div>
         </div>
-{% comment %}<!--
-        <div class="widget widget-colors">
-          <h4 class="widget-title">Colors</h4>
-          <div class="widget-content">
-            <ul>
-              <li><a href="#"><span style="background-color: #ffffff"></span></a></li>
-              <li><a href="#"><span style="background-color: #161618"></span></a></li>
-              <li><a href="#"><span style="background-color: #e74c3c"></span></a></li>
-              <li><a href="#"><span style="background-color: #783ce7"></span></a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="widget widget-filter-price">
-          <h4 class="widget-title">Price</h4>
-          <div class="widget-content">
-            <div id="slider-range"></div>
-            <input type="text" id="amount" readonly />
-            <button class="btn btn-theme">Filter</button>
-          </div>
-        </div>
--->{% endcomment %}
-        {% for container in page.containers %}
-          {% if 'sidebar_' in container.container.tag %}
-            {% flatcontent request page container.container.tag %}
-          {% endif %}
-        {% endfor %}
-{% comment %}<!--
-        <div class="widget widget-tag-cloud">
-          <a class="btn btn-theme btn-title-more" href="#">See All</a>
-          <h4 class="widget-title"><span>Tags</span></h4>
-          <ul>
-            <li><a href="#">Fashion</a></li>
-            <li><a href="#">Jeans</a></li>
-            <li><a href="#">Top Sellers</a></li>
-            <li><a href="#">E commerce</a></li>
-            <li><a href="#">Hot Deals</a></li>
-          </ul>
-        </div>
--->{% endcomment %}
+        {% include "web/cat/filters.html" %}
       </aside>
       <div class="col-md-9 content" id="content">
         {% flatcontent request page 'slider2' %}
@@ -112,20 +73,9 @@
           </div>
         </div>
 
-        <div class="row products grid gridview">
-          {% for product in products %}
-            {% include "web/cat/grid_item.html" %}
-            {% cycle '' '' '<div class="clearfix"></div>' %}
-          {% endfor %}
+        <div id="products_container">
+          {% include "web/cat/plp.html" %}
         </div>
-
-        <div class="products list hidden listview">
-          {% for product in products %}
-            {% include "web/cat/list_item.html" %}
-          {% endfor %}
-        </div>
-
-        {% if paginator %}{{ paginator|safe }}{% endif %}
       </div>
     </div>
   </div>
@@ -134,6 +84,8 @@
 
 {% block extrascripts %}
 <script type="text/javascript" src="/static/js/cat.js"></script>
+<script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+
 {% if search_terms %}
 <script type="text/javascript" src="/static/js/jquery.mark.min.js"></script>
 <script type="text/javascript">
@@ -178,6 +130,82 @@
       $(".products.listview").removeClass("hidden");
       $("#listview").addClass("active");
     });
+
+    $("#facet_filters").ajaxForm({
+      beforeSubmit: showLoading,
+      success: showResponse,
+    });
+    function showLoading() {
+      $("#products_container").html("Пожалуйста, подождите");
+    }
+    function showResponse(r, statusText, xhr, $form){
+      $("#products_container").html(r['plp']);
+      $("#my_paginator").html(r['my_paginator']['total_records'] + " " + r['my_paginator']['ends']);
+    }
+    $.ajax({
+      type: "GET",
+      url: '{% url "products:facet_filters" page.id %}',
+      //data: 'search_facet=1', // все пока что
+    }).done(function(r){
+      //console.log(r);
+      var html = "";
+      var name = "";
+      var values_length;
+      var container = $("#facet_filters");
+      container.html("");
+
+      for(var key in r){
+
+        if(typeof(r[key]) == "boolean"){
+          continue;
+        }
+        values_length = r[key]['values'].length;
+        if(values_length < 2){
+          continue;
+        }
+        html += '<div class="widget-content">';
+        name = r[key]['name'];
+        if(r[key]['measure'] && r[key]['measure'].length > 0){
+          name += ", " + r[key]['measure'];
+        }
+        html += '<h4>' + name + '</h3>';
+        html += '<ul class="ptype">';
+        for(var i=0; i<values_length; i++){
+          //html += '<li><a>' + r[key]['values'][i]['value'] + '</a></li>';
+          html += '<label><input id="prop_' + key + '_' + r[key]['values'][i]['id'] + '" type="checkbox" name="prop_' + key + '" value="' + r[key]['values'][i]['id'] + '" autocomplete="off" /> ' + r[key]['values'][i]['value'] + '</label><br>';
+        }
+        html += '</ul>';
+        html += '</div>';
+      }
+      html += '<div class="text-center hidden"><button class="contact-form-btn mt-35" type="submit" value="1" name="ff"> Найти</button></div>';
+
+      container.html(html);
+
+      {% if q_string.q.ff %}
+        $("#show_facet_filters").click();
+        {% for key, value in facet_filters.items %}
+          {% for item in value %}
+            $("#prop_{{ key }}_{{ item }}").prop('checked', 'checked');
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+
+      $("#facet_filters input[type='checkbox']").change(function(){
+        $("#facet_filters button[type='submit']").click();
+      });
+
+    }).fail(function(){
+    });
+
+
+
+    {% for product in products %}
+      quantity_listener("{{ product.id }}",
+                        $("#qbuttons_{{ product.id }} .prod-plus"),
+                        $("#qbuttons_{{ product.id }} .prod-minus"),
+      );
+    {% endfor %}
+
   });
 </script>
 {% endblock %}

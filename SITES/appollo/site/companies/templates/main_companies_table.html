@@ -6,7 +6,14 @@
 {% block content %}
 {% include "core/forms/default_create.html" %}
 
+<a class="btn btn-primary pull-right mr" href="{% url 'companies:update_app' %}" id="update_app_action">
+  <em class="fa fa-plus-circle fa-fw mr-sm"></em>
+  <span>Обновить бд приложения</span>
+</a>
+
+
 {% include "core/title/page_title_table.html" %}
+
 {% include "core/breadcrumbs.html" %}
 {% include "core/tabulator_table.html" %}
 {% endblock %}
@@ -114,6 +121,28 @@ $(document).ready(function(){
         select.dispatchEvent(new Event('changed'));
       });
     }
+  });
+  $("#update_app_action").click(function(e){
+    e.preventDefault();
+    $("#update_app_action").hide();
+    var status = 'success';
+    $.notify({
+      message: 'Запущено обновление бд приложения, ждите окончания операции...',
+    },{
+      status: status,
+    });
+
+    $.ajax({
+      type: 'GET',
+      url: $("#update_app_action").attr('href'),
+    }).done(function(r) {
+      $.notify({
+        message: 'Обновление бд приложения выполнено',
+      },{
+        status: status,
+      });
+      $("#update_app_action").show();
+    });
   });
 });
 </script>

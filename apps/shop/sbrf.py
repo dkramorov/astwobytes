@@ -10,12 +10,22 @@ logger = logging.getLogger('main')
 
 class SberPaymentProovider():
     """Сбербанк эквайринг
+
        Тестовый личный кабинет - https://3dsec.sberbank.ru/mportal3
        Боевой личный кабинет - https://securepayments.sberbank.ru/mportal3
 
        https://securepayments.sberbank.ru/wiki/doku.php/integration:api:start
        https://securepayments.sberbank.ru/wiki/doku.php/integration:simple
        https://securepayments.sberbank.ru/wiki/doku.php/mportal3:auth
+
+       Тестовые банковские карты
+       https://securepayments.sberbank.ru/wiki/doku.php/test_cards
+       VISA:
+           Номер карты 	4111 1111 1111 1111
+           Дата истечения срока действия 2024/12
+           Проверочный код на обратной стороне 123
+           3-D Secure veres=y, pares=y
+           Проверочный код 3-D Secure 12345678 
     """
     def __init__(self):
         self.api_url = 'https://securepayments.sberbank.ru/payment/rest/'

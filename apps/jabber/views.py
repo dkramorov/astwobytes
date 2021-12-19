@@ -22,6 +22,7 @@ from apps.main_functions.views_helper import (show_view,
                                               search_view, )
 
 from apps.main_functions.files import (check_path,
+                                       open_file,
                                        make_folder,
                                        imageThumb,
                                        extension,
@@ -30,8 +31,10 @@ from apps.main_functions.files import (check_path,
 from apps.jabber.models import Registrations, FirebaseTokens
 
 EJABBERD_LOCAL = 'https://127.0.0.1:5443'.rstrip('/')
-FIREBASE_SERVER_KEY_8800 = 'AAAA6p6J3i8:APA91bEY6_SxH2vh-yiyqYY3UmPrKktbHohMFHhTVV38zfeYAKI6PDExh77IW6MiTFRaYobsy8oeSBmgMi0xs9YtEmXmnNo4X10j1dzcvMgrowZoH1hinzAsIJlZEedfpbM_nqz8-ULW'
-FIREBASE_SERVER_KEY_223 = 'AAAA2qpHlwc:APA91bGgP-wP2qxq3G7NEZgoH2WYmEzqM2tmcES97c5_Mj6_I8eE9fedMILjI1HycKj_dx8TkubsVvSM82OLMMf7JNErhN722oXLiiAGq6NNnlMe_uVEWaXRc98s-SRcoIg_71AwrMmb'
+
+all_settings = settings.FULL_SETTINGS_SET
+FIREBASE_SERVER_KEY_8800 = all_settings['FIREBASE_SERVER_KEY_8800']
+FIREBASE_SERVER_KEY_223 = all_settings['FIREBASE_SERVER_KEY_223']
 
 CUR_APP = 'jabber'
 registrations_vars = {
@@ -51,6 +54,25 @@ registrations_vars = {
     'model': Registrations,
     #'custom_model_permissions': Registrations,
 }
+
+def get_jabber_users(request):
+    """Отдаем пользователей джаббера, например, для свича,
+       чтобы он мог завести их в directory
+    """
+    result = []
+    token = request.headers.get('token') or request.GET.get('token') or request.POST.get('token')
+    if not token == settings.FS_TOKEN:
+        return JsonResponse({'error': 'bad token'}, safe=False)
+    registrations = Registrations.objects.filter(is_active=True).values('phone', 'passwd')
+    for registration in registrations:
+        phone = kill_quotes(registration['phone'], 'int')
+        if not phone or not len(phone) == 11 or not registration['passwd']:
+            continue
+        result.append({
+            'phone': phone,
+            'passwd': registration['passwd'],
+        })
+    return JsonResponse(result, safe=False)
 
 @login_required
 def show_registrations(request, *args, **kwargs):
@@ -200,11 +222,13 @@ def register_user(request):
             platform = method.get('platform')
             version = method.get('version')
             passwd = method.get('passwd')
+            name = method.get('name')
 
             # Заносим пользователя как отключенного (is_active=False)
             analog = Registrations(is_active=False)
             analog.phone = phone
             analog.code = code
+            analog.name = name if name else phone
             analog.platform = platform
             analog.version = version
             analog.passwd = passwd
@@ -247,34 +271,62 @@ def register_user(request):
             analog.save()
 
             result = object_fields(analog, pass_fields=('passwd', 'code'))
+            # Инкремент версии в связи с новой регистрацией
+            update_fs_users_db_version()
+
             # Делаем запрос на реальную регистрацию пользователя
-            r = requests.post('%s/api/register' % EJABBERD_LOCAL, json={'user': analog.phone, 'host': settings.JABBER_DOMAIN, 'password': analog.passwd}, verify=False)
-            try:
-                # Добавляем пользователя на свич
-                save_user2fs(analog.phone)
+            # https://docs.ejabberd.im/developer/ejabberd-api/admin-api/
+            reg_result = reg_user_on_jabber(analog.phone, analog.passwd)
+            status_code = reg_result['code']
+            result['result'] = reg_result['msg']
 
-                json_data = r.json()
-            except Exception as e:
-                json_data = None
-                result['json_parse_error'] = True
-                print(e)
-
-            if json_data:
-                result['result'] = json_data
-                # '{"status":"error","code":10090,"message":"User 89148959223@anhel.1sprav.ru already registered"}'
-                if isinstance(json_data, dict) and json_data['code'] == 10090:
-                    r = requests.post('%s/api/change_password' % EJABBERD_LOCAL, json={'user': analog.phone, 'host': settings.JABBER_DOMAIN, 'newpass': analog.passwd}, verify=False)
-                    if r.text == '0':
-                        status_code = 201 # Пароль изменен
-            else:
-                result['result'] = r.text
     return JsonResponse(result, safe=False, status=status_code)
+
+def reg_user_on_jabber(phone: str, passwd: str):
+    """Регистрация пользователя на джаббере,
+       либо смена пароля, если пользователь имеется
+       :param phone: телефон
+       :param passwd: пароль
+    """
+    r = requests.post('%s/api/register' % EJABBERD_LOCAL, json={'user': phone, 'host': settings.JABBER_DOMAIN, 'password': passwd}, verify=False)
+    try:
+        reg_obj = r.json()
+    except Exception as e:
+        reg_obj = None
+    if reg_obj:
+        if 'code' in reg_obj and reg_obj['code'] == 10090:
+            r = requests.post('%s/api/change_password' % EJABBERD_LOCAL, json={'user': phone, 'host': settings.JABBER_DOMAIN, 'newpass': passwd}, verify=False)
+            if r.text == '0':
+                return {
+                    'msg': 'Пароль пользователя %s успешно изменен' % phone,
+                    'code': 201,
+                }
+        elif 'successfully registered' in reg_obj:
+            return {
+                'msg': 'Пользователь %s успешно зарегистрирован' % phone,
+                'code': 200,
+            }
+
+def update_fs_users_db_version():
+    """Записываем новую версию для пользователей свича
+       свич сам заберет эту новую версию и если она
+       действительно новая, тогда инициируем обновление
+       пользователей и перезапуск свича
+    """
+    fs_users_db_version_path = 'fs_users_db_version.json'
+    if check_path(fs_users_db_version_path):
+        version = 1
+    else:
+        with open_file(fs_users_db_version_path, 'r', encoding='utf-8') as f:
+            content = json.loads(f.read())
+        version = int(content['version']) + 1
+    with open_file(fs_users_db_version_path, 'w+', encoding='utf-8') as f:
+        f.write(json.dumps({'version': version}))
+    return version
 
 @csrf_exempt
 def test_notification(request, skey: str = None):
-    """Апи-метод для отправки пуша
-       TODO: сравнивать айпишники,
-       чтобы пуши не могли подделать
+    """Апи-метод для отправки уведомления (пуша)
        :param skey: серверный ключ firebase для отправки сообщения
     """
     result = {}
@@ -336,7 +388,7 @@ def test_notification(request, skey: str = None):
         },
         # one recipient
         #'to': to_token,
-        'registration_ids': tokens, # many recipient
+        'registration_ids': tokens, # many recipients
         'click_action': 'FLUTTER_NOTIFICATION_CLICK',
     }
 
@@ -364,45 +416,12 @@ def test_notification(request, skey: str = None):
         result['fail'] = 'tokens not found'
     return JsonResponse(result, safe=False)
 
+
 def get_registered_users():
     """Получение списка всех зарегистрированных пользователей
     """
     r = requests.post('%s/api/registered_users' % EJABBERD_LOCAL, json={'host': settings.JABBER_DOMAIN}, verify=False)
     return r.json()
-
-def save_users2fs():
-    """Сохранить/обновить всех пользователей ejabberd
-       на сервере телефонии
-    """
-    users = get_registered_users()
-    if not isinstance(users, (list, tuple)):
-        print('error: users is not list %s' % users)
-        return
-    for user in users:
-        save_user2fs(user)
-
-def save_user2fs(username: str):
-    """После регистрации и/или подтверждения номера,
-       надо на свиче синхануть пользователя
-       Пользователи сайта /freeswitch/admin/personal_users/
-       Обновление происходит по userkey
-       телефон_домен - в таком формате шлем пользователя
-       :param username: логин пользователя (например, 89999999999)
-    """
-    endpoint = '/freeswitch/personal_users/sync/'
-    user_at_domain = '%s_%s' % (username, settings.JABBER_DOMAIN)
-    params = {
-        'userkey': user_at_domain,
-        'username': user_at_domain,
-        'phone': username,
-        'phone_confirmed': 10,
-    }
-    headers = {
-        'token': settings.FS_TOKEN,
-    }
-    r = requests.post('https://%s%s' % (settings.FREESWITCH_DOMAIN, endpoint), data=params, headers=headers)
-    #print('save user2fs %s' % user_at_domain)
-
 
 @csrf_exempt
 def vcard(request):

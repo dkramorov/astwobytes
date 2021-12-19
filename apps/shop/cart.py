@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import logging
+import json
 from django.conf import settings
 
 from apps.personal.models import Shopper, get_personal_user
@@ -9,7 +10,7 @@ from apps.flatcontent.flatcat import get_costs_types
 from apps.main_functions.string_parser import get_request_ip, summa_format
 from apps.main_functions.catcher import check_email, check_phone
 
-from apps.shop.models import Orders, Purchases, PromoCodes
+from apps.shop.models import Orders, Purchases, PromoCodes, OrdersDelivery
 
 logger = logging.getLogger('main')
 
@@ -163,13 +164,16 @@ def create_shopper(request):
     request.session['shopper'] = shopper.to_dict()
     return shopper
 
-def create_new_order(request, shopper, cart, comments: str = None):
+def create_new_order(request, shopper, cart, comments: str = None,
+                     delivery_additional_fields: dict = None):
     """Оформление заказа пользователем,
        нажатие кнопки на сайте Оформить заказ
        :param request: HttpRequest
        :param shopper: покупатель
        :param cart: корзинка пользователя
        :param comments: комментарий к заказу (доп инфа)
+       :param delivery_additional_fields: дополнительные поля в доставку,
+                                          например, ['up2floor', 'floor']
     """
     if not shopper or not cart or not shopper.id:
         return {}
@@ -205,6 +209,28 @@ def create_new_order(request, shopper, cart, comments: str = None):
             setattr(shopper, field, value)
         shopper_data[field] = value
 
+    # Данные по доставке
+    delivery_fields = (
+        'time',
+        'address', # подъем на этаж
+        'latitude',
+        'longitude',
+    )
+    # Доставка
+    delivery_data = {}
+    additional_data = {}
+
+    for field in delivery_fields:
+        value = request.POST.get(field)
+        if value:
+            delivery_data[field] = value
+    if not delivery_additional_fields:
+        delivery_additional_fields = []
+    for field in delivery_additional_fields:
+        value = request.POST.get(field)
+        if value:
+            additional_data[field] = value
+
     save_user_to_request(request, shopper)
 
     email = check_email(shopper_data['email'])
@@ -234,6 +260,13 @@ def create_new_order(request, shopper, cart, comments: str = None):
             state=2,
             comments=comments,
         )
+        if delivery_data or additional_data:
+            delivery = OrdersDelivery(order=new_order)
+            for key, value in delivery_data.items():
+                setattr(delivery, key, value)
+            delivery.additional_data = json.dumps(additional_data)
+            delivery.save()
+
         purchases = cart.get('purchases')
         for purchase in purchases:
             Purchases.objects.filter(pk=purchase.id).update(order=new_order, cost=purchase.cost)

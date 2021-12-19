@@ -116,6 +116,13 @@ def edit_order(request, action: str, row_id: int = None, *args, **kwargs):
     context['state_choices'] = Orders.state_choices
     template = '%sedit.html' % (mh.template_prefix, )
 
+    # Доставка на заказ
+    if row:
+        delivery = row.ordersdelivery_set.all().first()
+        if delivery:
+            delivery.additional_data = json.loads(delivery.additional_data)
+        context['delivery'] = delivery
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':

@@ -23,6 +23,13 @@
           </div>
 
           <div class="form-group">
+            <label class="col-lg-2 control-label">Имя пользователя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Имя пользователя" class="form-control name" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+
+          <div class="form-group">
             <label class="col-lg-2 control-label">Пароль</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Пароль" class="form-control" name="passwd" value="{% if row.passwd %}{{ row.passwd }}{% endif %}" autocomplete="off" data-parsley-required>

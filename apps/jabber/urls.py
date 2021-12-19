@@ -24,4 +24,6 @@ urlpatterns = [
     path('test_notification/', views.test_notification, name='test_notification'),
     path('vcard/', views.vcard, name='vcard'),
     url('^notification/(?P<app_id>[0-9]{1,11})/$', views.notification, name='notification'),
+
+    path('get_jabber_users/', views.get_jabber_users, name='get_jabber_users'),
 ]

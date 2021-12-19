@@ -36,7 +36,7 @@
 {% ifequal tag "bottommenu" %}
 {% for menu in menus %}
   <div class="col-md-3">
-    <div class="widget widget-categories">
+    <div class="widget{% comment %} widget-categories{% endcomment %}">
       <h4 class="widget-title">{{ menu.name }}</h4>
       <ul>
         {% for item in menu.sub %}
@@ -58,3 +58,12 @@
 </div>
 -->{% endcomment %}
 {% endifequal %}
+{% if tag == "footermenu" or tag == "footermenu2" %}
+  <div class="widget{% comment %} widget-categories{% endcomment %} footermenu">
+    <ul>
+      {% for menu in menus %}
+        <li><a href="{{ menu.link }}">{{ menu.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
