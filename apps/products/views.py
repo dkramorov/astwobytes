@@ -138,6 +138,10 @@ def show_products(request, *args, **kwargs):
             'is_active',
             'position',
         )
+        # Для переопределения получаемых полей
+        if kwargs.get('only_fields') and kwargs['only_fields']:
+            only_fields = kwargs['only_fields']
+
         rows = mh.standard_show(only_fields=only_fields)
 
         ids_products = {row.id: None for row in rows}
@@ -214,7 +218,7 @@ def create_double(product):
             new_imga = os.path.join(new_photo.get_folder(), photo.img)
             copy_file(imga, new_imga)
 
-    # Рубрики
+    # Рубрики (TODO: container?)
     cats = ProductsCats.objects.select_related('cat').filter(product=product)
     for cat in cats:
         ProductsCats.objects.create(product=new_product, cat=cat.cat)
@@ -702,6 +706,7 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
             if value:
                 value = value.strip()
             is_active = request.POST.get('is_active')
+            code = request.POST.get('code')
             prop = PropertiesValues(prop=row)
             if pk:
                 analog = PropertiesValues.objects.filter(pk=pk, prop=row).first()
@@ -715,6 +720,7 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
                     return JsonResponse(result, safe=False)
             prop.str_value = value
             prop.is_active = True if is_active else False
+            prop.code = code
 
             if mh.permissions['edit']:
                 result['success'] = 'Данные успешно записаны'

@@ -43,6 +43,7 @@ def fill_purchases_from_products(purchases, absents):
     """
     PRODUCT_FIELDS = (
         'name',
+        'altname',
         'manufacturer',
         'measure',
         'old_price',
@@ -157,14 +158,14 @@ def get_shopper(request, guest_enter: bool = False):
 def create_shopper(request):
     """Создание пользователя
        :param request: HttpRequest
-       :param shopper: словарь пользователя
     """
     shopper = get_shopper(request, guest_enter=True)
     shopper = Shopper.objects.create(ip=shopper.ip, name=shopper.name)
     request.session['shopper'] = shopper.to_dict()
     return shopper
 
-def create_new_order(request, shopper, cart, comments: str = None,
+def create_new_order(request, shopper, cart,
+                     comments: str = None,
                      delivery_additional_fields: dict = None):
     """Оформление заказа пользователем,
        нажатие кнопки на сайте Оформить заказ
@@ -215,6 +216,7 @@ def create_new_order(request, shopper, cart, comments: str = None,
         'address', # подъем на этаж
         'latitude',
         'longitude',
+        'cost', # стоимость доставки
     )
     # Доставка
     delivery_data = {}

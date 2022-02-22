@@ -1,0 +1,41 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<section class="page-section color confirmed">
+  <div class="container">
+    {% if action == 'fail' %}
+      <h3>Произошла ошибка при попытке оплаты, пожалуйста, сообщите нам по телефону</h3>
+    {% endif %}
+    {% if action == 'success' %}
+      <h3>Оплата успешно прошла</h3>
+      <div class="btn-theme center">
+        <ul>
+          <li>
+            <span>
+              <a target="_blank" class="btn" href="{% url 'main:pdf_order' order.id %}">Ваш полис (PDF)</a>
+            </span>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+    <h3>Заказ № {% if order.number %}{{ order.number }}{% else %}{{ order.id }}{% endif %} на сумму {{ order.total|money_format }} ₽ от {{ order.created|date:'d-m-Y H:i:s' }}</h3>
+
+    <div class="text-center">Ссылка для этого заказа: <a href="{% url 'main:checkout' %}?order_id={{ order.id }}">Ссылка на заказ</a></div>
+
+  </div>
+</section>
+<br><br>
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+
+{% endblock %}
+
+{% block subscribe %}{% endblock %}
+
+{% block extrascripts %}
+{% endblock %}

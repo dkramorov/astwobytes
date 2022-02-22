@@ -17,9 +17,6 @@ all_settings = settings.FULL_SETTINGS_SET
 FIREBASE_SERVER_KEY_8800 = all_settings['FIREBASE_SERVER_KEY_8800']
 FIREBASE_SERVER_KEY_223 = all_settings['FIREBASE_SERVER_KEY_223']
 
-TOKEN_DROID_959223 = 'fUIbEaDuTeqI16yWE97h5m:APA91bGRwOxrFjID2_IB2GxbY-uHUvLsNzE9SVa9ZkHP5c1z_cyyiHVEV5LK3590ZN4nWg-gClHuYO2enwdPjKjJcACMWJpXfzoPeozti1scd7BNNj750RoTRsi0K8su2G8PnS1ExtL1'
-
-TOKEN_IOS_959223 = 'dPNG8CWNYUP-jxyYI3dqLU:APA91bGosyPkq7GvTm1JStg8YMqdhGapg-BlFYQlQVxza803kufH_XXnhr9cvKqo9Icvxl5ixFhnMV3hBpdRuphexfApuYGFJlUA_OrD0cvmIR2t9krlSOEYSwtQN1VncAz81_aU9Nk6'
 
 def send_push_notification(token):
     """Тест пушь уведомления
@@ -82,10 +79,9 @@ def send_data_notification(token):
 
     tokens = [token]
 
-    to_jid = '89148959223'
-    from_jid = '89016598623'
+    to_jid = '89016598623'
+    from_jid = '89148959223'
     msg_body = 'test for background activity'
-    name = '8 (901) 659-86-23'
 
     url = 'https://fcm.googleapis.com/fcm/send'
     data = {
@@ -93,7 +89,9 @@ def send_data_notification(token):
         'data': {
             'sender': from_jid,
             'receiver': to_jid,
+            'name': 'Den Kramorov',
             'badge': 10,
+            'action': 'call',
         },
         'content_available': True,
         'priority': 'high',
@@ -124,11 +122,12 @@ class Command(BaseCommand):
             dest = 'push',
             default = False,
             help = 'Send push notification')
-        parser.add_argument('--ios',
-            action = 'store_true',
-            dest = 'ios',
+        parser.add_argument('--token',
+            action = 'store',
+            type = str,
+            dest = 'token',
             default = False,
-            help = 'Set ios token')
+            help = 'Set token')
     def handle(self, *args, **options):
         """Тестирования пуш уведомления и дата уведомления
         """
@@ -136,9 +135,12 @@ class Command(BaseCommand):
         if is_running:
             logger.error('Already running %s' % (is_running, ))
             exit()
-        token = TOKEN_DROID_959223
-        if options.get('ios'):
-            token = TOKEN_IOS_959223
+
+        if options.get('token'):
+            token = options['token']
+        else:
+            logger.error('Token required')
+            exit()
 
         if options.get('push'):
             send_push_notification(token)

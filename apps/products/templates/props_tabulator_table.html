@@ -128,6 +128,7 @@ function edit_on_fly(cell){
       //props: main_table.getData(),
       id: data.id,
       value: data.name,
+      code: data.code,
       is_active: data.is_active ? 1 : '',
     },
   }).done(function(r) {
@@ -140,6 +141,7 @@ function edit_on_fly(cell){
       cell.getRow().update({
         'id': r['row']['id'],
         'name': r['row']['str_value'],
+        'code': r['row']['code'],
         'position': r['row']['position'],
         'is_active': r['row']['is_active'],
         'actions': r['row']['id'],

@@ -91,6 +91,7 @@ def sidebar_cats(request, tag: str = None):
         tag = tag,
         cache_time = 60,
         with_count = True,
+        fat_hier = 10000,
     )
     result['request'] = request
     return result

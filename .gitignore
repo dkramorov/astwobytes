@@ -127,3 +127,4 @@ xapian64/lib
 xapian64/share
 xapian64/site-packages/xapian
 
+SITES/greenfarm/db.sql

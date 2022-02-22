@@ -16,7 +16,7 @@ from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view, )
 
-from .models import Address
+from .models import Address, Polygon
 
 CUR_APP = 'addresses'
 addresses_vars = {
@@ -105,3 +105,59 @@ def search_addresses(request, *args, **kwargs):
         result['pagination'] = {'more': True}
     return JsonResponse(result, safe=False)
 
+polygons_vars = {
+    'singular_obj': 'Полигон',
+    'plural_obj': 'Полигоны',
+    'rp_singular_obj': 'полигона',
+    'rp_plural_obj': 'полигонов',
+    'template_prefix': 'polygons_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'addresses',
+    'submenu': 'polygons',
+    'show_urla': 'show_polygons',
+    'create_urla': 'create_polygon',
+    'edit_urla': 'edit_polygon',
+    'model': Polygon,
+    #'custom_model_permissions': Address,
+}
+
+
+@login_required
+def show_polygons(request, *args, **kwargs):
+    """Вывод объектов
+       :param request: HttpRequest
+    """
+    return show_view(request,
+                     model_vars = polygons_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = None, )
+
+@login_required
+def edit_polygon(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование объекта
+       :param request: HttpRequest
+       :param action: действие над объектом (создание/редактирование/удаление)
+       :param row_id: ид записи
+    """
+    extra_vars = {
+        'yandex_maps_api_key': settings.YANDEX_MAPS_API_KEY,
+    }
+    return edit_view(request,
+                     model_vars = polygons_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = extra_vars, )
+
+@login_required
+def polygons_positions(request, *args, **kwargs):
+    """Изменение позиций объектов
+       :param request: HttpRequest
+    """
+    result = {}
+    mh_vars = polygons_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
+    result = mh.update_positions()
+    return JsonResponse(result, safe=False)

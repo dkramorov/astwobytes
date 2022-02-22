@@ -198,7 +198,7 @@ def get_catalogue_lvl(request,
        :param force_new: получить каталог без кэша
     """
     result = []
-    if not container_id or not isinstance(container_id, int):
+    if not container_id or not container_id.isdigit():
         return []
     if not cat_id:
         menus = Blocks.objects.filter(container=container_id, parents='').order_by('position')
@@ -353,6 +353,11 @@ def get_facet_filters(request):
         except ValueError:
             continue
         values = request.GET.getlist(k)
+
+        # Если значение пустое, то лучше пропустить
+        if not values or (len(values) == 1 and not values[0]):
+            continue
+
         if not key in facet_filters:
             facet_filters[key] = []
 
@@ -362,6 +367,7 @@ def get_facet_filters(request):
             except ValueError:
                 continue
             facet_filters[key].append(value)
+
     if not facet_filters:
         return {}
     # Тут не получится собрать AND/OR запросами,

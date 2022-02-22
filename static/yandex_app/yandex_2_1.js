@@ -6,6 +6,9 @@
 var myMaps = [];
 var current_map_id = null;
 var irkutsk_coords = [52.286387, 104.28066];
+if (window.yandex_maps_coords != undefined) {
+    irkutsk_coords = window.yandex_maps_coords;
+}
 
 // --------------------------
 // Демо функция как загрузить
@@ -568,7 +571,36 @@ function search_by_coords(mapContainer, coords) {
   });
 }
 
+function add_polygon2map(myMap, coords_arr) {
+  /* Включить рисование полигона
+     :param myMap: объект карты new ymaps
+     :param coords_arr: массив координат многоугольника
+  */
+  if (typeof(coords_arr) == "undefined") {
+    coords_arr = [];
+  }
+  var myPolygon = new ymaps.Polygon(coords_arr, {}, {
+    editorDrawingCursor: "crosshair", // Курсор в режиме добавления новых вершин
+    //editorMaxPoints: 5, // Максимально допустимое количество вершин
+    fillColor: '#00FF00', // Цвет заливки
+    strokeColor: '#0000FF', // Цвет обводки
+    strokeWidth: 2, // Ширина обводки
+    opacity: 0.3,
+    interactivityModel: 'default#transparent', // Делаем полигон прозрачным для событий карты
+  });
+  // Добавляем многоугольник на карту.
+  myMap.geoObjects.add(myPolygon);
 
+  // В режиме добавления новых вершин меняем цвет обводки многоугольника.
+  var stateMonitor = new ymaps.Monitor(myPolygon.editor.state);
+  stateMonitor.add("drawing", function (newValue) {
+      myPolygon.options.set("strokeColor", newValue ? '#FF0000' : '#0000FF');
+  });
+
+  // Включаем режим редактирования с возможностью добавления новых вершин.
+  // myPolygon.editor.startDrawing();
+  return myPolygon;
+}
 
 
 // UNUSED

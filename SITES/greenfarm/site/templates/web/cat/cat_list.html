@@ -51,6 +51,11 @@
       transform: rotate(360deg);
     }
   }
+  .jstree-anchor {
+    height: 24px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
 <script type="text/javascript">window.cat_id = {{ page.id }};</script>
 {% endblock %}
@@ -123,6 +128,7 @@
             </a>
           </div>
         {% endif %}
+        <h1>{{ page.name }}</h1>
         {% if page.html %}{{ page.html|safe }}<br />{% endif %}
 
         <a href="javascript:void(0);" id="show_facet_filters">Показать фильтры</a>
@@ -235,7 +241,7 @@
         }
         html += '<div class="sidebar col-md-3">';
         name = r[key]['name'];
-        if(r[key]['measure'].length > 0){
+        if(r[key]['measure'] && r[key]['measure'].length > 0){
           name += ", " + r[key]['measure'];
         }
         html += '<h3 class="sidebar-title">' + name + '</h3>';

@@ -1,0 +1,61 @@
+{% load mtags %}
+
+<!-- Форма помощник -->
+<div id="survey_container">
+  <div id="top-wizard">
+    <strong>Процесс <span id="location"></span></strong>
+    <div id="progressbar"></div>
+    <div class="shadow"></div>
+  </div>
+
+  <form name="example-1" id="wrapped" action="" method="POST">
+    <div id="middle-wizard">
+      <div class="step">
+        <div class="row">
+          <h3 class="col-md-10">Оформить заявку</h3>
+          <div class="col-md-6">
+            <ul class="data-list">
+              <li><input type="text" name="firstname" class="required form-control" placeholder="Ваше имя"></li>
+              <li><input type="text" name="phone" class="required phone form-control" placeholder="Ваш телефон"></li>
+             <li><input type="email" name="email" class="required form-control" placeholder="Ваш email"></li>
+             <input id="website" name="website" type="hidden" value="" ><!-- Leave for security protection, read docs for details -->
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="data-list">
+              <li><textarea name="comments" rows="3" cols="3" class="required form-control" placeholder="Введите информацию"></textarea></li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4">
+            <ul class="data-list" id="terms">
+              <li>
+                <strong>Вы принимаете<a href="#" data-toggle="modal" data-target="#terms-txt"> соглашение по обработке персональных данных</a> ?</strong>
+                <label class="switch-light switch-ios ">
+                  <input type="checkbox" name="terms" class="required fix_ie8" value="yes">
+                  <span>
+                    <span class="ie8_hide">Нет</span>
+                    <span>Да</span>
+                  </span>
+                  <a></a>
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit step" id="complete">
+        <i class="icon-check"></i>
+        <h3>Заявка заполнена! Спасибо за ответы.</h3>
+        <button type="submit" name="process" class="submit">Отправить заявку</button>
+      </div>
+    </div>
+
+    <div id="bottom-wizard">
+      <button type="button" name="backward" class="backward">Назад</button>
+      <button type="button" name="forward" class="forward">Дальше </button>
+    </div>
+  </form>
+</div>

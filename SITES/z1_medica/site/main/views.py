@@ -18,7 +18,7 @@ from apps.personal.utils import save_user_to_request, remove_user_from_request
 from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
 from apps.shop.models import Orders
-from apps.shop.sbrf import SberPaymentProovider
+from apps.shop.sbrf import SberPaymentProvider
 
 CUR_APP = 'main'
 main_vars = {
@@ -349,7 +349,7 @@ def checkout(request):
             if order:
                 template = 'web/order/confirmed.html'
                 context['order'] = order
-                sber = SberPaymentProovider()
+                sber = SberPaymentProvider()
                 order_status = sber.get_order_status(order.external_number, order.id)
                 context['order_status'] = order_status
     # -----------------------------------------
@@ -374,7 +374,7 @@ def checkout(request):
             'email': shopper.email,
             'phone': shopper.phone,
         }
-        sber = SberPaymentProovider()
+        sber = SberPaymentProvider()
         register_order = sber.register_do(**params)
         context.update(register_order)
         # ------------------------
@@ -431,7 +431,7 @@ def payment(request, provider: str, action: str):
         order_id = request.GET['orderId']
         order = Orders.objects.filter(shopper=shopper, external_number=order_id).first()
         if order:
-            sber = SberPaymentProovider()
+            sber = SberPaymentProvider()
             order_status = sber.get_order_status(order.external_number, order.id)
             context['order_status'] = order_status
             context['order'] = order

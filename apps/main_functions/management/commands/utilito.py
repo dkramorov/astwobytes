@@ -121,6 +121,11 @@ class Command(BaseCommand):
             type = str,
             default = False,
             help = 'Unblock ip address')
+        parser.add_argument('--project_name',
+            action = 'store_true',
+            dest = 'project_name',
+            default = False,
+            help = 'Show project name')
 
     def handle(self, *args, **options):
         # domain => punycode
@@ -154,3 +159,6 @@ class Command(BaseCommand):
             search_ip = options.get('block_ip') or options.get('unblock_ip')
             action = 'block_ip' if options.get('block_ip') else 'unblock_ip'
             iptables_action(action, search_ip)
+
+        if options.get('project_name'):
+            print(settings.PROJECT_NAME)

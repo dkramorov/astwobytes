@@ -1,0 +1,458 @@
+{% extends "core/base.html" %}
+{% load mtags %}
+{% block extrahead %}
+<link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
+<link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
+<style type="text/css">
+  #product_properties .select2 {
+    margin-top: 10px;
+    padding: 0 5px;
+  }
+  #product_properties .select2-selection__arrow {
+    margin-right: 10px;
+  }
+  table.gallery tr td.first,
+  table.gallery tr td.last {
+    padding: 0;
+    text-align: center;
+    padding-bottom: 6px;
+  }
+  table.gallery tr td {
+    border-top: 0;
+  }
+  .col-masonry {
+    border: 1px solid #ccc;
+  }
+  .col-masonry .img-thumbnail {
+    display: block;
+    margin: 0 auto;
+    background-color: transparent;
+    border: 0;
+  }
+  table.gallery tr td input {
+    width: 100%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if row %}
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm" href="{{ row.link }}">
+    <em class="fa fa-eye fa-fw mr-sm"></em> Просмотр
+  </a>
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm" href="{% url 'products:edit_product' 'copy' row.id %}">
+    <em class="fa fa-copy fa-fw mr-sm"></em> Дублировать
+  </a>
+{% endif %}
+
+{% include "core/title/page_title_edit.html" %}
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          {% include "core/forms/row_name.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Код товара</label>
+            <div class="col-lg-10">
+              <input type="text" step="0.01" placeholder="Код товара" class="form-control" name="code" value="{% if row.code %}{{ row.code }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Привязанные категории -->
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Привязанные категории</label>
+            <div class="col-lg-10">
+              <select id="cats_select2" name="cats" autocomplete="off" multiple>
+                {% for item in cats %}
+                  <option value="{{ item.cat.id }}" selected>{{ item.cat.container.name }} #{{ item.cat.container.id }} >{% for parent in item.parents %} {{ parent.name }} #{{ parent.id }} >{% endfor %} {{ item.cat.name }} #{{ item.cat.id }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Альт. название</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Альт. название" class="form-control" name="altname" value="{% if row.altname %}{{ row.altname }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Производитель</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Производитель" class="form-control" name="manufacturer" value="{% if row.manufacturer %}{{ row.manufacturer }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Единица измерения</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Единица измерения" class="form-control" name="measure" value="{% if row.measure %}{{ row.measure }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Перечеркнутая цена</label>
+            <div class="col-lg-10">
+              <input type="number" step="0.01" placeholder="Перечеркнутая цена" class="form-control" name="old_price" value="{% if row.old_price %}{{ row.old_price }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Цена</label>
+            <div class="col-lg-10">
+              <input type="number" step="0.01" placeholder="Цена" class="form-control" name="price" value="{% if row.price %}{{ row.price }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          {% include "products_prices/products_cost_types.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Период страхования (в месяцах)</label>
+            <div class="col-lg-10">
+              <input type="number" step="1" placeholder="Период страхования (в месяцах)" class="form-control" name="count" value="{% if row.count %}{{ row.count }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Страховая программа</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Страховая программа" class="form-control" name="stock_info" value="{% if row.stock_info %}{{ row.stock_info }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Страховая выплата</label>
+            <div class="col-lg-10">
+              <input type="number" step="1" placeholder="Страховая выплата" class="form-control required" name="min_count" value="{% if row.min_count %}{{ row.min_count }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Кратность (шаг по добавляемому кол-ву)</label>
+            <div class="col-lg-10">
+              <input type="number" step="1" placeholder="Кратность (шаг по добавляемому кол-ву)" class="form-control" name="multiplicity" value="{% if row.multiplicity %}{{ row.multiplicity }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Краткое описание</label>
+            <div class="col-lg-10">
+              <textarea class="form-control" name="mini_info" id="html_mini_info">{% if row.mini_info %}{{ row.mini_info }}{% endif %}</textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Описание</label>
+            <div class="col-lg-10">
+              <textarea class="form-control" name="info" id="html_info">{% if row.info %}{{ row.info }}{% endif %}</textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Ключевые слова</label>
+            <div class="col-lg-10">
+              <textarea class="form-control" name="dj_info">{% if row.dj_info %}{{ row.dj_info }}{% endif %}</textarea>
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <strong>SEO, статьи</strong>
+            </div>
+            <div class="panel-body">
+              {% include "products_menus/products_menu_links.html" %}
+            </div>
+          </div>
+          {% include "core/forms/row_image.html" %}
+          {% include "products_gallery/product_photos.html" %}
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if row %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">Свойства товара</div>
+      <div class="panel-body" id="product_properties">
+        <div id="product-props-table"></div>
+      </div>
+      <div class="panel-footer">
+        <div class="col-lg-6 col-sm-6 padding-tb5">
+          <button type="button" class="btn btn-labeled btn-info" id="add_product_property">
+            <span class="btn-label"><i class="fa fa-plus"></i></span>Добавить свойство
+          </button>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extrascripts %}
+<div id="ajax_drop_photo" tabindex="-1" role="dialog" aria-labelledby="myModalLabelPhoto" aria-hidden="true" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
+        <h4 id="myModalLabelPhoto" class="modal-title">{{ action_drop }} фото из галереи товара</h4>
+      </div>
+      <div class="modal-body">Вы уверены, что хотите удалить фото id=<span id="ajax_drop_photo_id"></span><span class="hidden" id="ajax_drop_photo_ind"></span>?</div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
+        <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_photo_button">Да</button>
+      </div>
+    </div>
+  </div>
+</div>
+<form class="hidden" method="get" action="{{ root_url }}" id="current_drop_photo_form">{% csrf_token %}</form>
+
+<script src="/static/redactor/jquery.browser.js"></script>
+<script src="/static/redactor/redactor.js"></script>
+<script src="/static/admin/js/parsley.min.js"></script>
+{% if row %}
+  {% include "products_props/props_tabulator_table.html" %}
+  {% include "products_props/props_scripts.html" %}
+{% endif %}
+<script type="text/javascript">
+  // ---------------
+  // Обновление фото
+  // ---------------
+  function update_photo_name_listeners(){
+    $(".update_photo_name").each(function(){
+      if($(this).hasClass("touched")){
+        return;
+      }
+      $(this).addClass("touched");
+      $(this).click(function(){
+        var urla = "{% url 'products:edit_photo' 'update' 0 %}";
+        var photo_id = $(this).attr("data-photo_id");
+        urla = urla.replace("/0/", "/" + photo_id + "/");
+        var name = $("#photo_name_" + photo_id).val();
+        $.ajax({
+          type: "POST",
+          url: urla,
+          data: {
+            csrfmiddlewaretoken: getCookie('csrftoken'),
+            name: name,
+          },
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+          }
+          $.notify({
+            message: msg,
+          },{
+           status: status,
+          });
+        });
+      });
+    });
+  }
+  function prepare_for_drop_photo(pk, row_index){
+    $("#ajax_drop_photo_id").html(pk);
+    $("#current_drop_photo_form").attr("action", "{{ root_url }}photos/drop/" + pk + "/");
+  }
+  $(document).on("keypress", function(e) {
+    // ------------------------------------
+    // Подтверждение удаления фото по Enter
+    // ------------------------------------
+    if(e.which == 13) {
+      if($("#ajax_drop_photo").hasClass("in")){
+        $("#ajax_drop_photo").modal('hide');
+        $("#ajax_drop_photo_button").click();
+      }
+    }
+  });
+  $(document).ready(function(){
+    update_photo_name_listeners();
+    // -------------
+    // Удаление фото
+    // -------------
+    $('#ajax_drop_photo_button').click(function(){
+      var pk = $('#ajax_drop_photo_id').html();
+      var $form = $('#current_drop_photo_form');
+      var msg = 'Произошла ошибка, сообщите администратору';
+      var status = 'danger';
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          // Удаляем блок с фото
+          $("#photo_index_" + pk).remove();
+        }
+        $.notify({
+          message: msg,
+        },{
+         status: status,
+        });
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+    });
+    $("#current_edit_form").parsley();
+    $("#current_edit_form").submit(function(e) {
+      var $form = $(this);
+      var msg = 'Произошла ошибка, обновите страничку';
+      var status = 'danger'; // success, warning, info, danger
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          //$("#current_edit_form").attr("action", r.redirect);
+          {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+        }
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+        // Обновление ссылок
+        update_links(r);
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+      //отмена действия по умолчанию для кнопки submit
+      e.preventDefault();
+    });
+    function update_links(r){
+      // Обновление фотки
+      if(r['row']['is_gallery']){
+        // Добавление фотки в галерею
+        update_gallery_links(r);
+      }else{
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img_full").attr("href", r['row']['imagine'] + "?_=" + Date.now());
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      update_photo_name_listeners();
+    }
+    $("#html_mini_info").redactor({
+      //air: true,
+    });
+    $("#html_info").redactor({
+      fixed: true,
+      fixedTop: 60,
+    });
+    $('#cats_select2').select2({
+      placeholder: 'Какие категории привязать',
+      width: '100%',
+      //tags: true,
+      ajax: {
+        delay: 150,
+        url: "{% url 'flatcontent:search_blocks' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            only_cats: 1,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        //data: "only_cats=1",
+        cache: false,
+        dataType: 'json',
+      }
+    });
+    {% if row %}
+      var progressbar = $('#progressbar-files'),
+        bar         = progressbar.find('.progress-bar-files'),
+        settings    = {
+          action: '{% url "products:edit_product" "img" row.id %}', // upload url
+          allow : '*.*',
+          param: 'img',
+          params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+          // Загрузка в галерею, если выбрана опция
+          before: function(o) {
+            o.params['2gallery'] = $("#add2gallery_checkbox").prop('checked') ? 1 : '';
+          },
+          loadstart: function() {
+            bar.css('width', '0%').text('0%');
+            progressbar.removeClass('hidden');
+          },
+          progress: function(percent) {
+            percent = Math.ceil(percent);
+            bar.css('width', percent+'%').text(percent+'%');
+          },
+          allcomplete: function(response) {
+            bar.css('width', '100%').text('100%');
+            setTimeout(function(){
+              progressbar.addClass('hidden');
+            }, 750);
+            // Upload Completed
+          },
+          complete: function(response) {
+            // Обновление ссылок
+            var r = JSON.parse(response);
+            update_links(r);
+          }
+        };
+      var select = new $.upload.select($('#upload-select-files'), settings),
+          drop   = new $.upload.drop($('#upload-drop-files'), settings);
+    {% endif %}
+
+    $('#linkcontainer_select2').select2({
+      placeholder: 'Какие странички привязать',
+      width: '100%',
+      //tags: true,
+      ajax: {
+        url: "{% url 'flatcontent:search_containers' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            without_templates: 1,
+            without_menus: 1,
+            without_main: 1,
+            without_seo_prices: 1,
+            without_cats: 1,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        //data: "without_templates=1&without_menus=1&without_main=1",
+        cache: false,
+        dataType: 'json',
+      }
+    });
+
+    $(".menus_toggle").click(function(){
+      if($(".linked_menus").hasClass("hidden")){
+        $(".linked_menus").removeClass("hidden");
+      }else{
+        $(".linked_menus").addClass("hidden");
+      }
+    });
+
+  });
+</script>
+{% endblock %}

@@ -184,6 +184,7 @@
             <div class="col-md-12 only_delivery">
               <div class="form-group">
                 <input type="text" class="form-control" name="address" value="{% if shopper_data.address %}{{ shopper_data.address }}{% endif %}" placeholder="Ваш адрес" id="address_from_map">
+                <input type="hidden" name="cost" value="" id="delivery_cost" />
               </div>
             </div>
 
@@ -363,13 +364,13 @@
                 </tr>
                 <tr>
                   <td>Доставка:</td>
-                  <td>-</td>
+                  <td class="delivery_cost">-</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td>Итого:</td>
-                  <td>{{ cart.total_with_discount|money_format }} ₽</td>
+                  <td id="cart_total_with_discount">{{ cart.total_with_discount|money_format }} ₽</td>
                 </tr>
               </tfoot>
             </table>
@@ -420,13 +421,15 @@
 </script>
 
 <script type="text/javascript">
+  var cart_total_with_discount = {{ cart.total_with_discount }};
+  var polygons = [];
   var myMapContainer = "mapContainer";
   $(document).ready(function(){
     $("#confirm_order_button").click(function(){
       $("#confirm_order_action").click();
     });
     var kwargs = {};
-    kwargs['default_town'] = "Иркутск"; // TODO Задать в настройках и передавать в шаблон
+    kwargs['default_town'] = ""; // TODO Задать в настройках и передавать в шаблон
     kwargs['search_address_by_click'] = 1;
     kwargs['after_search'] = function(placemark) {
       placemark.balloon.open();
@@ -434,7 +437,8 @@
     kwargs['search_result_to_form_title'] = 'Выбрать этот адрес';
     kwargs['search_result_to_form'] = function(ind){
       var myMap = get_map(myMapContainer);
-
+      var myPolygon;
+      var result = false;
       console.log("search_result_to_form ", ind, myMap.search_results);
 
       var meta_data = myMap.search_results[ind].properties.get("metaDataProperty.GeocoderMetaData");
@@ -444,10 +448,25 @@
       $("#address_latitude").val(coords[0]);
       $("#address_longitude").val(coords[1]);
       $("#address_from_map").val(address);
+      $("#delivery_cost").val("");
+      $(".delivery_cost").html("");
+      $("#cart_total_with_discount").html("{{ cart.total_with_discount|money_format }} ₽");
+      for(var i=0; i<polygons.length; i++){
+        result = (polygons[i].geometry.contains(coords));
+        if (result) {
+          $("#delivery_cost").val(polygons[i].cost);
+          console.log(result, polygons[i].cost);
+          $(".delivery_cost").html(polygons[i].cost + " ₽");
+          var total = parseFloat(polygons[i].cost) + parseFloat(cart_total_with_discount)
+          $("#cart_total_with_discount").html(total + " ₽");
+        }
+      }
+
     }
 
     create_new_map(myMapContainer);
     wait_for_result(myMapContainer, function(){
+      var polygon;
       var myMap = get_map(myMapContainer);
       disable_map_wheel(myMapContainer);
       myMap.kwargs = kwargs;
@@ -461,6 +480,15 @@
         var myPoint = {"type": "Feature", "id": (myMap.search_results.length + myMap.myPoints.length), "geometry": {"type": "Point", "coordinates": coords}, "properties": {"balloonContent": "<p>{{ address|quotes2apostrophe }}</p>", "clusterCaption": "Адрес", "hintContent": "<p>{{ address|quotes2apostrophe }}</p>"}};
         myMap.myPoints.push(myPoint);
         add_points_to_map(myMapContainer, [myPoint]);
+      {% endif %}
+      {% if polygons %}
+        {% for polygon in polygons %}
+          {% if polygon.data %}
+            polygon = add_polygon2map(myMap, {{ polygon.data }});
+            polygon.cost = '{{ polygon.cost }}';
+            polygons.push(polygon);
+          {% endif %}
+        {% endfor %}
       {% endif %}
     }, ["map"]);
 

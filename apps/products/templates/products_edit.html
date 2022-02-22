@@ -111,7 +111,12 @@
               <input type="number" step="1" placeholder="Кол-во" class="form-control" name="count" value="{% if row.count %}{{ row.count }}{% endif %}" autocomplete="off">
             </div>
           </div>
-
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Информация об остатках</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Информация об остатках" class="form-control" name="stock_info" value="{% if row.stock_info %}{{ row.stock_info }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">Мин кол-во для заказа</label>
             <div class="col-lg-10">

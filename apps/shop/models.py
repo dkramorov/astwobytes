@@ -183,7 +183,9 @@ class OrdersDelivery(Standard):
         blank=True, null=True,
         verbose_name='Адрес строкой')
     additional_data = models.TextField(blank=True, null=True,
-        verbose_name='json ина с доп данными')
+        verbose_name='jsonина с доп данными')
+    cost = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Цена доставки')
 
     class Meta:
         verbose_name = 'Магазин - Доставка заказа'

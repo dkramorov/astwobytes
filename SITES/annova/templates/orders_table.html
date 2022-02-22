@@ -1,0 +1,162 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm ml-sm" href="{% url 'main:orders_report' %}">
+    <em class="fa fa-copy fa-fw mr-sm"></em> Отчет по заказам
+  </a>
+
+{% include "core/forms/default_create.html" %}
+
+{% include "core/title/page_title_table.html" %}
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script type="text/javascript">
+var main_table = null;
+$(document).ready(function(){
+
+  var state_choices = {
+    "": "Без фильтра",
+    {% for state_choice in state_choices %}
+      {{ state_choice.0 }}: "{{ state_choice.1 }}",
+    {% endfor %}
+  };
+
+  var promocodeFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    return data['promocode'] ? data['promocode']['code']  : '';
+  };
+
+  var stateFormatter = function(cell, formatterParams, onRendered){
+    var pk = cell.getValue();
+    return state_choices[pk];
+  };
+
+  var actionsOrderFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var rowIndex = row.getIndex();
+    var pk = cell.getValue();
+    var data = row.getData();
+    var actions = "<div class='padding-rl5'>";
+
+    actions += " <a class='btn-xs btn btn-primary pull-left ml' href='{{ root_url }}view/" + pk + "/' target='_blank' title='Просмотр заказа'><i class='fa fa-file-text-o'></i></a> ";
+
+    {% if permissions.edit %}
+      actions += " <a class='btn-xs btn btn-primary pull-left ml' href='{{ root_url }}edit/" + pk + "/'><i class='fa fa-edit'></i></a> ";
+    {% endif %}
+
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right ml' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");'><i class='fa fa-trash'></i></a> ";
+    {% endif %}
+    actions += "</div>";
+    return actions;
+  };
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns:[
+      {% include "core/tabulator_cell/drag.html" %}
+      {% include "core/tabulator_cell/id.html" %}
+      {
+        title: "Дата",
+        field: "created",
+        headerFilterPlaceholder: "Дата",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 150,
+      },
+      {
+        title: "Сумма",
+        field: "total",
+        headerFilterPlaceholder: "Сумма",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 90,
+      },
+      {
+        title: "Оплачено",
+        field: "payed",
+        headerFilterPlaceholder: "Оплачено",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 90,
+      },
+      {
+        title: "Скидка",
+        field: "discount",
+        headerFilterPlaceholder: "Скидка",
+        headerFilter: "input",
+        headerFilterFunc: "=",
+        width: 90,
+      },
+      {
+        title: "Телефон покупателя",
+        field: "shopper_phone",
+        headerFilterPlaceholder: "Телефон покупателя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        width: 150,
+      },
+      {
+        title: "Промокод",
+        field: "promocode__code",
+        headerFilterPlaceholder: "Промокод",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        formatter: promocodeFormatter,
+        width: 90,
+      },
+      {
+        title: "Статус заказа",
+        field: "state",
+        headerFilterPlaceholder: "Статус заказа",
+        headerFilter: true,
+        headerFilterFunc: "=",
+        headerFilterParams: {
+          values: state_choices,
+        },
+        editable: false,
+        editor: "select",
+        formatter: stateFormatter,
+        width: 90,
+      },
+      {
+        title: "Действия",
+        field: "actions",
+        headerSort: false,
+        formatter: actionsOrderFormatter,
+        width: 160,
+        download: false,
+      },
+    ],
+  });
+
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "created"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "right top",
+        todayButton: new Date(),
+      });
+    }else if($(this).attr("tabulator-field") === "created"){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        todayButton: new Date(),
+      });
+    }
+  });
+
+});
+</script>
+{% endblock %}

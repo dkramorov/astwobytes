@@ -1,0 +1,28 @@
+{% load mtags %}
+
+<div class="row">
+  <div class="col-md-12">
+  <h3>
+    {% if container.name %}{{ container.name }}{% endif %}
+    {% if container.description %}
+      <span>{{ container.description|safe }}</span>
+    {% endif %}
+  </h3>
+  </div>
+</div>
+{% for cont in blocks|assembleby:3 %}
+<div class="row">
+  {% for block in cont %}
+    <div class="col-md-4">
+      <div class="question_box">
+        {% if block.name %}<h3>{{ block.name }}</h3>{% endif %}
+        {% if block.html %}
+          {{ block.html|safe }}
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+<div class="divider"></div>

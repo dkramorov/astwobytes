@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<head lang="en">
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Annova Survey Template</title>
+	<!-- Framework CSS -->
+	<link rel="stylesheet" href="assets/blueprint-css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="assets/blueprint-css/print.css" type="text/css" media="print">
+	<!--[if lt IE 8]><link rel="stylesheet" href="assets/blueprint-css/ie.css" type="text/css" media="screen, projection"><![endif]-->
+	<link rel="stylesheet" href="assets/blueprint-css/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+	<style type="text/css" media="screen">
+		p, table, hr, .box { margin-bottom:25px; }
+		.box p { margin-bottom:10px; }
+		pre,code { font-family:"Consolas", Courier New, Courier, monospace; padding:15px; background:#f7f7f7; margin:0px 0px 18px; border:1px solid #e5e5e5; line-height:18px; color:#000 }
+code { padding:0px 3px; background-image:none; background:#f5f5f5; border:none }
+pre { white-space:pre-wrap; white-space:-moz-pre-wrap; white-space:-pre-wrap; white-space:-o-pre-wrap; word-wrap:break-word }
+	</style>
+</head>
+
+
+<body>
+	<div class="container">
+	
+		<h3 class="center alt">&ldquo;ANNOVA Survey Template&rdquo; Documentation by &ldquo;Ansonika&rdquo; v1.7</h3>
+		
+		<hr>
+		
+		<h1 class="center">&ldquo;Annova Survey Template&rdquo;</h1>
+		
+		<div class="borderTop">
+			<div class="span-6 colborder info prepend-1">
+				<p class="prepend-top">
+					<strong>
+					Created: 1 December 2013 <br>
+                    Last update: 13 May 2015<br>
+					By: Ansonika<br>
+					Website/support: <a href="http://www.ansonika.com">www.ansonika.com</a>
+				  </strong>
+			  </p>
+		  </div><!-- end div .span-6 -->		
+	
+			<div class="span-12 last">
+				<p class="prepend-top append-0">Thank you for purchasing my theme. If you have any questions that are beyond the scope of this help file, please feel free to email via my user page contact form here. If you are happy with the theme, please <strong><a href="http://themeforest.net/user/Ansonika">TAKE A MOMENT TO RATE IT</a></strong> on the ThemeForest website.
+Thanks so much!</p>
+			</div>
+		</div><!-- end div .borderTop -->
+		
+		<hr>
+        <h3>V1.7 13 May 2015</h3>
+        <ul>
+        	<li>Fixed php script for empty value in "standalone branch" version and "standalone branch advanced" version</li>
+        </ul>
+        <h3>V1.6 30 September 2014</h3>
+        <ul>
+		<li>Improved an antispam protection: spam bots usually disable javascripts to avoid the jquery validation or automatically fill all the input fields and send the email. Now the php submission script link is removed from the html and placed inside the the js script. So if the js will be disabled, the form will be not processed. The js script check also if the hidden input field (id website) is filled by the spam bot...if filled the form will be not processed.<pre>HOW TO UPDATE FROM PREVIOUS VERSIONS:<br>1) Remove from the html form the action link <br>&lt;form id=&quot;custom&quot; action=&quot;&quot; method=&quot;POST&quot; &gt; ...leave it blank.... action=&quot;&quot;
+2) In the html form add the hidden field &lt;input id=&quot;website&quot; name=&quot;website&quot; type=&quot;text&quot; value=&quot;&quot; &gt;<br>with the value empty...and remove the comment beside.
+3) update js/functions.js for each versions of Annova
+4) In css/style.css add this class input#website {display: none;} 	</pre>
+		</li>
+  </ul>
+        
+        <h3>V1.5 15 September 2014</h3>
+        <ul>
+		<li>Fixed Firebug Error (Uncaught TypeError: Cannot read property 'settings' of undefined) that affect on ie8 when focus on the input fields. To update from previous version copy and paste the fixed js/<strong>jquery.validate.js</strong> file into your js folder.</li>
+  		<li>Update this file js/jquery-ui-1.8.22.min.js.</li>
+  </ul>
+        
+           <h3>V1.4 14 March 2014</h3>
+        <ul>
+		<li>New Jquery Tweet Feed that support the new API V1.1: <a href="#modify3">How to udpate from previous version</a></li>
+        <li>Add a confirmation page (plus optional a summary) ...see the php files</li>
+        <li>Fix Backward issue with validation: disable the validation on backward.</li>
+  </ul>
+        
+        <h3>V1.3 31 January 2014</h3>
+        <ul>
+		<li><strong>Complete rewrite Input Switch (YES/NO terms)</strong>: styled and works better; now you can use it also in other steps of the wizards (remember to give a unique id and name if you use multiple of it). <a href="#modify2">How to udpate from previous version</a></li>
+		</ul>
+        
+        <h3>V1.2 18 December 2013</h3>
+        <ul>
+		<li><strong>Branching wizard support ADVANCED: </strong> user see different steps depending on his answers. <a href="#modify">Details</a></li>
+		</ul>
+        
+      <h3>V1.1 12 December 2013</h3>
+        <ul>
+		<li><strong>Branching wizard support: </strong>user see different steps depending on his answers.</li>
+        <li><strong>Incrementer input fixed: </strong>move the plus botton on top.</li>
+		</ul>
+       <hr>
+		
+		<h2 id="toc" class="alt">Table of Contents</h2>
+		<ol class="alpha">
+			<li><a href="#htmlStructure">HTML Structure</a></li>
+			<li><a href="#cssFiles">CSS Files and Structure</a></li>
+<li><a href="#modify">Customize the template</a></li>
+<li><a href="#php">PHP newsltetter form and sign up form</a></li>
+			<li><a href="#javascript">JavaScript</a></li>
+			<li><a href="#psdFiles">PSD Files</a></li>
+			<li><a href="#credits">Sources and Credits</a></li>
+		</ol>
+	  <hr>
+        
+        
+  <h3 id="htmlStructure"><strong>A) HTML Structure</strong> - <a href="#toc">top</a></h3>
+	  <p>This theme has a fixed centered layout 1170px. It's based on Boostrap 3 framework grid.<br />
+	    It' comes with a one page full version with some additional features or a standalone version. There is also a folder with "Honeypot tecnique": <a href="https://www.dexmedia.com/blog/honeypot-technique/">https://www.dexmedia.com/blog/honeypot-technique/ </a> applied in v.1.7.<br />
+	  </p>
+<hr>
+
+	  <h3 id="cssFiles"><strong>B) CSS Files Structure and basic modfication</strong> - <a href="#toc">top</a>	  </h3>
+	  <p>The css files are inside the css folder.</p>
+	  <ol>
+			<li><strong>bootstrap.css</strong>: The framework (not necessary to open/edit)</li>
+            <li><strong>bootstrap.min.css</strong>: The framework  minified (not necessary to open/edit)</li>
+            <li><strong> socialize-bookmarks.css</strong>: Socials Icons</li>
+            <li><strong> font-awesome.css</strong>: Icons</li>
+    <li><strong>jquery.switch.css</strong>: Form switch button style</li>
+    <li><strong> owl.carousel.css/owl.theme.css</strong>: Carousel style (Full version)</li>
+			<li><strong>style.css</strong>: all layout styles (mediaqueries included)</li>
+            	<li><strong>aero.css</strong> (located here: check_radio/skins/square/aero.css): Check and radio input styles</li>
+	  </ol>
+<p> To modify colors, typografy, button style ecc....find the realtive commen line in base.css. Below how the file is organized:</p>
+<p>STYLE.CSS STRUCTURE:<br>
+1. SITE STRUCTURE and TYPOGRAPHY<br>
+2. CONTENT<br>
+3. FORMS<br>
+3. COMMON<br>
+4. MEDIA QUERIES</p>
+<h3 id="modify"><strong>C) Customize the template</strong> - <a href="#toc">top</a>	  </h3>
+<p><strong>Change the logo<br>
+  </strong>To change the logo, simply use your PNG24 file. Keep in mind you have to setup the dimensions of your logo.</p>
+<pre>
+OPEN STYLE.CSS
+
+#logo a{<br>	text-indent:-99999px;<br>	background: url(../img/logo.png) no-repeat 0 0;<br>	display:block;<br>	height:35px;<br>	width:135px;<br>}<br>});
+</pre>
+
+<p><strong><br>
+  Change the main background color</strong><br>
+  Open style.css search for the comment line /** Header ==================== **/.....then modify this class</p>
+  <pre>#top-area {<br>	background-color:#1ab9a7;<br>	height: 500px;<br>}</pre>
+  <br>
+  <p><strong>
+    Add one more step to the wizard</strong><br>
+Each step is defined by a div, so simply duplicate one of them. Below an example of the structure:</p>
+  <pre>&lt;div class=&quot;step&quot;&gt;
+<br>				&lt;div class=&quot;row&quot;&gt;<br>					&lt;h3 class=&quot;col-md-10&quot;&gt;Enter your personal info&lt;/h3&gt;<br>					&lt;div class=&quot;col-md-10&quot;&gt;<br>						.....<br>					&lt;/div&gt;&lt;!-- end col-md-10 --&gt;<br>                <br>				&lt;/div&gt;&lt;!-- end row --&gt;<br>                <br>&lt;/div&gt;&lt;!-- end step--&gt;</pre>
+
+  <p><strong>Make an input field, select or radio/checkbox required or not.</strong><br>
+Simply add or remove the class "required" to the element.<strong><br>
+<br>
+   Add one more question with checkbox answer</strong><br>Open the HTML page. As you can see the name of the input has to be the same with at the end [], each one have a different value. </p>
+  <pre>&lt;h3&gt;How did you hear about our company?&lt;/h3&gt;
+&lt;ul class=&quot;data-list-2&quot;&gt;<br>	&lt;li&gt;&lt;input name=&quot;question_3[]&quot; type=&quot;checkbox&quot; class=&quot;required&quot; value=&quot;Google&quot;&gt;&lt;label&gt;Google&lt;/label&gt;&lt;/li&gt;<br>	&lt;li&gt;&lt;input name=&quot;question_3[]&quot; type=&quot;checkbox&quot; class=&quot;required&quot; value=&quot;A friend&quot;&gt;&lt;label&gt;Friend&lt;/label&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;input name=&quot;question_3[]&quot; type=&quot;checkbox&quot; class=&quot;required&quot; value=&quot;Print&quot;&gt;&lt;label&gt;Print&lt;/label&gt;&lt;/li&gt;
+&lt;/ul&gt;</pre>
+
+Open survey survey_send_1.php and  add the lines of code in bold into the the existing code
+<pre><code>$mail = $_POST['email'];
+
+			/*$subject = "".$_POST['subject'];*/
+			$to = "test@ansonika.com";
+			$subject = "Survey from ANNOVA";
+			$headers = "From: Survey from ANNOVA <noreply@yourdomain.com>";
+			$message = "USER INFO\n";
+			$message .= "\nName: " . $_POST['firstname'];
+			$message .= "\nLast Name: " . $_POST['lastname'];
+			$message .= "\nEmail: " . $_POST['email'];
+			$message .= "\nCountry: " . $_POST['country'];
+			$message .= "\nHow many children: " . $_POST['quantity'];
+			$message .= "\nAge: " . $_POST['age'];
+			$message .= "\nGender: " . $_POST['gender'];
+			$message .= "\nTerms and conditions: " . $_POST['terms'] . "\n";
+			$message .= "\nOverall satisfaction value: " . $_POST['rate'] . "\n";
+			$message .= "\nHow did you heard about our company?\n" ;
+			foreach($_POST['question_1'] as $value) 
+			{ 
+			$message .=   "- " .  trim(stripslashes($value)) . "\n"; 
+			};
+			$message .= "\nDo you think to suggest our company to a friend or parent?: " . $_POST['question_2'];
+			
+			<strong>$message .= "\nYour question?\n" ;
+			foreach($_POST['question_3'] as $value) 
+			{ 
+			$message .=   "- " .  trim(stripslashes($value)) . "\n"; 
+			};</strong>
+
+			$message .= "\nOptional message: " . $_POST['message_suggest_no'];
+			//Receive Variable
+$sentOk = mail($to,$subject,$message,$headers);</code>  </pre>
+<br>
+<p><strong>Branching wizard</strong>: user see different steps depending on his answers.<br>
+First of all start to work on the correct template version...take the standalone_brunch folder. As you can see each branch is defined by the <strong>value</strong> on the first step branch and the <strong>id. </strong>Each branch must have the class="branch". Take care on the last step that is little different.</p>
+  <pre>&lt;div class=&quot;step row&quot; data-state=&quot;branchtype&quot;&gt;<br>&lt;div class=&quot;col-md-10&quot;&gt;<br>&lt;h3&gt;Are you satisfied about the service provided?&lt;/h3&gt;<br>&lt;ul class=&quot;data-list-2&quot; &gt;<br>&lt;li&gt;&lt;input type=&quot;radio&quot; name=&quot;branchtype&quot; value=&quot;<strong>notsatisfied</strong>&quot; id=&quot;NotSatisfied&quot; /&gt;&lt;label&gt;..&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt;&lt;input type=&quot;radio&quot; name=&quot;branchtype&quot; value=&quot;<strong>satisfied</strong>&quot; id=&quot;Satisfied&quot; /&gt;&lt;label&gt;...&lt;/label&gt;&lt;/li&gt;
+&lt;/ul&gt;<br>&lt;/div&gt;
+
+&lt;div class=&quot;branch&quot; id=&quot;<strong>notsatisfied</strong>&quot;&gt;<br>	&lt;div class=&quot;step row&quot; data-state=&quot;end&quot;&gt;<br>	&lt;div class=&quot;col-md-10&quot;&gt;<br> &lt;h3&gt;Why are you not satisfied?&lt;/h3&gt;<br> &lt;ul class=&quot;data-list-2&quot;&gt;<br> &lt;li&gt;&lt;input name=&quot;question_1[]&quot; type=&quot;checkbox&quot; value=&quot;Poor variety of service&quot; class=&quot;required&quot; &gt;..&lt;/li&gt;<br> &lt;li&gt;&lt;input name=&quot;question_1[]&quot; type=&quot;checkbox&quot;  value=&quot;Bad support&quot; class=&quot;required&quot; &gt;..&lt;/li&gt;<br> &lt;/ul&gt;<br> &lt;/div&gt;<br>&lt;/div&gt;<br>&lt;/div&gt;&lt;!-- end step --&gt;
+
+&lt;div class=&quot;branch&quot; id=&quot;<strong>satisfied</strong>&quot;&gt;<br>	&lt;div class=&quot;step row&quot; data-state=&quot;end&quot;&gt;<br>		......<br>&lt;/div&gt;<br>&lt;/div&gt;&lt;!-- end step --&gt;
+
+ &lt;div class=&quot;submit step&quot; id=&quot;<strong>end</strong>&quot;&gt;<br>   	&lt;i class=&quot;icon-check&quot;&gt;&lt;/i&gt;<br>			&lt;h3&gt;Survey complete! Thank you for you time.&lt;/h3&gt;<br>		&lt;button type=&quot;submit&quot; name=&quot;process&quot; class=&quot;submit&quot;&gt;Submit the survey&lt;/button&gt;<br>  &lt;/div&gt;&lt;!-- end submit step --&gt;</pre>
+  <p><strong>
+    Tweet feed settings</strong><br>
+Open jquery.tweetable.js, and set that part of code that you find at the bottom of the page.</p>
+  <pre>// Define plugin defaults<br>	$.fn.tweetable.options = {<br>		limit: 2,                       // Number of tweets to show<br>		username: 'ansonika',         // @username tweets to display<br>		time: true,                    // Display date<br>		rotate: true,                  // Rotate tweets<br>		speed: 5000,                    // Speed of rotation<br>		replies: false,                 // Filter out @replys<br>		position: 'append',             // Append position<br>		failed: &quot;No tweets available&quot;,  // Twitter stream unavailable text<br>		html5: false,                   // HTML5 Support<br>		retweets: false,                // Show retweets<br>		onComplete: function($ul) {}    // On complete callback<br>	};</pre>
+  
+  <p><strong>
+    Branching wizar advanced</strong>: take the files in standalone_branch_advanced as reference.<br>
+In this case after the user fill with the personal info has two questions, then on third start the branch: if select the first option he continue with other questions, if select the second option go to the end of the survey.</p>
+  <pre>&lt;div class=&quot;step row&quot; <strong>data-state=&quot;branchtype&quot;</strong>&gt;<br>&lt;div class=&quot;col-md-10&quot;&gt;<br>&lt;h3&gt;Are you satisfied about the service provided?&lt;/h3&gt;<br>&lt;ul class=&quot;data-list-2&quot; &gt;<br>&lt;li&gt;&lt;input type=&quot;radio&quot; <strong>name=&quot;branchtype&quot;</strong> <strong>value=&quot;notsatisfied&quot;</strong> id=&quot;NotSatisfied&quot; /&gt;&lt;label&gt;---&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt;&lt;input type=&quot;radio&quot; <strong>name=&quot;branchtype&quot;</strong> <strong>value=&quot;satisfied&quot;</strong> id=&quot;Satisfied&quot; /&gt;&lt;label&gt;----&lt;/label&gt;&lt;/li&gt;<br>&lt;/ul&gt;<br>&lt;/div&gt;<br>&lt;/div&gt;&lt;!-- end step question 3 start branch--&gt;
+
+The step where the branch start must have <strong>data-state=&quot;branchtype&quot;</strong>on the step container and the input must<br>have the same name <strong>name=&quot;branchtype&quot;</strong>. <br>
+1) The <strong>value param</strong> define where that option point...the example below is how the first option goes to the<br>notsatified branch:
+
+&lt;div class=&quot;branch&quot; <strong>id=&quot;notsatisfied&quot;</strong>&gt;<br>&lt;div class=&quot;step row&quot; <strong>data-state=&quot;branch-1-step-1&quot;</strong>&gt;<br>&lt;div class=&quot;col-md-10&quot;&gt;<br>&lt;h3&gt;Branch 1 Question 1?&lt;/h3&gt;<br>------<br>&lt;/div&gt;<br>&lt;/div&gt;<br>&lt;/div&gt;&lt;!-- end step question 4 branch1 --&gt;
+
+
+The <strong>data-state=&quot;branch-1-step-1&quot;</strong> define the the next branch question...whre is declared with an id:
+
+&lt;div class=&quot;branch&quot; <strong>id=&quot;branch-1-step-1&quot;</strong>&gt;   <br>&lt;div class=&quot;step row&quot; data-state=&quot;branch-1-step-2&quot;&gt; NEXT STEP<br>&lt;div class=&quot;col-md-10&quot;&gt;<br>&lt;h3&gt;Branch 1 Question 2?&lt;/h3&gt;<br>-----           <br>&lt;/div&gt;<br>&lt;/div&gt;<br>&lt;/div&gt;&lt;!-- end step question 2--&gt;
+
+
+2) The example below it's about if the user select the second option in the branch...so go to the end of<br>the wizard (<strong>value=&quot;satisfied&quot;</strong>):
+
+&lt;div class=&quot;submit step complete&quot; <strong>id=&quot;satisfied&quot;</strong>&gt;<br>&lt;i class=&quot;icon-check&quot;&gt;&lt;/i&gt;<br>&lt;h3&gt;Survey complete! Thank you for you time.&lt;/h3&gt;<br>&lt;button type=&quot;submit&quot; name=&quot;process&quot; class=&quot;submit&quot;&gt;Submit the survey&lt;/button&gt;<br>&lt;/div&gt;&lt;!-- end submit step --&gt;
+
+<br>The logic and parameters to keep in mind are the <strong>value</strong> and the <strong>data-state</strong>. Remember to edit the php file<br>properly in order to send the data. Attention to write correctly the name of each input and the value; for<br>example radio inputs must have the same name and different value.
+
+THIS EXAMPLE IS FOR A SINGLE BRANCH OPTION.
+  </pre>
+  
+     <p><strong id="modify2">How to quick update the Input Switch (YES/NO terms):</strong></p>
+
+<pre>
+1) Update jquery.switch.css in the css folder.<br>
+2) Update functions.js (note: take the updated file from the respective wizard type...full, standalone, etc)
+
+3) Open the html page and cahnge this lines of code:
+
+<br>&lt;div style=&quot;position:relative&quot;&gt;<br>&lt;select class=&quot; example-1 required&quot; name=&quot;terms&quot;&gt;<br>&lt;option value=&quot;&quot;&gt;No&lt;/option&gt;<br>&lt;option value=&quot;Accepted&quot;&gt;Yes&lt;/option&gt;<br>&lt;/select&gt;<br>&lt;/div&gt;<br>
+
+INTO
+
+&lt;label class=&quot;switch-light switch-ios&quot;&gt;<br>  &lt;input type=&quot;checkbox&quot; name=&quot;terms&quot; class=&quot;required fix_ie8&quot; value=&quot;yes&quot;&gt;<br>  &lt;span&gt;<br>  &lt;span class=&quot;ie8_hide&quot;&gt;No&lt;/span&gt;<br>   &lt;span&gt;Yes&lt;/span&gt;<br>  &lt;/span&gt;<br>  &lt;a&gt;&lt;/a&gt;<br>&lt;/label&gt;
+
+4) Add this style to each radio or checkbox input like below (except for the switch button):<br>&lt;input name=&quot;gender&quot; type=&quot;radio&quot; class=&quot;required <strong>check_radio</strong>&quot; value=&quot;Male&quot;&gt;
+
+and remove this line from bottom:
+&lt;script src=&quot;js/jquery.switch.min.js&quot;&gt;&lt;/script&gt;</pre>
+
+<p><strong id="modify3">How to quick update the Twitter feed:</strong></p>
+<pre>1) Choose the Annova version (Standalone, Full, ETc...)
+
+2) Copy the entire folder &quot;twitter folder&quot;
+
+3) Copy the updated js/functions.js
+
+4) Copy from the js folder these files: jquery.bxslider.min.js, jquery.tweet.js, jquery.tweet.min.js.
+
+5) From style.css copy the new styles under the section /* twitter feed*/
+
+6) from the html page copy the new html code and set your twitter username</pre>
+
+<p><strong >Fix Backward issue with validation:</strong></p>
+<pre>Open function.js and add these line at top of beforeSelect
+
+if (!state.isMovingForward)    return true;
+
+BECAME
+// WIZARD  ===============================================================================<br>jQuery(function($) {<br>				// Basic wizard with validation<br>				$(&quot;#survey_container&quot;).wizard({<br>					stepsWrapper: &quot;#wrapped&quot;,<br>					submit: &quot;.submit&quot;,<br>					beforeSelect: function( event, state ) {<br>						<strong>if (!state.isMovingForward)<br>  						 return true;</strong><br>						var inputs = $(this).wizard('state').step.find(':input');<br>						return !inputs.length || !!inputs.valid();<br>					}</pre>
+
+      <hr>
+<br>
+      <h3 id="php"><strong>D) PHP file</strong> - <a href="#php">top</a></h3>
+      <p>Below the code of the php file that process and send the email.<br>
+      </strong><br>
+      <img src="assets/images/mail.png" alt="" width="732" height="399" style="border:1px solid #ccc;"></p>
+      </p>
+      <p> If you doesn't recieve the email please first check:<br>
+      1) Your spam folder<br>
+      2) If you hosting requires special settings and support php language<br>
+      3) If your email  has to be managed from the same hosting provider<br>
+</p>
+<hr>
+<h3 id="javascript"><strong>E) JavaScript</strong> - <a href="#toc">top</a></h3>
+		
+	  <p>This theme use These Javascript.</p>
+		<p><img src="assets/images/js.jpg" width="304" height="419" style="border:1px solid #ccc;"><br>
+        <p><img src="assets/images/check.png" width="410" height="166" style="border:1px solid #ccc;"><br>
+		  <br>
+	  </p>
+	  <hr>
+		
+	  <h3 id="psdFiles"><strong>F) PSD Files</strong> - <a href="#toc">top</a></h3>
+		
+		<p>Inlcuded with the theme there is a basic structure psd, and two psd with the radio anc checkbutton graphics (@2x is for retina images) You can edit and change the color as you wont; if you change the sizes of theme be sure to update the css  located here: check_radio/skins/square/aero.css.<br>
+          <br>
+      <img src="assets/images/psd.jpg" alt="" width="412" height="115" style="border:1px solid #ccc;"></p>
+<p>&nbsp;</p>
+<hr>
+		
+		<h3 id="credits"><strong>G ) Sources and Credits</strong> - <a href="#toc">top</a></h3>
+		
+	  <p>I've used the following scripts, plugins or frameworks as listed.
+		
+		
+	  <ul>
+        <li><a href="http://twitter.github.io/bootstrap/">Twitter Boostrap</a></li>
+        <li><a href="http://fortawesome.github.io/">Font Awesome</a></li>
+        <li><a href="https://github.com/scottjehl/Respond">Respond</a> (media queries for IE7-IE8)</li>
+        <li><a href="http://www.modernizr.com/">Moderniz</a></li>
+        <li><a href="http://fancyapps.com/fancybox/">Fancybox viewer</a></li>
+        <li><a href="http://jquery.com/">Jquery</a></li>
+        <li><a href="http://owlgraphic.com/owlcarousel/">Owlcarousel</a></li>
+       <li><a href="http://jqueryvalidation.org/">Jquery validation</a></li>
+       <li><a href="http://jamesallardice.github.io/Placeholders.js/">Jquery Placeholder</a></li>
+       <li><a href="http://retinajs.com/">Retina support</a></li>
+       <li><a href="https://github.com/philipbeel/Tweetable">Tweet feed</a></li>
+       <li><a href="https://github.com/kflorence/jquery-wizard/">Wizard</a></li>
+        <li><a href="https://github.com/fronteed/iCheck">Icheck - Check and radio styles</a></li>
+	  </ul>
+		
+<hr>
+<p><strong><br>
+    <img src="assets/images/avatar.jpg" width="80" height="80"><br>
+	  <br>
+    Once again, thank you so much for purchasing this theme. Please take a moment to rate it from your Downloads page.</strong><br> 
+		  
+<h3>Need support?</h3>
+For support contact me using the form on my profile page <span class="text_medium">with subject <strong>[ThemeForest Support]  Template name</strong></span>, via <a href="http://support.ansonika.com/">Support site</a> or submit a comment on item page. You will receive an answer within 24-48 hours (working days)  GMT  +1.
+<ul>
+<li>I only provide support for fixing bugs or small issues on my items.</li>
+<li>I don't provide free support for additional custom modifications to the items.</li>
+<li>Please provide your site link, screenshots and other information about your issue.</li>
+</ul>
+
+<h3>Need customization or availability for freelance projects?</h3>
+Just send an email via profile page form; please don't forget to specify:
+<ul>
+<li>if you are a company, agency or private user</li>
+<li>all the information about your projects, needs, site urls, project sheet, etc..</li>
+<li>from which country you are</li>
+<li>if you have a deadline</li>
+<li>if you have basic knowledge of  HTML , CSS, JS,  PHP</li>
+</ul>
+<p class="append-bottom alt large"><strong>Ansonika</strong></p>
+		<p><a href="#toc">Go To Table of Contents</a></p>
+		
+		<hr class="space">
+	</div><!-- end div .container -->
+</body>
+</html>

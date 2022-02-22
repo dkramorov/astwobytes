@@ -1,0 +1,97 @@
+<!DOCTYPE html><!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]--><!--[if IE 9 ]><html class="ie ie9" lang="en"> <![endif]--><html lang="en"><!--<![endif]-->
+<head>
+{% include "skeleton_header.html" %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="/media/css/bootstrap.css" rel="stylesheet">
+<link href="/media/css/style.css?v=2" rel="stylesheet">
+<link href="/media/css/font-awesome.min.css" rel="stylesheet" >
+<link href="/media/css/socialize-bookmarks.css" rel="stylesheet">
+<link href="/media/css/jquery.fancybox.css?v=2.1.4" rel="stylesheet">
+<link href="/media/css/aero.css?v=2" rel="stylesheet">
+
+<!-- Toggle Switch -->
+<link rel="stylesheet" href="/media/css/jquery.switch.css">
+
+<!-- Owl Carousel Assets -->
+<link href="/media/css/owl.carousel.css" rel="stylesheet">
+<link href="/media/css/owl.theme.css" rel="stylesheet">
+
+<!--[if lt IE 9]><script src="/media/js/html5.js"></script><![endif]-->
+
+<!-- Jquery -->
+<script src="/media/js/jquery-1.10.2.min.js"></script>
+<script src="/media/js/jquery-ui-1.8.22.min.js"></script>
+
+<!-- Wizard-->
+<script src="/media/js/jquery.wizard.js?v=2"></script>
+
+<!-- Radio and checkbox styles -->
+<script src="/media/js/check.min.js"></script>
+
+<!-- HTML5 and CSS3-in older browsers-->
+<script src="/media/js/modernizr.custom.17475.js"></script>
+
+<!-- Support media queries for IE8 -->
+<script src="/media/js/respond.min.js"></script>
+{% block extrahead %}{% endblock %}
+</head>
+
+<body>
+{% block body %}
+{% include "web/components/header.html" %}
+
+<section class="container" id="main">
+{% block content %}
+{% endblock %}
+</section>
+
+{% include "web/components/footer.html" %}
+<div id="toTop">Наверх</div>
+{% include "web/components/modals.html" %}
+{% endblock %}
+<script type="text/javascript" src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/media/js/jquery.validate.js?v=3"></script>
+<script src="/media/js/jquery.placeholder.js"></script>
+<script src="/media/js/jquery.tweet.min.js"></script>
+<script src="/media/js/jquery.bxslider.min.js"></script>
+<script src="/media/js/quantity-bt.js"></script>
+<script src="/media/js/bootstrap.min.js"></script>
+<script src="/media/js/retina.js"></script>
+<script src="/media/js/owl.carousel.min.js"></script>
+<script src="/media/js/functions.js"></script>
+
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/feedback.js"></script>
+
+<script src="/media/js/jquery.fancybox.pack.js" type="text/javascript"></script>
+<script src="/media/js/jquery.fancybox-media.js" type="text/javascript"></script>
+<script src="/media/js/fancy_func.js" type="text/javascript"></script> 
+<script type="text/javascript">
+$(document).ready(function(){
+  $("input[type='text'].phone").mask("8(999)9 999-999");
+  $("input[type='text'].date").mask('99/99/9999', {placeholder:"дд/мм/гггг"});
+  $("button.forward").click(function(){
+    document.getElementById("survey_container").scrollIntoView();
+  });
+  {% if product_id %}
+    $("form select[name='product']").val("{{ product_id }}");
+  {% endif %}
+
+  var profile = new FeedBack("contact-form", {
+    "wait": "Ждите...",
+    //"send": "Отправить",
+    "success": "Спасибо. Сообщение отправлено.",
+    "progress": "Пожалуйста, ждите...",
+    "error": "Произошла ошибка, сообщите нам по телефону",
+    "error_captcha": "Не пройдена проверка на работа",
+    "callback_success": "",
+    "callback_error": "",
+    //"dont_reset_on_submit": 1, // or 1
+    //"errorClass": "invalid",
+  });
+
+});
+</script>
+</body>
+</html>

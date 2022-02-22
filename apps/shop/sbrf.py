@@ -8,7 +8,7 @@ from apps.shop.models import Orders, Transactions
 
 logger = logging.getLogger('main')
 
-class SberPaymentProovider():
+class SberPaymentProvider():
     """Сбербанк эквайринг
 
        Тестовый личный кабинет - https://3dsec.sberbank.ru/mportal3
@@ -74,8 +74,9 @@ class SberPaymentProovider():
             'phone': None, # Номер телефона клиента (цифры)
         })
         params.update(**kwargs)
+        urla = '%s%s' % (self.api_url, endpoint)
 
-        r = requests.get('%s%s' % (self.api_url, endpoint), params=params)
+        r = requests.get(urla, params=params)
         if not r.status_code == 200:
             logger.info('[ERROR]: sbrf register_do: %s' % r.status_code)
             return {}

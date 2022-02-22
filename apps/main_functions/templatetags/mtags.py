@@ -17,6 +17,16 @@ register = template.Library()
 UPS_PATH = '/static/img/ups.png'
 
 @register.simple_tag
+def get_currency_symbol():
+    """Вывод валюты
+       USAGE: {% get_currency_symbol %}
+    """
+    if not hasattr(settings, 'CURRENCIES') or not hasattr(settings, 'DEFAULT_CURRENCY'):
+        return '₽'
+    value = settings.CURRENCIES[settings.DEFAULT_CURRENCY].get('symbol') or '₽'
+    return value
+
+@register.simple_tag
 def settings_value(name: str):
     """Получение переменной из settings.py
        USAGE: {% settings_value "LANGUAGE_CODE" %}

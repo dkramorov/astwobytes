@@ -325,8 +325,9 @@ def update_fs_users_db_version():
     return version
 
 @csrf_exempt
-def test_notification(request, skey: str = None):
+def notification_helper(request, skey: str = None):
     """Апи-метод для отправки уведомления (пуша)
+       :param request: HttpRequest
        :param skey: серверный ключ firebase для отправки сообщения
     """
     result = {}
@@ -343,6 +344,8 @@ def test_notification(request, skey: str = None):
     from_jid = None
     msg_body = None
     name = None
+    only_data = False # только data push
+    additional_data = {} # доп параметры в data push
 
     # Серверный ключ Firebase
     server_key = FIREBASE_SERVER_KEY_8800
@@ -361,6 +364,11 @@ def test_notification(request, skey: str = None):
             msg_body = body.get('body')
             name = body.get('name')
             result['body'] = body
+            # Только data push
+            if 'only_data' in body:
+                only_data = True
+            if 'additional_data' in body:
+                additional_data = body['additional_data']
             if 'credentials' in result['body']:
                 del result['body']['credentials']
 
@@ -377,6 +385,7 @@ def test_notification(request, skey: str = None):
     title = name or 'Новое сообщение'
 
     url = 'https://fcm.googleapis.com/fcm/send'
+
     data = {
         'data': {
             'sender': from_jid,
@@ -386,11 +395,24 @@ def test_notification(request, skey: str = None):
             'title': title,
             'body': text,
         },
-        # one recipient
-        #'to': to_token,
+        #'to': to_token, # one recipient
         'registration_ids': tokens, # many recipients
         'click_action': 'FLUTTER_NOTIFICATION_CLICK',
     }
+
+    if only_data:
+        data = {
+            'data': {
+                'sender': from_jid,
+                'receiver': to_jid,
+            },
+            'content_available': True,
+            'priority': 'high',
+            'registration_ids': tokens, # many recipients
+        }
+    if additional_data and isinstance(additional_data, dict):
+        for k, v in additional_data.items():
+            data['data'][k] = v
 
     headers = {'Authorization': 'key=%s' % server_key}
     if tokens:
@@ -468,8 +490,8 @@ def notification(request, app_id: int):
        :param app_id: ид приложения
     """
     if app_id == '8800':
-        return test_notification(request, skey=FIREBASE_SERVER_KEY_8800)
+        return notification_helper(request, skey=FIREBASE_SERVER_KEY_8800)
     elif app_id == '223':
-        return test_notification(request, skey=FIREBASE_SERVER_KEY_223)
-    return test_notification(request)
+        return notification_helper(request, skey=FIREBASE_SERVER_KEY_223)
+    return notification_helper(request)
 

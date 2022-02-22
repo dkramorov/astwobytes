@@ -1,0 +1,28 @@
+{% load mtags %}
+
+<div class="row">
+  <div class="col-md-12">
+  <h3>
+    {% if container.name %}{{ container.name }}{% endif %}
+    {% if container.description %}
+      <span>{{ container.description|safe }}</span>
+    {% endif %}
+  </h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div id="owl-demo">
+      {% for block in blocks %}
+        <div class="item">
+          <a href="{{ block.imagine }}" class="fancybox">
+            {% imagine block.img '300x300' block.get_folder %}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>

@@ -1,0 +1,8 @@
+{% if perms.passport.view_passport %}
+<li{% ifequal menu 'passport' %} class="active"{% endifequal %} id="left_menu_passport_app">
+  <a href="{% url 'passport:show_passports' %}">
+    <em class="fa fa-file-text"></em>
+    <span class="item-text">Паспортные данные</span>
+  </a>
+</li>
+{% endif %}

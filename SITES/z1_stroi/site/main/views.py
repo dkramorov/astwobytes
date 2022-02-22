@@ -9,6 +9,7 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.conf import settings
+from django.db.models import Q
 
 from apps.flatcontent.models import Containers, Blocks
 from apps.flatcontent.views import SearchLink
@@ -28,7 +29,9 @@ from apps.personal.auth import register_from_site, login_from_site, update_profi
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
 from apps.shop.order import get_order
 from apps.shop.models import Orders, WishList
-from apps.shop.sbrf import SberPaymentProovider
+from apps.shop.sbrf import SberPaymentProvider
+
+from apps.addresses.models import Polygon
 
 CUR_APP = 'main'
 main_vars = {
@@ -168,7 +171,7 @@ def product_by_link(request, link: str):
     """
     code = link.split('-')[-1]
     code = code.replace('/', '')
-    product = Products.objects.filter(code=code).only('id').first()
+    product = Products.objects.filter(Q(code=code)|Q(id=code)).only('id').first()
     if product:
         return product_on_site(request, product.id)
     raise Http404
@@ -458,7 +461,7 @@ def checkout(request):
             if order:
                 template = 'web/order/confirmed.html'
                 context['order'] = order
-                sber = SberPaymentProovider()
+                sber = SberPaymentProvider()
                 order_status = sber.get_order_status(order.external_number, order.id)
                 context['order_status'] = order_status
     # -----------------------------------------
@@ -483,7 +486,7 @@ def checkout(request):
             'email': shopper.email,
             'phone': shopper.phone,
         }
-        sber = SberPaymentProovider()
+        sber = SberPaymentProvider()
         register_order = sber.register_do(**params)
         context.update(register_order)
         # ------------------------
@@ -507,6 +510,7 @@ def checkout(request):
           'month': month,
         })
     context['dates'] = dates
+    context['polygons'] = Polygon.objects.all()
     return render(request, template, context)
 
 order_vars = {
@@ -651,7 +655,7 @@ def payment(request, provider: str, action: str):
         order_id = request.GET['orderId']
         order = Orders.objects.filter(shopper=shopper, external_number=order_id).first()
         if order:
-            sber = SberPaymentProovider()
+            sber = SberPaymentProvider()
             order_status = sber.get_order_status(order.external_number, order.id)
             context['order_status'] = order_status
             context['order'] = order

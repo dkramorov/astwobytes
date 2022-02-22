@@ -1,0 +1,34 @@
+{% load mtags %}
+<div class="row">
+  <div class="col-md-12">
+  <h3>
+    {% if container.name %}{{ container.name }}{% endif %}
+    {% if container.description %}
+      <span>{{ container.description|safe }}</span>
+    {% endif %}
+  </h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    {% for block in blocks %}
+      {% if not block.tag %}
+        {% if block.name %}<h4>{{ block.name }}</h4>{% endif %}
+        {% if block.html %}{{ block.html|safe }}{% endif %}
+        <div class="clear clearfix"></div><br>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% for block in blocks %}
+    {% if block.tag %}
+      <div class="col-md-6">
+        <div class="thumbnail">
+          <div class="project-item-image-container">
+            {% if block.img %}{% imagine block.img '600x600' block.get_folder %}{% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

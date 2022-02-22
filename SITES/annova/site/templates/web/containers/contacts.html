@@ -1,0 +1,55 @@
+{% load mtags %}
+<div class="row">
+  <div class="col-md-12">
+  <h3>
+    {% if container.name %}{{ container.name }}{% endif %}
+    {% if container.description %}
+      <span>{{ container.description|safe }}</span>
+    {% endif %}
+  </h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    {% for block in blocks %}
+      {% if not block.tag %}
+        {% if block.name %}<h4>{{ block.name }}</h4>{% endif %}
+        {% if block.html %}{{ block.html|safe }}{% endif %}
+        <div class="clear clearfix"></div><br>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% for block in blocks %}
+    {% if block.tag %}
+      <div class="col-md-3">
+        <div class="thumbnail">
+          <div class="project-item-image-container">
+            {% if block.img %}{% imagine block.img '300x300' block.get_folder %}{% endif %}
+          </div>
+          <div class="caption">
+            <div class="transit-to-top">
+              {% if block.name %}
+                <h4 class="p-title">{{ block.name }}
+                  <!--<small>должность</small>-->
+                </h4>
+              {% endif %}
+              <div class="widget_nav_menu">
+                <ul class="social-bookmarks team">
+                  <li class="facebook"><a href="#">facebook</a></li>
+                  <li class="googleplus"><a href="#">googleplus</a></li>
+                  <li class="twitter"><a href="#">twitter</a></li>
+                </ul>
+                {% if block.html %}
+                  <div class="phone-info">
+                    <i class="icon-phone-sign"></i> {{ block.html|safe }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

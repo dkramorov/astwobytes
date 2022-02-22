@@ -76,6 +76,12 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-lg-2 control-label">Цена доставки</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Цена доставки" class="form-control" name="cost" value="{% if row.cost %}{{ row.cost }}{% endif %}" id="delivery_cost" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-2 control-label">Время доставки</label>
             <div class="col-lg-10">
               <input type="text" placeholder="Время доставки" class="form-control" name="time" value="{% if row.time %}{{ row.time }}{% endif %}" id="delivery_time" autocomplete="off">

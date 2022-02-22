@@ -266,6 +266,11 @@ class Blocks(Standard):
         else:
             link = '/' + translit(self.name) + '/'
         link = fix_multiple_dashes(link)
+
+        # TODO: проверить повторы
+        if len(link) > 254:
+            link = '/' + translit(self.name) + '/'
+
         self.link = link
 
     def create_cat_link(self, force: bool = False):

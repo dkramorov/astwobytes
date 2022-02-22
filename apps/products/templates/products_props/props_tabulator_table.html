@@ -102,6 +102,7 @@ var propPropEditor = function(cell, onRendered, success, cancel){
       cell.getRow().update({
         'id': !data['id'] ? 0 : data['id'],
         'name': input.text(),
+        'code': data['code'],
         'value': null,
         'prop_id': input.val(),
         'pvalue_id': null,
@@ -176,6 +177,7 @@ function save_prop_pvalue(cell){
       cell.getRow().update({
         'id': r['row']['id'],
         'name': r['row']['name'],
+        'code': r['row']['code'],
         'value': r['row']['value'],
         'prop_id': r['row']['prop_id'],
         'position': r['row']['position'],

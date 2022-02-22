@@ -1,0 +1,35 @@
+{% load mtags %}
+
+<div class="row">
+  <div class="col-md-12">
+  <h2>
+    {% if container.name %}{{ container.name }}{% endif %}
+    {% if container.description %}
+      <span>{{ container.description|safe }}</span>
+    {% endif %}
+  </h2>
+  </div>
+</div>
+
+<div class="row">
+  {% for product in products %}
+    <div class="col-md-4 col-sm-4 add_bottom_30 box products">
+      {% if product.img %}
+        <p>
+          {% imagine product.img '150x150' product.get_folder %}
+        </p>
+      {% endif %}
+      {% if product.name %}
+        <h3>{{ product.name }}</h3>
+      {% endif %}
+      {% if product.mini_info %}
+        {{ product.mini_info|safe }}
+      {% endif %}
+      <div class="price">Цена: {{ product.price|money_format }} {% get_currency_symbol %}</div>
+      <div class="clear clearfix"></div><br>
+      <a href="/?product_id={{ product.id }}" title="{{ product.name|textize }}" class="button_medium_2">Купить</a>
+    </div>
+    {% cycle '' '' '<div class="clear clearfix"></div>' %}
+  {% endfor %}
+</div>
+<div class="divider"></div>

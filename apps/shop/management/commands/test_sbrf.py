@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from apps.main_functions.catcher import json_pretty_print
-from apps.shop.sbrf import SberPaymentProovider
+from apps.shop.sbrf import SberPaymentProvider
 
 logger = logging.getLogger('main')
 
@@ -41,7 +41,7 @@ class Command(BaseCommand):
             'phone': '73952959223',
         }
 
-        sber = SberPaymentProovider()
+        sber = SberPaymentProvider()
         register_order = sber.register_do(**params)
         print(json_pretty_print(register_order))
         print(register_order['errorCode'], type(register_order['errorCode']))

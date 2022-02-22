@@ -53,7 +53,11 @@ DEFAULT_DOMAIN = env('DEFAULT_DOMAIN', default=None)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_NAME = os.path.split(BASE_DIR)[-1]
+
+# Pay attention for web hosting, where PROJECT_NAME="public_html"
+PROJECT_NAME = env('PROJECT_NAME', default=None)
+if not PROJECT_NAME:
+    PROJECT_NAME = os.path.split(BASE_DIR)[-1]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -69,6 +73,14 @@ ALLOWED_HOSTS = [
     #'.example.com',  # Allow domain and subdomains
     #'.example.com.',  # Also allow FQDN and subdomains
 ]
+
+CURRENCIES = {
+    'RUB': {'symbol': '₽'}, # remove on hosting
+    'USD': {'symbol': '$'},
+    'EUR': {'symbol': '€'},
+}
+
+DEFAULT_CURRENCY = env('DEFAULT_CURRENCY', default='RUB')
 
 # main_functions.tasks create_new_app
 # если надо https локально

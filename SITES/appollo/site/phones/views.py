@@ -146,7 +146,7 @@ def edit_phone(request, action: str, row_id: int = None, *args, **kwargs):
 
 @login_required
 def phones_positions(request, *args, **kwargs):
-    """Изменение позиций контрагентов
+    """Изменение позиций телефонов
        :param request: HttpRequest
     """
     result = {}

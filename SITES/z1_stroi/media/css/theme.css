@@ -4886,7 +4886,7 @@ input[type=checkbox] {
 .widget.widget-filter-price .widget-content {
     border-top: solid 1px rgba(35, 35, 35, 0.1);
     padding: 15px;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 .widget.widget-filter-price #slider-range {
     margin-top: 5px;

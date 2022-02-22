@@ -27,6 +27,9 @@ class Products(Standard):
     info = models.TextField(blank=True, null=True)
     code = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     count = models.IntegerField(blank=True, null=True, db_index=True)
+    stock_info = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Текстовая информация об остатках')
     # min/max price храним преимущественно для сортировки,
     # согда у нас есть несколько типов цен на товар
     min_price = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=2, db_index=True) # 99 000 000 000,00
@@ -59,8 +62,9 @@ class Products(Standard):
 
     def save(self, *args, **kwargs):
         self.analyze_prices()
-        if self.code:
-            self.code = str(self.code).replace('-', '_')
+        # Замена для того, чтобы ЧПУ ссылку распознать
+        #if self.code:
+        #    self.code = str(self.code).replace('-', '_')
         super(Products, self).save(*args, **kwargs)
         if self.id and not self.code:
             Products.objects.filter(pk=self.id).update(code=self.id)
@@ -68,7 +72,7 @@ class Products(Standard):
     def link(self):
         """Ссылка на товар/услугу"""
         link = '/product/%s/' % self.id
-        if self.code and self.name:
+        if self.code and self.name and not '-' in self.code:
             link = '/product/%s-%s/' % (translit(self.name), self.code)
         elif self.name:
             link = '/product/%s-%s/' % (translit(self.name), self.id)
@@ -145,6 +149,13 @@ class Products(Standard):
         get_link_containers(seo_block)
         return seo_block
 
+class PropertyGroup(Standard):
+    """Группа свойств"""
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    code = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+
 class Property(Standard):
     """Свойство для товара"""
     ptype_choices = (
@@ -159,9 +170,13 @@ class Property(Standard):
         blank=True, null=True, db_index=True)
     ptype = models.IntegerField(choices=ptype_choices,
         blank=True, null=True, db_index=True)
-    measure = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Единица измерения')
+    measure = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Единица измерения')
     search_facet = models.BooleanField(db_index=True, default=False,
         verbose_name='Отображать в фильтрах для поиска')
+    group = models.ForeignKey(PropertyGroup, blank=True, null=True,
+        verbose_name='Группа свойств', on_delete=models.SET_NULL)
 
 class PropertiesValues(Standard):
     """Свойства для товаров/услуг
@@ -172,6 +187,8 @@ class PropertiesValues(Standard):
     str_value = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     # По большей части для сортировки и фильтров
     digit_value = models.DecimalField(blank=True, null=True, max_digits=13, decimal_places=4, db_index=True) # 990 000 000,0000
+    code = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
 
     def save(self, *args, **kwargs):
         if self.str_value:

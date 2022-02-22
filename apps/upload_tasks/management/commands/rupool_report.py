@@ -105,8 +105,6 @@ class Command(BaseCommand):
             logger.error('Already running %s' % (is_running, ))
             #exit()
 
-        telega.send_message('hi')
-
         if options.get('get_products') or options.get('full'):
             get_products_operation(True)
 
@@ -326,6 +324,8 @@ def create_xlsx(pages):
         ('Цена закупочная', 'opt_price'),
         ('% скидки', 'discount'),
         ('Раздел', 'cat'),
+        ('Описание', 'mini_info'),
+        ('Характеристики', 'props'),
     )
     dest = os.path.join(DIR, 'report.xlsx')
     book = xlsxwriter.Workbook(full_path(dest))
@@ -335,10 +335,10 @@ def create_xlsx(pages):
         sheet = book.add_worksheet('Лист %s' % (i + 1))
         row_number = 0
 
-        for i, title in enumerate(titles):
-            sheet.write(row_number, i, title[0])
-            sheet.write(row_number + 1, i, title[1])
-        row_number += 1
+        for j, title in enumerate(titles):
+            sheet.write(row_number, j, title[0])
+            sheet.write(row_number + 1, j, title[1])
+        row_number += 2
 
         stocks = page['stocks']
         cats = page['cats']
@@ -350,6 +350,8 @@ def create_xlsx(pages):
 
             product_price = product.get('price')
             discount = product.get('discount')
+            mini_info = product.get('mini_info')
+            props = product.get('props', [])
 
             sheet.write(row_number, 2, stocks.get(product['id']))
             sheet.write(row_number, 3, product_price)
@@ -361,6 +363,11 @@ def create_xlsx(pages):
                 sheet.write(row_number, 4, opt_price)
             sheet.write(row_number, 5, discount)
             sheet.write(row_number, 6, cats.get(product.get('cat')))
+            sheet.write(row_number, 7, mini_info)
+            props_str = ''
+            for prop in props:
+                props_str += '- %s %s\n' % (prop.get('name'), prop.get('value'))
+            sheet.write(row_number, 8, props_str)
             row_number += 1
     book.close()
 
@@ -392,7 +399,7 @@ def to_string(el):
     """Получение элемента текстом
        :param el: элемент
     """
-    return lxml_html.tostring(el)
+    return lxml_html.tostring(el, encoding = 'unicode')
 
 def auth():
     """Авторизация на https://www.rupool.ru/enter/
@@ -477,7 +484,11 @@ def get_breadcrumbs(page_in_bottom, is_ppage: bool = False):
     for li in lis:
         alinks = li.xpath('.//a')
         for alink in alinks:
-            parent_id = int(alink.attrib.get('href').split('/')[-1])
+            href = alink.attrib.get('href')
+            if not href or not href.split('/')[-1]:
+                print('[ERROR]: empty href %s in %s' % (href, to_string(alink)))
+                continue
+            parent_id = int(href.split('/')[-1])
             if is_ppage:
                 parents.append(parent_id)
             else:
@@ -517,18 +528,30 @@ def get_rubrics(links):
         cat = {
             'id': cat_id,
             'parents': [],
+            'img': None,
+            'desc': None,
         }
         tree = lxml_html.fromstring(r.text)
         page_in_bottom = tree.xpath('.//div[@id="page_in_bottom"]')[0]
 
         h1 = page_in_bottom.xpath('.//h1')
-        if not h1:
-            print('[ERROR]: h1 not found for %s' % cat_id)
-            return
+        if h1:
+            h1 = h1[0]
+            cat_name = h1.text.strip()
+            cat['name'] = cat_name
 
-        h1 = h1[0]
-        cat_name = h1.text.strip()
-        cat['name'] = cat_name
+        crumbs = page_in_bottom.xpath('.//ol/li[@itemprop="itemListElement"]')
+        if crumbs:
+            cat_name = crumbs[-1].text
+            if cat_name:
+                cat['name'] = cat_name
+
+        desc = page_in_bottom.xpath('.//div[@class="epigraph_body"]/p')
+        if desc:
+            cat['desc'] = desc[0].text
+        imga = page_in_bottom.xpath('.//div[@class="article_dop"]/div/img')
+        if imga:
+            cat['img'] = imga[0].attrib.get('src')
 
         cat['parents'] = get_breadcrumbs(page_in_bottom)
 
@@ -663,8 +686,26 @@ def get_products(links, prefix='', session = None):
                     if div.text and discount_str in div.text:
                         discount = div.text.split(discount_str)[-1]
                         product['discount'] = discount
-        return product
 
+        description = ''
+        description_div = page_in_bottom.xpath('.//span[@itemprop="description"]')
+        if description_div:
+            cur_item = None
+            for item in description_div[0]:
+                if item.tag == 'b':
+                    if 'Технические характеристики' in item.text:
+                        cur_item = 'tech'
+                    elif 'Описание' in item.text:
+                        cur_item = 'desc'
+                    else:
+                        cur_item = 'unset'
+                elif item.tag == 'div':
+                    if cur_item == 'desc':
+                        #desc = str(to_string(item))
+                        product['mini_info'] = item.text_content()
+                    elif cur_item == 'tech':
+                        parse_product_prop(product, item)
+        return product
 
     products = []
 
@@ -678,6 +719,35 @@ def get_products(links, prefix='', session = None):
     with open_file(dest, 'w+', encoding='utf-8') as f:
         f.write(json.dumps(products))
     return products
+
+def parse_product_prop(product, prop_block):
+    """Парсим свойства товара
+       :param product: заполняемый товар
+       :param prop_block: элемент с характеристиками товара
+    """
+    if not 'props' in product:
+        product['props'] = []
+    groups = prop_block.xpath('.//div[@class="div2"]')
+    if groups:
+        group = groups[0]
+        cur_item = ''
+        new_prop = {}
+        for item in group:
+            #print(str(to_string(item)))
+            if item.tag == 'li':
+                cur_item = item.text
+            else:
+                part = str(to_string(item))
+                if part.startswith('<br>'):
+                    name = kill_html(part)
+                    if not name:
+                        continue
+                    new_prop['name'] = name
+                elif part.startswith('<span>'):
+                    new_prop['value'] = kill_html(part)
+                    new_prop['group'] = cur_item
+                    product['props'].append(new_prop)
+                    new_prop = {}
 
 class ParallelRequests:
     def __init__(self,
@@ -693,7 +763,7 @@ class ParallelRequests:
            :param session: сессия requests.Session для авторизованных запросов
         """
         # https://hg.python.org/cpython/file/3.5/Lib/queue.py
-        self.q = queue.Queue(maxsize = 40)
+        self.q = queue.Queue(maxsize = 25) # 30 банан ловится
         self.accum_result = [] # Куда ложим результаты
         # Функция обработки результата (в accum_result)
         self.accum_function = accum_function
@@ -744,6 +814,8 @@ class ParallelRequests:
         """Обработка результатов запроса
            :param r: результат запроса requests.get / requests.post
         """
+        if not r:
+            return
         print(r.request.url, '=>',
               r.status_code,
               '(', self.links.index(r.request.url), '/', len(self.links), ')'

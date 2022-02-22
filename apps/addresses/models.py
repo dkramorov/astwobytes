@@ -3,6 +3,23 @@ from django.db import models
 
 from apps.main_functions.models import Standard
 
+class Polygon(Standard):
+    """Полигоны, предположительно, для доставки
+    """
+    ptype_choices = (
+        (1, 'delivery'), # Доставка
+        (2, 'free_delivery'), # Бесплатная доставка
+    )
+    name = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+    ptype = models.IntegerField(choices=ptype_choices,
+        blank=True, null=True, db_index=True)
+    cost = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Стоимость (например, доставки)')
+    data = models.TextField(blank=True, null=True)
+    code = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True)
+
 class Address(Standard):
     """Адреса объектов
        https://developer.here.com/rest-apis/documentation/geocoder/topics/resource-geocode.html

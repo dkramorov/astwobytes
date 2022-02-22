@@ -1,0 +1,153 @@
+{% load mtags %}
+
+<!-- Форма помощник -->
+<div id="survey_container">
+  <div id="top-wizard">
+    <strong>Процесс <span id="location"></span></strong>
+    <div id="progressbar"></div>
+    <div class="shadow"></div>
+  </div>
+
+  <form name="example-1" id="wrapped" action="/order_form/" method="POST">
+    <div id="middle-wizard">
+      <div class="step">
+        <div class="row">
+          <h3 class="col-md-10">Ваши персональные данные</h3>
+          <div class="col-md-6">
+            <ul class="data-list">
+              <li><input type="text" name="firstname" class="required form-control" placeholder="Ваше имя"></li>
+              <li><input type="text" name="lastname" class="required form-control" placeholder="Ваша фамилия"></li>
+             <li><input type="email" name="email" class="required form-control" placeholder="Ваш email"></li>
+             <input id="website" name="website" type="hidden" value="" ><!-- Leave for security protection, read docs for details -->
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="data-list">
+              <li>
+              <div class="styled-select">
+                <select class="form-control required" name="country">
+                  <option value="" selected>Выбор города</option>
+                  <option value="Irkutsk">Иркутск</option>
+                  <option value="Moscow">Москва</option>
+                </select>
+              </div>
+              </li>
+            </ul>
+            <ul class="data-list">
+              <li>
+              <div class="qty-buttons">
+                <input type="button" value="+" class="qtyplus" name="quantity">
+                <input type="text" name="quantity" value="" class="qty form-control required" placeholder="none">
+                <input type="button" value="-" class="qtyminus" name="quantity">
+                <span>Сумма</span>
+              </div>
+              </li>
+            </ul>
+            <ul class="data-list floated clearfix">
+              <li id="age"><input type="text" name="age" class="required form-control" placeholder="Сумма"></li>
+              <li><input name="gender" type="radio" class="required check_radio" value="Male"><label class="label_gender"> Муж</label></li>
+              <li><input name="gender" type="radio" class="required check_radio" value="Female"><label class="label_gender"> Жен</label></li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4">
+            <ul class="data-list" id="terms">
+              <li>
+                <strong>Вы принимаете<a href="#" data-toggle="modal" data-target="#terms-txt"> соглашение по обработке персональных данных</a> ?</strong>
+                <label class="switch-light switch-ios ">
+                  <input type="checkbox" name="terms" class="required fix_ie8" value="yes">
+                  <span>
+                    <span class="ie8_hide">Нет</span>
+                    <span>Да</span>
+                  </span>
+                  <a></a>
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="step row">
+        <div class="col-md-10">
+          <h3>Пожалуйста выберите варианты</h3>
+          <ul class="data-list-2">
+            <li>
+              <input name="rate" type="radio" class="required check_radio" value="Not Satisfied"><label>Нет страховки</label>
+            </li>
+            <li>
+              <input name="rate" type="radio" class="required check_radio" value="Quite Satisfied"><label>Заканчивается страховка</label>
+            </li>
+            <li>
+              <input name="rate" type="radio" class="required check_radio" value="Satisfied"><label>Страховка оформлена в другой компании</label>
+            </li>
+            <li>
+              <input name="rate" type="radio" class="required check_radio" value="Completely Satisfied">
+              <label>Нужна консультация</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+            
+      <div class="step row">
+        <div class="col-md-10">
+          <h3>Как будете оплачивать?</h3>
+          <ul class="data-list-2">
+            <li>
+              <input name="question_1[]" type="checkbox" class="required check_radio" value="Наличными курьеру"><label>Наличными курьеру</label>
+            </li>
+            <li>
+              <input name="question_1[]" type="checkbox" class="required check_radio" value="Безнал курьеру"><label>Безнал курьеру</label>
+            </li>
+            <li>
+              <input name="question_1[]" type="checkbox" class="required check_radio" value="Картой онлайн"><label>Картой онлайн</label>
+            </li>
+            <li>
+              <input name="question_1[]" type="checkbox" class="required check_radio" value="Другое"><label>Другое</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+            
+      <div class="step row">
+        <div class="col-md-10">
+          <h3>Выберите вариант</h3>
+          <ul class="data-list-2 clearfix">
+            <li>
+              <input name="question_2" type="radio" class="required check_radio" value="No"><label>Женат/замужем</label>
+            </li>
+            <li>
+              <input name="question_2" type="radio" class="required check_radio" value="Maybe">
+              <label>Холост/незамужем</label>
+            </li>
+            <li>
+              <input name="question_2" type="radio" class="required check_radio" value="Probably">
+              <label>Гражданский брак</label>
+            </li>
+            <li>
+              <input name="question_2" type="radio" class="required check_radio" value="100% Sure">
+              <label>Не знаю</label>
+            </li>
+            <li>
+              <strong>Или напишите другой вариант</strong>
+              <textarea name="message_suggest_no" class="form-control">
+              </textarea>
+            </li>
+          </ul>
+        </div>
+      </div>
+            
+      <div class="submit step" id="complete">
+        <i class="icon-check"></i>
+        <h3>Анкета заполнена! Спасибо за ответы.</h3>
+        <button type="submit" name="process" class="submit">Отправить анкету</button>
+      </div>
+    </div>
+
+    <div id="bottom-wizard">
+      <button type="button" name="backward" class="backward">Назад</button>
+      <button type="button" name="forward" class="forward">Дальше </button>
+    </div>
+  </form>
+</div>

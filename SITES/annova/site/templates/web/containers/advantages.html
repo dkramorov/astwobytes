@@ -1,0 +1,35 @@
+{% load mtags %}
+
+<div class="row">
+  <div class="col-md-12">
+  <h2>
+    {% if container.name %}{{ container.name }}{% endif %}
+    {% if container.description %}
+      <span>{{ container.description|safe }}</span>
+    {% endif %}
+  </h2>
+  </div>
+</div>
+
+<div class="row">
+  {% for block in blocks %}
+  <div class="col-md-4 col-sm-4 add_bottom_30 box">
+    {% if block.img %}
+      <p>
+        {% imagine block.img '150x150' block.get_folder %}
+      </p>
+    {% endif %}
+    {% if block.name %}
+      <h3>{{ block.name }}</h3>
+    {% endif %}
+    {% if block.html %}
+      {{ block.html|safe }}
+    {% endif %}
+    <div class="clear clearfix"></div><br>
+    {% if block.link %}
+      <a href="{{ block.link }}" title="{{ block.title|textize }}" class="button_medium_2">{{ block.title }}</a>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+<div class="divider"></div>

@@ -13,6 +13,12 @@ urlpatterns = [
     url('^admin/(?P<action>create)/$', views.edit_address, name='create_address'),
     url('^admin/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_address, name='edit_address'),
     path('admin/positions/', views.addresses_positions, name='addresses_positions'),
+
+    path('admin/polygons/', views.show_polygons, name='show_polygons'),
+    url('^admin/polygons/(?P<action>create)/$', views.edit_polygon, name='create_polygon'),
+    url('^admin/polygons/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.edit_polygon, name='edit_polygon'),
+    path('admin/polygons/positions/', views.polygons_positions, name='polygons_positions'),
+
     # аякс-поиск
     path('addresses/search/', views.search_addresses, name='search_addresses'),
 ]

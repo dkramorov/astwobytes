@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
 import os
-import platform
+import sys
 import psutil
 import socket
 import datetime
+
+def get_platform():
+    """Определяем операционную систему"""
+    platform = 'unknown'
+    if 'darwin' in sys.platform:
+        platform = 'mac'
+    elif 'linux' in sys.platform:
+        platform = 'linux'
+    return platform
 
 def get_locale():
     """Возвращает локаль,

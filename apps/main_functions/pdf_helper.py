@@ -8,7 +8,7 @@ from django.conf import settings
 from django.http import HttpResponse, FileResponse
 from django.template.loader import get_template
 
-from apps.main_functions.files import full_path
+from apps.main_functions.files import full_path, open_file
 
 def link_callback(uri, rel):
     """
@@ -34,7 +34,8 @@ def render_pdf(request,
                fname: str = None,
                download: bool = False,
                page_size: str = 'letter',
-               page_orientation: str = 'portrait'):
+               page_orientation: str = 'portrait',
+               write2file: bool = False):
     """Формирует пдф
        :param request: HttpRequest
        :param template: шаблон для pdf, например, 'web/test_pdf.html'
@@ -43,6 +44,7 @@ def render_pdf(request,
        :param download: скачать файла (иначе показать в браузере)
        :param page_size: размер листа
        :param page_orientation: вид листа portrait/landscape
+       :param write2file: записать в файл
     """
     if not context:
         context = {}
@@ -65,6 +67,14 @@ def render_pdf(request,
 
     template = get_template(template)
     html = template.render(context)
+
+    # Сохранение в файл
+    if write2file:
+        dest = open_file('%s.pdf' % fname, 'wb+')
+        pisa.CreatePDF(html, dest=dest)
+
+    # Если путь со слешами
+    fname = fname.replace('/', '_')
 
     if not download:
         result = BytesIO()

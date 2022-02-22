@@ -1,0 +1,126 @@
+{% load mtags tags %}
+
+<!-- Форма помощник -->
+<div id="survey_container">
+  <div id="top-wizard">
+    <strong>Процесс <span id="location"></span></strong>
+    <div id="progressbar"></div>
+    <div class="shadow"></div>
+  </div>
+
+  <form name="example-1" id="wrapped_hockey" action="/order_form/" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="insurance_type" value="Страховка Хоккей" />
+    <div id="middle-wizard">
+
+      <div class="step">
+        <div class="row">
+          <h3 class="col-md-10">Оформить страховку на ребенка:</h3>
+          <div class="col-md-6">
+            <ul class="data-list">
+<!--
+              <li><input type="text" name="firstname" class="required form-control" placeholder="Ваше имя"></li>
+              <li><input type="text" name="lastname" class="required form-control" placeholder="Ваша фамилия"></li>
+-->
+              <li><input type="text" name="name" class="required form-control" placeholder="ФИО ребенка"></li>
+              <li>
+                <input type="text" name="passport_birthday" class="required date form-control" placeholder="Дата рождения ребенка">
+              </li>
+              <li><input type="text" name="phone" class="required form-control phone" placeholder="Ваш телефон"></li>
+              <input id="website" name="website" type="hidden" value="" ><!-- Leave for security protection, read docs for details -->
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="data-list">
+              <li>
+                <div class="styled-select">
+                  {% with request|insurance_products as products %}
+                  <select class="form-control required" name="product">
+                    <option value="" disabled selected>Программа страхования</option>
+                    {% for product in products %}
+                      <option value="{{ product.id }}">{{ product.name }} - {{ product.price|money_format }} {% get_currency_symbol %}</option>
+                    {% endfor %}
+                  </select>
+                  {% endwith %}
+                </div>
+              </li>
+            </ul>
+            <ul class="data-list">
+              <li>
+                <input type="text" name="started" class="required date form-control" min='{% tomorrow %}' placeholder="Дата начала программы" value="{% tomorrow %}">
+                <span class="input_helper">Ближайшая дата: {% tomorrow %}</span>
+              </li>
+              <li><input type="email" name="email" class="required form-control" placeholder="Ваш email"></li>
+            </ul>
+<!--
+            <ul class="data-list">
+              <li>
+              <div class="qty-buttons">
+                <input type="button" value="+" class="qtyplus" name="quantity">
+                <input type="text" name="quantity" value="" class="qty form-control required" placeholder="none">
+                <input type="button" value="-" class="qtyminus" name="quantity">
+                <span>Сумма</span>
+              </div>
+              </li>
+            </ul>
+            <ul class="data-list floated clearfix">
+              <li id="age"><input type="text" name="age" class="required form-control" placeholder="Сумма"></li>
+              <li><input name="gender" type="radio" class="required check_radio" value="Male"><label class="label_gender"> Муж</label></li>
+              <li><input name="gender" type="radio" class="required check_radio" value="Female"><label class="label_gender"> Жен</label></li>
+            </ul>
+-->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4">
+            <ul class="data-list" id="terms">
+              <li>
+                <strong>Вы принимаете<a href="#" data-toggle="modal" data-target="#terms-txt"> соглашение по обработке персональных данных</a> ?</strong>
+                <label class="switch-light switch-ios ">
+                  <input type="checkbox" name="terms" class="required fix_ie8" value="yes">
+                  <span>
+                    <span class="ie8_hide">Нет</span>
+                    <span>Да</span>
+                  </span>
+                  <a></a>
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="step row">
+        <div class="col-md-10">
+          <h3>Паспортные данные ребенка</h3>
+          <ul class="data-list-2">
+            <li><input type="text" name="passport_series" class="required form-control" placeholder="Серия"></li>
+            <li><input type="text" name="passport_number" class="required form-control" placeholder="Номер"></li>
+          </ul>
+          <ul class="data-list-2">
+            <li><input type="text" name="passport_issued" class="required form-control" placeholder="Кем выдан"></li>
+            <li><input type="text" name="passport_issued_date" class="required date form-control" placeholder="Когда выдан"></li>
+          </ul>
+          <ul class="data-list-2">
+            <li><input type="text" name="passport_registration" class="required form-control" placeholder="Место регистрации"></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="submit step without_preview" id="complete">
+        <i class="icon-check"></i>
+        <h3>Спасибо, заявка на страховку заполнена!<br>
+            Пожалуйста, подождите, сейчас вам будет предложена онлайн оплата
+        </h3>
+<!--
+        <button type="submit" name="process" class="submit">Отправить заявку</button>
+-->
+      </div>
+    </div>
+
+    <div id="bottom-wizard">
+      <button type="button" name="backward" class="backward">Назад</button>
+      <button type="button" name="forward" class="forward">Дальше </button>
+    </div>
+  </form>
+</div>

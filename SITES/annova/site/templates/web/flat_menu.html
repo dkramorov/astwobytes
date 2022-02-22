@@ -1,0 +1,16 @@
+{% ifequal tag 'mainmenu' %}
+  <nav class="col-md-8 col-xs-9" id="top-nav">
+    <ul>
+      {% for menu in menus %}
+        <li><a href="{{ menu.link }}">{{ menu.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endifequal %}
+{% ifequal tag 'bottommenu' %}
+  {% for menu in menus %}
+    <li>
+      <a href="{{ menu.link }}">{{ menu.name }}</a>
+    </li>
+  {% endfor %}
+{% endifequal %}

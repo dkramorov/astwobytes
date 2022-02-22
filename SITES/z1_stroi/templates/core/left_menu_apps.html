@@ -23,6 +23,10 @@
     {% include "files_admin_menu.html" %}
   {% endif %}
 
+  {% if 'addresses' in apps %}
+    {% include "addresses_admin_menu.html" %}
+  {% endif %}
+
   {% include "users_admin_menu.html" %}
   {% include "main_functions_admin_menu.html" %}
 </ul>

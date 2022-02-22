@@ -1,0 +1,18 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="URN:TRIGGER_MARKETING">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <urn:MT_CLAIM_RES>
+            {% for task in tasks %}
+            <CLAIMS>
+                <ID>{{ task.id }}</ID>
+{% comment %}<!-- СУКА - тут важен порядок следования
+                  если телефоны ниже чем PRICE_SEG - то хуй че распознается
+-->{% endcomment %}
+                <TEL_NUMBER1>+79148959223</TEL_NUMBER1>
+                {% cycle '' '<TEL_NUMBER2>+79242911459</TEL_NUMBER2>' %}
+                <PRICE_SEG>{{ task.price_seg }}</PRICE_SEG>
+            </CLAIMS>
+            {% endfor %}
+        </urn:MT_CLAIM_RES>
+    </soapenv:Body>
+</soapenv:Envelope>

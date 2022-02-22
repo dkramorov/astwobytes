@@ -1,0 +1,21 @@
+{% load mtags %}
+<div class="row">
+  <div class="col-md-12">
+  <h3>
+    {% if container.name %}{{ container.name }}{% endif %}
+    {% if container.description %}
+      <span>{{ container.description|safe }}</span>
+    {% endif %}
+  </h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    {% for block in blocks %}
+      {% if block.name %}<h4 class="text-center">{{ block.name }}</h4>{% endif %}
+      {% if block.html %}{{ block.html|safe }}{% endif %}
+      <div class="clear clearfix"></div><br>
+    {% endfor %}
+  </div>
+</div>

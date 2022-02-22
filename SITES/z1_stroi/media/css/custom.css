@@ -1,6 +1,22 @@
 /**Theme Color CSS
 red FC2622
 **/
+.desktop {
+  display: none;
+}
+@media (min-width: 991px) {
+  .desktop {
+    display: block;
+  }
+}
+.mobile {
+  display: block;
+}
+@media (min-width: 991px) {
+  .mobile {
+    display: none;
+  }
+}
 .nomargin {
   margin: 0 !important;
 }
@@ -110,6 +126,9 @@ a:hover .btn-play,
 @media (max-width: 991px) {
     .sf-menu > li > a:hover {
         color: #FC2622;
+    }
+    .center-xs {
+        text-align: center;
     }
 }
 .footer {

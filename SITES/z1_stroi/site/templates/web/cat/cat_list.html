@@ -38,6 +38,8 @@
                   <a href="{{ subcat.link }}">{{ subcat.name }}</a>
                 </div>
               </div>
+              {% cycle '' '<div class="clearfix mobile"></div>' %}
+              {% cycle '' '' '' '' '<div class="clearfix desktop"></div>' %}
             {% endfor %}
           </div>
           <div class="clearfix"></div>
@@ -142,11 +144,105 @@
       $("#products_container").html(r['plp']);
       $("#my_paginator").html(r['my_paginator']['total_records'] + " " + r['my_paginator']['ends']);
     }
+
+    {% if not subcats %}
     $.ajax({
       type: "GET",
       url: '{% url "products:facet_filters" page.id %}',
       //data: 'search_facet=1', // все пока что
     }).done(function(r){
+      build_filters_selects(r);
+      //build_filters_checkboxes(r);
+    }).fail(function(){
+    });
+    {% else %}
+      $("#facet_filters").parent().hide();
+    {% endif %}
+
+
+
+    /* Построить фильтры выбором через select */
+    function build_filters_selects(r) {
+      //console.log(r);
+      var html = "";
+      var name = "";
+      var values_length;
+      var container = $("#facet_filters");
+      container.html("");
+
+      max_filters_len = 15;
+      cur_filters_len = 0;
+
+      for(var key in r){
+
+        if(typeof(r[key]) == "boolean"){
+          continue;
+        }
+        // Ограничение по количеству фильтров
+        cur_filters_len += 1;
+        if (cur_filters_len > max_filters_len) {
+          break;
+        }
+
+        values_length = r[key]['values'].length;
+        if(values_length < 2){
+          continue;
+        }
+        html += '<div class="widget-content">';
+        name = r[key]['name'];
+
+        // Убираем вес из всех фильтров
+        if(name == 'Вес, кг'){
+          continue;
+        }
+
+        if(r[key]['measure'] && r[key]['measure'].length > 0){
+          name += ", " + r[key]['measure'];
+        }
+
+        html += '<h4>' + name + '</h3>';
+        html += '<div class="form-group selectpicker-wrapper">';
+        html += '<select class="selectpicker" data-live-search="true" data-width="100%" name="prop_' + key + '">';
+        html += '<option value="" selected>Без фильтра</option>';
+        for(var i=0; i<values_length; i++){
+          html += '<option id="prop_' + key + '_' + r[key]['values'][i]['id'] + '" value="' + r[key]['values'][i]['id'] + '"> ' + r[key]['values'][i]['value'] + '</option>';
+        }
+        html += '</select>';
+        html += '</div>';
+
+        html += '</div>';
+      }
+      html += '<div class="text-center hidden"><button class="contact-form-btn mt-35" type="submit" value="1" name="ff"> Найти</button></div>';
+
+      container.html(html);
+
+      {% if q_string.q.ff %}
+        $("#show_facet_filters").click();
+        {% for key, value in facet_filters.items %}
+          {% for item in value %}
+            $("#prop_{{ key }}_{{ item }}").prop('checked', 'checked');
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+
+      $("#facet_filters select").change(function(){
+        $("#facet_filters button[type='submit']").click();
+      });
+      $('.selectpicker').selectpicker();
+    }
+
+
+
+    {% for product in products %}
+      quantity_listener("{{ product.id }}",
+                        $("#qbuttons_{{ product.id }} .prod-plus"),
+                        $("#qbuttons_{{ product.id }} .prod-minus"),
+      );
+    {% endfor %}
+
+
+    /* Построить фильтры плоским списком - checkbox */
+    function build_filters_checkboxes(r) {
       //console.log(r);
       var html = "";
       var name = "";
@@ -193,18 +289,7 @@
       $("#facet_filters input[type='checkbox']").change(function(){
         $("#facet_filters button[type='submit']").click();
       });
-
-    }).fail(function(){
-    });
-
-
-
-    {% for product in products %}
-      quantity_listener("{{ product.id }}",
-                        $("#qbuttons_{{ product.id }} .prod-plus"),
-                        $("#qbuttons_{{ product.id }} .prod-minus"),
-      );
-    {% endfor %}
+    }
 
   });
 </script>

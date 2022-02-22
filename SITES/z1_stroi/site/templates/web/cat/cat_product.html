@@ -40,8 +40,11 @@
 }
 .ppage .content-tabs .tab-content {
   border: 0;
+  margin: 20px 0 0 0;
+  padding: 0;
 }
 </style>
+<link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox.min.css" media="all" />
 {% endblock %}
 
 {% block extracontent %}{% endblock %}
@@ -60,15 +63,15 @@
           <div class="new">new</div>
         </div>
 -->{% endcomment %}
+
+
         <div class="owl-carousel img-carousel">
           <div class="item">
-            <a class="btn btn-theme btn-theme-transparent btn-zoom" href="{{ product.imagine }}" data-gal="prettyPhoto"><i class="fa fa-plus"></i></a>
-            <a href="{{ product.imagine }}" data-gal="prettyPhoto"><img class="img-responsive" src="{% imagine product.img '800x600' product.get_folder True %}" alt="{{ product.name|textize }}"/></a>
+            <a href="{{ product.imagine }}" data-fancybox="gallery" rel="prettyPhoto[gallery]"><img class="img-responsive" src="{% imagine product.img '800x600' product.get_folder True %}" alt="{{ product.name|textize }}"/></a>
           </div>
           {% for photo in photos %}
             <div class="item">
-              <a class="btn btn-theme btn-theme-transparent btn-zoom" href="{{ photo.imagine }}" data-gal="prettyPhoto"><i class="fa fa-plus"></i></a>
-              <a href="{{ photo.imagine }}" data-gal="prettyPhoto"><img class="img-responsive" src="{% imagine photo.img '800x600' photo.get_folder True %}" alt="{{ photo.name|textize }}"/></a>
+              <a href="{{ photo.imagine }}" data-fancybox="gallery" rel="prettyPhoto[gallery]"><img class="img-responsive" src="{% imagine photo.img '800x600' photo.get_folder True %}" alt="{{ photo.name|textize }}"/></a>
             </div>
           {% endfor %}
         </div>
@@ -90,7 +93,7 @@
         </div>
 -->{% endcomment %}
         <div class="back-to-category">
-          <span class="link color-grey">Артикул: {{ product.code }}</span>
+          <span class="link color-grey">Артикул: {% if product.altname %}{{ product.altname }}{% else %}{{ product.code }}{% endif %}</span>
           <div class="pull-right">
             {% include "web/cat/product_review.html" %}
           </div>
@@ -191,15 +194,20 @@
   <div class="container">
     <div class="tabs-wrapper content-tabs">
       <ul class="nav nav-tabs">
+<!--
         <li class="active"><a href="#item-description" data-toggle="tab">Описание</a></li>
+-->
+        <li class="active"><a href="#product_props" data-toggle="tab">Характеристики</a></li>
         <li><a href="#reviews" data-toggle="tab">Отзывы</a></li>
-        <li><a href="#product_props" data-toggle="tab">Характеристики</a></li>
       </ul>
       <div class="tab-content">
+{% comment %}<!--
         <div class="tab-pane fade in active" id="item-description">
-          {{ product.info|safe }}
+          {% if product.mini_info %}{{ product.mini_info|safe }}{% endif %}
+          {% if product.info %}{{ product.info|safe }}{% endif %}
         </div>
-        <div class="tab-pane fade" id="product_props">
+-->{% endcomment %}
+        <div class="tab-pane fade THIS in active" id="product_props">
           <table>
             {% for item in product.props %}
               <tr>
@@ -259,6 +267,7 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/fancybox/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
   $(document).ready(function(){
     quantity_listener("{{ product.id }}",

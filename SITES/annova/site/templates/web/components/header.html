@@ -1,0 +1,30 @@
+{% load flatcontent_tags mtags %}
+<section id="top-area"{% if containers.main.tags.background.img %} style="background-image:url('{% imagine containers.main.tags.background.img '1200x800' containers.main.tags.background.get_folder True %}'); background-size: cover;"{% endif %}>
+  <header>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 col-xs-3" id="logo">
+          <a href="/"{% if containers.main.tags.logo.img %} style="background-image:url('{{ containers.main.tags.logo.imagine }}');"{% endif %} alt="{{ containers.main.tags.logo.description|textize }}">Страхование</a>
+        </div>
+        <div class="btn-responsive-menu"> 
+          <span class="bar"></span> 
+          <span class="bar"></span> 
+          <span class="bar"></span> 
+        </div>
+        {% flatmenu request "mainmenu" %}
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 main-title">
+        <h1>
+          {% if containers.main.tags.logo.title %}{{ containers.main.tags.logo.title }}{% endif %}
+        </h1>
+        <p>
+          {% if containers.main.tags.logo.description %}{{ containers.main.tags.logo.description }}{% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+ </section>   

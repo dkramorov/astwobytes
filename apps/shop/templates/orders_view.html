@@ -41,6 +41,7 @@
               <h4>Доставка</h4>
               <p>Время: {{ delivery.time|date:'d-m-Y H:i:s' }}</p>
               <p>Адрес: {{ delivery.address }}</p>
+              <p>Цена: {{ delivery.cost|money_format }} ₽</p>
               <p>Дополнительно:<br>
                 {% for key, value in delivery.additional_data.items %}
                   {{ key }}: {{ value }}<br>
@@ -60,6 +61,10 @@
           <div class="clearfix">
             <p class="pull-left">Дата</p>
             <p class="pull-right mr">{{ row.created }}</p>
+          </div>
+          <div class="clearfix">
+            <p class="pull-left">Комментарий к заказу</p>
+            <p class="pull-right mr">{{ row.comments }}</p>
           </div>
           {% if row.promocode %}
             <div class="clearfix">

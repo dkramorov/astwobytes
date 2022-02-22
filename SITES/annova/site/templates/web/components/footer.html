@@ -1,0 +1,55 @@
+{% load flatcontent_tags %}
+<footer>
+  <section class="container">
+    <div class="row">
+      <div class="col-md-6">
+        {% if containers.main.tags.about %}
+          <h3>{{ containers.main.tags.about.name }}</h3>
+          {{ containers.main.tags.about.html|safe }}
+        {% endif %}
+      </div>
+      <div class="col-md-6" id="contact">
+        <h3>Контакты</h3>
+        <p>Вы можете связаться с нами по телефону</p> 
+        <ul>
+          {% if containers.main.tags.address.html %}
+            <li>
+              <i class="icon-home"></i> {{ containers.main.tags.address.html|safe }}
+            </li>
+          {% endif %}
+          {% if containers.main.tags.phone.html %}
+            <li>
+              <i class="icon-phone"></i> {{ containers.main.tags.phone.html|safe }}
+            </li>
+          {% endif %}
+          {% if containers.main.tags.email.html %}
+            <li>
+              <i class="icon-envelope"></i> {{ containers.main.tags.email.html|safe }}
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="footer_2">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <ul id="footer-nav">
+            <li>{% if containers.main.tags.copyright.html %}{{ containers.main.tags.copyright.html|safe }}{% endif %}</li>
+            {% flatmenu request "bottommenu" %}
+          </ul>
+        </div>
+        <div class="col-md-6" style="text-align:center">
+          <ul class="social-bookmarks clearfix">
+            <li class="facebook"><a href="#">facebook</a></li>
+            <li class="googleplus"><a href="#">googleplus</a></li>
+            <li class="twitter"><a href="#">twitter</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</footer> 

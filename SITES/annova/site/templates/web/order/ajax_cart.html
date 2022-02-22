@@ -1,0 +1,50 @@
+{% load mtags %}
+<div class="modal-dialog">
+  <div class="container">
+    <div class="cart-items">
+      <div class="cart-items-inner">
+        {% if not cart.items %}Корзина пуста{% else %}
+          {% for purchase in cart.purchases %}
+            <div class="media">
+              <a class="pull-left" href="#">
+                <img class="media-object item-image" src="{{ purchase.thumb }}" alt="{{ purchase.name|textize }}">
+              </a>
+              <p class="pull-right item-price">{{ purchase.total|money_format }} ₽</p>
+              <div class="media-body">
+                <h4 class="media-heading item-title">
+                  <a href="{{ purchase.link }}">{{ purchase.count }} x {{ purchase.product_name }}</a>
+                </h4>
+{% comment %}<!--
+                <p class="item-desc">Lorem ipsum dolor</p>
+-->{% endcomment %}
+              </div>
+            </div>
+          {% endfor %}
+          <div class="media">
+            <p class="pull-right item-price">{{ cart.total|money_format }} ₽</p>
+            <div class="media-body">
+              <h4 class="media-heading item-title summary">Итого</h4>
+            </div>
+          </div>
+          <div class="media">
+            <div class="media-body">
+              <div>
+                <a href="#" class="btn btn-theme btn-theme-dark" data-dismiss="modal">Закрыть</a>
+                <a href="/shop/cart/" class="btn btn-theme btn-theme-transparent btn-call-checkout">Оформить заказ</a>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% if cart.items %}
+<div class="hidden"
+  id="ajax_cart_info"
+  data-items="{% if cart.items %}{{ cart.items }}{% else %}0{% endif %}"
+  data-total="{% if cart.total %}{{ cart.total|money_format }} ₽{% else %}0{% endif %}"
+  data-items-selector="#stroi_cartpro .count"
+  data-total-selector="#stroi_cartpro .price">
+</div>
+{% endif %}

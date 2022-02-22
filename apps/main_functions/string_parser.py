@@ -55,6 +55,7 @@ def load_iptables(path='/home/jocker/iptables'):
 
 def domain2punycode(domain: str) -> str:
     """Преобразуем домен к punycode
+       обратно 'xn--p1ai'.encode('idna').decode('idna') = 'ру'
        :param domain: Домен
        :return: домен строкой в punycode
     """
@@ -234,8 +235,9 @@ def translit(text: str):
     return result
 
 def digit_to_str(digit):
-    """Число записываем прописью"""
-    digits = []
+    """Число записываем прописью
+       :param digit: число, которое будем писать текстом
+    """
     result = ''
     measure = ('', '', 'миллион', 'миллиард', 'триллион',
                'квадриллион', 'квинтиллион', 'секстиллион',
@@ -251,12 +253,9 @@ def digit_to_str(digit):
     except ValueError:
         digit = 0
     digit_str = str(digit)
-    digit_len = len(digit_str)
-
-    z = 0
 
     summa = summa_format(digit)
-    if " " in summa:
+    if ' ' in summa:
         digits = summa.split(' ')
     else:
         digits = [summa, ]
@@ -287,7 +286,10 @@ def digit_to_str(digit):
 
 def analyze_triptix(digit, woman=False):
     """Передаем число (максимум трехзначное), пишем его прописью
-       woman = False по умолчанию - мужской род, например, "один" (м.б одна)"""
+       woman = False по умолчанию - мужской род, например, "один" (м.б одна)
+       :param digit: число
+       :param woman: если женский род
+    """
     result = ''
     hundred = dozen = unit = None
     hundred_str = dozen_str = unit_str = ''
@@ -342,10 +344,10 @@ def analyze_triptix(digit, woman=False):
 
     # Пишем результат
     for item in (hundred_str, dozen_str, unit_str):
-        if result:
+        if result and not result.endswith(' '):
             result += ' '
         result += item
-    return result
+    return result.strip()
 
 def analyze_digit(digit, end:tuple = ('тысяча', 'тысяч', 'тысячи')):
     """Пишет прописью  с нужным окончанием слово (день, год, месяц)
