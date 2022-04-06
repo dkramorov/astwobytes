@@ -1,0 +1,93 @@
+Альтернативный вывод записей
+mysql> select * from companies_company where tag='' limit 1\G;
+*************************** 1. row ***************************
+       id: 2823
+
+очень пухлые логи
+/usr/local/Cellar/mysql/5.7.19
+
+сейчас файлы баз данных хранятся
+/usr/local/var/mysql установка из исходных тестов
+/usr/local/mysql/data бинарная установка
+
+
+To have launchd start mysql@5.7 now and restart at login:
+  brew services start mysql@5.7
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/mysql@5.7/bin/mysql.server start
+
+If you need to have mysql@5.7 first in your PATH run:
+  echo 'export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"' >> /Users/jocker/.bash_profile
+
+For compilers to find mysql@5.7 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/mysql@5.7/lib"
+  export CPPFLAGS="-I/usr/local/opt/mysql@5.7/include"
+
+For pkg-config to find mysql@5.7 you may need to set:
+  export PKG_CONFIG_PATH="/usr/local/opt/mysql@5.7/lib/pkgconfig"
+
+
+
+ALTER DATABASE DBNAME CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER SCHEMA phil DEFAULT CHARACTER SET utf8mb4  DEFAULT COLLATE utf8mb4_general_ci;
+
+CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 'mypass';
+GRANT ALL ON db1.* TO 'jeffrey'@'localhost';
+# --------------------------
+# Наблюдение за логами mysql
+# mysql> show variables like '%log%';
+# mysql> SET global general_log = 1;
+# --------------------------
+tail -f /path/to/query.log
+tail -f /usr/local/Cellar/mysql/5.7.19/mysql.log
+
+
+use mysql;
+select Host,User,plugin,authentication_string from user where User='root';
+
+# ----------
+# Размер баз
+# ----------
+du -h /var/lib/mysql
+
+# -------------
+# Размер таблиц
+# -------------
+SELECT
+     table_schema as `Database`,
+     table_name AS `Table`,
+     round(((data_length + index_length) / 1024 / 1024), 2) `Size in MB`
+FROM information_schema.TABLES
+////where table_schema='a223'
+ORDER BY (data_length + index_length) DESC;
+
+
+FOREIGN KEYS CHECKS
+
+SELECT    TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME FROM   INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE   REFERENCED_TABLE_SCHEMA = 'goldfish' AND   REFERENCED_TABLE_NAME = 'price_products';
+
+
+SELECT table_name, `ENGINE` FROM `information_schema`.`TABLES`
+  WHERE `TABLE_SCHEMA`='your_database_name' AND `TABLE_NAME`='your_table_name';
+
+RENAME TABLE old_table TO new_table;
+
+ALTER TABLE Orders ADD FOREIGN KEY (P_Id) REFERENCES Persons(P_Id)
+
+ALTER TABLE Orders DROP FOREIGN KEY fk_PerOrders
+
+DROP INDEX `PRIMARY` ON t;
+
+# заменить начальный символ 7 на 8
+update clients_clients set phone=CONCAT(REPLACE(LEFT(phone,1),'7','8'), SUBSTRING(phone, 2, CHAR_LENGTH(phone)));
+
+update price_products set image=REPLACE(image, "http://", "https://") where image like 'http://%';
+
+update stata_modelsshows set page=REPLACE(page, "https://223-223.ru", "");
+
+select model_pk, count(model_pk) as cc from stata_gotosite group by model_pk having(cc>1);
+
+
+
+character-set-server = utf8
+collation_server = utf8_general_ci

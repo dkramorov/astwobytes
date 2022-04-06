@@ -1,0 +1,13 @@
+AttributeError at /
+
+'MSetItem' object has no attribute 'get_document'
+
+It seems like the method get_document() used in ResultSet in Djapian is outdated in the newest release of Xapian (I think 1.2.2), along with get_percent(), get_weight(), and many other of these functions.
+
+Instead, Xapian is using self.document instead of self.get_document().
+
+The error message is often:
+'MSetItem' object has no attribute 'get_document'
+
+To correct that, just modify the file resultset.py in the root directory where Djapian was installed so it uses 'doc = self.document', 'percent = self.percent' and etc.
+

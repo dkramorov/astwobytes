@@ -95,6 +95,7 @@ def send_data_notification(token):
         },
         'content_available': True,
         'priority': 'high',
+        #'click_action': 'FLUTTER_NOTIFICATION_CLICK',
     }
 
     headers = {'Authorization': 'key=%s' % FIREBASE_SERVER_KEY_8800}

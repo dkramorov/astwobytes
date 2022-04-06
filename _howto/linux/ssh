@@ -1,0 +1,5 @@
+ssh-keygen -f "/root/.ssh/known_hosts" -R [10.10.10.1]:9022
+
+ListenAddress 0.0.0.0:9022
+ListenAddress 192.168.1.4:22
+ListenAddress 10.10.10.253:22

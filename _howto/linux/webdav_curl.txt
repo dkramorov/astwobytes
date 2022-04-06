@@ -1,0 +1,27 @@
+Загрузка одного файла при помощи CURL по WebDAV
+
+curl -T ./local_file.zip --user "{username}:{password}" https://webdav.yandex.ru/backup.zip
+
+local_file.zip будет загружен в корень Яндекс Диска с именем backup.zip. {username} и {password} необходимо поменять на свои реальные данные для доступа к ЯД.
+Копирование файлов в директории при помощи CURL по WebDAV
+
+ls -f | xargs -I{} curl -T {} --user '{username}:{password}' https://webdav.yandex.ru/{}
+
+Этот набор команд скопирует все файл в текущей директории в корень ЯД.
+Чтение файлов и папок при помощи CURL с WebDAV
+
+curl --user "{username}:{password}" -X PROPFIND -H "Depth: 1" https://webdav.yandex.ru/
+
+Удаление файлов или папок при помощи CURL с WebDAV
+
+curl -X DELETE --user "{username}:{password}" https://webdav.yandex.ru/file_will_be_delete.txt
+
+Переименовывание файла или папки при помощи CURL с WebDAV
+
+curl -X MOVE --header 'Destination:http://example.org/new_file.txt' --user "{username}:{password}" https://webdav.yandex.ru/old_file.txt
+
+Создание папки при помощи CURL с WebDAV
+
+curl -X MKCOL --user "{username}:{password}" https://webdav.yandex.ru/new_folder
+
+Не забывай менять {username} на свой логин, и {password} на свой пароль от от Яндекс Диска.

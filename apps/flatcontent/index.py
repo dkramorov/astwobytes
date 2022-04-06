@@ -6,7 +6,7 @@ from apps.flatcontent.models import Containers, Blocks
 class ContainersIndexer(NewIndexer):
     fields = ('name',)
     tags = [
-      ('tag', 'tag'),
+        ('tag', 'tag', 2),
     ]
 space.add_index(Containers, ContainersIndexer, attach_as='indexer')
 
@@ -19,8 +19,8 @@ class BlocksIndexer(NewIndexer):
         ('description', 4),
         ('keywords', 4),
     )
-  #tags = [
-    #('name', 'name', 2),
-    #('body', 'body'),
-  #]
+    #tags = [
+        #('name', 'name', 2),
+        #('body', 'body'),
+    #]
 space.add_index(Blocks, BlocksIndexer, attach_as='indexer')

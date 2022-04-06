@@ -1,0 +1,7 @@
+ /var/log/messages:
+  May 24 22:18:16 223-223 kernel: possible SYN flooding on port 465. Sending cookies.
+
+Лидер SYN запросов
+netstat -n -p | grep SYN_REC| awk '{print $5}'|awk -F: '{print $1}' | sort -n | uniq -c | sort -nr | head -n10
+бан:
+iptables -I INPUT -p tcp -s 88.147.212.229 -j REJECT --reject-with tcp-reset

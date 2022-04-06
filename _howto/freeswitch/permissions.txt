@@ -1,0 +1,7 @@
+Here are the 3 relevant prefs to getUserMedia() and mozRTCPeerConnection():
+
+    media.navigator.enabled enables calls to mozGetUserMedia() only
+    media.navigator.permission.disabled automatically gives permission to access the camera/microphone and bypasses the permission/selection dialog
+    media.peerconnection.enabled enables use of mozRTCPeerConnection()
+
+Note: media.peerconnection.enabled implies media.navigator.enabled has been set to true.

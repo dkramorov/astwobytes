@@ -1,0 +1,5 @@
+update zprices set name=(CASE id
+  WHEN 9287 THEN 'first_record'
+  WHEN 9288 THEN 'second_record'
+  WHEN 9289 THEN 'third' END) 
+where id in(9287,9288,9289); 

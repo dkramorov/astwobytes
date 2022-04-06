@@ -7,7 +7,7 @@
           {% for block in blocks %}
             <div class="single-policy">
               <span>
-                <img src="{{ block.thumb }}" class="img-fluid" alt="{{ block.description|textize }}">
+                <img src="{{ block.thumb }}" class="img-fluid" alt="{{ block.description|textize }}" loading="lazy">
               </span>
               <p>{{ block.name }}</p>
             </div>

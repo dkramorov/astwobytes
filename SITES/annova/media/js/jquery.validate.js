@@ -1041,6 +1041,8 @@ validator.settings[eventType] && validator.settings[eventType].call(validator, t
 		// http://docs.jquery.com/Plugins/Validation/Methods/date
 		// $("input[type='text'].date").mask('99/99/9999', {placeholder:"мм/дд/гггг"});
 		date: function( value, element ) {
+      var minmax_result = true;
+
       var newValue = value.substring(3,5) + '/' + value.substring(0,2) + '/' + value.substring(6, 10);
 
       var minValue = $(element).attr("min");
@@ -1048,11 +1050,25 @@ validator.settings[eventType] && validator.settings[eventType].call(validator, t
       if (minValue != undefined){
           fromDate = new Date(minValue.substring(3,5) + '/' + minValue.substring(0,2) + '/' + minValue.substring(6, 10));
           if(!/Invalid|NaN/.test(new Date(newValue)) && new Date(newValue) >= fromDate){
-             return true;
            } else {
-             return false;
+             minmax_result = false;
            }
       }
+
+      var maxValue = $(element).attr("max");
+      var toDate = null;
+      if (maxValue != undefined){
+          toDate = new Date(maxValue.substring(3,5) + '/' + maxValue.substring(0,2) + '/' + maxValue.substring(6, 10));
+          if(!/Invalid|NaN/.test(new Date(newValue)) && new Date(newValue) <= toDate){
+           } else {
+             minmax_result = false;
+           }
+      }
+
+      if(!minmax_result) {
+        return false;
+      }
+
 			return this.optional(element) || !/Invalid|NaN/.test(new Date(newValue).toString());
 		},
 

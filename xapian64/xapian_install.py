@@ -96,6 +96,8 @@ def xcore():
 def xbindings():
     """Установка биндингов
        для python3 требуется python3-sphinx
+       apt-get install python3-sphinx
+       pip uninstall sphinx
        pip install sphinx
        после этого поедет сборка
     """
@@ -106,7 +108,9 @@ def xbindings():
 def xhunspell():
     """Установка hunspell
        т/к мы в виртуальном окружении,
-       TOO: передалать на setup.py install
+       apt install hunspell libhunspell-dev python3-hunspell
+       затем через setup.py install
+       TOOO: передалать на setup.py install
     """
     os.system('cd %s && ./configure --prefix=%s' % (hunspell_path, xapian_path))
     os.system('cd '+hunspell_path+' && '+ gmake)

@@ -1,0 +1,39 @@
+It is a common practice to highlight words in search result which matches
+terms of the search query.
+
+What we need is the xapian.QueryParser object used by
+Indexer._parse_query(), which is already a part of ResultSet, and the query
+string.
+
+Here is a generic idea following:
+
+# Inside a model's views.py:
+
+...
+
+results = MyModel.indexer.search(query).spell_correction()
+
+# we have to call count(), get_corrected_query_string() or any other method
+which calls ResultSet._get_mset()
+corrected_query = results.get_corrected_query_string()
+
+# prepare a list of normalized search terms to be used for highlighting
+results._query_parser.set_stemming_strategy(xapian.QueryParser.STEM_ALL)
+search_terms = list(results._query_parser.parse_query(results._query_str))
+
+...
+# highlighting query terms in result hit, for each result hit in results
+
+value = result.instance.<field_name>
+
+stem = xapian.Stem(settings.DJAPIAN_STEMMING_LANG)
+# some wise method of splitting text into words could be used here
+for word in value.split():
+    # we should check if a stemmed version of the word matches any search
+term (which were stemmed above)
+    if stem(word.lower()) in search_terms:
+        # do highlighting here: each highlighted word is going to put into
+<tag></tag>
+        value = value.replace(word, u'<%(tag)s>%(word)s</%(tag)s>' %
+dict(tag=tag, word=word))
+

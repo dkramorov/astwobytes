@@ -1,0 +1,3831 @@
+<!DOCTYPE html>
+<html class="wf-proximanova-n6-active wf-proximanova-n4-active wf-proximanova-i4-active wf-proximanova-n3-active wf-active" style="" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><script type="text/javascript" async="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/linkid.js"></script><script type="text/javascript" async="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/conversion_async.js"></script><script async="" id="demandbase_js_lib" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/014ab3bd.js"></script><script type="text/javascript" async="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/analytics.js"></script><script type="text/javascript" async="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/qevents.txt"></script>
+    <title>How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04 | DigitalOcean</title>
+
+<meta name="description" content="NGINX is a fast and reliable open-source web server. It gained its popularity due to its low memory footprint, high scalability, ease of configuration, and support for the vast majority of different protocols. The main advantage of HTTP/2 is its high">
+<meta name="keywords" content="Nginx">
+
+<meta name="og:title" content="How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04 | DigitalOcean">
+<meta name="og:description" content="NGINX is a fast and reliable open-source web server. It gained its popularity due to its low memory footprint, high scalability, ease of configuration, and support for the vast majority of different protocols. The main advantage of HTTP/2 is its high">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04 | DigitalOcean">
+<meta name="twitter:description" content="NGINX is a fast and reliable open-source web server. It gained its popularity due to its low memory footprint, high scalability, ease of configuration, and support for the vast majority of different protocols. The main advantage of HTTP/2 is its high">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo">
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04">
+
+<meta property="og:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/NGINX_http2_tw_mostov.png.jpg?1468952433">
+<meta name="twitter:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/NGINX_http2_tw_mostov.png.jpg?1468952433">
+
+  <link rel="canonical" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04">
+
+
+    <link rel="stylesheet" media="all" href="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/application-3581ecf47493bb94fe7e22837f582073.css">
+
+    
+    <meta name="csrf-param" content="authenticity_token">
+<meta name="csrf-token" content="rMXBwSOO8E8lz7dvZ2m78uibTLwDX6Dm18gkVZuKzrHc5Ym8NKSz6AhNU0H9otb/fuTa6vmujRs4QTZFXsKaag==">
+      <script async="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/gtm.js"></script><script type="text/javascript" async="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/analytics_002.js"></script><script src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/izu1uqu.js"></script>
+      <style type="text/css">.tk-proxima-nova{font-family:"proxima-nova",sans-serif;}</style><style type="text/css">@font-face{font-family:tk-proxima-nova-n6;src:url(https://use.typekit.net/af/138935/00000000000000003b9b0939/27/l?subset_id=2&fvd=n6&v=3) format("woff2"),url(https://use.typekit.net/af/138935/00000000000000003b9b0939/27/d?subset_id=2&fvd=n6&v=3) format("woff"),url(https://use.typekit.net/af/138935/00000000000000003b9b0939/27/a?subset_id=2&fvd=n6&v=3) format("opentype");font-weight:600;font-style:normal;}@font-face{font-family:tk-proxima-nova-n4;src:url(https://use.typekit.net/af/03ff77/00000000000000003b9b0934/27/l?subset_id=2&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/03ff77/00000000000000003b9b0934/27/d?subset_id=2&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/03ff77/00000000000000003b9b0934/27/a?subset_id=2&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;}@font-face{font-family:tk-proxima-nova-i4;src:url(https://use.typekit.net/af/d0b1d4/00000000000000003b9b0935/27/l?subset_id=2&fvd=i4&v=3) format("woff2"),url(https://use.typekit.net/af/d0b1d4/00000000000000003b9b0935/27/d?subset_id=2&fvd=i4&v=3) format("woff"),url(https://use.typekit.net/af/d0b1d4/00000000000000003b9b0935/27/a?subset_id=2&fvd=i4&v=3) format("opentype");font-weight:400;font-style:italic;}@font-face{font-family:tk-proxima-nova-n3;src:url(https://use.typekit.net/af/faad97/00000000000000003b9b0932/27/l?subset_id=2&fvd=n3&v=3) format("woff2"),url(https://use.typekit.net/af/faad97/00000000000000003b9b0932/27/d?subset_id=2&fvd=n3&v=3) format("woff"),url(https://use.typekit.net/af/faad97/00000000000000003b9b0932/27/a?subset_id=2&fvd=n3&v=3) format("opentype");font-weight:300;font-style:normal;}</style><script>try{Typekit.load({ async: true });}catch(e){}</script>
+      <script src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/polyfill.js"></script>
+    <script src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/bugsnag-2.js" data-apikey="9ffc01bc3e1fa7891bfd20909d1bfb0e">
+    </script>
+    <script type="text/javascript">
+      if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",
+      window.analytics.load("puo3uv968t")}
+      window.analytics.page();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="https://www.digitalocean.com/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community'
+      };
+    </script>
+      <script src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/forms2.js"></script>
+
+    <script src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/application-513d1423e401e0f9e93164d7cec61ba2.js"></script>
+  <style>.fluidvids {width: 100%; max-width: 100%; position: relative;}.fluidvids-item {position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;}</style><script id="twitter-wjs" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/widgets.js"></script><script id="facebook-jssdk" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/all.js"></script><link id="mktoForms2BaseStyle" rel="stylesheet" type="text/css" href="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/forms2.css"><style type="text/css">@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/138935/00000000000000003b9b0939/27/l?subset_id=2&fvd=n6&v=3) format("woff2"),url(https://use.typekit.net/af/138935/00000000000000003b9b0939/27/d?subset_id=2&fvd=n6&v=3) format("woff"),url(https://use.typekit.net/af/138935/00000000000000003b9b0939/27/a?subset_id=2&fvd=n6&v=3) format("opentype");font-weight:600;font-style:normal;}@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/03ff77/00000000000000003b9b0934/27/l?subset_id=2&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/03ff77/00000000000000003b9b0934/27/d?subset_id=2&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/03ff77/00000000000000003b9b0934/27/a?subset_id=2&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;}@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/d0b1d4/00000000000000003b9b0935/27/l?subset_id=2&fvd=i4&v=3) format("woff2"),url(https://use.typekit.net/af/d0b1d4/00000000000000003b9b0935/27/d?subset_id=2&fvd=i4&v=3) format("woff"),url(https://use.typekit.net/af/d0b1d4/00000000000000003b9b0935/27/a?subset_id=2&fvd=i4&v=3) format("opentype");font-weight:400;font-style:italic;}@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/faad97/00000000000000003b9b0932/27/l?subset_id=2&fvd=n3&v=3) format("woff2"),url(https://use.typekit.net/af/faad97/00000000000000003b9b0932/27/d?subset_id=2&fvd=n3&v=3) format("woff"),url(https://use.typekit.net/af/faad97/00000000000000003b9b0932/27/a?subset_id=2&fvd=n3&v=3) format("opentype");font-weight:300;font-style:normal;}</style><link id="mktoForms2ThemeStyle" rel="stylesheet" type="text/css" href="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/forms2-theme-simple.css"><style type="text/css">.fb_hidden{position:absolute;top:-10000px;z-index:10001}.fb_reposition{overflow:hidden;position:relative}.fb_invisible{display:none}.fb_reset{background:none;border:0;border-spacing:0;color:#000;cursor:auto;direction:ltr;font-family:"lucida grande", tahoma, verdana, arial, sans-serif;font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal}.fb_reset>div{overflow:hidden}.fb_link img{border:none}@keyframes fb_transform{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}.fb_animate{animation:fb_transform .3s forwards}
+.fb_dialog{background:rgba(82, 82, 82, .7);position:absolute;top:-10000px;z-index:10001}.fb_reset .fb_dialog_legacy{overflow:visible}.fb_dialog_advanced{padding:10px;border-radius:8px}.fb_dialog_content{background:#fff;color:#333}.fb_dialog_close_icon{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;cursor:pointer;display:block;height:15px;position:absolute;right:18px;top:17px;width:15px}.fb_dialog_mobile .fb_dialog_close_icon{top:5px;left:5px;right:auto}.fb_dialog_padding{background-color:transparent;position:absolute;width:1px;z-index:-1}.fb_dialog_close_icon:hover{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent}.fb_dialog_close_icon:active{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent}.fb_dialog_loader{background-color:#f6f7f9;border:1px solid #606060;font-size:24px;padding:20px}.fb_dialog_top_left,.fb_dialog_top_right,.fb_dialog_bottom_left,.fb_dialog_bottom_right{height:10px;width:10px;overflow:hidden;position:absolute}.fb_dialog_top_left{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/8YeTNIlTZjm.png) no-repeat 0 0;left:-10px;top:-10px}.fb_dialog_top_right{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/8YeTNIlTZjm.png) no-repeat 0 -10px;right:-10px;top:-10px}.fb_dialog_bottom_left{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/8YeTNIlTZjm.png) no-repeat 0 -20px;bottom:-10px;left:-10px}.fb_dialog_bottom_right{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/8YeTNIlTZjm.png) no-repeat 0 -30px;right:-10px;bottom:-10px}.fb_dialog_vert_left,.fb_dialog_vert_right,.fb_dialog_horiz_top,.fb_dialog_horiz_bottom{position:absolute;background:#525252;filter:alpha(opacity=70);opacity:.7}.fb_dialog_vert_left,.fb_dialog_vert_right{width:10px;height:100%}.fb_dialog_vert_left{margin-left:-10px}.fb_dialog_vert_right{right:0;margin-right:-10px}.fb_dialog_horiz_top,.fb_dialog_horiz_bottom{width:100%;height:10px}.fb_dialog_horiz_top{margin-top:-10px}.fb_dialog_horiz_bottom{bottom:0;margin-bottom:-10px}.fb_dialog_iframe{line-height:0}.fb_dialog_content .dialog_title{background:#6d84b4;border:1px solid #365899;color:#fff;font-size:14px;font-weight:bold;margin:0}.fb_dialog_content .dialog_title>span{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yd/r/Cou7n-nqK52.gif) no-repeat 5px 50%;float:left;padding:5px 0 7px 26px}body.fb_hidden{-webkit-transform:none;height:100%;margin:0;overflow:visible;position:absolute;top:-10000px;left:0;width:100%}.fb_dialog.fb_dialog_mobile.loading{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/ya/r/3rhSv5V8j3o.gif) white no-repeat 50% 50%;min-height:100%;min-width:100%;overflow:hidden;position:absolute;top:0;z-index:10001}.fb_dialog.fb_dialog_mobile.loading.centered{width:auto;height:auto;min-height:initial;min-width:initial;background:none}.fb_dialog.fb_dialog_mobile.loading.centered #fb_dialog_loader_spinner{width:100%}.fb_dialog.fb_dialog_mobile.loading.centered .fb_dialog_content{background:none}.loading.centered #fb_dialog_loader_close{color:#fff;display:block;padding-top:20px;clear:both;font-size:18px}#fb-root #fb_dialog_ipad_overlay{background:rgba(0, 0, 0, .45);position:absolute;bottom:0;left:0;right:0;top:0;width:100%;min-height:100%;z-index:10000}#fb-root #fb_dialog_ipad_overlay.hidden{display:none}.fb_dialog.fb_dialog_mobile.loading iframe{visibility:hidden}.fb_dialog_content .dialog_header{-webkit-box-shadow:white 0 1px 1px -1px inset;background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#738ABA), to(#2C4987));border-bottom:1px solid;border-color:#1d4088;color:#fff;font:14px Helvetica, sans-serif;font-weight:bold;text-overflow:ellipsis;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0;vertical-align:middle;white-space:nowrap}.fb_dialog_content .dialog_header table{-webkit-font-smoothing:subpixel-antialiased;height:43px;width:100%}.fb_dialog_content .dialog_header td.header_left{font-size:12px;padding-left:5px;vertical-align:middle;width:60px}.fb_dialog_content .dialog_header td.header_right{font-size:12px;padding-right:5px;vertical-align:middle;width:60px}.fb_dialog_content .touchable_button{background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#4966A6), color-stop(.5, #355492), to(#2A4887));border:1px solid #29487d;-webkit-background-clip:padding-box;-webkit-border-radius:3px;-webkit-box-shadow:rgba(0, 0, 0, .117188) 0 1px 1px inset, rgba(255, 255, 255, .167969) 0 1px 0;display:inline-block;margin-top:3px;max-width:85px;line-height:18px;padding:4px 12px;position:relative}.fb_dialog_content .dialog_header .touchable_button input{border:none;background:none;color:#fff;font:12px Helvetica, sans-serif;font-weight:bold;margin:2px -12px;padding:2px 6px 3px 6px;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog_content .dialog_header .header_center{color:#fff;font-size:16px;font-weight:bold;line-height:18px;text-align:center;vertical-align:middle}.fb_dialog_content .dialog_content{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;border:1px solid #555;border-bottom:0;border-top:0;height:150px}.fb_dialog_content .dialog_footer{background:#f6f7f9;border:1px solid #555;border-top-color:#ccc;height:40px}#fb_dialog_loader_close{float:left}.fb_dialog.fb_dialog_mobile .fb_dialog_close_button{text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog.fb_dialog_mobile .fb_dialog_close_icon{visibility:hidden}#fb_dialog_loader_spinner{animation:rotateSpinner 1.2s linear infinite;background-color:transparent;background-image:url(https://static.xx.fbcdn.net/rsrc.php/v3/yD/r/t-wz8gw1xG1.png);background-repeat:no-repeat;background-position:50% 50%;height:24px;width:24px}@keyframes rotateSpinner{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.fb_iframe_widget{display:inline-block;position:relative}.fb_iframe_widget span{display:inline-block;position:relative;text-align:justify}.fb_iframe_widget iframe{position:absolute}.fb_iframe_widget_fluid_desktop,.fb_iframe_widget_fluid_desktop span,.fb_iframe_widget_fluid_desktop iframe{max-width:100%}.fb_iframe_widget_fluid_desktop iframe{min-width:220px;position:relative}.fb_iframe_widget_lift{z-index:1}.fb_hide_iframes iframe{position:relative;left:-10000px}.fb_iframe_widget_loader{position:relative;display:inline-block}.fb_iframe_widget_fluid{display:inline}.fb_iframe_widget_fluid span{width:100%}.fb_iframe_widget_loader iframe{min-height:32px;z-index:2;zoom:1}.fb_iframe_widget_loader .FB_Loader{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/y9/r/jKEcVPZFk-2.gif) no-repeat;height:32px;width:32px;margin-left:-16px;position:absolute;left:50%;z-index:4}
+.fb_customer_chat_bounce_in{animation-duration:250ms;animation-name:fb_bounce_in}.fb_customer_chat_bounce_out{animation-duration:250ms;animation-name:fb_fade_out}.fb_invisible_flow{display:inherit;height:0;overflow-x:hidden;width:0}.fb_mobile_overlay_active{background-color:#fff;height:100%;overflow:hidden;position:fixed;visibility:hidden;width:100%}@keyframes fb_fade_out{from{opacity:1}to{opacity:0}}@keyframes fb_bounce_in{0%{opacity:0;transform:scale(.8, .8);transform-origin:100% 100%}10%{opacity:.1}20%{opacity:.2}30%{opacity:.3}40%{opacity:.4}50%{opacity:.5}60%{opacity:.6}70%{opacity:.7}80%{opacity:.8;transform:scale(1.03, 1.03)}90{opacity:.9}100%{opacity:1;transform:scale(1, 1)}}</style><script src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/a.js"></script></head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011" data-completed-tutorial-id="" data-tutorial-id="1922" data-js="tutorial">
+    <script>
+//<![CDATA[
+
+//]]>
+</script>
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-KHWBBT"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KHWBBT');</script>
+<!-- End Google Tag Manager -->
+
+    
+
+    <div class="outside_viewport">
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal tocify"><ul id="tocify-header0" class="tocify-header"><li class="tocify-item tocify-focus" data-unique="prerequisites"><a>Prerequisites</a></li></ul><ul id="tocify-header1" class="tocify-header"><li class="tocify-item" data-unique="differences-between-http-11-and-http2"><a>Differences Between HTTP 1.1 and HTTP/2</a></li></ul><ul id="tocify-header2" class="tocify-header"><li class="tocify-item" data-unique="step-1-—-installing-the-latest-version-of-nginx"><a>Step 1 — Installing the Latest Version of Nginx</a></li></ul><ul id="tocify-header3" class="tocify-header"><li class="tocify-item" data-unique="step-2-—-changing-the-listening-port-and-enabling-http2"><a>Step 2 — Changing the Listening Port and Enabling HTTP/2</a></li></ul><ul id="tocify-header4" class="tocify-header"><li class="tocify-item" data-unique="step-3-—-changing-the-server-name"><a>Step 3 — Changing the Server Name</a></li></ul><ul id="tocify-header5" class="tocify-header"><li class="tocify-item" data-unique="step-4-—-adding-the-ssl-certificates"><a>Step 4 —&nbsp;Adding the SSL Certificates</a></li></ul><ul id="tocify-header6" class="tocify-header"><li class="tocify-item" data-unique="step-5-—-avoiding-old-cipher-suites"><a>Step 5 — Avoiding Old Cipher Suites</a></li></ul><ul id="tocify-header7" class="tocify-header"><li class="tocify-item" data-unique="step-6-—-increasing-key-exchange-security"><a>Step 6 — Increasing Key Exchange Security</a></li></ul><ul id="tocify-header8" class="tocify-header"><li class="tocify-item" data-unique="step-7-—-redirecting-all-http-request-to-https"><a>Step 7 — Redirecting all HTTP Request to HTTPS</a></li></ul><ul id="tocify-header9" class="tocify-header"><li class="tocify-item" data-unique="step-8-—-reloading-nginx"><a>Step 8 — Reloading Nginx</a></li></ul><ul id="tocify-header10" class="tocify-header"><li class="tocify-item" data-unique="step-9-—-verifying-the-changes"><a>Step 9 — Verifying the Changes</a></li></ul><ul id="tocify-header11" class="tocify-header"><li class="tocify-item" data-unique="step-10-—-optimizing-nginx-for-best-performance"><a>Step 10 —  Optimizing Nginx for Best Performance</a></li></ul><ul id="tocify-header12" class="tocify-header"><li class="tocify-item" data-unique="conclusion"><a>Conclusion</a></li></ul></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How%20To%20Set%20Up%20Nginx%20with%20HTTP/2%20Support%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How%20To%20Set%20Up%20Nginx%20with%20HTTP/2%20Support%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon facebook-share" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" onclick="" title="Share on Facebook">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link facebook-share" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" onclick="" title="Share on Facebook">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbGoogle">
+              <a href="https://plus.google.com/share?url=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=gpshare" class="share-icon share-popup" title="Share on Google+">
+                <span class="sIcon icon-google-plus-B"></span>
+              </a>
+              <a href="https://plus.google.com/share?url=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=gpshare" class="share-link share-popup" title="Share on Google+">
+                Google+
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How%20To%20Set%20Up%20Nginx%20with%20HTTP/2%20Support%20on%20Ubuntu%2016.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How%20To%20Set%20Up%20Nginx%20with%20HTTP/2%20Support%20on%20Ubuntu%2016.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents has-init" style="top: 198px;">
+    <div data-js="tableOfContentsDesktop" class="tocify"><ul id="tocify-header0" class="tocify-header"><li class="tocify-item tocify-focus" data-unique="prerequisites"><a>Prerequisites</a></li></ul><ul id="tocify-header1" class="tocify-header"><li class="tocify-item" data-unique="differences-between-http-11-and-http2"><a>Differences Between HTTP 1.1 and HTTP/2</a></li></ul><ul id="tocify-header2" class="tocify-header"><li class="tocify-item" data-unique="step-1-—-installing-the-latest-version-of-nginx"><a>Step 1 — Installing the Latest Version of Nginx</a></li></ul><ul id="tocify-header3" class="tocify-header"><li class="tocify-item" data-unique="step-2-—-changing-the-listening-port-and-enabling-http2"><a>Step 2 — Changing the Listening Port and Enabling HTTP/2</a></li></ul><ul id="tocify-header4" class="tocify-header"><li class="tocify-item" data-unique="step-3-—-changing-the-server-name"><a>Step 3 — Changing the Server Name</a></li></ul><ul id="tocify-header5" class="tocify-header"><li class="tocify-item" data-unique="step-4-—-adding-the-ssl-certificates"><a>Step 4 —&nbsp;Adding the SSL Certificates</a></li></ul><ul id="tocify-header6" class="tocify-header"><li class="tocify-item" data-unique="step-5-—-avoiding-old-cipher-suites"><a>Step 5 — Avoiding Old Cipher Suites</a></li></ul><ul id="tocify-header7" class="tocify-header"><li class="tocify-item" data-unique="step-6-—-increasing-key-exchange-security"><a>Step 6 — Increasing Key Exchange Security</a></li></ul><ul id="tocify-header8" class="tocify-header"><li class="tocify-item" data-unique="step-7-—-redirecting-all-http-request-to-https"><a>Step 7 — Redirecting all HTTP Request to HTTPS</a></li></ul><ul id="tocify-header9" class="tocify-header"><li class="tocify-item" data-unique="step-8-—-reloading-nginx"><a>Step 8 — Reloading Nginx</a></li></ul><ul id="tocify-header10" class="tocify-header"><li class="tocify-item" data-unique="step-9-—-verifying-the-changes"><a>Step 9 — Verifying the Changes</a></li></ul><ul id="tocify-header11" class="tocify-header"><li class="tocify-item" data-unique="step-10-—-optimizing-nginx-for-best-performance"><a>Step 10 —  Optimizing Nginx for Best Performance</a></li></ul><ul id="tocify-header12" class="tocify-header"><li class="tocify-item" data-unique="conclusion"><a>Conclusion</a></li></ul></div>
+    <button type="button" class="Button--reset Tutorial-button " data-js="markAsComplete" data-tutorialinteraction="" data-tutorialsingle=""><svg class="svg-icon svg-icon-completed"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed"></use></svg><span>Mark as Complete</span></button>
+  </div>
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How%20To%20Set%20Up%20Nginx%20with%20HTTP/2%20Support%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How%20To%20Set%20Up%20Nginx%20with%20HTTP/2%20Support%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon facebook-share" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" onclick="" title="Share on Facebook">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link facebook-share" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" onclick="" title="Share on Facebook">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbGoogle">
+              <a href="https://plus.google.com/share?url=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=gpshare" class="share-icon share-popup" title="Share on Google+">
+                <span class="sIcon icon-google-plus-B"></span>
+              </a>
+              <a href="https://plus.google.com/share?url=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=gpshare" class="share-link share-popup" title="Share on Google+">
+                Google+
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How%20To%20Set%20Up%20Nginx%20with%20HTTP/2%20Support%20on%20Ubuntu%2016.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How%20To%20Set%20Up%20Nginx%20with%20HTTP/2%20Support%20on%20Ubuntu%2016.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog reveal" data-newsletter-signup-dialog="" data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss="">×</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" value="✓" type="hidden">
+
+  <input data-newsletter-signup-field="url" name="newsletter_signup[url]" id="newsletter_signup_url" type="hidden">
+  <input data-newsletter-signup-field="title" name="newsletter_signup[title]" id="newsletter_signup_title" type="hidden">
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error=""></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" name="newsletter_signup[email]" id="newsletter_signup_email" type="email">
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful=""> 
+  <div class="pull-right"> 
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss icon icon-close-light" data-newsletter-signup-dismiss=""></a> 
+  </div> 
+
+  <span class="newsletter-signups-dialog-success"> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      <div class="mobile-nav">
+  
+<div class="account-buttons">
+    <div id="entrance">
+      <a id="sign-up" class="button" href="https://www.digitalocean.com/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+      <a id="log-in" class="button" href="https://www.digitalocean.com/community/auth/digitalocean">Log In</a>
+    </div>
+</div>
+
+  <button type="button" aria-label="close" class="close-panel icon-close"></button>
+
+  <form class="mobile-search" role="search" action="/community/search" accept-charset="UTF-8" method="get"><input name="utf8" value="✓" type="hidden">
+    <span class="icon icon-search-thin"></span>
+    <input name="q" id="q" title="Search" placeholder="Search" type="text">
+    <button name="button" type="submit" class="icon-btn">submit</button>
+</form>
+  
+<nav>
+
+  <ul>
+    <li><a class="active" href="https://www.digitalocean.com/community/tutorials">Tutorials</a></li>
+    <li><a href="https://www.digitalocean.com/community/questions">Questions</a></li>
+    <li><a href="https://www.digitalocean.com/community/projects">Projects</a></li>
+    <li><a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_community" target="_blank">Meetups</a></li>
+    <li class="mobile-nav-only"><a href="https://www.digitalocean.com/">Main Site</a></li>
+  </ul>
+</nav>
+
+  
+</div>
+
+      
+      <header>
+  <div class="flash-container"></div>
+
+  <div class="main-menu-container">
+    <div class="wrapper">
+      <div class="logo">
+        <a class="logo-icon" href="https://www.digitalocean.com/">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 32" class="do-icon">
+<title>DigitalOcean</title>
+<path class="path1" d="M16.016 32v-6.204c6.584 0 11.648-6.52 9.147-13.42-0.95-2.564-2.975-4.59-5.539-5.539-6.9-2.501-13.42 2.564-13.42 9.147 0 0 0 0 0 0l-6.204 0.032c0-10.477 10.129-18.643 21.112-15.225 4.811 1.488 8.609 5.317 10.097 10.097 3.418 10.983-4.716 21.112-15.193 21.112z"></path>
+<path class="path2" d="M16.016 25.828h-6.172v-6.172h6.172z"></path>
+<path class="path3" d="M9.844 30.576h-4.748v-4.748h4.748v4.748z"></path>
+<path class="path4" d="M5.096 25.828h-3.988v-3.988h3.988z"></path>
+<path class="path5" d="M56.973 9.242c-1.836-1.266-4.115-1.931-6.773-1.931h-5.792v18.39h5.792c2.659 0 4.938-0.665 6.773-2.026 1.013-0.696 1.804-1.709 2.342-2.944s0.823-2.69 0.823-4.336c0-1.614-0.285-3.070-0.823-4.305-0.538-1.203-1.329-2.152-2.342-2.849zM47.794 10.445h1.836c2.026 0 3.703 0.411 4.969 1.171 1.393 0.855 2.121 2.469 2.121 4.779 0 2.406-0.728 4.083-2.121 5.001v0c-1.203 0.791-2.88 1.203-4.938 1.203h-1.867v-12.154z"></path>
+<path class="path6" d="M64.19 7.122c-0.57 0-1.044 0.19-1.424 0.57s-0.601 0.855-0.601 1.393c0 0.57 0.19 1.044 0.601 1.424 0.38 0.38 0.855 0.601 1.424 0.601s1.044-0.19 1.424-0.601c0.38-0.38 0.601-0.886 0.601-1.424 0-0.57-0.19-1.044-0.601-1.393-0.38-0.38-0.886-0.57-1.424-0.57z"></path>
+<path class="path7" d="M62.512 12.787h3.26v12.977h-3.26v-12.977z"></path>
+<path class="path8" d="M77.642 13.864c-0.981-0.886-2.089-1.393-3.26-1.393-1.804 0-3.292 0.633-4.463 1.836s-1.741 2.785-1.741 4.653c0 1.836 0.57 3.387 1.741 4.653 1.171 1.203 2.659 1.836 4.463 1.836 1.266 0 2.342-0.348 3.228-1.044v0.285c0 1.076-0.285 1.899-0.855 2.5-0.57 0.57-1.361 0.855-2.342 0.855-1.519 0-2.437-0.601-3.608-2.152l-2.216 2.121 0.063 0.095c0.475 0.665 1.203 1.329 2.184 1.962s2.184 0.95 3.64 0.95c1.931 0 3.513-0.601 4.653-1.773 1.171-1.171 1.741-2.754 1.741-4.716v-11.743h-3.197v1.076zM76.787 21.523c-0.57 0.633-1.298 0.95-2.247 0.95s-1.678-0.317-2.216-0.95c-0.57-0.633-0.855-1.488-0.855-2.532s0.285-1.931 0.855-2.564c0.57-0.633 1.298-0.981 2.216-0.981 0.95 0 1.678 0.317 2.247 0.981 0.57 0.633 0.855 1.519 0.855 2.564s-0.317 1.899-0.855 2.532z"></path>
+<path class="path9" d="M83.624 12.787h3.26v12.977h-3.26v-12.977z"></path>
+<path class="path10" d="M85.302 7.122c-0.57 0-1.044 0.19-1.424 0.57s-0.601 0.855-0.601 1.393c0 0.57 0.19 1.044 0.601 1.424 0.38 0.38 0.855 0.601 1.424 0.601s1.044-0.19 1.424-0.601c0.38-0.38 0.601-0.886 0.601-1.424 0-0.57-0.19-1.044-0.601-1.393-0.38-0.38-0.886-0.57-1.424-0.57z"></path>
+<path class="path11" d="M94.038 9.274h-3.197v3.513h-1.867v2.975h1.867v5.381c0 1.678 0.348 2.88 1.013 3.577s1.836 1.044 3.513 1.044c0.538 0 1.076-0.032 1.583-0.063h0.158v-2.975l-1.108 0.063c-0.791 0-1.298-0.127-1.551-0.411s-0.38-0.855-0.38-1.709v-4.906h3.039v-2.975h-3.039v-3.513z"></path>
+<path class="path12" d="M112.364 7.343h3.26v18.39h-3.26v-18.39z"></path>
+<path class="path13" d="M148.574 21.112c-0.57 0.665-1.171 1.234-1.646 1.519v0c-0.443 0.285-1.013 0.443-1.678 0.443-0.95 0-1.741-0.348-2.374-1.076s-0.95-1.646-0.95-2.754 0.317-2.026 0.918-2.722c0.633-0.728 1.393-1.076 2.342-1.076 1.044 0 2.152 0.665 3.102 1.773l2.152-2.057c-1.393-1.836-3.197-2.69-5.349-2.69-1.804 0-3.355 0.665-4.621 1.931s-1.899 2.912-1.899 4.843 0.633 3.545 1.899 4.843c1.266 1.298 2.817 1.931 4.621 1.931 2.374 0 4.273-1.013 5.539-2.88l-2.057-2.026z"></path>
+<path class="path14" d="M161.962 14.591c-0.475-0.633-1.108-1.171-1.867-1.551-0.791-0.38-1.678-0.57-2.69-0.57-1.836 0-3.323 0.665-4.431 1.994-1.076 1.329-1.646 2.944-1.646 4.874 0 1.962 0.601 3.577 1.804 4.843 1.171 1.234 2.785 1.867 4.716 1.867 2.184 0 4.020-0.886 5.349-2.659l0.063-0.095-2.121-2.057c-0.19 0.253-0.475 0.506-0.728 0.76-0.317 0.317-0.633 0.538-0.95 0.696-0.475 0.253-1.044 0.348-1.646 0.348-0.918 0-1.646-0.253-2.216-0.791-0.538-0.475-0.855-1.139-0.918-1.962h8.641l0.032-1.203c0-0.855-0.127-1.646-0.348-2.406-0.222-0.728-0.57-1.456-1.044-2.089zM154.841 17.63c0.158-0.633 0.443-1.139 0.855-1.551 0.443-0.443 1.013-0.665 1.709-0.665 0.791 0 1.393 0.222 1.804 0.665 0.38 0.411 0.601 0.918 0.665 1.519h-5.033z"></path>
+<path class="path15" d="M174.497 13.737v0c-0.981-0.855-2.342-1.266-4.051-1.266-1.076 0-2.089 0.253-3.007 0.696-0.855 0.443-1.678 1.139-2.216 2.089l0.032 0.032 2.089 1.994c0.855-1.361 1.804-1.836 3.070-1.836 0.696 0 1.234 0.19 1.678 0.538s0.633 0.823 0.633 1.393v0.633c-0.823-0.253-1.614-0.38-2.406-0.38-1.614 0-2.944 0.38-3.925 1.139s-1.488 1.867-1.488 3.229c0 1.203 0.411 2.216 1.266 2.944 0.855 0.696 1.899 1.076 3.134 1.076s2.406-0.506 3.45-1.361v1.076h3.197v-8.324c0.063-1.583-0.443-2.817-1.456-3.672zM168.704 20.795c0.38-0.253 0.886-0.38 1.551-0.38 0.791 0 1.614 0.158 2.469 0.475v1.266c-0.696 0.665-1.646 0.981-2.817 0.981-0.57 0-1.013-0.127-1.298-0.38s-0.443-0.538-0.443-0.95c0-0.443 0.19-0.76 0.538-1.013z"></path>
+<path class="path16" d="M188.55 13.99c-0.918-1.013-2.184-1.519-3.798-1.519-1.298 0-2.342 0.38-3.134 1.108v-0.791h-3.197v12.977h3.26v-7.185c0-0.981 0.222-1.773 0.696-2.311 0.475-0.57 1.076-0.823 1.931-0.823 0.728 0 1.298 0.253 1.709 0.728 0.411 0.506 0.633 1.171 0.633 2.026v7.501h3.26v-7.47c0-1.804-0.443-3.229-1.361-4.241z"></path>
+<path class="path17" d="M108.281 13.737v0c-0.981-0.855-2.342-1.266-4.051-1.266-1.076 0-2.089 0.253-3.007 0.696-0.855 0.443-1.678 1.139-2.216 2.089l0.032 0.032 2.089 1.994c0.855-1.361 1.804-1.836 3.070-1.836 0.696 0 1.234 0.19 1.678 0.538s0.633 0.823 0.633 1.393v0.633c-0.823-0.253-1.614-0.38-2.406-0.38-1.614 0-2.944 0.38-3.925 1.139s-1.488 1.867-1.488 3.229c0 1.203 0.411 2.216 1.266 2.944 0.855 0.696 1.899 1.076 3.134 1.076s2.406-0.506 3.45-1.361v1.076h3.197v-8.324c0.032-1.583-0.475-2.817-1.456-3.672zM102.489 20.795c0.38-0.253 0.886-0.38 1.551-0.38 0.791 0 1.614 0.158 2.469 0.475v1.266c-0.696 0.665-1.646 0.981-2.817 0.981-0.57 0-1.013-0.127-1.298-0.38s-0.443-0.538-0.443-0.95c0-0.443 0.158-0.76 0.538-1.013z"></path>
+<path class="path18" d="M127.462 26.018c-5.223 0-9.496-4.241-9.496-9.496s4.241-9.496 9.496-9.496 9.496 4.241 9.496 9.496-4.273 9.496-9.496 9.496zM127.462 10.382c-3.387 0-6.14 2.754-6.14 6.14s2.754 6.14 6.14 6.14 6.14-2.754 6.14-6.14-2.754-6.14-6.14-6.14z"></path>
+</svg>
+
+          <span class="sr-only">DigitalOcean</span>
+</a>
+        <span class="logo-separator"></span>
+
+        <a class="home-link" href="https://www.digitalocean.com/community">
+          <span class="logo-community-text">Community</span>
+</a>      </div>
+
+      <a class="mobile-nav-toggle icon-menu-thin" data-role="left">
+        <span>Menu</span>
+      </a>
+
+      
+<nav>
+
+  <ul>
+    <li><a class="active" href="https://www.digitalocean.com/community/tutorials">Tutorials</a></li>
+    <li><a href="https://www.digitalocean.com/community/questions">Questions</a></li>
+    <li><a href="https://www.digitalocean.com/community/projects">Projects</a></li>
+    <li><a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_community" target="_blank">Meetups</a></li>
+    <li class="mobile-nav-only"><a href="https://www.digitalocean.com/">Main Site</a></li>
+  </ul>
+</nav>
+
+
+      
+<div class="account-buttons">
+    <div id="entrance">
+      <a id="sign-up" class="button" href="https://www.digitalocean.com/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+      <a id="log-in" class="button" href="https://www.digitalocean.com/community/auth/digitalocean">Log In</a>
+    </div>
+</div>
+      <div class="header-search open">
+  <form action="/community/search" accept-charset="UTF-8" method="get"><input name="utf8" value="✓" type="hidden">
+    <span class="icon icon-search-thin"></span>
+    <input name="q" id="q" title="Search" placeholder="Search" autocomplete="off" spellcheck="false" class="header-search__input" data-algolia-application-id="6ZHEUVKJ88" data-algolia-api-key="c5470567eae7fa1177d43222e18ba086" type="text">
+    <button name="button" type="submit" class="icon-btn">submit</button>
+</form></div>
+
+<div class="search-results-dropdown dropdown" data-root-path="https://www.digitalocean.com/community">
+  <div class="container">
+    <div class="header-search-results-list"></div>
+
+    <div id="btn-wrap">
+      <a class="more-search-results" data-search-path="/community/search" href="https://www.digitalocean.com/community/search">
+        <span class="icon-mag"></span>
+        View All Results
+</a>    </div>
+  </div>
+</div>
+
+<script type="text/template" id="autocomplete-hits-template">
+  <div class="inner-search">
+    <ul>
+        {{#hits}}
+          <li>
+            <span class='icon icon-{{type}}'></span>
+            <a href='{{url}}'>{{title}}</a>
+          </li>
+        {{/hits}}
+    </ul>
+  </div>
+</script>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    
+  </div>
+</header>
+
+
+      
+
+      <div class="wrapper layout-wrapper">
+
+        
+
+
+
+
+
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content content-has-mobile-image">
+  <div class="postable-info-bar-container">
+  <div class="postable-info-bar">
+    <div class="left-section">
+        <div class="tutorial-author-avatar">
+    <a href="https://www.digitalocean.com/community/users/lomand"><img alt="Lomand" class="avatar avatar-small" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/bdf4bd6c0e3c933b810d4684a1cd48a6.jpg" width="80" height="80"></a>
+  </div>
+  <div class="author-and-date">
+    <div class="tutorial-author">
+      <div class="by">By: </div>
+      <a href="https://www.digitalocean.com/community/users/lomand">Sergey Zhukaev</a>
+    </div>
+  </div>
+
+      
+    </div>
+
+    <div class="right-section">
+      
+
+
+      <div class="section-item section-item-subscribe">
+  <span class="opt-in-switch off signed-out-subscribe">
+    <span class="subscribe-label">
+      <span class="icon icon-subscribe"></span>
+      <span class="subscription-label subscribe">Subscribe</span>
+      <span class="icon icon-subscribed"></span>
+      <span class="subscription-label subscribed">Subscribed</span>
+    </span>
+    <a data-toggle="modal" data-target="#sign-in-modal" class="mini-switch-container" href="javascript:void(0);"><div class="mini-switch off signed-out-subscribe"><div class="switch-handle"></div></div></a>
+  </span>
+</div>
+
+<div class="section-item social-sharing-item">
+  <div class="sharing">
+  <a class="share-button" href="#" data-toggle="modal" data-target="#share-modal">
+    <span class="icon icon-share-square"></span>
+    <span class="share-button-text">Share</span>
+  </a>
+</div>
+
+</div>
+
+        <div class="section-item table-of-contents-triggers"><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+    <img alt="How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04" title="How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04" class="tutorial-image-mobile" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/NGINX_http2_tw_mostov.jpg">
+
+  <div class="container tutorial-header">
+      <img alt="How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04" title="How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04" class="tutorial-image" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/NGINX_http2_tw_mostov.jpg">
+
+      <div class="info-cta">
+    <a class="icon-close-light" href="javascript:void();"></a>
+    We hope you find this tutorial helpful. In addition to guides like 
+this one, we provide simple cloud infrastructure for developers. <a href="https://www.digitalocean.com/?utm_medium=community&amp;utm_source=community_gencta&amp;utm_campaign=needaserver&amp;utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04">
+        Learn more →
+</a>  </div>
+
+
+    <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="1922" data-upvotable-type="Tutorial"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">71</span></button>
+
+    <h1 class="content-title Tutorial-header">
+      <button type="button" class="Button--reset Tutorial-headerButton " data-toggle="tooltip" title="" data-js="markAsComplete" data-tutorialinteraction="" data-tutorialsingle="" data-original-title="Mark as Complete">
+        <svg class="svg-icon svg-icon-completed"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed"></use></svg>
+      </button> How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04
+    </h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">April 12, 2016</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">209.7k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="https://www.digitalocean.com/community/tags/nginx?type=tutorials">Nginx</a>
+      <a class="tag" href="https://www.digitalocean.com/community/tags/ubuntu?type=tutorials">Ubuntu</a> <a class="tag" href="https://www.digitalocean.com/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+
+    <div class="content-body tutorial-content" data-growable-markdown="">
+      <h3 id="introduction">Introduction</h3>
+
+<p>NGINX is a fast and reliable open-source web server. It gained its 
+popularity due to its low memory footprint, high scalability, ease of 
+configuration, and support for the vast majority of different protocols.</p>
+
+<p>One of the protocols supported is the relatively new HTTP/2, which 
+was published in May 2015. The main advantage of HTTP/2 is its high 
+transfer speed for content-rich websites.</p>
+
+<p>This tutorial will help you set up a fast and secure Nginx server with HTTP/2 support.</p>
+
+<div name="prerequisites" data-unique="prerequisites"></div><h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before we get started, we will need a few things:</p>
+
+<ul>
+<li>Ubuntu 16.04 Droplet</li>
+<li>Non-root user with sudo privileges (Check out <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04">Initial Server Setup with Ubuntu 16.04</a> for details.)</li>
+<li>Fully registered domain. You can purchase one on <a href="https://namecheap.com/">Namecheap</a> or get one for free on <a href="http://www.freenom.com/en/index.html">Freenom</a>.</li>
+<li>Make sure your domain name is configured to point to your Droplet. Check out <a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-a-host-name-with-digitalocean">this tutorial</a> if you need help.</li>
+<li>An SSL certificate. <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04">Generate a self-signed certificate</a>, <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">obtain a free one from Let's Encrypt</a>, or <a href="https://www.digitalocean.com/community/tutorials/how-to-install-an-ssl-certificate-from-a-commercial-certificate-authority">buy one from another provider</a>.</li>
+</ul>
+
+<p>That is all. If you have everything listed above, you are ready to go.</p>
+
+<div name="differences-between-http-11-and-http2" data-unique="differences-between-http-11-and-http2"></div><h2 id="differences-between-http-1-1-and-http-2">Differences Between HTTP 1.1 and HTTP/2</h2>
+
+<p>HTTP/2 is a new version of the Hypertext Transport Protocol, which is
+ used on the Web to deliver pages from server to browser. HTTP/2 is the 
+first major update of HTTP in almost two decades: HTTP1.1 was introduced
+ to the public back in 1999 when webpages were usually just a single 
+HTML file with inline CSS stylesheet. The Internet has dramatically 
+changed since then, and now we are facing the limitations of HTTP 1.1 — 
+the protocol limits potential transfer speeds for most modern websites 
+because it downloads parts of a page in a queue (the previous part must 
+download completely before the download of the next part begins), and an
+ average modern webpage requires about 100 request to be downloaded 
+(each request is a picture, js file, css file, etc).</p>
+
+<p>HTTP/2 solves this problem because it brings a few fundamental changes:</p>
+
+<ul>
+<li>All requests are downloaded in parallel, not in a queue</li>
+<li>HTTP headers are compressed</li>
+<li>Pages transfer as a binary, not as a text file, which is more efficient</li>
+<li>Servers can “push” data even without the user’s request, which improves speed for users with high latency</li>
+</ul>
+
+<p>Even though HTTP/2 does not require encryption, developers of two 
+most popular browsers, Google Chrome and Mozilla Firefox, stated that 
+for the security reasons they will support HTTP/2 only for HTTPS 
+connections. Hence, if you decide to set up servers with HTTP/2 support,
+ you must also secure them with HTTPS.</p>
+
+<div name="step-1-—-installing-the-latest-version-of-nginx" data-unique="step-1-—-installing-the-latest-version-of-nginx"></div><h2 id="step-1-—-installing-the-latest-version-of-nginx">Step 1 — Installing the Latest Version of Nginx</h2>
+
+<p>Support of the HTTP/2 protocol was introduced in Nginx 1.9.5. 
+Fortunately, the default repository in Ubuntu 16.04 contains a version 
+higher than this, so we don't have to add a third party repository. </p>
+
+<p>First, update the list of available packages in the apt packaging system: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-get update
+</li></ul></code></pre>
+<p>Then, install Nginx:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-get install nginx
+</li></ul></code></pre>
+<p>After the installation process finishes, you can check the version of Nginx by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nginx -v
+</li></ul></code></pre>
+<p>The output should be similar to the following:</p>
+<div class="code-label " title="Ouput of sudo nginx -v">Ouput of sudo nginx -v</div><pre class="code-pre "><code langs="">nginx version: nginx/1.10.0 (Ubuntu)
+</code></pre>
+<p>In the next several steps, we will modify the Nginx configuration 
+files. Each step will change an Nginx configuration option. We will test
+ the syntax of the configuration file along the way. Finally, we will 
+verify that Nginx supports HTTP/2 and make a few changes to optimize 
+performance.</p>
+
+<div name="step-2-—-changing-the-listening-port-and-enabling-http2" data-unique="step-2-—-changing-the-listening-port-and-enabling-http2"></div><h2 id="step-2-—-changing-the-listening-port-and-enabling-http-2">Step 2 — Changing the Listening Port and Enabling HTTP/2</h2>
+
+<p>The first change we will make will be to change the listening port from <code>80</code> to <code>443</code>.</p>
+
+<p>Let's open the configuration file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/nginx/sites-available/default
+</li></ul></code></pre>
+<p>By default, Nginx is set to listen to port 80, which is the standard HTTP port:</p>
+<div class="code-label " title="/etc/nginx/sites-available/default">/etc/nginx/sites-available/default</div><pre class="code-pre "><code langs="">listen <span class="highlight">80</span> default_server;
+listen [::]:<span class="highlight">80</span> default_server;
+</code></pre>
+<p>As you can see, we have two different <code>listen</code> variables. 
+The first one is for all IPv4 connections. The second one is for IPv6 
+connections. We will enable encryption for both.</p>
+
+<p>Modify the listening port to <code>443</code>, which is used by the HTTPS protocol:</p>
+<div class="code-label " title="/etc/nginx/sites-available/default">/etc/nginx/sites-available/default</div><pre class="code-pre "><code langs="">listen <span class="highlight">443 ssl http2</span> default_server;
+listen [::]:<span class="highlight">443 ssl http2</span> default_server;
+</code></pre>
+<p>Notice that in addition to <code>ssl</code>, we also added <code>http2</code> to the line. This variable tells Nginx to use HTTP/2 with supported browsers. </p>
+
+<div name="step-3-—-changing-the-server-name" data-unique="step-3-—-changing-the-server-name"></div><h2 id="step-3-—-changing-the-server-name">Step 3 — Changing the Server Name</h2>
+
+<p>We use the <code>server_name</code> entry to specify which domain should be associated with the configuration file. Locate the <code>server_name</code> entry in the configuration file.</p>
+
+<p>By default, <code>server_name</code> is set to <code>_</code> (underscore), which means the config file is responsible for all incoming requests. Change <code>_</code> to your actual domain, like this:</p>
+<div class="code-label " title="/etc/nginx/sites-available/default">/etc/nginx/sites-available/default</div><pre class="code-pre "><code langs="">server_name <span class="highlight">example.com</span>;
+</code></pre>
+<p>Save the configuration file and edit the text editor.</p>
+
+<p>Whenever you make changes to Nginx configuration files, you should check the configuration for syntax errors, like this:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nginx -t
+</li></ul></code></pre>
+<p>If the syntax is error-free, you will see the following output:</p>
+<div class="code-label " title="Output of sudo nginx -t">Output of sudo nginx -t</div><pre class="code-pre "><code langs="">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+</code></pre>
+<div name="step-4-—-adding-the-ssl-certificates" data-unique="step-4-—-adding-the-ssl-certificates"></div><h2 id="step-4-—&nbsp;adding-the-ssl-certificates">Step 4 —&nbsp;Adding the SSL Certificates</h2>
+
+<p>Next, you need to configure Nginx to use your SSL certificate. If you
+ don’t know what an SSL certificate is or currently don’t have any, 
+please follow one of the tutorials in the Prerequisites section of this 
+article.</p>
+
+<p>Create a directory to store your SSL certificates inside the Nginx configuration directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo mkdir /etc/nginx/ssl
+</li></ul></code></pre>
+<p>Copy your certificate and the private key to this location. We will 
+also rename the files to show which domain they are associated. This 
+will come in handy in the future, when you have more than one domain 
+associated with this server. Replace <code>example.com</code> with your actual hostname:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo cp /path/to/your/certificate.crt /etc/nginx/ssl/<span class="highlight">example.com</span>.crt
+</li><li class="line" prefix="$">sudo cp /path/to/your/private.key /etc/nginx/ssl/<span class="highlight">example.com</span>.key
+</li></ul></code></pre>
+<p>Now, let's open our configuration file one again and configure SSL. </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/nginx/sites-available/default
+</li></ul></code></pre>
+<p>On new lines inside the <code>server</code> block, define the location of your certificates:</p>
+<div class="code-label " title="/etc/nginx/sites-available/default">/etc/nginx/sites-available/default</div><pre class="code-pre "><code langs="">ssl_certificate /etc/nginx/ssl/<span class="highlight">example.com</span>.crt;
+ssl_certificate_key /etc/nginx/ssl/<span class="highlight">example.com</span>.key;
+</code></pre>
+<p>Save the file, and exit the text editor.</p>
+
+<div name="step-5-—-avoiding-old-cipher-suites" data-unique="step-5-—-avoiding-old-cipher-suites"></div><h2 id="step-5-—-avoiding-old-cipher-suites">Step 5 — Avoiding Old Cipher Suites</h2>
+
+<p>HTTP/2 has a <a href="https://http2.github.io/http2-spec/#BadCipherSuites">huge blacklist</a>
+ of old and insecure ciphers, so we must avoid them. Cipher suites are a
+ bunch of cryptographic algorithms, which describe how the transferring 
+data should be encrypted.  </p>
+
+<p>We will use a really popular cipher set, whose security was approved 
+by Internet giants like CloudFlare. It does not allow the usage of MD5 
+encryption (which was known as insecure since 1996, but despite this 
+fact, its use is widespread even to this day).</p>
+
+<p>Open the following configuration file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/nginx/nginx.conf
+</li></ul></code></pre>
+<p>Add this line after <code>ssl_prefer_server_ciphers on;</code>.</p>
+<div class="code-label " title="/etc/nginx/nginx.conf">/etc/nginx/nginx.conf</div><pre class="code-pre "><code langs="">ssl_ciphers EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
+</code></pre>
+<p>Save the file, and exit the text editor.</p>
+
+<p>Once again, check the configuration for syntax errors:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nginx -t
+</li></ul></code></pre>
+<div name="step-6-—-increasing-key-exchange-security" data-unique="step-6-—-increasing-key-exchange-security"></div><h2 id="step-6-—-increasing-key-exchange-security">Step 6 — Increasing Key Exchange Security</h2>
+
+<p>The first step in the establishment of a secure connection is the 
+exchange of the private keys between server and client. The problem is 
+that, up to this point, the connection between them is not encrypted — 
+which means the transferring of data is visible to any third party. That
+ is why we need the Diffie–Hellman–Merkle algorithm. The technical 
+details about how does it work is a complicated matter that cannot be 
+explained in a nutshell, but if you are really interested in details, 
+you can watch <a href="https://www.youtube.com/watch?v=M-0qt6tdHzk">this YouTube video</a>.</p>
+
+<p>By default, Nginx uses a 1028-bit DHE (Ephemeral Diffie-Hellman) key,
+ which is relatively easy to decrypt. To provide maximum security, we 
+should build our own, more secure DHE key.</p>
+
+<p>To do it, issue the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo openssl dhparam -out <span class="highlight">/etc/nginx/ssl/</span>dhparam.pem 2048
+</li></ul></code></pre>
+<p><span class="note">Keep in mind that we should generate DH parameters
+ in the same folder as our SSL certificates. In this tutorial, the 
+certificates are located in <code>/etc/nginx/ssl/</code>. The reason for this is that Nginx always looks for user-provided DHE key in the certificates folder and uses it if exists.<br></span></p>
+
+<p>The variable after the file path (in our case it is <code>2048</code>) specifies the length of the key. A key with a 2048-bit length is secure enough and <a href="https://wiki.mozilla.org/Security/Server_Side_TLS#Pre-defined_DHE_groups">recommended by the Mozilla Foundation</a>, but if you are looking for even more encryption, you can change it to <code>4096</code>.</p>
+
+<p>The generation process will take about 5 minutes.</p>
+
+<p>Once it is complete, open the default Nginx configuration file again:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/nginx/sites-available/default
+</li></ul></code></pre>
+<p>On a new line inside <code>server</code> block, define the location of your custom DHE key:</p>
+<div class="code-label " title="/etc/nginx/sites-available/default">/etc/nginx/sites-available/default</div><pre class="code-pre "><code langs="">ssl_dhparam  /etc/nginx/ssl/dhparam.pem;
+</code></pre>
+<div name="step-7-—-redirecting-all-http-request-to-https" data-unique="step-7-—-redirecting-all-http-request-to-https"></div><h2 id="step-7-—-redirecting-all-http-request-to-https">Step 7 — Redirecting all HTTP Request to HTTPS</h2>
+
+<p>Since we are interested in serving the content through HTTPS only, we
+ should tell Nginx what it should do if the server receives an HTTP 
+request.</p>
+
+<p>At the bottom of our file, we will create a new server block for 
+redirecting all HTTP requests to HTTPS (be sure to replace the server 
+name with your actual domain name):</p>
+<div class="code-label " title="/etc/nginx/sites-available/default">/etc/nginx/sites-available/default</div><pre class="code-pre "><code langs="">server {
+       listen         80;
+       listen    [::]:80;
+       server_name    <span class="highlight">example.com</span>;
+       return         301 https://$server_name$request_uri;
+}
+</code></pre>
+<p>Save the file, and exit the configuration file.</p>
+
+<p>Check the configuration for syntax errors:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nginx -t
+</li></ul></code></pre>
+<div name="step-8-—-reloading-nginx" data-unique="step-8-—-reloading-nginx"></div><h2 id="step-8-—-reloading-nginx">Step 8 — Reloading Nginx</h2>
+
+<p>That's it for all the Nginx configuration changes. Since we checked 
+for syntax errors with each change, you should be ready to restart Nginx
+ and test your changes.</p>
+
+<p>To summarize, ignoring commented out lines, your configuration file should now look similar to this:</p>
+<div class="code-label " title="/etc/nginx/sites-available/default">/etc/nginx/sites-available/default</div><pre class="code-pre "><code langs="">server {
+        listen 443 ssl http2 default_server;
+        listen [::]:443 ssl http2 default_server;
+
+        root /var/www/html;
+
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name <span class="highlight">example.com</span>;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+
+        ssl_certificate /etc/nginx/ssl/<span class="highlight">example.com</span>.crt;
+        ssl_certificate_key /etc/nginx/ssl/<span class="highlight">example.com</span>.key;
+        ssl_dhparam /etc/nginx/ssl/dhparam.pem;
+}
+
+
+server {
+       listen         80;
+       listen    [::]:80;
+       server_name    <span class="highlight">example.com</span>;
+       return         301 https://$server_name$request_uri;
+}
+
+</code></pre>
+<p>To apply the changes,  restart the Nginx server.</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo systemctl restart nginx
+</li></ul></code></pre>
+<div name="step-9-—-verifying-the-changes" data-unique="step-9-—-verifying-the-changes"></div><h2 id="step-9-—-verifying-the-changes">Step 9 — Verifying the Changes</h2>
+
+<p>Let's check that our server is up and running. Open your web browser and navigate to your domain (replace <code>example.com</code> with your actual domain name):</p>
+<pre class="code-pre "><code langs=""><span class="highlight">example.com</span>
+</code></pre>
+<p>If everything was configured properly, you should be automatically 
+redirected to HTTPS. Now, let's check that HTTP/2 is working: open the 
+Chrome Developer Tools (<strong>View</strong> -&gt; <strong>Developer</strong> -&gt; <strong>Developer Tools</strong>) and reload the page (<strong>View</strong> -&gt; <strong>Reload This Page</strong>). Then navigate to the <strong>Network</strong> tab, click on table header row that starts with <strong>Name</strong>, right-click on it, and select the <strong>Protocol</strong> option. </p>
+
+<p>Now you should see <code>h2</code> (which stands for HTTP/2) in a new column for your website serving HTTP/2 content.</p>
+
+<p class="growable"><img src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/http2_check.png" alt="Chrome Developer Tools HTTP/2 check"></p>
+
+<p>At this point, our server is ready to serve content through HTTP/2 
+protocol, but there are still some things we should do to prepare the 
+server to be used in production.</p>
+
+<div name="step-10-—-optimizing-nginx-for-best-performance" data-unique="step-10-—-optimizing-nginx-for-best-performance"></div><h2 id="step-10-—-optimizing-nginx-for-best-performance">Step 10 —  Optimizing Nginx for Best Performance</h2>
+
+<p>In this step we will tune the main Nginx configuration file for best performance and security.</p>
+
+<p>First of all, let's open <code>nginx.conf</code> by typing the following in the console:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/nginx/nginx.conf
+</li></ul></code></pre>
+<h3 id="enabling-connection-credentials-caching">Enabling Connection Credentials Caching</h3>
+
+<p>Compared to HTTP, HTTPS takes a relatively longer time to establish 
+initial connection between server and user. To minimize this difference 
+in page load speed, we will enable caching of the connection 
+credentials. That means instead of creating a new session on every page 
+requested, the server will use a cached version of the credentials 
+instead.</p>
+
+<p>To enable session caching, add these lines at the end of <code>http</code> block of your <code>nginx.conf</code> file:</p>
+<div class="code-label " title="/etc/nginx/nginx.conf">/etc/nginx/nginx.conf</div><pre class="code-pre "><code langs="">ssl_session_cache shared:SSL:5m;
+ssl_session_timeout 1h;
+</code></pre>
+<p><code>ssl_session_cache</code> specifies the size of cache that will 
+contain session information. 1 MB of it can store information for about 
+4000 sessions. The default value of 5 MB will be more than enough for 
+most users, but if you expect really heavy traffic, you can increase 
+this value accordingly. </p>
+
+<p><code>ssl_session_timeout</code> limits the time particular sessions 
+are stored in the cache. This value shouldn’t be too big (more than an 
+hour), but setting the value too low is pointless as well.</p>
+
+<h3 id="enabling-http-strict-transport-security-hsts">Enabling HTTP Strict Transport Security (HSTS)</h3>
+
+<p>Even though we have already made all regular HTTP requests redirect 
+to HTTPS in our Nginx configuration file, we also should enable HTTP 
+Strict Transport Security to avoid having to do those redirects in the 
+first place.</p>
+
+<p>If the browser finds an HSTS header, it will not try to connect to 
+the server via regular HTTP again for the given time period. No matter 
+what, it will exchange data using only encrypted HTTPS connection. This 
+header should also protect us from protocol downgrade attacks.</p>
+
+<p>Add this line in <code>nginx.conf</code>:</p>
+<div class="code-label " title="/etc/nginx/nginx.conf">/etc/nginx/nginx.conf</div><pre class="code-pre "><code langs="">add_header Strict-Transport-Security "max-age=15768000" always;
+</code></pre>
+<p>The <code>max-age</code> is set in seconds. 15768000 seconds is equivalent to 6 months.</p>
+
+<p>By default, this header is not added to subdomain requests. If you 
+have subdomains and want HSTS to apply to all of them, you should add 
+the <code>includeSubDomains</code> variable at the end of the line, like this:</p>
+<div class="code-label " title="/etc/nginx/nginx.conf">/etc/nginx/nginx.conf</div><pre class="code-pre "><code langs="">add_header Strict-Transport-Security "max-age=15768000<span class="highlight">; includeSubDomains</span>" always;
+</code></pre>
+<p>Save the file, and exit the text editor.</p>
+
+<p>Once again, check the configuration for syntax errors:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nginx -t
+</li></ul></code></pre>
+<p>Finally, restart the Nginx server to apply the changes.</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo systemctl restart nginx
+</li></ul></code></pre>
+<div name="conclusion" data-unique="conclusion"></div><h2 id="conclusion">Conclusion</h2>
+
+<p>Your Nginx server is now serving HTTP/2 pages. If you want to test the strength of your SSL connection, please visit <a href="https://www.ssllabs.com/ssltest/">Qualys SSL Lab</a> and run a test against your server. If everything is configured properly, you should get an A+ mark for security.</p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  <div class="tutorial-footer-details">
+
+  <div class="postable-info-bar-container">
+  <div class="postable-info-bar">
+    <div class="left-section">
+        <div class="tutorial-author-avatar">
+    <a href="https://www.digitalocean.com/community/users/lomand"><img alt="Lomand" class="avatar avatar-small" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/bdf4bd6c0e3c933b810d4684a1cd48a6.jpg" width="80" height="80"></a>
+  </div>
+  <div class="author-and-date">
+    <div class="tutorial-author">
+      <div class="by">By: </div>
+      <a href="https://www.digitalocean.com/community/users/lomand">Sergey Zhukaev</a>
+    </div>
+  </div>
+
+    </div>
+    <div class="right-section">
+      <div class="upvote-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="false" data-upvotable-id="1922" data-upvotable-type="Tutorial"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-heart"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-heart"></use></svg></span><span class="new-upvote-text">Upvote</span><span class="new-upvote-count">71</span></button>
+      </div>
+      <div class="section-item section-item-subscribe">
+  <span class="opt-in-switch off signed-out-subscribe">
+    <span class="subscribe-label">
+      <span class="icon icon-subscribe"></span>
+      <span class="subscription-label subscribe">Subscribe</span>
+      <span class="icon icon-subscribed"></span>
+      <span class="subscription-label subscribed">Subscribed</span>
+    </span>
+    <a data-toggle="modal" data-target="#sign-in-modal" class="mini-switch-container" href="javascript:void(0);"><div class="mini-switch off signed-out-subscribe"><div class="switch-handle"></div></div></a>
+  </span>
+</div>
+
+<div class="section-item social-sharing-item">
+  <div class="sharing">
+  <a class="share-button" href="#" data-toggle="modal" data-target="#share-modal">
+    <span class="icon icon-share-square"></span>
+    <span class="share-button-text">Share</span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class="section-content tutorial-contributors two">
+
+      <div class="tutorial-footer-user">
+        <div class="tutorial-footer-user-avatar-container">
+          <a href="https://www.digitalocean.com/community/users/tfox"><img class="avatar avatar-small" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/d67be84c5e0a20b4c1cdb360319cdf4b5d9df7f6.png" alt="D67be84c5e0a20b4c1cdb360319cdf4b5d9df7f6"></a>
+        </div>
+        <div class="user-info">
+          <div class="tutorial-user-type">Editor:</div>
+          <a class="" href="https://www.digitalocean.com/community/users/tfox">Tammy Fox</a>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+
+  
+  <div class="tutorial-ctas">
+  <div class="section-content">
+    <div class="cta-description">
+      <h2>Spin up an SSD cloud server in under a minute.</h2>
+
+      <p>Simple setup. Full root access. Straightforward pricing.</p>
+
+      <a class="cloud-tutorial-cta" href="https://www.digitalocean.com/?utm_medium=community&amp;utm_source=community_gencta&amp;utm_campaign=needaserver&amp;utm_content=how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04">Deploy Server</a>
+    </div>
+  </div>
+</div>
+    <div class="related-tutorials">
+    <div class="section-content">
+      <h2>Related Tutorials</h2>
+
+      <ul>
+        <li><a class="related-link" href="https://www.digitalocean.com/community/tutorials/how-to-upgrade-nginx-in-place-without-dropping-client-connections">How To Upgrade Nginx In-Place Without Dropping Client Connections</a></li>
+<li><a class="related-link" href="https://www.digitalocean.com/community/tutorials/how-to-target-your-users-with-nginx-analytics-and-a-b-testing">How To Target Your Users with Nginx Analytics and A/B Testing</a></li>
+<li><a class="related-link" href="https://www.digitalocean.com/community/tutorials/how-to-write-a-slash-command-with-flask-and-python-3-on-ubuntu-16-04">How to Write a Slash Command with Flask and Python 3 on Ubuntu 16.04</a></li>
+<li><a class="related-link" href="https://www.digitalocean.com/community/tutorials/nginx-essentials-installation-and-configuration-troubleshooting">Nginx Essentials: Installation and Configuration Troubleshooting</a></li>
+<li><a class="related-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-let-s-encrypt-with-nginx-server-blocks-on-ubuntu-16-04">How To Set Up Let's Encrypt with Nginx Server Blocks on Ubuntu 16.04</a></li>
+
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_1922">
+
+  <div class="comments-header">
+    <h4 class="comments-count"><span>35 Comments</span></h4>
+  </div>
+
+  <div class="response response-form no-avatar">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" value="✓" disabled="disabled" type="hidden">
+
+    <div class="meltdown_wrap" style="height: auto;"><div class="meltdown_topmargin"></div><div class="meltdown_bar"><ul class="meltdown_controls meltdown_controls_preview"><li class="meltdown_control-preview meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Toggle Preview"><span>Preview</span></li></ul><div class="preview-header">Markdown Preview</div><ul class="meltdown_controls meltdown_controls_main"><li class="meltdown_control-bold meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Bold" style=""><span unselectable="on">B</span></li><li class="meltdown_control-italics meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Italics"><span unselectable="on">I</span></li><li class="meltdown_control-h1 meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Header 1"><span unselectable="on">H1</span></li><li class="meltdown_control-h2 meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Header 2"><span unselectable="on">H2</span></li><li class="meltdown_control-h3 meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Header 3"><span unselectable="on">H3</span></li><li class="meltdown_control-ul meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Unordered List"><span unselectable="on">UL</span></li><li class="meltdown_control-ol meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Ordered List"><span unselectable="on">OL</span></li><li class="meltdown_control-link meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Link"><span unselectable="on">Link</span></li><li class="meltdown_control-code meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Code"><span unselectable="on">Code</span></li><li class="meltdown_control-highlight meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Highlight"><span unselectable="on">Highlight</span></li><li class="meltdown_control-table meltdown_control meltdown_controlbutton disabled" title="" data-original-title="Table" style=""><span unselectable="on">Table</span></li></ul></div><div class="meltdown_editor-wrap"><div class="meltdown_editor-deco"><textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field meltdown_editor" data-markdown="true" disabled="disabled" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 120px;"></textarea></div></div><div class="meltdown_preview-wrap"><div class="meltdown_preview-wrap2"><div class="meltdown_preview-error-message">Could not load preview. <a href="#">Try again</a></div><div class="meltdown_preview-loading-message">Loading preview...</div><div class="meltdown_preview content-body"></div></div></div><div class="meltdown_bottommargin"></div></div>
+
+      <div class="log-in-notice "><a href="https://www.digitalocean.com/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class="clearfix"></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+          <a class="hidden" rel="nofollow" data-remote="true" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04/comments">Load</a>
+    <li id="comment_45934" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="45934" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">4</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/draikin">Draikin</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=45934">April 16, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Correct me if I'm wrong, but since this 
+version of nginx is built using Openssl 1.0.1, it doesn't have support 
+for ALPN, right? I did exactly this a few months ago, and only realized 
+this afterwards. To get ALPN working on Ubuntu 14.04, you apparently 
+have to build nginx from source. And while it's not a problem now, <a href="http://blog.chromium.org/2016/02/transitioning-from-spdy-to-http2.html" rel="nofollow">Chrome is ending support for NPN on May 15th</a>. At which point I imagine this configuration will simply stop working. There's <a href="https://tools.keycdn.com/http2-test" rel="nofollow">a test website here</a> that let's you check whether or not ALPN is supported by your server:</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_45934">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_45952" data-level="1" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="45952" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">1</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/lomand">Lomand</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=45952">April 17, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Thanks for pointing this out, Draikin!<br>
+The tutorial will be updated as soon as possible.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_45952">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_45952"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_46123" data-level="1" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="46123" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">1</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/tfox">tfox</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=46123">April 22, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Thanks for the feedback. The update is already in the works. Expect to see it soon.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_46123">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_47056" data-level="2" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="47056" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/partounian">partounian</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=47056">May 18, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>To confirm, there is still no simple way of downloading and keeping an up-to-date version of openSSL on Ubuntu 14.04?</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_47056">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_47074" data-level="3" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="47074" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/tfox">tfox</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=47074">May 18, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>There is no simple way that I am aware of. If you discover one, please let us know, and we will be happy to test it.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_47074">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_47074"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_53435" data-level="3" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="53435" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/rankun203">rankun203</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=53435">December  1, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>I'm using docker nginx:alpine (including OpenSSL ^1.0.2) and it works fine.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_53435">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_53435"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_47056"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_46123"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_45934"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_45953" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="45953" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/newbie">newbie</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=45953">April 17, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>thanks for this great tutorial.</p>
+
+<p>i have one questions regarding <strong>Connection Credentials Caching</strong> though,<br>
+is it possible to store ssl credentials for all my subdomains? or simply
+ by following these 2 lines enable caching for subdomains automatically?</p>
+
+<p>ssl<em>session</em>cache shared:SSL:5m;<br>
+ssl<em>session</em>timeout 1h;</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_45953">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_45996" data-level="1" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="45996" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/newbie">newbie</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=45996">April 19, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p><a href="https://www.digitalocean.com/community/users/lomand" class="username-tag">@Lomand</a> <br>
+thanks for this great tutorial.</p>
+
+<p>i have one questions regarding Connection Credentials Caching though,<br>
+is it possible to store ssl credentials for all my subdomains? or simply
+ by following these 2 lines enable caching for subdomains automatically?</p>
+
+<p>sslsessioncache shared:SSL:5m;<br>
+sslsessiontimeout 1h;</p>
+
+<p>i meant when we are using wildcard ssl</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_45996">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_45998" data-level="2" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="45998" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">1</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/lomand">Lomand</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=45998">April 19, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Sorry for the late response, <a href="https://www.digitalocean.com/community/users/newbie" class="username-tag">@newbie</a>!<br>
+All of the settings from the main NGINX configuration file ( <span class="highlight">/etc/nginx/nginx.conf</span>) are applied globally, so every virtual host on your server has this settings.<br>
+In this tutorial, we're configured SSL Session Cache Time through the 
+main NGINX conf file, so you don't need to worry about subdomains, 
+they're store connection credentials as well as the main domain!</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_45998">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_46026" data-level="3" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="46026" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/newbie">newbie</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=46026">April 20, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>really thanks for confirming.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_46026">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_46026"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_47714" data-level="3" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="47714" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/zeonos">zeonos</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=47714">June  6, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Will it be shared or will it have 5m for each domain/subdomain?</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_47714">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_47726" data-level="4" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="47726" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/newbie">newbie</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=47726">June  6, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Most probably for shared. </p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_47726">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_47726"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_47714"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_45998"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_45996"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_45953"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_46038" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="46038" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/pdeleonardis">pdeleonardis</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=46038">April 20, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>add_header Strict-Transport-Security "max-age=15768000; includeSubDomains: always;</p>
+
+<p>should be</p>
+
+<p>add_header Strict-Transport-Security "max-age=15768000; includeSubDomains: always;";</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_46038">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_46038"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_47906" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="47906" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/waqasrahman">waqasrahman</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=47906">June 11, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>I do not own a domain but i want to test 
+HTTP-2 server push feature so the option i have is to use localhost as 
+server_name. Can i generate ssl certificate for localhost? or can I 
+connect the client and server using HTTP/2 connection without HTTPS?</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_47906">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_47906"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_47907" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="47907" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/andynazay153">andynazay153</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=47907">June 11, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Can you please update this to work with lets encrypt certificates?</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_47907">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_48048" data-level="1" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48048" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/daianm">daianm</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48048">June 15, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>you can setup as <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04" rel="nofollow">here</a>, and include http2 after..  </p>
+</div>
+            <div class="snippet"><img class="snippet-image" alt="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/Lets_Encrypt_nginx_tw_mostov.jpg"><div class="snippet-content"><div class="snippet-title"><a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">How To Secure Nginx with Let's Encrypt on Ubuntu 16.04</a></div><div class="snippet-description">In
+ this tutorial, we will show you how to use Let's Encrypt to obtain a 
+free SSL certificate and use it with Nginx on Ubuntu 16.04. We will also
+ show you how to automatically renew your SSL certificate. If you're 
+running a different web server, simply follow your web server's 
+documentation to learn how to use the certificate with your setup.
+</div></div></div>
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48048">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_48050" data-level="2" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48050" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/andynazay153">andynazay153</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48050">June 15, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>But let's encrypt files are all .pem, not .cert or .key...</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48050">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_48063" data-level="3" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48063" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">1</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/daianm">daianm</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48063">June 15, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>This isnt a problem...you should refeer fullchain.pem and privkey.pem...<br>
+Just follow <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04" rel="nofollow">this</a> steps</p>
+</div>
+            <div class="snippet"><img class="snippet-image" alt="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/Lets_Encrypt_nginx_tw_mostov.jpg"><div class="snippet-content"><div class="snippet-title"><a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">How To Secure Nginx with Let's Encrypt on Ubuntu 16.04</a></div><div class="snippet-description">In
+ this tutorial, we will show you how to use Let's Encrypt to obtain a 
+free SSL certificate and use it with Nginx on Ubuntu 16.04. We will also
+ show you how to automatically renew your SSL certificate. If you're 
+running a different web server, simply follow your web server's 
+documentation to learn how to use the certificate with your setup.
+</div></div></div>
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48063">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_48064" data-level="4" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48064" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/andynazay153">andynazay153</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48064">June 15, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Okay thanks!</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48064">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48064"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48063"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48050"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48048"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_47907"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_48047" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48047" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/daianm">daianm</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48047">June 15, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>my site isnt working on microsoft edge and ie 11... pressing f12, i noticed that protocol type is "pending".. any thoughts?  <a href="https://estiloasmeninas.com/" rel="nofollow">https://estiloasmeninas.com</a><br>
+tnkss</p>
+
+<p>SOLVED: just used <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04" rel="nofollow">that </a>code for ssl.</p>
+</div>
+            <div class="snippet"><img class="snippet-image" alt="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/Lets_Encrypt_nginx_tw_mostov.jpg"><div class="snippet-content"><div class="snippet-title"><a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">How To Secure Nginx with Let's Encrypt on Ubuntu 16.04</a></div><div class="snippet-description">In
+ this tutorial, we will show you how to use Let's Encrypt to obtain a 
+free SSL certificate and use it with Nginx on Ubuntu 16.04. We will also
+ show you how to automatically renew your SSL certificate. If you're 
+running a different web server, simply follow your web server's 
+documentation to learn how to use the certificate with your setup.
+</div></div></div>
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48047">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48047"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_48105" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48105" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/andynazay153">andynazay153</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48105">June 16, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>I used this setup, and went to the page refeenced in this article to enable support for winxp, and testing my website here: <a href="https://tools.keycdn.com/http2-test" rel="nofollow">https://tools.keycdn.com/http2-test</a> says that i have http2, but when i go there on a browser it does not use it.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48105">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48105"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_48254" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48254" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/jimmyrittenborg">JimmyRittenborg</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48254">June 22, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>As far as I know Nginx doesn't support Server Push yet - but maybe someone can enlighten me on this one? ✨</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48254">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48254"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_48584" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48584" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/nagra">nagra</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48584">July  1, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Is there an update for the article showing how we enable ALPN support? 😅 Thanks in advance.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48584">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48584"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_48996" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="48996" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">1</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/cwhsu1984">cwhsu1984</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=48996">July 13, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Always love tutorial from you guys, but there is a small mistake. According to <a href="https://www.nginx.com/blog/http-strict-transport-security-hsts-and-nginx/" rel="nofollow">nginx's</a> document, HSTS config should be:</p>
+<pre class="code-pre "><code langs="">add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+</code></pre>
+<p>I tried your config and tested with ssllab which gave me<br>
+"Invalid Failed to parse header max-age=15768000; includeSubDomains: always;"</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_48996">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+      <li id="comment_50534" data-level="1" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="50534" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/bhogan">bhogan</a></span>
+          <span class="mod-badge">MOD</span>
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=50534">August 29, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p><a href="https://www.digitalocean.com/community/users/cwhsu1984" class="username-tag">@cwhsu1984</a>
+ Thanks for your feedback. I've tested out the article and applied the 
+change you suggested. I really appreciate the time you took to look up 
+the issue and let us know how to resolve it.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_50534">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_50534"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_53267" data-level="1" class="comment-container">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container comment-reply-container">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="53267" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/rejkpp">rejkpp</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=53267">November 24, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>The <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04" rel="nofollow">letsencrypt tutorial</a> </p>
+
+<p>uses this configuration</p>
+<pre class="code-pre "><code langs="">add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
+</code></pre>
+<p>you mention this</p>
+<pre class="code-pre "><code langs="">add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+</code></pre>
+<p>What does the "always" at the end of the line do and mean?</p>
+</div>
+            <div class="snippet"><img class="snippet-image" alt="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/Lets_Encrypt_nginx_tw_mostov.jpg"><div class="snippet-content"><div class="snippet-title"><a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">How To Secure Nginx with Let's Encrypt on Ubuntu 16.04</a></div><div class="snippet-description">In
+ this tutorial, we will show you how to use Let's Encrypt to obtain a 
+free SSL certificate and use it with Nginx on Ubuntu 16.04. We will also
+ show you how to automatically renew your SSL certificate. If you're 
+running a different web server, simply follow your web server's 
+documentation to learn how to use the certificate with your setup.
+</div></div></div>
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_53267">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_53267"></div>
+</div>
+    </div>
+
+  </li>
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_48996"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_50828" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="50828" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/smellyshovel">smellyshovel</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=50828">September  7, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Спасибо за статью, Сергей.<br>
+У вас опечатка, насколько я понял: "Save the configuration file and edit
+ the text editor." Я предполагаю, что вместо "edit" должно быть "exit".<br>
+И еще: "Now, let's open our configuration file one again and configure SSL." (one -&gt; once).</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_50828">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_50828"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_52110" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="52110" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/constantinanghe">constantinanghe</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=52110">October 15, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>openssl <em>v1.0.2</em> is required </p>
+
+<p>for debian i installed from backports: <code>apt-get install -t jessie-backports openssl</code></p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_52110">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_52110"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_53434" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="53434" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/rankun203">rankun203</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=53434">December  1, 2016</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>If you want to enable HTTP2 on a 14.04 Ubuntu machine, you could use a docker packaged nginx.</p>
+
+<p>The image: <a href="https://hub.docker.com/_/nginx/" rel="nofollow">https://hub.docker.com/_/nginx/</a></p>
+
+<p>Use the nginx:alpine version instead of nginx:latest which uses Debian doesn't include OpenSSL ^1.0.2.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_53434">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_53434"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_54840" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="54840" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/wedward">wedward</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=54840">January 18, 2017</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Excellent tutorial!  I appreciate the details and clear explanation of concepts and settings.  </p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_54840">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_54840"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_56039" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="56039" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/redhat57">redhat57</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=56039">February 16, 2017</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>How to check whether server running on http 1.1 or http/2 ?</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_56039">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_56039"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_62333" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="62333" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/ksg">ksg</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=62333">July  9, 2017</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>"... secure connection is the exchange of 
+the private keys between server and client" - lol what :) ? if your send
+ you private key to somebody, it is not private anymore. please lookup 
+what asymmetric encryption is. </p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_62333">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_62333"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_62938" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="62938" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/tnbland">tnbland</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=62938">July 26, 2017</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>my web server using VestaCP and running on 
+Utunbu 16.04 .but  i don't know how to upgragde http/1.1 to http/2 on my
+ webserver. Because, when install VestaCP , then auto create nginx. <a href="https://tnbland.com.vn/" rel="nofollow">my website here</a></p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_62938">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_62938"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_66307" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="66307" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/lausent">lausent</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=66307">December  7, 2017</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>I follow this guide and I check with this tool if http2 is enabled on my server:<br>
+<a href="https://tools.keycdn.com/http2-test" rel="nofollow">https://tools.keycdn.com/http2-test</a><br>
+The result was:<br>
+Yeah! MYSITE supports HTTP/2.0. ALPN supported.</p>
+
+<p>So I open the browser console like the instruction above to see 
+it...but I still get http/1.1 to content provided from my site (other 
+contents not hosted in my site was http2). I delete the browser cache 
+reboot the server but nothing happens. What is the problem?</p>
+
+<p>Edit: I solved, you need to check if your antivirus filter the protocols.</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_66307">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_66307"></div>
+</div>
+    </div>
+
+  </li>
+
+      <li id="comment_67912" data-level="0" class="comment-container" style="">
+    <div class="response comment-body-container    " data-highlight="">
+      <div class="comment-upvote-container ">
+        <button name="button" type="button" class="new-upvote-button" data-include-caret="true" data-upvotable-id="67912" data-upvotable-type="Comment"><span class="icon new-upvote-icon"><svg class="svg-icon svg-icon-upvote-empty"><use xlink:href="https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-upvote-empty"></use></svg></span><span class="new-upvote-count">0</span></button>
+      </div>
+      <div class="ox-auto">
+        <div class="comment-header">
+          <span class="response-name"><a class="username" href="https://www.digitalocean.com/community/users/jousch">jousch</a></span>
+          
+          <span class="response-time"><a rel="nofollow" class="post-time-link" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04?comment=67912">February  9, 2018</a></span>
+
+          
+        </div>
+
+          <div class="response-body content-body">
+            <div class=""><p>Hi, for me, the nginx (1.10.3) has no activated http2 module (nginx -V). Is it possible to activate modules without reinstall?</p>
+</div>
+            
+          </div>
+
+        
+
+        <div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+
+
+        <div class="content-actions">
+  <div class="comment-actions">
+
+    
+
+    
+  </div>
+
+  <div class="comment-moderation-actions">
+    <ul class="comment-moderation-actions-list ">
+      
+
+
+
+
+
+
+
+    </ul>
+  </div>
+</div>
+
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="response-comments">
+      <div class="response_comment commentable comment" id="response_comment_67912">
+
+
+  <div class="comments">
+    <ul class="response-list">
+      
+
+
+
+    </ul>
+  </div>
+
+
+  <div id="reply_anchor_comment_67912"></div>
+</div>
+    </div>
+
+  </li></ul>
+
+      <div class="comments-spinner" style="display: none;"><div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+</div>
+  </div>
+
+  <div class="load-more-container"></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png"></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+
+      <footer class="Footer">
+  <span class="Footer-logo icon-sammy"></span>
+
+  <div>Copyright © 2018 DigitalOcean™ Inc.</div>
+
+  <ul class="Footer-nav">
+    <li><a href="https://www.digitalocean.com/community">Community</a></li>
+    <li><a href="https://www.digitalocean.com/community/tutorials">Tutorials</a></li>
+    <li><a href="https://www.digitalocean.com/community/questions">Questions</a></li>
+    <li><a href="https://www.digitalocean.com/community/projects">Projects</a></li>
+    <li><a href="https://www.digitalocean.com/community/tags">Tags</a></li>
+    <li><a href="https://www.digitalocean.com/community/newsletter">Newsletter</a></li>
+    <li>
+      <a href="https://www.digitalocean.com/community/tutorials/feed">
+        RSS <span class="icon-rss"></span>
+</a>    </li>
+  </ul>
+
+  <br>
+
+  <ul class="Footer-nav Footer-nav--secondary">
+    <li><a href="https://www.digitalocean.com/products/one-click-apps/">Distros &amp; One-Click Apps</a></li>
+    <li><a href="https://www.digitalocean.com/legal/terms/">Terms, Privacy, &amp; Copyright</a></li>
+    <li><a href="https://www.digitalocean.com/security/">Security</a></li>
+      <li><a data-toggle="modal" data-target="#sign-in-modal" href="#">Report a Bug</a></li>
+    <li><a href="https://www.digitalocean.com/community/write-for-digitalocean">Write for DOnations</a></li>
+    <li><a href="http://store.digitalocean.com/">Shop</a></li>
+  </ul>
+</footer>
+
+
+
+
+
+      <div id="sign-in-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Almost there!</h1>
+        <a class="close-button" data-dismiss="modal" aria-label="close" href=""><span class="icon icon-close-light"></span></a>
+      </div>
+      <div class="modal-body">
+        <div class="sign-in-message">Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class="sign-in-modal-actions">
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="https://www.digitalocean.com/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button green-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="https://www.digitalocean.com/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+
+      window.Bugsnag.beforeNotify = function(payload, metaData) {
+        // custom logic to determine groupingHash
+        metaData.groupingHash = "tutorialShow";
+      }
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04","headline":"How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04","alternativeHeadline":"How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04","description":"NGINX is a fast and reliable open-source web server. It gained its popularity due to its low memory footprint, high scalability, ease of configuration, and support for the vast majority of different protocols. The main advantage of HTTP/2 is its high transfer speed for content-rich websites.\r\n\r\nThis tutorial will help you set up fast and secure Nginx server with HTTP/2 support.","keywords":"Nginx","url":"https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04"},"dateModified":"2016-10-13T17:22:57Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":{"@type":"Person","name":"Sergey Zhukaev","@id":"https://www.digitalocean.com/community/users/lomand"},"datePublished":"2016-04-12T16:59:27Z","editor":{"@type":"Person","name":"Tammy Fox","@id":"tfox"},"image":{"@type":"ImageObject","url":"https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/NGINX_http2_tw_mostov.png.jpg?1468952433","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"71"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"19"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+  <div id="report-a-bug-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Report a Bug</h1>
+          <a class="close-button" data-dismiss="modal" aria-label="close" href=""><span class="icon icon-close-light"></span></a>
+        </div>
+        <div class="modal-body">
+          <div class="report-a-bug-message text-center">Use this form to report bugs related to the Community</div>
+          <div class="report-a-bug-actions do-form">
+            <div class="form-wrap">
+              <form class="new_bug_report" id="new_bug_report" action="/community/bug_reports" accept-charset="UTF-8" method="post"><input name="utf8" value="✓" type="hidden"><input name="authenticity_token" value="rMXBwSOO8E8lz7dvZ2m78uibTLwDX6Dm18gkVZuKzrHc5Ym8NKSz6AhNU0H9otb/fuTa6vmujRs4QTZFXsKaag==" type="hidden">
+                <fieldset name="report-a-bug-info">
+                <legend class="sr-only">Report a bug:</legend>
+                  <div class="field">
+                    <label for="bug_reporter_name" class="sr-only">Name</label>
+                    <input placeholder="Name" id="bug_reporter_name" name="bug_report[name]" type="text">
+                  </div>
+                  <div class="field">
+                    <label for="bug_reporter_email" class="sr-only">Email</label>
+                    <input name="Email" placeholder="Email" id="bug_reporter_email" required="required" type="text">
+                  </div>
+                  <div class="field">
+                    <label for="bug_reporter_message" class="sr-only">Message</label>
+                    <textarea name="Message" placeholder="Message" id="bug_reporter_message" required="required" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 125px;"></textarea>
+                  </div>
+
+                  <div class="field actions">
+                    <input name="commit" value="Submit" class="button" type="submit">
+                  </div>
+                </fieldset>
+</form>            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    
+  
+
+<textarea tabindex="-1" aria-hidden="true" ,="" style="position: absolute; top: -999px; left: 0px; right: auto; bottom: auto; border: 0px none; padding: 0px; box-sizing: content-box; overflow-wrap: break-word; height: 0px !important; min-height: 0px !important; overflow: hidden; transition: none 0s ease 0s; font-family: &quot;proxima-nova&quot;, sans-serif; font-size: 17px; font-weight: 400; font-style: normal; letter-spacing: 0px; text-transform: none; word-spacing: 0px; text-indent: 0px; line-height: 18px; width: 58px;" class="autosizejs" id="autosizejs">Message
+</textarea><a id="scrollUp" href="#top" style="position: fixed; z-index: 1000; display: none;">Scroll to top</a><div id="scrollUp-active" style="position: absolute; top: 300px; width: 100%; border-top: 1px dotted rgb(0, 255, 255); z-index: 1000;"></div><div id="mktoStyleLoaded" style="display: none; border-top-color: rgb(18, 52, 86);"></div><form novalidate="novalidate" style="font-family: Helvetica, Arial, sans-serif; font-size: 13px; color: rgb(51, 51, 51); visibility: hidden; position: absolute; top: -500px; left: -1000px; width: 1600px;" class="mktoForm mktoHasWidth mktoLayoutLeft"></form><iframe name="mktoFormsXDIframe0.03498644095782566" id="MktoForms2XDIframe" style="display: none;" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/XDFrame.html"></iframe><iframe scrolling="no" allowtransparency="true" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/widget_iframe.html" style="display: none;" frameborder="0"></iframe><script type="text/javascript" id="">(function(){try{analytics&&analytics.ready(function(){var
+ 
+c=analytics.user().traits(),a=c.recent||[],d=[$("body").data("tutorial-id")||"",Math.round(new
+ Date/864E5)],e=a.length,b;for(b=0;b<e;b++)if(a[b]instanceof 
+Array&&a[b][0]===d[0]){a.splice(b,1);break}a.unshift(d);5<=a.length&&a.pop();c.recent=a;analytics.user().traits(c)})}catch(c){}})();</script><script type="text/javascript" id="">try{document.addEventListener("copy",function(a){window.getSelection&&$(window.getSelection().anchorNode).parents("pre").length&&analytics.track("Web
+ Interaction",{action:"Code 
+Copy",name:window.getSelection().toString().substring(0,64)+(64<window.getSelection().toString().length?"\u2026":"")})})}catch(a){};</script><iframe id="rufous-sandbox" scrolling="no" allowtransparency="true" allowfullscreen="true" style="position: absolute; visibility: hidden; display: none; width: 0px; height: 0px; padding: 0px; border: medium none;" title="Twitter analytics iframe" frameborder="0"></iframe><div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div><iframe name="fb_xdm_frame_https" allowtransparency="true" allowfullscreen="true" scrolling="no" id="fb_xdm_frame_https" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tabindex="-1" style="border: medium none;" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/Ms1VZf1Vg1J.html" frameborder="0"></iframe></div></div><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div></div></div></div><script type="text/javascript" id="">(function(a,b,c,d,e){a=b.createElement(c);b=b.getElementsByTagName(c)[0];a.async=1;a.id=e;a.src=d;b.parentNode.insertBefore(a,b)})(window,document,"script","https://scripts.demandbase.com/014ab3bd.min.js","demandbase_js_lib");</script>
+<script type="text/javascript" id="" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/js.js"></script>
+<script type="text/javascript" id="">window.dataLayer=window.dataLayer||[];function
+ gtag(){dataLayer.push(arguments)}gtag("js",new 
+Date);gtag("config","AW-836091520");</script>
+
+<img style="display:none" alt="" aria-hidden="true" id="db_pixel_ad" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/pixel_002.png"><img style="display:none" alt="" aria-hidden="true" id="db_bw_pixel_ad" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/demandbase.gif"><img style="display:none" alt="" aria-hidden="true" id="db_pixel_rt" src="How%20To%20Set%20Up%20Nginx%20with%20HTTP_2%20Support%20on%20Ubuntu%2016.04%20|%20DigitalOcean_files/pixel.png"><script type="text/javascript" id="">(function(){try{analytics&&(analytics.track("dwell",{time:"5
+ minute"}),analytics.ready(function(){var 
+c=analytics.user().traits(),a=c.dwell||[],d=[$("body").data("tutorial-id")||"",Math.round(new
+ Date/864E5)],e=a.length,b;for(b=0;b<e;b++)if(a[b]instanceof 
+Array&&a[b][0]===d[0]){a.splice(b,1);break}a.unshift(d);5<=a.length&&a.pop();c.dwell=a;analytics.user().traits(c)}))}catch(c){}})();</script></body></html>

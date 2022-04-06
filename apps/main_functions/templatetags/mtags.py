@@ -21,10 +21,7 @@ def get_currency_symbol():
     """Вывод валюты
        USAGE: {% get_currency_symbol %}
     """
-    if not hasattr(settings, 'CURRENCIES') or not hasattr(settings, 'DEFAULT_CURRENCY'):
-        return '₽'
-    value = settings.CURRENCIES[settings.DEFAULT_CURRENCY].get('symbol') or '₽'
-    return value
+    return settings.CURRENCY
 
 @register.simple_tag
 def settings_value(name: str):

@@ -1,0 +1,2 @@
+# Позволяет монтировать ftp папку
+curlftpfs alex223.tmweb.ru /home/jocker/sites/welding2/media/cam -o user=alex223_cam:UNyH3Le3,allow_other

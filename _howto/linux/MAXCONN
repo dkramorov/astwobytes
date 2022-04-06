@@ -1,0 +1,14 @@
+# sysctl -w net.core.somaxconn=400
+net.core.somaxconn = 400
+
+
+root@223223:/etc/uwsgi/apps-enabled# cat openlock.ini
+[uwsgi]
+  processes = 1
+  master = true
+  plugins = python27
+  harakiri = 40
+  wsgi-file = /home/jocker/sites/django/bin/openlock_wsgi
+  pythonpath = /home/jocker/sites/django/parts/django/
+  buffer-size = 8192
+  listen = 400

@@ -1,0 +1,46 @@
+  import xappy
+  path = os.path.join(settings.MEDIA_ROOT, "DOCS")
+  # открытие соединения для индексации с базой поискового индекса
+  # указывается полный или относительный путь к папке
+  connection = xappy.IndexerConnection(path)
+  # свойства полей индекса
+  connection.add_field_action(
+    'title', xappy.FieldActions.INDEX_FREETEXT, weight=5, language='ru')
+  connection.add_field_action(
+    'description', xappy.FieldActions.INDEX_FREETEXT, language='ru')
+
+  #INDEX_FREETEXT: в поле хранится текст, требуется создать лишь индекс без хранения самого текста. Для этого типа поля можно указать дополнительные атрибуты, в примере language='ru' для учета морфологии языка и weight=5 — «вес» поля при ранжировании;
+  #INDEX_EXACT: в поле хранится точное значение слова (подойдет для поиска точных значений, например идентификаторов книг), текст хранится в индексе;
+  #SORTABLE: по полю будет происходить сортировка. По умолчанию сортировка идет в лексикографическом формате независимо от того что в нем хранится. Такое поведение можно изменить через атрибут type='date' для сортировки дат (в формате YYYYMMDD, YYYY-MM-DD или YYYY/MM/DD) и type='float' для сортировки вещественных чисел (в любом поддерживаемом Python формате);
+  #COLLAPSE: по полю будет происходить группировка (аналог GROUP BY в SQL, например найти по одному наиболее подходящему под запрос документу в каждой категории);
+  #STORE_CONTENT: аналогично INDEX_FREETEXT только текст тоже хранится в индексе.
+
+  # создание нового документа
+  doc = xappy.UnprocessedDocument()
+  # заполнение полей
+  doc.fields.append(xappy.Field('title', 'Какой хороший день'))
+  doc.fields.append(xappy.Field('description', 'Моя струится лень'))
+  # добавление в индекс
+  connection.add(doc)
+
+  connection.flush()
+  connection.close()
+
+  #connection.reopen()
+
+
+  connection = xappy.SearchConnection(path)
+  query = connection.query_parse('день')
+  # нужны лишь первые 10 результатов
+  # для следующей десятки нужно указать 10, 20 и т.д.
+  results = connection.search(query, 0, 10)
+  # что-то нашлось
+  if results.matches_estimated > 0:
+    for results_item in results:
+        print(results_item.rank, results_item.id)
+  else:
+    print('Ничего не найдено')
+
+  # Если хранится текст
+  #for results_item in results:
+    #print(results_item.data['title'])

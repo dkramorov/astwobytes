@@ -1,0 +1,25 @@
+Exception: tostring() has been removed. Please call tobytes() instead.
+
+As per this message. It seems I have to switch to older version of Pillow. I did that 
+
+"pip install Pillow==2.1.0"
+
+
+reportlab 3.4.0 has requirement pillow>=2.4.0, but you'll have pillow 2.1.0 which is incompatible.
+
+
+Works with newer PIL (python-pil) 3.1.2-0ubuntu1.
+
+Index: pisa-3.0.32/sx/pisa3/pisa_reportlab.py
+===================================================================
+--- pisa-3.0.32.orig/sx/pisa3/pisa_reportlab.py
++++ pisa-3.0.32/sx/pisa3/pisa_reportlab.py
+@@ -316,7 +316,7 @@ class PmlImageReader(object):
+                 elif mode not in ('L', 'RGB', 'CMYK'):
+                     im = im.convert('RGB')
+                     self.mode = 'RGB'
+-                self._data = im.tostring()        
++                self._data = im.tobytes()        
+         return self._data
+ 
+     def getImageData(self):

@@ -1,0 +1,2 @@
+cat */settings.py|grep "DEBUG = True"
+tail -n +1 -- */settings.py

@@ -1,0 +1,46 @@
+x11vnc -storepasswd "reabhxbr" /home/jocker/x11vnc.pass
+
+x11vnc -rfbauth /home/jocker/x11vnc.pass -noxdamage -shared -dontdisconnect -many -noxfixes -auth guess
+
+
+# Перезагрузить убунту десктоп
+systemctl restart lightdm.service
+systemctl restart xdm.service
+
+For other Ubuntu versions, first find which display manager your ubuntu is having with following command:
+
+cat /etc/X11/default-display-manager
+
+Сменить менеджер дисплеев
+sudo dpkg-reconfigure kdm
+
+Сменить менеджер окон
+xfwm --replace   # xfce, I think
+metacity --replace   # default wm in Gnome 2
+
+
+wmctrl -m
+will show you the name of the window manager. If you don't have wmctrl installed, use the following command to install it:
+    -m Display information about the window manager ...
+
+
+apt-get remove network-manager
+
+
+
+
+user@localhost:~$ sudo nano /lib/systemd/system/x11vnc.service
+
+[Unit]
+Description=Start x11vnc at startup.
+After=multi-user.target
+[Service]
+Type=simple
+ExecStart=/usr/bin/x11vnc -auth /run/user/1000/gdm/Xauthority -display :0 -forever -loop -noxdamage -repeat -rfbauth /home/jocker/x11vnc.pass -rfbport 5900 -shared -ncache 10 -o /var/log/x11vnc.log
+[Install]
+WantedBy=multi-user.target
+
+user@localhost:~$ sudo systemctl daemon-reload
+user@localhost:~$ sudo systemctl enable x11vnc.service
+user@localhost:~$ sudo systemctl start x11vnc.service
+

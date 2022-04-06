@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="distr_annova">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/SITES/annova/distr_annova.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

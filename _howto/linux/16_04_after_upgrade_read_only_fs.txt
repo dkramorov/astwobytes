@@ -1,0 +1,21 @@
+Read Only File System After Upgrade from Ubuntu 14.10 to Ubuntu 15.04
+
+ April 29, 2015  james  Ubuntu 15.04
+I just upgrade a server from Ubuntu from 14.10 to Ubuntu 15.04. The server started okay and I was able to ssh in. However, the login prompt said that is was a “Read only file system”. This means that I wasn’t able to run any commands to fix the issue.
+
+After a bit of searching, I found that the problem was that the UUID was incorrect in the /etc/fstab/
+
+Before upgrading the fstab was:
+
+UUID=18254707-08e8-494e-b456-938592928a5e /               ext4    errors=remount-ro 0       1
+After upgrading the fstab was:
+
+UUID=815063a9-c956-44a6-ab11-05e1d0bb3a58 /               ext4    errors=remount-ro 0       1
+To fix the issue:
+
+1) You need to find what the correct UUID is. You find this using the command:
+
+ls -al /dev/disk/by-uuid/*
+2) You need to boot into the server in recovery mode and edit the fstab.
+
+I hope this helps someone

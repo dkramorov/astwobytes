@@ -1,0 +1,14 @@
+Do a
+
+sudo screen -list
+There is a screen on:
+    2953.ubuntu-release-upgrade-screen-window   (09/13/2012 04:48:02 AM)    (Detached)
+1 Socket in /var/run/screen/S-root.
+
+Then to reattach do:
+
+sudo screen -d -r root/2953.ubuntu-release-upgrade-screen-window
+
+Using the previously listed screen after root/
+
+You should be back to where you lost connection.

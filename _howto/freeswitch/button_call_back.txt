@@ -1,0 +1,82 @@
+   <extension name="Another Lua Test">
+     <condition field="destination_number" expression="^(9911)$">
+       <action application="lua" data="test5.lua"/>
+     </condition>
+   </extension>
+
+freeswitch.consoleLog("WARNING","Before first call\n")
+   first_session = freeswitch.Session("user/1011")
+   if (first_session:ready()) then
+           freeswitch.consoleLog("WARNING","first leg answered\n")
+           second_session = freeswitch.Session("user/1010")
+           if (second_session:ready()) then
+                   freeswitch.consoleLog("WARNING","second leg answered\n")
+                   freeswitch.bridge(first_session, second_session)
+                   freeswitch.consoleLog("WARNING","After bridge\n")
+else
+                   freeswitch.consoleLog("WARNING","second leg failed\n")
+           freeswitch.consoleLog("WARNING","first leg failed\n")
+    end else
+end
+
+
+
+obSession = freeswitch.Session("sofia/192.168.0.4/1002")
+ 
+   -- Check to see if the call was answered
+   if obSession:ready() then
+    -- Play file here
+   else   
+    -- This means the call was not answered ... Check for the reason
+    local obCause = obSession:hangupCause()
+    freeswitch.consoleLog("info", "obSession:hangupCause() = " .. obCause )
+    if ( obCause == "USER_BUSY" ) then              -- SIP 486
+       -- For BUSY you may reschedule the call for later
+    elseif ( obCause == "NO_ANSWER" ) then
+       -- Call them back in an hour
+    elseif ( obCause == "ORIGINATOR_CANCEL" ) then   -- SIP 487
+       -- May need to check for network congestion or problems
+    else
+       -- Log these issues
+    end
+    end
+
+
+
+
+https://github.com/Deepwalker/FreeSWITCH/blob/master/src/mod/languages/mod_python/freeswitch.py
+
+https://alexn.org/blog/2009/02/20/tips-for-creating-voip-dialer.html
+
+function makeCall(nr_or_tries) { 
+    session = new Session('sofia/external/$number@provider');
+    // The following line is a deprecated method 
+    //session.originate(undefined, 'sofia/external/$number@provider'); 
+ 
+    session.waitForAnswer(10000);
+ 
+    if (session.cause == "USER_BUSY") { 
+        // not sure if this is necessary 
+	// session.hangup(); 
+ 
+	if (nr_or_tries <= 1) { 
+	    console_log("Action: Trying again!");
+	    return true;
+	} 
+ 
+	console_log("Action: Cannot try again, skipping!");
+    } 
+ 
+ 
+    if (session.ready()) { 
+        session.sleep(1000);
+	session.streamFile('/path/to/your.wav');
+	session.hangup();
+    } 
+} 
+ 
+var nr_or_tries = 0;
+ 
+while (nr_or_tries < 2) { 
+    if (!makeCall(nr_or_tries++)) break;
+}

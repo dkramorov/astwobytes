@@ -1,0 +1,78 @@
+1)  http://xapian.org/download - xapian page
+    in home dir:
+    wget http://oligarchy.co.uk/xapian/1.2.10/xapian-core-1.2.10.tar.gz
+    wget http://oligarchy.co.uk/xapian/1.2.10/xapian-bindings-1.2.10.tar.gz
+    wget http://oligarchy.co.uk/xapian/1.2.10/Search-Xapian-1.2.10.0.tar.gz
+
+2)  than, extract xapian-core and change folder;
+3)  ./configure --prefix=/home/m/milo38/
+    gmake
+    gmake install
+    check WHERE located xapian-config! /home/m/milo38/bin/xapian-config ?
+4)  PYTHON:
+    extract xapian-bindings and change folder;
+    ./configure --prefix=/home/m/milo38 --with-python XAPIAN_CONFIG=/home/m/milo38/bin/xapian-config PYTHON_LIB=/home/m/milo38/lib/python/site-packages/
+    gmake
+    gmake install
+    PYTHON_LIB ??? - directory to install python bindings
+5)  milo38@scorpius ~ $ cat .profile - change .profile
+    PATH=/usr/local/bin:/usr/bin:/bin:/opt/bin:/usr/x86_64-pc-linux-gnu/gcc-bin/4.1.2:$HOME:$HOME/lib:$HOME/lib/python:$HOME/lib/python/site-packages
+    export PATH
+    my path startswith $HOME...
+    .profile works after re-login;
+    check: milo38@scorpius ~ $ echo $PATH
+/usr/local/bin:/usr/bin:/bin:/opt/bin:/usr/x86_64-pc-linux-gnu/gcc-bin/4.1.2:/home/m/milo38:/home/m/milo38/lib:/home/m/milo38/lib/python:/home/m/milo38/lib/python/site-packages
+    >>> import sys
+    >>> sys.path
+      ['', '/usr/local/bin', '/usr/bin', '/bin', '/opt/bin', '/usr/x86_64-pc-linux-gnu/gcc-bin/4.1.2', '/home/m/milo38', '/home/m/milo38/lib', '/home/m/milo38/lib/python', '/home/m/milo38/lib/python/site-packages', '/usr/lib64/python26.zip', '/usr/lib64/python2.6', '/usr/lib64/python2.6/plat-linux2', '/usr/lib64/python2.6/lib-tk', '/usr/lib64/python2.6/lib-old', '/usr/lib64/python2.6/lib-dynload', '/usr/lib64/python2.6/site-packages', '/usr/lib64/python2.6/site-packages/PIL', '/usr/lib64/portage/pym']
+    >>> import xapian
+    >>>
+    THAT'S OK!
+6) OMEGA:
+    milo38@scorpius ~/xapian/xapian-omega-1.2.10 $ ./configure --prefix=/home/m/milo38 XAPIAN_CONFIG=/home/m/milo38/bin/xapian-config
+    gmake
+    gmake install
+7) http://code.google.com/p/djapian/downloads/list - Download Djapian
+    milo38@scorpius ~/xapian $ easy_install --prefix=/home/m/milo38 --install-dir=/home/m/milo38/lib/python/site-packages Djapian-2.3.1.tar.gz
+    Creating /home/m/milo38/lib/python/site-packages/site.py
+    Processing Djapian-2.3.1.tar.gz
+    Running Djapian-2.3.1/setup.py -q bdist_egg --dist-dir /tmp/easy_install-Ne_dYB/Djapian-2.3.1/egg-dist-tmp-8iRcel
+    zip_safe flag not set; analyzing archive contents...
+    djapian.utils.loading: module references __path__
+    Adding Djapian 2.3.1 to easy-install.pth file
+    Installed /home/m/milo38/lib/python/site-packages/Djapian-2.3.1-py2.6.egg
+    Processing dependencies for Djapian==2.3.1
+    Finished processing dependencies for Djapian==2.3.1
+
+
+
+
+ kladr/index.py
+
+class KladrAdminIndexer(NonPositionalIndexer):
+    fields = ('__unicode__', 'indx',
+              )
+
+    def get_stemmer(self, stemming_lang):
+        return self.stemmer_class('none')
+
+    def get_stopper(self, lang):
+        if self.stopper is not None:
+            return self.stopper
+
+        unique_socr = set()
+        for socr in Socr.objects.all():
+            unique_socr.add(socr.name)
+            unique_socr.add(socr.socr)
+
+        self.stopper = xapian.SimpleStopper()
+        for socr in unique_socr:
+            self.stopper.add(socr)
+        return self.stopper
+
+
+ реализуешь свой get_stemmer() и get_stopper() и ты в шоколаде. стоппер вообще можно сразу
+class MyIndexer(djapian.Indexer):
+   stopper = create_my_stopper()
+
+

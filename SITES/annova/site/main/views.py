@@ -18,7 +18,8 @@ from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site, get
 from apps.main_functions.date_time import date_plus_days, weekdayToStr, monthToStr
 from apps.main_functions.views import DefaultFeedback
 from apps.main_functions.date_time import str_to_date
-from apps.main_functions.files import full_path, open_file
+from apps.main_functions.files import full_path, open_file, file_size
+
 from apps.personal.models import Shopper
 from apps.shop.cart import calc_cart, get_shopper, create_new_order, create_shopper
 from apps.shop.models import Orders, Purchases
@@ -29,6 +30,9 @@ from apps.main_functions.pdf_helper import render_pdf
 
 from apps.site.passport.models import Passport
 from apps.site.polis.models import Polis
+from apps.site.polis.report import polis_report
+
+from . import order_forms
 
 CUR_APP = 'main'
 main_vars = {
@@ -76,16 +80,41 @@ def custom_show_products(request):
             'count', # Период страхования (в мес)
         ), })
 
-def pdf_order(request, order_id, write2file: bool = False):
+def pdf_order(request,
+              order_id,
+              template_vars: dict = None,
+              write2file: bool = False):
     context = {}
-    order = Orders.objects.select_related('polis').filter(pk=order_id).first()
+    order = Orders.objects.select_related('polis', 'shopper').filter(pk=order_id).first()
+    polis = order.polis
+    shopper = order.shopper
+    passport = Passport.objects.filter(shopper=shopper).first()
+    zfill7 = 7 - len('%s' % order.polis.id)
     context.update({
         'logo': full_path('misc/soglasie_logo.png'),
         'stamp': full_path('misc/soglasie_stamp.png'),
-        'polis': order.polis,
+        'order': order,
+        'polis': polis,
+        'shopper': shopper,
+        'passport': passport,
+        'number7': '%s%s' % ('0' * zfill7, order.polis.number)
     })
 
     template = 'web/order/pdf/order.html'
+
+    ptype = 'hockey'
+    if polis.ptype == 1:
+        ptype = 'hockey'
+        context['logo'] = full_path('misc/soglasie_logo.png')
+        context['stamp'] = full_path('misc/soglasie_stamp.png')
+    elif polis.ptype == 2:
+        ptype = 'cruise'
+        context['logo'] = full_path('misc/soglasie_logo_en.jpg')
+        context['stamp'] = full_path('misc/soglasie_stamp_en.png')
+        context['members'] = list(polis.polismember_set.all())
+        context['members_count'] = len(context['members']) + 2
+    template = 'web/order/pdf/order_%s.html' % ptype
+
     return render_pdf(
         request,
         template = template,
@@ -256,139 +285,13 @@ def feedback(request):
 
     return DefaultFeedback(request, **kwargs)
 
+def order_form_cruise(request):
+    """Страничка оформления заказа по страховке Круизы"""
+    return order_forms.order_form_cruise(request)
 
 def order_form(request):
     """Страничка оформления заказа"""
-    mh_vars = main_vars.copy()
-    context = {}
-    q_string = {}
-    containers = {}
-
-    kwargs = {
-        'force_send': 1, # Принудительная отправка
-        #'fv': [],
-        #'dummy': 1, # Не возвращаем HttpResponse
-        #'do_not_send': 1, # Не отправляем письмо
-        'fields':[
-          {'name': 'test_field', 'value': 'Тестовое поле'},
-          {'name': 'insurance_type', 'value': 'Тип страховки'},
-
-          {'name': 'birthday', 'value': 'Дата рождения'},
-          {'name': 'started', 'value': 'Дата начала программы'},
-
-          {'name': 'passport_series', 'value': 'Паспорт, серия'},
-          {'name': 'passport_number', 'value': 'Паспорт, номер'},
-          {'name': 'passport_issued', 'value': 'Паспорт, кем выдан'},
-          {'name': 'passport_issued_date', 'value': 'Паспорт, когда выдан'},
-          {'name': 'passport_registration', 'value': 'Паспорт, место регистрации'},
-
-        ],
-    }
-
-    if request.method == 'POST':
-        order_id = None
-        # Заполняем паспортные данные, по ним найдем пользователя
-        passport_fields = {
-            'series': '',
-            'number': '',
-            'issued': '',
-            'issued_date': '',
-            'registration': '',
-            'birthday': '',
-        }
-        for key in passport_fields.keys():
-            passport_fields[key] = request.POST.get('passport_%s' % key)
-        passport = Passport.objects.select_related('shopper').filter(
-            series=passport_fields['series'],
-            number=passport_fields['number'],
-        ).first()
-        if not passport:
-            passport = Passport()
-        for key, value in passport_fields.items():
-            if not value:
-                continue
-            if key in ('birthday', 'issued_date'):
-                value = str_to_date(value)
-            setattr(passport, key, value)
-        passport.save()
-        # Заполняем пользователя
-        if passport.shopper:
-            shopper = passport.shopper
-        else:
-            shopper = Shopper()
-        shopper_fields = {
-            'name': '',
-            'phone': '',
-            'email': '',
-        }
-        for key in shopper_fields.keys():
-            shopper_fields[key] = request.POST.get(key)
-            if not shopper_fields[key]:
-                continue
-            setattr(shopper, key, shopper_fields[key])
-        shopper.save()
-        request.session['shopper'] = shopper.to_dict()
-
-        passport.shopper = shopper
-        passport.save()
-        # Заполняем заказ
-        product = Products.objects.filter(pk=request.POST.get('product')).first()
-
-        birthday = passport.birthday.strftime('%Y-%m-%d') if passport.birthday else None
-        started = str_to_date(request.POST.get('started'))
-
-        if product:
-            order = Orders.objects.create(
-                total=product.price,
-                shopper=shopper,
-                shopper_name=shopper.name,
-                shopper_email=shopper.email,
-                shopper_phone=shopper.phone,
-                shopper_address=passport.registration,
-                comments='Паспорт: \nСерия: %s, номер: %s \nДата рождения: %s \nКем выдан: %s, когда выдан: %s' % (
-                    passport.series,
-                    passport.number,
-                    birthday,
-                    passport.issued,
-                    passport.issued_date.strftime('%Y-%m-%d') if passport.issued_date else None,
-                )
-            )
-            order_id = order.id
-            purchase = Purchases.objects.create(
-                product_id=product.id,
-                product_name=product.name,
-                product_price=product.price,
-                product_code=product.code,
-                count=1,
-                cost=product.price,
-                shopper=shopper,
-                order=order,
-            )
-
-            ended = None
-            if started and product.count:
-                ended = date_plus_days(started, product.count * 30) 
-
-            polis = Polis.objects.create(
-                order = order,
-                number = order_id,
-                name = shopper.name,
-                birthday = birthday,
-                insurance_sum = product.min_count,
-                insurance_program = product.stock_info,
-                from_date = started,
-                to_date = ended)
-
-        DefaultFeedback(request, **kwargs)
-
-        return redirect('/shop/checkout/?order_id=%s' % order_id)
-    template = 'web/thanks.html'
-
-    page = SearchLink(q_string, request, containers)
-    context['page'] = page
-    context['containers'] = containers
-
-    return render(request, template, context)
+    return order_forms.order_form_hockey(request)
 
 
 reg_vars = {
@@ -617,6 +520,8 @@ def checkout(request):
                 sber = SberPaymentProvider()
                 order_status = sber.get_order_status(order.external_number, order.id)
                 context['order_status'] = order_status
+                markup = order.purchases_set.filter(product_code='markup').first()
+                context['markup'] = markup
     # -----------------------------------------
     # Если пользователь пытается оплатить заказ
     # -----------------------------------------
@@ -689,6 +594,7 @@ def show_order(request, order_id: int):
     context['page'] = page
     context['containers'] = containers
     result = get_order(shopper, order_id)
+
     context['cart'] = result.get('cart', {})
     context['cart']['purchases'] = result.get('purchases', [])
     context['order'] = result.get('order')
@@ -750,7 +656,10 @@ def payment(request, provider: str, action: str):
                 host = request.META['HTTP_HOST'].encode('idna').decode('idna')
                 mail = EmailMessage('%s полис' % host, msg, settings.EMAIL_HOST_USER, [shopper.email])
                 mail.content_subtype = 'html'
-                pdf_order(request, order.id, write2file=True)
+
+                pdf_order(request,
+                          order.id,
+                          write2file=True)
                 fname = 'insurance_%s.pdf' % order.id
                 with open_file(fname, 'rb') as f:
                     mail.attach('polis%s.pdf' % order.id, f.read(), 'application/pdf')
@@ -767,5 +676,12 @@ def orders_report(request):
        :param request: HttpRequest
     """
     context = {}
-    template = 'web/order/xlsx/orders_report.html'
-    return render(request, template, context)
+    # TODO: сделать разными
+    polis_report()
+    path = 'report.xlsx'
+    ### settings.FULL_SETTINGS_SET.get('REPORT_TYPE') == 'hockey' # 'cruises'
+    with open(full_path(path), 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Length'] = file_size(path)
+        response['Content-Disposition'] = 'inline; filename=%s' % (path, )
+        return response

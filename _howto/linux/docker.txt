@@ -1,0 +1,30 @@
+docker inspect run-service_megafon_integration
+
+
+# docker inspect -f '{{.State.Pid}}' run-service_megafon_integration
+8280
+
+root@kvint-host-0:~# nsenter -t 8280 -n netstat
+Active Internet connections (w/o servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 172.21.46.5:35304       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:42870       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:5013        158.255.7.163:60510     ESTABLISHED
+tcp        0      0 172.21.46.5:42902       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:35364       185.130.212.71:27017    ESTABLISHED
+tcp        1      0 172.21.46.5:5013        158.255.7.163:57806     CLOSE_WAIT 
+tcp        0      0 172.21.46.5:42874       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:41326       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:42876       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:35306       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:42872       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:35308       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:39914       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:39052       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:35340       185.130.212.71:27017    ESTABLISHED
+tcp        0      0 172.21.46.5:57118       185.130.212.71:mysql    ESTABLISHED
+tcp        0      0 172.21.46.5:39992       185.130.212.71:27017    ESTABLISHED
+Active UNIX domain sockets (w/o servers)
+Proto RefCnt Flags       Type       State         I-Node   Path
+unix  3      [ ]         STREAM     CONNECTED     3169442558 
+unix  3      [ ]         STREAM     CONNECTED     3169442557 

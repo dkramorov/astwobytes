@@ -1,0 +1,58 @@
+Соединить напрямую
+
+originate {origination_caller_id_numbeateway/rt_gw/83952959223 &bridge({origination_caller_id_number=83952505000}sofia/gateway/rt_gw/83952505000)
+
+originate {origination_caller_id_number=782536}sofia/gateway/pcheline_gw/00815368583952959223 &bridge({origination_caller_id_number=782536}sofia/gateway/pcheline_gw/00815368583952505000)
+
+Соединить через dialplan
+originate {origination_caller_id_number=9005551212}sofia/default/whatever@wherever 19005551212 XML default CALLER_ID_NAME CALLER_ID_NUMBER
+
+
+НА пользователя
+originate user/jocker 1000 XML rostelecom
+
+
+freeswitch@internal> originate sofia/gateway/pattaya_cat/021419889@catnextgen.com &park()
+
+freeswitch@internal> originate sofia/internal/1000@10.10.9.1 &park()       +OK 331afbe9-2c4e-4c8e-a339-3286c86cc859
+
+originate {'origination_caller_id_number=6633005923'}sofia/gateway/pattaya_cat/0805829240 &bridge(['effective_caller_id_number=6633005923']sofia/gateway/pattaya_cat/021419889)
+
+originate sofia/gateway/pattaya_cat/021419889 &park()
+
+
+
+
+i need to call freeswitch from a webapp (e.g. python) and pass number1 and number2. i then need freeswitch to call number1. as soon as it is picked up say a short confirmaton text, call number2 and bridge the two.
+
+my first approach was to call via xml_rpc like described in the wiki but when i call like
+
+ server.freeswitch.api("originate","sofia/gategay/gateway1/{number1} &bridge(sofia/gateway/gateway2/{number2})")
+
+but in this case both numbers are called in parallel and the first number to pick up gets a ringback tone until the other number picks up. how can i get the sequence described above? 
+
+
+You are probably getting early media when dialing number 1.  Try :
+
+ server.freeswitch.api("originate","{ignore_early_media=true}sofia/gategay/gateway1/{number1}
+ &bridge(sofia/gateway/gateway2/{number2})") 
+
+
+
+
+#!/usr/bin/python
+
+from xmlrpclib import ServerProxy
+
+host = 'localhost'
+username = 'freeswitch'
+password = 'works'
+port = '8080'
+
+server = ServerProxy("http://%s:%s@%s:%s" % (username, password, host, port))
+print 'result:' + server.freeswitch.api("originate", "sofia/internal/111@192.168.0.10 &hangup()")
+
+
+# Бомбануть на зареганного пользователя
+originate user/89148959223@91.185.46.56 81111111111 XML public_context
+originate user/89148959223@91.185.46.56 && hangup()

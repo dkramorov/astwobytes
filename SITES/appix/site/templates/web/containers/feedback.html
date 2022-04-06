@@ -16,18 +16,22 @@
         <div class="row">
           <div class="col-md-6 col-md-push-3">
             <div class="contact-form">
-              <form action="/feedback/" method="post" class="contact-form">
+              <form action="/feedback/" method="post" class="contact-form" id="contact-form">
+                {% csrf_token %}
                 <div class="form-group">
-                  <input class="form-control" type="text" id="name" placeholder="Ваше имя" required>
+                  <input class="form-control required" type="text" placeholder="Ваше имя" name="name">
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="text" id="phone" placeholder="Ваш телефон" required>
+                  <input class="form-control required phone" type="text" placeholder="Ваш телефон" name="phone">
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="email" id="email" placeholder="Ваш Email" required>
+                  <input class="form-control required email" type="email" placeholder="Ваш Email" name="email">
                 </div>
                 <div class="form-group">
-                  <textarea rows="5" class="form-control" name="msg" placeholder="Ваше сообщение" required></textarea>
+                  <textarea rows="5" class="form-control required" name="msg" placeholder="Ваше сообщение"></textarea>
+                </div>
+                <div class="form-group">
+                  <div class="feedback_alerts"></div>
                 </div>
                 <div class="form-group">
                   <div class="themeix-button-group">

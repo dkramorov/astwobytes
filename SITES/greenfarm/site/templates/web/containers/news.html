@@ -17,7 +17,7 @@
               <div class="single-post-wrapper">
                 <div class="post-thumb">
                   <a href="{{ block.link }}">
-                    <img src="{% imagine block.img '600x400' block.get_folder True %}" class="img-fluid" alt="{{ block.description|textize }}">
+                    <img src="{% imagine block.img '600x400' block.get_folder True %}" class="img-fluid" alt="{{ block.description|textize }}" loading="lazy">
                   </a>
                 </div>
                 <div class="post-info">

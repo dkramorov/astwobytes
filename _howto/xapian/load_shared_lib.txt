@@ -1,0 +1,18 @@
+>>> from ctypes import *
+>>> cdll.LoadLibrary("/home/m/milo38/public_html/xapian/lib/libhunspell-1.2.so")
+<CDLL '/home/m/milo38/public_html/xapian/lib/libhunspell-1.2.so', handle 6bd710 at 7f5a2626b510>
+>>> import hunspell
+
+
+#Libraries have been installed in:
+#   /home/jocker/django/xapian/hunspell/lib
+#If you ever happen to want to link against installed libraries
+#in a given directory, LIBDIR, you must either use libtool, and
+#specify the full pathname of the library, or use the `-LLIBDIR'
+#flag during linking and do at least one of the following:
+#   - add LIBDIR to the `LD_LIBRARY_PATH' environment variable
+#     during execution
+#   - add LIBDIR to the `LD_RUN_PATH' environment variable
+#     during linking
+#   - use the `-Wl,-rpath -Wl,LIBDIR' linker flag
+#   - have your system administrator add LIBDIR to `/etc/ld.so.conf'

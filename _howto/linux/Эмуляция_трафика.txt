@@ -1,0 +1,5 @@
+man siege и man ab. 
+
+
+http://validator.w3.org/checklink ПРОВЕРКА битых ссылок
+http://loadimpact.com/test/view/1206671 Эмуляция клиентов

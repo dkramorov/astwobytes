@@ -1,0 +1,44 @@
+# Подключение самоподписанного сертификата
+# генерация сертификата:
+# openssl req -new -x509 -days 9999 -nodes -out cert.pem -keyout cert.key
+
+ssl			on;
+ssl_protocols		SSLv3 TLSv1;
+ssl_certificate		/etc/nginx/ssl/cert.pem;
+ssl_certificate_key	/etc/nginx/ssl/cert.key;
+
+#################################################
+
+root@niagara:/usr/bin# gentls_cert setup -cn 10.1.250.6 -alt DNS:10.1.250.6 -org 10.1.250.6
+Creating new CA...
+Generating a 161 bit EC private key
+writing new private key to '/usr/conf/ssl/CA/cakey.pem'
+-----
+DONE
+
+#################################################
+
+root@niagara:/usr/bin# gentls_cert create_server -cn 10.1.250.6 -alt DNS:10.1.250.6 -org 10.1.250.6
+Generating new certificate...
+
+--------------------------------------------------------
+CN: "10.1.250.6"
+ORG_NAME: "10.1.250.6"
+ALT_NAME: "DNS:10.1.250.6"
+
+Certificate filename "agent.pem"
+
+[Is this OK? (y/N)]
+y
+Generating a 161 bit EC private key
+writing new private key to '/tmp/fs-ca-104856-20150205210315.key'
+-----
+Signature ok
+subject=/CN=10.1.250.6/O=10.1.250.6
+Getting CA Private Key
+DONE
+
+#################################################
+
+openssl x509 -noout -inform pem -text -in agent.pem
+

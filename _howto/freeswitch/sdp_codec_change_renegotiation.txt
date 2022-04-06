@@ -1,0 +1,10 @@
+sip_renegotiate_codec_on_reinvite
+
+Allow SDP codec change with re-INVITE
+
+
+Usage:
+
+<action application="bridge" data="{sip_renegotiate_codec_on_reinvite=true}sofia/gateway/trunk/$1"/>
+
+Note: It may also be set globally in vars.xml or set it in sip profiles (<param name="renegotiate-codec-on-reinvite" value="true"/>)

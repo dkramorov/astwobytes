@@ -1,0 +1,14 @@
+sudo -s sysctl -w vm.oom-kill = 1
+
+
+Чтобы отключить OOM-Killer, укажите значение 0 в этой же команде:
+
+sudo -s sysctl -w vm.oom-kill = 0
+
+
+Результат этой команды сохранится не навсегда, а только до первой перезагрузки. Если нужно больше постоянства, добавьте эту строку в файл /etc/sysctl.conf:
+
+echo vm.oom-kill = 1 >>/etc/sysctl.conf
+
+Если установить значение 0, то когда закончится память, kernel panic не будет.
+cat /proc/sys/vm/panic_on_oom

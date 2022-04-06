@@ -1,0 +1,135 @@
+$ sudo apt-get install ssmtp
+
+
+root@295753-cc69233:/etc/ssmtp# cat revaliases
+root:admin
+
+root@295753-cc69233:/etc/ssmtp# cat ssmtp.conf
+Debug=Yes
+hostname=vernal.1sprav.ru
+rewriteDomain=masterme.ru
+root=admin@masterme.ru
+mailhub=smtp.timeweb.ru:2525
+AuthUser=admin@masterme.ru
+AuthPass=Cnfylfhnysq1
+UseSTARTTLS=YES
+#FromLineOverride=YES
+
+revaliases помогает в случае
+Apr 10 13:42:47 295753-cc69233 sSMTP[25608]: RCPT TO:<dkramorov@gmail.com> (550 5.7.1 You are not allowed to send messages as "root@masterme.ru")
+
+
+
+Поправим файл конфигурации (например, я хочу для пересылки почты использовать Gmail):
+
+$ sudo vi /etc/ssmtp/ssmtp.conf
+
+root=youremailhere@gmail.com
+mailhub=smtp.gmail.com:587
+AuthUser=yourgmailusername
+AuthPass=yourgmailpassword
+UseSTARTTLS=YES
+
+Если долго отправляется сообщение, то скорее всего отправка идет через ipv6 - а гугль не принимает соединение, поэтому в /etc/hosts делаем запись ip => smtp.gmail.com
+/etc/hosts:
+108.177.96.108	smtp.gmail.com
+87.250.250.38	smtp.yandex.ru
+
+ЛИБО
+
+How to prefer IPv4 over IPv6 in Ubuntu and CentOS
+
+We've had this question come in a lot, specifically via chat.  The reason you may want to do this is to save some processing and resource utilization.  In Ubuntu, if you don't modify this, it will do a AAAA DNS lookup before A record lookups.
+
+Ubuntu:
+You can change this by editing the precedence blocks in /etc/gai.conf.  Locate this line:
+#precedence ::ffff:0:0/96  100
+And un-comment it to look like:
+precedence ::ffff:0:0/96  100
+
+
+
+# echo "this mail"|mail -s "hello" dkramorov@gmail.com
+
+Если обоссанный гугль не дает отправлять и пишет типа
+smtplib.SMTPAuthenticationError: (534, '5.7.14 <https://accounts.google.com/signin/continue?sarp=1&scc=1&plt=AKgnsbtK\n5.7.14 cgG4HlOa2VpbWP_xBr7NbrqLHHIVk9vguLD_KAD6R3aIC8-bHFnEpICSKrkcznuAsxA2dF\n5.7.14 FclEFI2JiuA3dJkX8uGAYfl069LM6tzxAHxRT8ESaGA7bkUYWC0ccvim0TtA06qGI3OT15\n5.7.14 939s8PeXkVqDmRW6DC2UjURwgec5Jr9m3jmCnrrsUtZAfom6CPPiYDsRPMjgN5rYADDjNk\n5.7.14 QiPEzuosGt-VwcCEz8YwQquQWWLew> Please log in via your web browser and\n5.7.14 then try again.\n5.7.14  Learn more at\n5.7.14  https://support.google.com/mail/answer/78754 v35sm572006wrc.73 - gsmtp')
+
+то нужно воспользоваться lynx gmail.com (Авторизоваться на аккаунте а затем идти)
+ https://g.co/allowaccess
+
+но для удобства можно настроить автопринятие куков в линксе
+Most of the lynx.cfg usual locations are /etc/lynx/lynx.cfg or /etc/lynx.cfg as of time of writting this post in Debian Squeeze GNU / Linux the lynx.cfg is located in /etc/lynx-cur/lynx.cfg, whether for FreeBSD / NetBSD / OpenBSD users the file is located in /usr/local/etc/lynx.cfg
+#FORCE_SSL_COOKIES_SECURE:FALSE =>
+FORCE_SSL_COOKIES_SECURE:TRUE
+
+#SET_COOKIES:TRUE =>
+SET_COOKIES:TRUE
+
+ACCEPT_ALL_COOKIES:FALSE =>
+ACCEPT_ALL_COOKIES:TRUE
+
+
+
+
+
+
+
+
+
+
+MASTERME.RU:
+
+#
+# Config file for sSMTP sendmail
+#
+# The person who gets all mail for userids < 1000
+# Make this empty to disable rewriting.
+root=dkramorov@gmail.com
+
+# The place where the mail goes. The actual machine name is required no
+# MX records are consulted. Commonly mailhosts are named mail.domain.com
+mailhub=smtp.gmail.com:587
+
+#Debug=Yes
+
+AuthUser=dkramorov@gmail.com
+AuthPass=
+UseSTARTTLS=YES
+UseTLS=YES
+
+# Where will the mail seem to come from?
+rewriteDomain=gmail.com
+
+# The full hostname
+hostname=localhost
+
+# Are users allowed to set their own From: address?
+# YES - Allow the user to specify their own From: address
+# NO - Use the system generated From: address
+FromLineOverride=YES
+
+
+223-223.ru:
+
+# Config file for sSMTP sendmail
+#
+# The person who gets all mail for userids < 1000
+# Make this empty to disable rewriting.
+#Debug=Yes
+
+root=dkramorov@gmail.com
+mailhub=smtp.gmail.com:587
+AuthUser=dkramorov@gmail.com
+AuthPass=
+UseSTARTTLS=YES
+
+# Where will the mail seem to come from?
+#rewriteDomain=
+
+# The full hostname
+hostname=223-223.ru
+
+# Are users allowed to set their own From: address?
+# YES - Allow the user to specify their own From: address
+# NO - Use the system generated From: address
+#FromLineOverride=YES

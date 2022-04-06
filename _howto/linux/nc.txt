@@ -1,0 +1,11 @@
+Провка порта net cat по udp
+
+# nc -vnzu 172.16.254.194 5060
+Connection to 172.16.254.194 5060 port [udp/*] succeeded!
+
+# nc -vnzu 172.16.254.194 5060-5061
+Connection to 172.16.254.194 5060 port [udp/*] succeeded!
+Connection to 172.16.254.194 5061 port [udp/*] succeeded!
+
+по tcp
+$ nc -vnz 192.168.1.100 20-24

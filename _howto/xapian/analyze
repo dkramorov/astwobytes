@@ -1,0 +1,13 @@
+jocker@tabletka:~/django/xapian$ bin/analyze spell/ru.aff spell/ru.dic spell/test
+
+ln -s /usr/lib/hunspell/analyze /usr/bin/analyze
+
+touch test
+echo "абажурмо">test
+
+# analyze ru.aff ru.dic test
+> абажурмо
+analyze(абажурмо) =  st:абажур fl:K
+stem(абажурмо) = абажур
+
+

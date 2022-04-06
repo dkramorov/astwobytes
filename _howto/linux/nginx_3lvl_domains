@@ -1,0 +1,18 @@
+В самых разнообразных веб-проектах возникает задача организации пользовательских поддоменов «на лету». При использовании nginx приходит на помощь следующая конструкция:
+
+server {
+    listen 80;
+    server_name example.com *.example.com;
+    location / {
+        root   /var/www/example.com/$subdomain;
+        index  index.html index.php;
+    }
+    set $subdomain "";
+    if ($host ~* ^([a-z0-9-\.]+)\.example.com$) {
+        set $subdomain $1;
+    }
+    if ($host ~* ^www.example.com$) {
+        set $subdomain "";
+    }
+}
+

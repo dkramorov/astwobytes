@@ -1,0 +1,9 @@
+Cron Job Prevent the sending of errors and output
+
+To prevent the sending of errors and output, add any one of the following at the end of the line for each cron job to redirect output to /dev/null.
+>/dev/null 2>&1.
+OR
+&> /dev/null
+
+
+*/10 * * * * root /home/jocker/sites/django/bin/avtovorota index >/dev/null 2>&1

@@ -1,0 +1,41 @@
+root@niagara:/etc/freeswitch# cat /etc/odbcinst.ini
+[MySQL]
+Description             = MySQL ODBC MyODBC Driver
+Driver          = /usr/lib/x86_64-linux-gnu/odbc/libmyodbc.so
+Setup           = /usr/lib/x86_64-linux-gnu/odbc/libodbcmyS.so
+Threading               = 2
+FileUsage               = 1
+UsageCount              = 7
+OPTION = 67108864
+
+root@niagara:/etc/freeswitch# odbcinst -i -d -f /etc/odbcinst.ini
+odbcinst: Driver installed. Usage count increased to 7. 
+    Target directory is /etc
+
+root@niagara:/etc/freeswitch# odbcinst -i -s -l -f /etc/odbc.ini
+
+Если в /etc/odbc.ini вносятся какие-либо изменения, процедуру установки ностроек ODBC в систему, необходимо повторить (sudo odbcinst -i -s -l -f /etc/odbc.ini)
+
+root@niagara:/etc/freeswitch# cat /etc/odbc.ini
+[fs]
+Driver          = MySQL
+Database                = fs
+Server          = 127.0.0.1
+Port            = 3306
+Socket          = /var/run/mysqld/mysqld.sock
+
+root@niagara:/etc/freeswitch# odbcinst -s -q
+[fs]
+
+
+root@niagara:/etc/freeswitch# isql fs
++---------------------------------------+
+| Connected!                            |
+|                                       |
+| sql-statement                         |
+| help [tablename]                      |
+| quit                                  |
+|                                       |
++---------------------------------------+
+SQL> 
+

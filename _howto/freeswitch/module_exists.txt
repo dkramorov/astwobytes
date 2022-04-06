@@ -1,0 +1,3 @@
+fs_cli -x "module_exists mod_say_ru"
+freeswitch@internal> module_exists mod_fifo
+true

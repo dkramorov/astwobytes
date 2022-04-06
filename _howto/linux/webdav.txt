@@ -1,0 +1,43 @@
+apt-get install davfs2
+dpkg-reconfigure davfs2 ИЛИ chmod 4755 /usr/sbin/mount.davfs (usermod -aG davfs2 $USER)
+
+mkdir $PathToMountPoint
+
+Для того, что бы не было необходимости вводить пароль при каждом монтировании, следует сообщить имя пользователя удаленного облачного диска и его пароль утилите «davfs2». Для этого необходимо редактировать файл «/etc/davfs2/secrets» или «$HOME/.davfs2/secrets». 
+
+ Файл «/etc/davfs2/secrets» является системным, доступ на чтение к нему имеет только корневой пользователь «root», поэтому хранение пароля в нём более безопасно. Файл «$HOME/.davfs2/secrets» после установки пакета «davfs2» не существует. Его следует создать, например, выполнив команды
+
+mkdir $HOME/.davfs2
+touch $HOME/.davfs2/secrets
+
+ необходимо ввести строку
+$PathToMountPoint $USER $PASSWORD
+
+
+ с указанием абсолютного пути точки монтирования вместо «$PathToMountPoint» (так же как указано в файле «/etc/fstab»), имени пользователя у поставщика облачного диска вместо «$USER» и его пароля вместо «$PASSWORD», например
+/mnt/cloud MyName 12345
+Можно указывать адрес облачного диска, а не путь монтирования
+$WebDAV_Address $USER $PASSWORD
+где параметр «$WebDAV_Address» аналогичен описанному в файле «/etc/fstab», например,
+https://example.com/webdav.php MyName 12345
+
+
+«Яндекс Диск» (см. Работа через WebDAV). Строка в «/etc/fstab» может иметь вид
+https://webdav.yandex.ru:443 /media/Yandex davfs user,rw,noauto 0 0
+
+
+
+
+
+
+
+mount -t davfs https://webdav.yandex.ru /home/jocker/sites/bis223_media
+
+
+/etc/fstab:
+https://webdav.yandex.ru /media/webdav davfs gid=hb860,uid=hb860,noauto 0 0
+
+mount:
+mount -t davfs -o uid=username,gid=username https://webdav.yandex.ru /media/webdav
+
+https://webdav.yandex.ru /media/webdav davfs gid=hb860,uid=hb860,noauto 0 0

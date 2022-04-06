@@ -8,7 +8,7 @@
 <link href="/media/css/font-awesome.min.css" rel="stylesheet" >
 <link href="/media/css/socialize-bookmarks.css" rel="stylesheet">
 <link href="/media/css/jquery.fancybox.css?v=2.1.4" rel="stylesheet">
-<link href="/media/css/aero.css?v=2" rel="stylesheet">
+<link href="/media/css/aero.css?v=3" rel="stylesheet">
 
 <!-- Toggle Switch -->
 <link rel="stylesheet" href="/media/css/jquery.switch.css">
@@ -24,7 +24,7 @@
 <script src="/media/js/jquery-ui-1.8.22.min.js"></script>
 
 <!-- Wizard-->
-<script src="/media/js/jquery.wizard.js?v=2"></script>
+<script src="/media/js/jquery.wizard.js?v=3"></script>
 
 <!-- Radio and checkbox styles -->
 <script src="/media/js/check.min.js"></script>
@@ -51,7 +51,7 @@
 {% include "web/components/modals.html" %}
 {% endblock %}
 <script type="text/javascript" src="/static/js/jquery.maskedinput.min.js"></script>
-<script src="/media/js/jquery.validate.js?v=3"></script>
+<script src="/media/js/jquery.validate.js?v=4"></script>
 <script src="/media/js/jquery.placeholder.js"></script>
 <script src="/media/js/jquery.tweet.min.js"></script>
 <script src="/media/js/jquery.bxslider.min.js"></script>
@@ -71,9 +71,18 @@
 $(document).ready(function(){
   $("input[type='text'].phone").mask("8(999)9 999-999");
   $("input[type='text'].date").mask('99/99/9999', {placeholder:"дд/мм/гггг"});
+  $("input[type='text'].passport_series").mask('99 99', {placeholder:"__ __"});
+  $("input[type='text'].passport_number").mask('999999', {placeholder:"______"});
+  $("input[type='text'].fpassport_series").mask('99', {placeholder:"__"});
+  $("input[type='text'].fpassport_number").mask('9999999', {placeholder:"_______"});
+
+  $("button.backward").click(function(){
+    document.getElementById("survey_container").scrollIntoView();
+  });
   $("button.forward").click(function(){
     document.getElementById("survey_container").scrollIntoView();
   });
+
   {% if product_id %}
     $("form select[name='product']").val("{{ product_id }}");
   {% endif %}

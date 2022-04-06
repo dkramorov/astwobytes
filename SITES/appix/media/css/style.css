@@ -86,9 +86,6 @@ video {
 img {
     max-width: 100%;
 }
-p {
-    color: #666666;
-}
 /*=========================
     2.Typography
 ===========================*/
@@ -1066,6 +1063,7 @@ header {
     font-size: 20px;
     color: #f96a91;
 }
+
 .owl-controls .owl-nav div {
     display: inline-block;
     background: #F86A90;

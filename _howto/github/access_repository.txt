@@ -1,0 +1,15 @@
+Доступ к приватной репе
+
+идем в access keys
+https://bitbucket.org/kvintinc/service-megafon-integration/admin/access-keys/
+добавляем ключ
+
+этот ключ копируем на сервак, откуда нужно иметь доступ к закрытой репе
+
+
+ssh-add ~/.ssh/id_rsa
+where id_rsa is a ssh key associated with git repo
+
+You may get Could not open a connection to your authentication agent. error to resolve that you need to start the agent first by:
+eval `ssh-agent -s`
+

@@ -1,0 +1,28 @@
+freeswitch@internal> list_users
+
+
+freeswitch@internal> list_users user niagara
+userid|context|domain|group|contact|callgroup|effective_caller_id_name|effective_caller_id_number
+niagara|rtmp_context|192.168.1.100|default|error/user_not_registered|admins|niagara|niagara
+
++OK
+
+
+sofia profile default restart reloadxml
+
+
+
+
+ДО регистрации:
+
+freeswitch@iguasu> list_users user 89148959223
+userid|context|domain|group|contact|callgroup|effective_caller_id_name|effective_caller_id_number
+89148959223|public_context|91.185.46.56|default|error/user_not_registered|app|89148959223|959223
+
+После регистрации:
+
+2021-11-28 13:39:54.210323 [WARNING] sofia_reg.c:1793 SIP auth challenge (REGISTER) on sofia profile 'public' for [89148959223@calls.223-223.ru] from ip 31.132.227.49
+
+freeswitch@iguasu> list_users user 89148959223
+userid|context|domain|group|contact|callgroup|effective_caller_id_name|effective_caller_id_number
+89148959223|public_context|91.185.46.56|default|sofia/public/sip:52f858ct@btarx2q16q2m.invalid;transport=wss;fs_nat=yes;fs_path=sip%3A52f858ct%4031.132.227.49%3A55550%3Btransport%3Dwss|app|89148959223|959223

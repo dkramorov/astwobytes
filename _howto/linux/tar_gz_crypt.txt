@@ -1,0 +1,13 @@
+
+
+You can use gpg (=GnuPG):
+
+gpg -o fileToTar.tgz.gpg --symmetric fileToTar.tgz
+
+This will prompt you for a passphrase.
+
+To decrypt the file later on, just do a:
+
+gpg fileToTar.tgz.gpg
+
+This will prompt you, again, for the passphrase.

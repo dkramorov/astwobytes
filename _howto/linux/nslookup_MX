@@ -1,0 +1,2 @@
+nslookup -type=mx baikal-mercury.ru
+

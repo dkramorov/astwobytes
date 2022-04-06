@@ -1,0 +1,27 @@
+# systemctl disable cups
+# systemctl stop cups
+
+Synchronizing state of cups.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install disable cups
+Removed /etc/systemd/system/multi-user.target.wants/cups.path.
+Removed /etc/systemd/system/sockets.target.wants/cups.socket.
+
+root@jocker_sip:/usr/local/freeswitch# service cups stop
+
+# Просмотр всех сервисов
+systemctl list-unit-files --type=service
+# systemctl list-unit-files | grep enabled
+
+
+Jul 13 13:15:50 jocker_sip ovpn-server[2770]: Options error: In [CMD-LINE]:1: Error opening configuration file: /etc/openvpn/server.conf
+systemctl stop openvpn@server.service
+
+
+# systemctl disable bluetooth.service
+Synchronizing state of bluetooth.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install disable bluetooth
+Removed /etc/systemd/system/dbus-org.bluez.service.
+# systemctl stop bluetooth.service
+
+# systemctl disable cups-browsed.service
+# systemctl stop cups-browsed.service

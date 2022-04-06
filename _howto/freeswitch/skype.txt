@@ -1,0 +1,79 @@
+https://freeswitch.org/confluence/display/FREESWITCH/mod_skypopen
+
+
+
+
+ API and CLI Commands
+
+Skypopen adds the "sk" and the "skypopen" API/CLI commands, for sending Skype API commands to the Skype client instance related to an interface. Both "sk" and "skypopen" commands can be used through the command line and via API/socket/ESL/whatever.
+sk
+
+"sk" commands are intended to be used from the FreeSWITCH command line ("sk remove" and "sk reload" can be useful from Event socket as well).
+
+You begin typing "sk console interface_name" to direct the "current console" to sending messages to interface_name. Starting now on, you can type "sk command_string" and command_string will be sent to the Skype client instance related to interface interface_name.
+
+sk console interface1
+sk MESSAGE alice25 Hej Alice, this is a Skype chat message for you!
+
+sk list
+
+"sk list" gives the list and status of all the Skypopen interfaces (a star marks the interface from which "RR" - see below - will start hunting an IDLE one).
+
+sk list
+
+sk balances
+
+"sk balances" gives the list and balances (in account currency) of all the Skypopen interfaces (eg: the credits you have for Skypeout, calling PSTN). Patch added by Ivan Trifonov
+
+sk balances
+
+We got patches from Muhammad Shahzad and Seven Du for adding and removing interfaces on the fly.
+sk reload
+
+sk reload => this re-reads Skypopen configuration file skypopen.conf.xml and adds ONLY new interfaces it found in conf. All existing interfaces are not touched.
+
+sk reload
+
+sk remove
+
+sk remove <skype-user> => this remove skypopen interface associated with given Skype user account, if it is idle.
+
+freeswitch@internal> sk remove Bob
+
+sk remove <#interface-numeric-id> => this remove skypopen interface associated with given Skype interface_id, if is idle (remember, you must add the pound sign in front of the interface-numeric-id, # is mandatory).
+
+freeswitch@internal> sk remove #10
+
+sk remove <#interface-name> => this remove skypopen interface associated with given Skype interface_name, if is idle (remember, you must add the pound sign in front of the interface-name, # is mandatory).
+
+freeswitch@internal> sk remove #interface10
+
+skypopen
+
+"sk remove" and "sk reload" (see before) can be useful from API/socket/ESL/whatever as well.
+
+"skypopen" commands are intended to be used by programs (API/socket/ESL/whatever) and have the format: "skypopen interface_name command_string". They send the command_string to the Skype client instance related to interface_name.
+
+skypopen interface2 MESSAGE bob34 Ciao Bob! This is my Skype chat message for you from FreeSWITCH :-)
+
+This allow you to use directly the entire power of the Skype API ( http://developer.skype.com/public-api-reference ), for eg to send chat messages, interact with the buddy list, etc etc. Typing "console loglevel 9" at the FreeSWITCH command line allows you to see the Skype API answers from the Skype client instance.
+skypopen_chat
+
+It supports full utf8 chat text, although the FreeSWITCH command line only accepts ASCII. Please use ESL or API to send utf8 text.
+
+skypopen_chat interface_name remote_skypename chat_text
+
+eg:
+
+skypopen_chat interface2001 gmaruzz5 ciao bello
+
+chat
+
+Skypopen answers to the FreeSWITCH standard "chat" command too, and use its arguments to execute a skypopen_chat command (it will find the first available interface that uses the "local_skypename"). So, if you got a messaging applications that uses chat command with Sofia/SIP or Jingle, no need to recode it with special cases for Skype:).
+
+chat SKYPE|local_skypename|remote_skypename|chat_text
+
+It uses SKYPE as protocol specification. e.g., from command line:
+
+chat SKYPE|user2|gmaruzz5|ciao amore
+

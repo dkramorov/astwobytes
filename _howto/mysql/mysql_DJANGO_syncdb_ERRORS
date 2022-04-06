@@ -1,0 +1,7 @@
+syncdb вызывает ошибку
+ _mysql_exceptions.OperationalError: (1005, "Can't create table 'bis_223.#sql-1932_1fb' (errno: 150)")
+
+происходит по причине разных таблиц с foreign_key - одни в myisam а новые создаются в innodb таким образом в my.cnf надо вписать
+
+default-storage-engine=InnoDB
+и проверит SHOW ENGINES

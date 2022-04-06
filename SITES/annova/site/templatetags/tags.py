@@ -5,8 +5,8 @@ from django.conf import settings
 from django.core.cache import cache
 
 from apps.main_functions.date_time import date_plus_days
-from apps.products.models import Products
-from apps.flatcontent.models import Blocks
+from apps.products.models import Products, ProductsCats
+from apps.flatcontent.models import Blocks, Containers
 from apps.flatcontent.flatcat import get_catalogue, search_alt_catalogue
 
 register = template.Library()
@@ -18,6 +18,12 @@ def test_tag():
 @register.simple_tag
 def tomorrow():
     return date_plus_days(datetime.datetime.today(), days=1).strftime('%d-%m-%Y')
+
+@register.simple_tag
+def adult_date():
+    """18 лет назад"""
+    now = datetime.datetime.today()
+    return datetime.datetime(now.year - 18, now.month, now.day).strftime('%d-%m-%Y')
 
 @register.filter(name = 'replace_quotes')
 def replace_quotes(text):
@@ -136,7 +142,7 @@ def products_sidebar_slider(product, limit: int = 12):
 @register.filter
 def insurance_products(request,
                        tag: str = 'insurance_products',
-                       name: str = 'Популярные товары',
+                       name: str = 'Товары для страховки',
                        cache_time: int = 120):
     """Товары страхования
        :param request: HttpRequest
@@ -152,7 +158,7 @@ def insurance_products(request,
     if inCache:
         return inCache
 
-    products = list(Products.objects.all())
+    products = list(Products.objects.all().exclude(code='markup'))
     cache.set(cache_var, products, cache_time)
     return products
 
@@ -177,3 +183,35 @@ def cruises(request,
     products = list(Blocks.objects.filter(container__tag='cruises').order_by('position'))
     cache.set(cache_var, products, cache_time)
     return products
+
+
+@register.filter
+def insurance_products_cruise(request,
+                              tag: str = 'insurance_products_cruise',
+                              name: str = 'Товары для страховки',
+                              cache_time: int = 120):
+    """Товары страхования
+       :param request: HttpRequest
+       :param tag: тег для сохранения в кэше
+       :param name: заголовок в блоке
+       :param cache_time: время кэширования
+    """
+    cache_var = '%s_insurance_products_cruise_%s' % (
+        settings.PROJECT_NAME,
+        tag,
+    )
+    result = {}
+    inCache = cache.get(cache_var)
+    if inCache:
+        return inCache
+
+    catalogue = Containers.objects.filter(tag='insurance_products_cruise').first()
+    pcats = ProductsCats.objects.select_related('product', 'cat').filter(cat__container__tag='insurance_products_cruise')
+    for pcat in pcats:
+        cat = pcat.cat
+        if cat.id not in result:
+            result[cat.id] = {'cat': cat, 'products': []}
+        result[cat.id]['products'].append(pcat.product)
+
+    cache.set(cache_var, result, cache_time)
+    return result

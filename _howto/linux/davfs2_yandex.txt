@@ -1,0 +1,33 @@
+Ну собственно есть davfs, что позволяет монтировать несколько сервисов по протоколу webdav как папку и есть mhddfs и аналоги для объединения нескольких fs в одну.
+
+# apt-get install davfs2
+# mkdir /mnt/yandex.disk
+# mount -t davfs https://webdav.yandex.ru /mnt/yandex.disk/
+# df -h /mnt/yandex.disk/
+Filesystem            Size  Used Avail Use% Mounted on
+https://webdav.yandex.ru
+                       10G  7.7M   10G   1% /mnt/yandex.disk
+
+#!/usr/bin/expect
+spawn mount.davfs https://webdav.yandex.ru /clouds/yandex.disk/
+expect "Username:"
+send "USERNAME@yandex.ru\r"
+expect "Password:"
+send "PASS\r"
+expect eof
+
+# ------
+# MAC os
+# ------
+mount_webdav -i https://webdav.yandex.ru:443 /home/jocker/tmp
+Username: bbugoga5
+Password:
+
+#!/usr/bin/expect
+spawn mount_webdav -i https://webdav.yandex.ru:443 /home/jocker/tmp
+expect "Username:"
+send "bbugoga5\r"
+expect "Password:"
+send ",,eujuf5\r"
+expect eof
+

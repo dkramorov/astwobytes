@@ -1,0 +1,60 @@
+в bis/bis/refs/utils.py :
+
+class HunspellStem(xapian.StemImplementation):
+    dic = {'яблоки': 'яблоко',
+           'яблок': 'яблоко',
+           'окон': 'окно',
+           }
+
+    def __init__(self):
+        super(HunspellStem, self).__init__()
+        self._h = get_hunspell_obj()
+
+    def __call__(self, s):
+        # здесь считаем что строка s в кодировке UTF-8
+        # заменяем в строке букву Ё на Е (см.тикет #337)
+        s = s.replace('ё', 'е').replace('Ё', 'Е')
+        return self._do_stem(s)
+
+    def _do_stem(self, s):
+        res = self._h.stem(s)
+        # Если HunSpell не обработал слово (нет в словаре, или ошибка правописания),
+        # то ищем в локальном словаре
+        return res[0] if len(res) else self.dic.get(s, '')
+
+
+_stemmer_hunspell = None
+def get_hunspell_stemmer():
+    global _stemmer_hunspell
+    if _stemmer_hunspell is None:
+        _stemmer_hunspell = xapian.Stem(HunspellStem())
+    return _stemmer_hunspell
+
+
+
+ нужно унаследоваться от xapian.StemImplementation и переопределить метод def __call__(self, s)
+
+потом создать xapian.Stem(HunspellStem()) скормив ему олбъект своего унаследованного класса
+вместо просто  xapian.Stem()
+
+
+
+
+
+
+class WeightenedIndexer(NonPositionalIndexer):
+    decider = PublishedOnlyDecider
+    stopper = get_xapian_stopper()
+
+    def search(self, query, default_attr=None):
+        return BisResultSet(self, query, default_attr=default_attr)
+
+    def get_stemmer(self, stemming_lang):
+        return get_bis_stemmer() 
+
+
+ вот чтобы объект не создавался каждый раз (и не подсасывал словари заново) я его в прокси-функцию с глобальным объектом и завернул
+
+class ClientIndexer(MemoizedIndexer):
+    fields = ('name', 'name2', 'get_office_names'
+

@@ -1,0 +1,36 @@
+я выбрал айпи 192.168.1.52
+
+ps -fax|grep etwork
+выдает NetworkManager запущенный, поэтому надо его удалить, но предварительно записываю в конфиг
+
+root@olga:~# cat /etc/network/interfaces
+auto lo
+iface lo inet loopback
+
+auto enp3s0
+iface enp3s0 inet static
+  address 192.168.1.52
+  netmask 255.255.255.0
+  gateway 192.168.1.5
+  post-up route add -net 192.168.0.0/24 gw 192.168.1.6
+  post-up route add -host 10.1.250.6 gw 192.168.1.6
+
+dns-nameservers 8.8.8.8 8.8.4.4
+
+root@olga:~# aptitude search network|grep manager
+
+root@olga:~# apt-get remove network-manager && apt-get remove network-manager-gnome && shutdown -r now
+
+root@olga:~# ping ya.ru
+ping: unknown host ya.ru
+такое бывает , смотрим версию убунты
+root@olga:~# cat /etc/issue
+Ubuntu 16.04.3 LTS \n \l
+
+# --------
+# рестарю:
+# --------
+ip addr flush enp3s0 && systemctl restart networking.service
+
+проверяю перезагрузкой! - все пашет и после перезагрузки, маршрут второй пришлось врукопашную добавить еще
+

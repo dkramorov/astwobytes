@@ -27,6 +27,8 @@ if 'apps.products' in settings.INSTALLED_APPS:
                                       ProductsProperties,
                                       CostsTypes,
                                       Costs, )
+    from apps.products.strategy import get_search_strategy
+
 
 def get_costs_types(products):
     """Разные типы цен
@@ -197,6 +199,15 @@ def get_catalogue_lvl(request,
        :param cache_time: время кэширования
        :param force_new: получить каталог без кэша
     """
+    cache_var = '%s_%s_%s_get_catalogue_lvl' % (
+        settings.PROJECT_NAME,
+        container_id,
+        cat_id,
+    )
+    inCache = cache.get(cache_var)
+    if inCache and not force_new:
+        return inCache
+
     result = []
     if not container_id or not container_id.isdigit():
         return []
@@ -213,11 +224,13 @@ def get_catalogue_lvl(request,
     # Узнать есть ли вложенность в каждом из menus
     menus_parents = ['%s_%s' % (menu.parents or '', menu.id) for menu in menus]
     counts = Blocks.objects.filter(parents__in=menus_parents).values('parents').annotate(Count('parents'))
+
     ids_counts = {int(count['parents'].split('_')[-1]): count['parents__count'] for count in counts}
     for item in result:
         if not item['id'] in ids_counts:
             item['children'] = False
 
+    cache.set(cache_var, result, cache_time)
     return result
 
 def get_catalogue(request,
@@ -286,15 +299,17 @@ def get_catalogue(request,
         result['products_count'] = get_catalogue_products_count(tag)
     return result
 
-def search_products(q: str):
+def search_products(q: str, search_fields: list = None):
     """Поиск товаров по запросу,
        возвращаем только id
        :param q: поисковая фраза
+       :param search_fields: поисковые поля
        :return: ид товаров и поисковые фразы
     """
     if not q:
         return []
-    search_fields = ('name', 'altname', 'dj_info', 'code')
+    if not search_fields:
+        search_fields = ['name', 'altname', 'dj_info', 'code']
     cond = Q()
     q_arr = q.strip().split(' ')
     search_terms = []
@@ -320,9 +335,10 @@ def create_new_cat():
     )
     return container
 
-def search_alt_catalogue(link: str):
+def search_alt_catalogue(link: str, force_new: bool = False):
     """Ищем альтернативные каталоги
        :param link: ссылка на рубрику
+       :param force_new: игнорировать кэш
        :return: список тег каталога и флаг, что это корень
     """
     if not link or not link.startswith('/cat/'):
@@ -331,72 +347,55 @@ def search_alt_catalogue(link: str):
     # ссылка на корень каталога
     is_root_level = len(link_parts) == 4
     catalogue_tag = link_parts[2]
+
+    cache_time = 300
+    cache_var = '%s_%s_search_alt_catalogue' % (
+        settings.PROJECT_NAME,
+        catalogue_tag,
+    )
+    inCache = cache.get(cache_var)
+    if inCache and not force_new:
+        return inCache
+
     catalogue = Containers.objects.filter(
         tag = catalogue_tag,
         is_active = True,
         state = 7).aggregate(Count('id'))['id__count']
-    if catalogue:
-        return catalogue_tag, is_root_level
-    return None, None
+    if not catalogue:
+        catalogue_tag, is_root_level = None, None
+    cache.set(cache_var, [catalogue_tag, is_root_level], cache_time)
+    return catalogue_tag, is_root_level
 
 def get_facet_filters(request):
     """Получаем фасетные фильтры из запроса,
        находим по ним товары
        :param request: HttpRequest
     """
-    facet_filters = {}
-    for k in request.GET.keys():
-        if not k.startswith('prop_'):
-            continue
-        try:
-            key = int(k.replace('prop_', ''))
-        except ValueError:
-            continue
-        values = request.GET.getlist(k)
+    strategy = get_search_strategy()
+    facet_filters = strategy.get_facet_filters_from_request(request)
+    return strategy.get_filters_for_search(facet_filters)
 
-        # Если значение пустое, то лучше пропустить
-        if not values or (len(values) == 1 and not values[0]):
-            continue
+def pick_root_catalogue(tag: str, state: int, force_new: bool = False):
+    """Получение каталога (контейнера)
+       :param tag: тег контейнера
+       :param state: тип контейнера
+       :param force_new: игнорировать кэш
+    """
+    cache_time = 300
+    cache_var = '%s_%s_%s_pick_root_catalogue' % (
+        settings.PROJECT_NAME,
+        tag,
+        state,
+    )
+    inCache = cache.get(cache_var)
+    if inCache and not force_new:
+        return inCache
 
-        if not key in facet_filters:
-            facet_filters[key] = []
-
-        for value in values:
-            try:
-                value = int(value)
-            except ValueError:
-                continue
-            facet_filters[key].append(value)
-
-    if not facet_filters:
-        return {}
-    # Тут не получится собрать AND/OR запросами,
-    # т/к при выборке 2х значений, мы не сможем
-    # выбрать запись, где оба значения удволетворены,
-    # поэтому отфильтровываем по каждому
-    facet_query = Q()
-    ids_products = []
-    first_filter = True
-    for k, v in facet_filters.items():
-        prop_query = Q()
-        for item in v:
-            prop_query.add(Q(prop__id=item), Q.OR)
-        if first_filter:
-            ids_products = ProductsProperties.objects.filter(prop_query).values_list('product', flat=True)
-        else:
-            # Уже первый фильтр нихера не вернул,
-            # можно не продолжать
-            if not ids_products:
-                return {
-                    'ids_products': [],
-                    'facet_filters': facet_filters,
-                }
-            ids_products = ProductsProperties.objects.filter(prop_query).filter(product__in=ids_products).values_list('product', flat=True)
-
-    return {
-        'ids_products': list(ids_products),
-        'facet_filters': facet_filters,
-    }
+    catalogue = Containers.objects.filter(tag=tag, state=state).first()
+    if not catalogue:
+        catalogue = create_new_cat()
+    cache.set(cache_var, catalogue, cache_time)
+    return catalogue
 
 def get_cat_for_site(request,
                      link: str = None,
@@ -436,9 +435,8 @@ def get_cat_for_site(request,
         is_root_level = True
         # Поиск всегда идет на /cat/
         q = q_string['q'].get('q')
-        catalogue = Containers.objects.filter(tag=tag, state=cat_type).first()
-        if not catalogue:
-            catalogue = create_new_cat()
+        catalogue = pick_root_catalogue(tag=tag, state=cat_type)
+
         page.name = catalogue.name
         page.link = link
         if q:
@@ -488,11 +486,9 @@ def get_cat_for_site(request,
     if is_search:
         prefix = ''
 
-    # -----------------------------
-    # Фильтрация ProductsProperties
-    # В рамках одного свойства
-    # надо фильтровать по ИЛИ, не И
-    # -----------------------------
+    # ----------
+    # Фильтрация
+    # ----------
     facet_filters = get_facet_filters(request)
     if facet_filters:
         query = query.filter(**{'%sid__in' % (prefix, ): facet_filters['ids_products']})
@@ -610,81 +606,3 @@ def get_props_for_products(products: list, only_props: list = None):
                     } for p in ids_pvalues.values()
                         if p['id'] in pvalues and p['prop'] == prop_id]
                 })
-
-def get_filters_for_cat(cat_id: int,
-                        search_facet: bool = True,
-                        cache_time: int = 300,
-                        force_new: bool = False):
-    """Получение фильтров по рубрике
-       Тут кэш обязателен
-       :param cat_id: ид выбранной категории
-       :param search_facet: только фасеты для поиска (search_facet)
-       :param cache_time: время кэширования
-       :param force_new: игнорить кэш
-       :return result: словарь фильтров
-    """
-    result = {}
-    # 0) Проверяем в кэше
-    cache_var = '%s_%s_filters_for_cat_%s' % (
-        settings.PROJECT_NAME,
-        cat_id,
-        1 if search_facet else 0,
-    )
-    inCache = cache.get(cache_var)
-    if inCache and not force_new:
-        inCache['from_cache'] = True
-        return inCache
-
-    # 1) Находим рубрику
-    cats = Blocks.objects.filter(pk=cat_id).only('id', 'parents')
-    if not cats:
-        return
-    cat = cats[0]
-    parents = '_%s' % cat.id
-    cat_parents = cat.parents
-    if cat_parents:
-        parents ='%s_%s' % (cat_parents, cat.id)
-    # 2) Находим вложенные рубрики
-    subcats = Blocks.objects.filter(is_active=True).filter(Q(parents=parents)|Q(parents__startswith='%s_' % parents)).values_list('id', flat=True)
-    # 3) Находим товары привязанные к рубрике и подрубрикам
-    cats = list(subcats)
-    cats.append(cat.id)
-    products = ProductsCats.objects.filter(cat__in=cats).values_list('product', flat=True)
-    # 4) Находим привязанные значения свойств для товаров
-    products = list(products)
-    ids_values = ProductsProperties.objects.filter(product__in=products)
-    # Только фасеты поиска
-    if search_facet:
-        ids_search_props = Property.objects.filter(search_facet=True, is_active=True).values_list('id', flat=True)
-        ids_values = ids_values.filter(prop__prop__search_facet=True)
-
-    ids_values = ids_values.values_list('prop', flat=True) # это PropertiesValues
-
-    ids_values = set(ids_values)
-    # 5) Находим значения свойств
-    pvalues = PropertiesValues.objects.filter(pk__in=ids_values, is_active=True)
-    # 6) Находим свойства по значениям
-    ids_props = set([pvalue.prop_id for pvalue in pvalues])
-    # TODO завести признак фасета для свойства (выводится в фильтрах)
-    props = Property.objects.filter(pk__in=ids_props)
-    for prop in props:
-        result[prop.id] = {
-            'id': prop.id,
-            'name': prop.name,
-            'code': prop.code,
-            'ptype': prop.ptype,
-            'measure': prop.measure,
-            'values': [],
-        }
-    for pvalue in pvalues:
-        if pvalue.prop_id in result:
-            prop = result[pvalue.prop_id]
-            prop['values'].append({
-                'id': pvalue.id,
-                'value': pvalue.str_value,
-            })
-    for key in result.keys():
-        result[key]['values'].sort(key=lambda x: x['value'])
-    cache.set(cache_var, result, cache_time)
-    return result
-

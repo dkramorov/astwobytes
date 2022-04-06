@@ -1,0 +1,8 @@
+Create a .desktop file like this and put it in /usr/share/applications/
+
+[Desktop Entry]
+Type=Application
+Name=XChat Firefox
+Exec=/home/jocker/django/archive/myscripts/SFLPHONE/sflphone.py
+Icon=/usr/share/icons/xchats_icon
+

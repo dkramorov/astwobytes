@@ -1,0 +1,2 @@
+root@jubuntu:/var/log/mysql# aptitude -F %p%v%V search yui-compressor
+yui-compressor                                                                                       2.4.2-2   2.4.2-2 

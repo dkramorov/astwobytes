@@ -15,8 +15,6 @@ from apps.flatcontent.models import Containers, Blocks
 from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import (get_cat_for_site,
                                       get_product_for_site,
-                                      get_catalogue_lvl,
-                                      get_filters_for_cat,
                                       get_props_for_products, )
 from apps.main_functions.string_parser import q_string_fill
 from apps.main_functions.date_time import date_plus_days, weekdayToStr, monthToStr

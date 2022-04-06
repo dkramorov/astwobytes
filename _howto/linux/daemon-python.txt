@@ -1,0 +1,50 @@
+Для того чтобы создать своего демона из любого скрипта или проги нужно создать в каталоге /etc/systemd/system/ файл NAME.service (NAME меняем на нужное нам имя).
+
+Для примера я использовал скрипт своего telegram бота.
+
+[Unit]
+Description=MyTelegramBot
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /home/pi/pyprojects/sitbot/sitbot.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+ВНИМАНИЕ:
+путьи должны быть полные, не python а /usr/bin/python и никаких ~/ и ./ и так далее.
+
+Restart=always нужно для того чтобы в случае падения демон рестартовал сам (некоторые скрипты при перезагрузке отваливаются, причин может быть много не буду рассказывать про мой конкретный случай, но и в этой ситуации эта строчка поможет)
+
+Description это всего лишь имя, туда можете написать понятное вам любое имя
+
+After это после чего запускать службу, в данном примере это запуск при загрузке в многопользовательском режиме после всех основных служб
+
+
+Теперь можно добавить скрипт в автозагрузку и стартовать его вручную, а если systemctl ругается на незнакомый ему сервис то нужно сначала выполнить команду systemctl daemon-reload
+
+sudo systemctl daemon-reload
+sudo systemctl enable sitbot.service
+sudo systemctl start sitbot.service
+
+
+можно сделать символическую ссыль, а файл держать в приложении
+root@a223223:/etc/systemd/system# cat wss_server.service
+[Unit]
+Description=WSS Server for ws chat
+After=multi-user.target
+ConditionPathExists=/home/jocker/sites/astwobytes_spamcha/apps/ws/wss_server.py
+
+[Service]
+ExecStart=/home/jocker/sites/astwobytes_spamcha/env/bin/python /home/jocker/sites/astwobytes_spamcha/apps/ws/wss_server.py
+Restart=always
+Type=idle
+
+[Install]
+WantedBy=multi-user.target
+Alias=sshd.service
+
+

@@ -1,0 +1,50 @@
+$ telnet 192.168.1.5
+Trying 192.168.1.5...
+Connected to 192.168.1.5.
+Escape character is '^]'.
+Login: admin
+Password: ************
+(config)>  TAB выводит список команд
+
+           system - maintenance functions
+              ntp - configure NTP
+            known - manage lists of known network objects
+      access-list - configure network access lists
+  isolate-private - configure if traffic may pass between "private" interfaces
+           dyndns - configure DynDns profiles
+        interface - network interface configuration
+               ip - configure IP parameters
+            pppoe - configure PPPoE parameters
+              ppe - enable Packet Processing Engine
+             upnp - configure UPnP parameters
+             user - configure user account
+          service - manage services
+           whoami - display info about the current management session
+             more - view text file
+               ls - list directory contents
+             copy - copy files
+            erase - delete file
+             show - display various diagnostic information
+            tools - tools for testing the environment
+       components - manage firmware components
+
+(config)> sys TAB - выведет команды в секции
+
+           system - maintenance functions
+
+(config)> system configuration save[Enter]
+
+Core::ConfigurationSaver: Saving configuration...
+
+(config)> exit
+
+
+
+Команда, add static DNS record
+ip host {domain} {address}
+
+(config)> ip host cc.223-223.ru 10.1.250.6
+Core::Configurator: done.
+
+
+https://forum.keenetic.net/topic/4741-%D0%BB%D0%BE%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9-dns-%D0%BA%D0%B0%D0%BA-%D0%BF%D1%80%D0%B8%D0%B2%D1%8F%D0%B7%D0%B0%D1%82%D1%8C-%D0%BB%D0%BE%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE-%D0%B4%D0%BE%D0%BC%D0%B5%D0%BD-%D0%BA-ip/

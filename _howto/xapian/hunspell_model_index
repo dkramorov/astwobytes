@@ -1,0 +1,542 @@
+########
+#INDEX.py
+########
+# -*- coding: utf-8 -*-
+from django.db.models import get_model
+from django.utils.functional import memoize
+import djapian
+from utils import WeightenedIndexer, validate_phones_for_search
+Client = get_model('refs', 'client')
+_address_cache = {}
+get_address_memoized = memoize(lambda client_id, resolve, value: resolve(value),
+                               _address_cache, 1)
+class MemoizedField(djapian.Field):
+    def resolve(self, value):
+        resolve = super(MemoizedField, self).resolve
+        if self.path == 'get_address':
+            client_id = value.client_id if hasattr(value, 'client_id') else value.pk
+            return get_address_memoized(client_id, resolve, value)
+        return resolve(value)
+class MemoizedIndexer(WeightenedIndexer):
+    field_class = MemoizedField
+
+    def update(self, documents=None, *args, **kwargs):
+        res = super(MemoizedIndexer, self).update(documents, *args, **kwargs)
+        if documents is not None: # очищаем кеш если НЕ полная реиндексация (дефект #699)
+            _address_cache.clear()
+        return res
+class ClientIndexer(MemoizedIndexer):
+    fields = ('name', 'name2', 'get_office_names',
+              )
+    tags = (('client_id', 'pk'),
+            ('address', 'get_address'),
+            ('phones', 'get_phones'),
+            ('okopf', 'get_okopf'),
+            ('catalogue', 'get_catalogue'),
+            )
+    def filter(self, queryset):
+        qs = queryset.select_related('okopf__singular',
+                                     'okopf__abbreviation') \
+                     .defer('resume', 'image', 'comments', 'info',
+                            'contact_person', 'contact_phones', 'contact_email')
+        return qs
+    def search(self, query):
+        query = validate_phones_for_search(query)
+        return super(ClientIndexer, self).search(query)
+djapian.add_index(Client, ClientIndexer, attach_as='indexer')
+
+
+########
+# UTILS.py
+########
+import xapian
+import hunspell
+
+import djapian
+from djapian.database import CompositeDatabase
+from djapian.decider import CompositeDecider
+from djapian.models import Change
+from djapian.utils.decorators import reopen_if_modified
+
+_stopper = None
+def get_xapian_stopper(stopwords=None):
+    global _stopper
+    if _stopper is None:
+        _stopper = xapian.SimpleStopper()
+        if stopwords is None:
+            stopwords_file = os.path.join(settings.PROJECT_UP_PATH, 'spell', 'ru.stop')
+            stopwords = open(stopwords_file).readlines()
+        elif isinstance(stopwords, basestring):
+            stopwords = stopwords.split()
+        for word in stopwords:
+            _stopper.add(word.strip())
+    return _stopper
+
+
+_stemmer = None
+def get_xapian_stemmer():
+    global _stemmer
+    if _stemmer is None:
+        _stemmer = xapian.Stem('ru')
+    return _stemmer
+
+
+_hunspell_obj = None
+def get_hunspell_obj():
+    global _hunspell_obj
+    if _hunspell_obj is None:
+        base_path = os.path.join(settings.PROJECT_UP_PATH, 'spell')
+        _hunspell_obj = hunspell.HunSpell(os.path.join(base_path, 'ru.dic'),
+                                          os.path.join(base_path, 'ru.aff'))
+    return _hunspell_obj
+
+
+class HunspellStem(xapian.StemImplementation):
+    dic = {'яблоки': 'яблоко',
+           'яблок': 'яблоко',
+           'окон': 'окно',
+           }
+
+    def __init__(self):
+        super(HunspellStem, self).__init__()
+        self._h = get_hunspell_obj()
+
+    def __call__(self, s):
+        # здесь считаем что строка s в кодировке UTF-8
+        # заменяем в строке букву Ё на Е (см.тикет #337)
+        s = s.replace('ё', 'е').replace('Ё', 'Е')
+        return self._do_stem(s)
+
+    def _do_stem(self, s):
+        res = self._h.stem(s)
+        # Если HunSpell не обработал слово (нет в словаре, или ошибка правописания),
+        # то ищем в локальном словаре
+        return res[0] if len(res) else self.dic.get(s, '')
+
+
+class BisStem(HunspellStem):
+    def __init__(self):
+        super(BisStem, self).__init__()
+        self._stem = get_xapian_stemmer()
+        OKOPF = get_model('refs', 'okopf')
+        qs = OKOPF.objects \
+            .filter(abbreviation__isnull=False) \
+            .values_list('abbreviation', flat=True)
+        for value in qs:
+            value = value.lower()
+            self.dic[value] = value
+
+    def _do_stem(self, s):
+        res = super(BisStem, self)._do_stem(s)
+        # Если HunSpell не обработал слово (нет в словаре, или ошибка правописания),
+        # то выполняем обработку через алгоритмический стеммер
+        return res or self._stem(s)
+
+
+_stemmer_hunspell = None
+def get_hunspell_stemmer():
+    global _stemmer_hunspell
+    if _stemmer_hunspell is None:
+        _stemmer_hunspell = xapian.Stem(HunspellStem())
+    return _stemmer_hunspell
+
+
+_stemmer_bis = None
+def get_bis_stemmer():
+    global _stemmer_bis
+    if _stemmer_bis is None:
+        _stemmer_bis = xapian.Stem(BisStem())
+    return _stemmer_bis
+
+
+def get_query_parser(stoper=None, stemmer=None):
+    query_parser = xapian.QueryParser()
+    if stoper:
+        query_parser.set_stopper(stoper)
+    if stemmer:
+        query_parser.set_stemmer(stemmer)
+        query_parser.set_stemming_strategy(xapian.QueryParser.STEM_ALL)
+    return query_parser
+
+
+_query_parser = None
+def prepare_search_query(query):
+    "Uses HunSpell dictionary-based stemmer. HunSpell is a MySpell successor."
+    global _query_parser
+    if _query_parser is None:
+        _query_parser = get_query_parser(get_xapian_stopper(),
+                                         get_bis_stemmer())
+    return set(_query_parser.parse_query(query))
+
+
+_query_parser2 = None
+def prepare_search_query2(query):
+    "Uses Xapian Stem implementation based on Snowball algorithmic stemmer."
+    global _query_parser2
+    if _query_parser2 is None:
+        _query_parser2 = get_query_parser(get_xapian_stopper(),
+                                          get_xapian_stemmer())
+    return set(_query_parser2.parse_query(query))
+
+
+class RandomizedWithinPriorityKeyMaker(xapian.KeyMaker):
+    def __init__(self, priority_cache, seed, client_id_tag, social_client_ids):
+        super(RandomizedWithinPriorityKeyMaker, self).__init__()
+        self.priority_cache = priority_cache
+        self.seed = seed
+        self.client_id_tag = client_id_tag
+        self.social_client_ids = set(social_client_ids)
+
+    def __call__(self, doc):
+        priority = self._get_priority(doc)
+        if self.seed is not None:
+            random.seed(self.seed)
+            self.seed = None
+        random_value = ('%.5f' % random.random())[2:]
+        return ''.join([priority, random_value])
+
+    def _get_priority(self, document):
+        client_id = xapian.sortable_unserialise(document.get_value(self.client_id_tag))
+        return '%02d' % self.priority_cache.get(client_id,
+                                                PRIORITY_SOCIAL if client_id in self.social_client_ids else PRIORITY_DEFAULT)
+
+
+class BisResultSet(djapian.resultset.ResultSet):
+    _priority_tag_name = 'priority'
+
+    def __init__(self, indexer, query_str, default_attr=None, **kwargs):
+        super(BisResultSet, self).__init__(indexer, query_str, **kwargs)
+        self._default_attr = default_attr
+
+    def randomize(self, tag_name, seed=None):
+        self._priority_tag_name = tag_name
+
+        Service = get_model('serv', 'service')
+
+        def find_best_match(q):
+            search_query = prepare_search_query2(q)
+
+            PositionCategory = get_model('serv', 'positioncategory')
+            qs = PositionCategory.objects \
+                .filter(reduce(lambda a, b: a | Q(search_terms__icontains=b),
+                               search_query,
+                               Q(search_terms__isnull=False))) \
+                .filter(PositionCategory.objects.get_published_filter()) \
+                .values_list('pk', 'search_terms')
+
+            matches = dict([(pk, [prepare_search_query2(a)
+                                  for a in search_terms.splitlines()])
+                            for pk, search_terms in qs])
+            if not matches:
+                return None
+
+            ranks = {}
+            for pk, search_terms in matches.iteritems():
+                # по 0 ниже выбирается только "наиболее полно соответствующая"
+                # категория (например, запрос "такси" подымет только категорию
+                # "такси", но не "маршрутное такси" или "такси аршан");
+                # можно использовать 1 чтобы срабатывали все найденные категории,
+                # содержащие хотя бы одно слово из поискового запроса
+                rank = max(len(a) if a.issubset(search_query) else 0 # 0 или 1
+                           for a in search_terms)
+                if rank: # если как минимум 1 слово совпадает
+                    ranks.setdefault(rank, []).append(pk)
+            return ranks.get(max(ranks.keys()), None) if ranks else ()
+
+        match = find_best_match(self._query_str)
+        if match:
+            Position = get_model('serv', 'position')
+            qs = Position.objects \
+                .filter(category__in=match) \
+                .filter(service__in=Service.objects.get_published()) \
+                .values_list('service__client', 'category', 'position')
+            self._priority_cache = dict(qs.values_list('service__client', 'position'))
+            self._priority_match = match
+
+        self._social_client_ids = Service.objects \
+            .get_published(Service.objects.filter(state=Service.SOCIAL)) \
+            .values_list('client', flat=True).distinct()
+        self._client_id_tag = self._indexer.tag_index('client_id')
+        sort_key = RandomizedWithinPriorityKeyMaker(getattr(self, '_priority_cache', {}), seed,
+                                                    self._client_id_tag,
+                                                    self._social_client_ids)
+        return self._clone(order_by=(sort_key, False))
+
+    def _clone(self, **kwargs):
+        res = super(BisResultSet, self)._clone(**kwargs)
+        res.__class__ = BisResultSet
+
+        res._default_attr = self._default_attr
+        res._priority_tag_name = self._priority_tag_name
+        if hasattr(self, '_priority_cache'):
+            res._priority_cache = self._priority_cache
+            res._priority_match = self._priority_match
+        if hasattr(self, '_social_client_ids'):
+            res._social_client_ids = self._social_client_ids
+        if hasattr(self, '_client_id_tag'):
+            res._client_id_tag = self._client_id_tag
+
+        if self._mset is not None:
+            res._mset, res._query, res._query_parser = self._mset, self._query, self._query_parser
+        return res
+
+    def _do_prefetch(self):
+        model_map = {}
+
+        for hit in self._resultset_cache:
+            model_map.setdefault(hit.model, []).append(hit)
+
+        for model, hits in model_map.iteritems():
+            pks = [hit.pk for hit in hits]
+
+            instances = model._default_manager.all()
+
+            if self._prefetch_select_related:
+                instances = instances.select_related()
+
+            instances = instances.in_bulk(pks)
+
+            for hit in hits:
+                instance = instances.get(hit.pk, None)
+                if instance:
+                    hit.instance = instance
+
+        self._resultset_cache = filter(lambda hit: hit._instance, self._resultset_cache)
+
+    def _get_mset(self):
+        if self._mset is None:
+            self._mset, self._query, self._query_parser = self._indexer._do_search(self)
+
+    def _parse_results(self):
+        super(BisResultSet, self)._parse_results()
+
+        priority_tag_name = self._priority_tag_name
+        unserialise = xapian.sortable_unserialise
+
+        priority_cache = getattr(self, '_priority_cache', {})
+        if priority_cache:
+            Service = get_model('serv', 'service')
+            Position = get_model('serv', 'position')
+            qs = Position.objects \
+                .filter(category__in=self._priority_match) \
+                .filter(service__in=Service.objects.get_published()) \
+                .values_list('service__client', 'category')
+            category_cache = dict(qs)
+        else:
+            category_cache = {}
+        social_client_ids = getattr(self, '_social_client_ids', {})
+        for hit in self._resultset_cache:
+            client_id = hit.tags.get('client_id', None)
+            if client_id:
+                client_id = unserialise(client_id)
+                priority = priority_cache.get(client_id, None) or client_id in social_client_ids and PRIORITY_SOCIAL
+                if priority:
+                    hit.tags[priority_tag_name] = '%02d' % priority
+                    hit.tags[priority_tag_name+'_category_id'] = category_cache.get(client_id, None)
+
+
+class DBExistsCompositeDecider(CompositeDecider):
+    def __init__(self, model, *args, **kwargs):
+        super(DBExistsCompositeDecider, self).__init__(model, *args, **kwargs)
+
+    def __call__(self, document):
+        res = super(DBExistsCompositeDecider, self).__call__(document)
+        if not res:
+            return res
+
+        model = document.get_value(2)
+        model = get_model(*model.split('.'))
+        pk = model._meta.pk.to_python(document.get_value(1))
+        try:
+            model._default_manager.get(pk=pk)
+        except ObjectDoesNotExist:
+            return False
+
+        return True
+
+
+class ChangesCompositeDecider(CompositeDecider):
+    def __init__(self, model, *args, **kwargs):
+        super(ChangesCompositeDecider, self).__init__(model, *args, **kwargs)
+
+        deleted = {}
+        for model in model if isinstance(model, (list, tuple)) else [model]:
+            qs = Change._default_manager.filter(content_type=ContentType.objects.get_for_model(model),
+                                                action='delete') \
+                                        .values_list('object_id', flat=True)
+            deleted[model] = map(model._meta.pk.to_python, qs)
+        self._deleted = deleted
+
+    def __call__(self, document):
+        res = super(ChangesCompositeDecider, self).__call__(document)
+        if not res:
+            return res
+
+        model = document.get_value(2)
+        model = get_model(*model.split('.'))
+        pk = model._meta.pk.to_python(document.get_value(1))
+        if pk in self._deleted[model]:
+            return False
+
+        return True
+
+
+class PublishedOnlyDecider(ChangesCompositeDecider):
+    _client_id_tag = None
+    _skip_clients = None
+
+    def __init__(self, model, *args, **kwargs):
+        client_id_tag = kwargs.pop('client_id_tag', None)
+        super(PublishedOnlyDecider, self).__init__(model, *args, **kwargs)
+
+        if client_id_tag:
+            Client = get_model('refs', 'client')
+            skip_clients = Client.objects \
+                                 .filter(~Client.objects.get_published_filter()) \
+                                 .values_list('pk', flat=True)
+            if skip_clients:
+                self._client_id_tag = client_id_tag
+                self._skip_clients = set(skip_clients)
+
+    def __call__(self, document):
+        res = super(PublishedOnlyDecider, self).__call__(document)
+        if not res:
+            return res
+
+        # пропускаем "неопубликованных" клиентов и все что к ним относится
+        if self._client_id_tag and self._skip_clients:
+            client_id = xapian.sortable_unserialise(document.get_value(self._client_id_tag))
+            if client_id in self._skip_clients:
+                return False
+
+        return True
+
+
+class NonPositionalIndexer(djapian.Indexer):
+    def _do_index_fields(self, doc, generator, obj, obj_weight):
+        """
+        Do not honor terms position during indexing. This should lead to a lesser disk space usage.
+        """
+        for field in self.fields + self.tags:
+            # Trying to resolve field value or skip it
+            try:
+                value = field.resolve(obj)
+                if value is None:
+                    continue
+            except AttributeError:
+                continue
+
+            if field.prefix:
+                doc.add_value(field.number, field.convert(value))
+
+            prefix = smart_str(field.get_tag())
+            value = smart_str(value)
+            generator.index_text_without_positions(value, field.weight*obj_weight, prefix)
+            if prefix:  # if prefixed then also index without prefix
+                generator.index_text_without_positions(value, field.weight*obj_weight)
+
+
+class WeightenedIndexer(NonPositionalIndexer):
+    decider = PublishedOnlyDecider
+    stopper = get_xapian_stopper()
+
+    def search(self, query, default_attr=None):
+        return BisResultSet(self, query, default_attr=default_attr)
+
+    def get_stemmer(self, stemming_lang):
+        return get_bis_stemmer()
+
+    def update(self, documents=None, after_index=None, per_page=10000, commit_each=False):
+        if hasattr(self, 'filter'):
+            if documents is None:
+                documents = self._model.objects.all()
+            documents = self.filter(documents)
+            self.trigger = lambda obj: True # disable trigger function as we already have only filtered query set
+        return super(WeightenedIndexer, self).update(documents, after_index, per_page, commit_each)
+
+    def _enquire_order_by(self, enquire, order_by):
+        if order_by is None or order_by[0] in (None, 'RELEVANCE'):
+            enquire.set_sort_by_relevance()
+        elif isinstance(order_by[0], xapian.KeyMaker):
+            enquire.set_weighting_scheme(xapian.BoolWeight())
+            enquire.set_sort_by_key(order_by[0], False)
+        else:
+            reverse = False
+            order_by, relevance_first = order_by
+            if order_by.startswith('-'):
+                reverse = True
+            if order_by[0] in '+-':
+                order_by = order_by[1:]
+
+            try:
+                valueno = self.tag_index(order_by)
+            except (ValueError, TypeError):
+                raise ValueError("Field %s cannot be used in order_by clause"
+                                 " because it doen't exist in index" % order_by)
+
+            if relevance_first:
+                enquire.set_sort_by_relevance_then_value(valueno, reverse)
+            else:
+                enquire.set_sort_by_value_then_relevance(valueno, reverse)
+
+        return enquire
+
+    def _do_search(self, rs):
+        database = self._db.open()
+        enquire = xapian.Enquire(database)
+        enquire = self._enquire_order_by(enquire, rs._order_by)
+
+        if rs._collapse_by:
+            try:
+                valueno = self.tag_index(rs._collapse_by)
+            except (ValueError, TypeError):
+                raise ValueError("Field %s cannot be used in set_collapse_key"
+                                 " because it doen't exist in index" % rs._collapse_by)
+            enquire.set_collapse_key(valueno)
+
+        query, query_parser = self._parse_query(rs, database)
+        enquire.set_query(query)
+
+        decider = self._get_decider(rs._filter, rs._exclude)
+        limit = self.document_count() if rs._limit is None else rs._limit
+
+        return reopen_if_modified(database)(
+            lambda: enquire.get_mset(rs._offset, limit, None, decider)
+        )(), query, query_parser
+
+    def _parse_query(self, rs, db):
+        """
+        Parses search queries
+        """
+        # Instance Xapian Query Parser
+        query_parser = self._get_query_parser(rs._stemming_lang, rs._stopper)
+        query_parser.set_database(db)
+        args = (rs._query_str.lower(), rs._flags)
+        if rs._default_attr:
+            args += (rs._default_attr,)
+        query = query_parser.parse_query(*args)
+        return query, query_parser
+
+    def _get_decider(self, filter, exclude):
+        return self.decider(self._model, self.tags, filter, exclude,
+                            client_id_tag=self.tag_index('client_id'))
+
+
+class CompositeIndexer(WeightenedIndexer):
+    def __init__(self, *indexers):
+        self._indexers = indexers
+        self._prepare(
+            db=CompositeDatabase([indexer._db for indexer in indexers])
+        )
+        self._model = [indexer._model for indexer in indexers]
+
+    def clear(self):
+        raise NotImplementedError
+
+    def update(self, *args):
+        raise NotImplementedError
+
+    def tag_index(self, name):
+        return reduce(lambda a, b: a == b and a or None,
+                      [indexer.tag_index(name) for indexer in self._indexers])
+

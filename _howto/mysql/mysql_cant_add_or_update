@@ -1,0 +1,3 @@
+Cannot add or update a child row: a foreign key constraint fails 
+
+update tmp_pcats set price_id=NULL where price_id not IN(select id from price_products);

@@ -4,6 +4,7 @@ import requests
 
 from django.conf import settings
 
+from apps.main_functions.currency_cbr import get_currency_cbr
 from apps.shop.models import Orders, Transactions
 
 logger = logging.getLogger('main')
@@ -14,6 +15,7 @@ class SberPaymentProvider():
        Тестовый личный кабинет - https://3dsec.sberbank.ru/mportal3
        Боевой личный кабинет - https://securepayments.sberbank.ru/mportal3
 
+       Документация
        https://securepayments.sberbank.ru/wiki/doku.php/integration:api:start
        https://securepayments.sberbank.ru/wiki/doku.php/integration:simple
        https://securepayments.sberbank.ru/wiki/doku.php/mportal3:auth
@@ -53,10 +55,40 @@ class SberPaymentProvider():
             'password': self.password,
         }
 
+    def convert_summa(self, summa: int, currency: str = 'RUB'):
+        """Конвертация суммы в рубли из ISO 4217
+           :param summa: сумма, которую надо конвертировать (в копейках)
+           :param currency: валюта, принимаем текстовый код
+        """
+        summa = float(summa)
+        currencies = get_currency_cbr()
+        for item in currencies:
+            if item['char_code'] == currency:
+                # Сумма в копейках
+                summa = summa / 100 # делаем в рубли
+                result = summa / item['nominal'] * item['value']
+                return {
+                    'amount': int(result * 100), # Возвращем в копейки
+                    'course': item['value'],
+                    'nominal': item['nominal'],
+                }
+
+        raise 'Не удалось произвести конвертацию из %s' % currency
+
     def register_do(self, **kwargs):
         """Регистрация заказа
            https://3dsec.sberbank.ru/payment/rest/register.do
         """
+        # Шлюз сбера не поддерживает валюту кроме рублей
+        if hasattr(settings, 'DEFAULT_CURRENCY') and settings.DEFAULT_CURRENCY and settings.DEFAULT_CURRENCY != 'RUB':
+            # kwargs['amount'] в копейках
+            convert_result = self.convert_summa(
+                kwargs['amount'],
+                settings.DEFAULT_CURRENCY,
+            )
+            kwargs['amount'] = convert_result['amount']
+            kwargs['convert'] = convert_result
+
         endpoint = 'register.do'
         params = self.auth_params()
         params.update({
@@ -86,6 +118,8 @@ class SberPaymentProvider():
             'formUrl': resp['formUrl'], # URL-адрес платёжной формы
             'errorCode': resp.get('errorCode'), # Код ошибки (может не быть)
             'errorMessage': resp.get('errorMessage'),
+            # для записи в заказ
+            'convert': kwargs.get('convert'), # Если была конвертация валют
         }
         return result
 

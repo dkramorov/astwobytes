@@ -24,7 +24,7 @@ def calc_elapsed_time(func):
         started = time.time()
         result = func(*args, **kwargs)
         elapsed = time.time() - started
-        logger.info('[ELAPSED]: %.2f (%.1f min)' % (elapsed, elapsed/60))
+        logger.info('[ELAPSED]: func:%s %.2f (%.1f min)' % (func.__name__, elapsed, elapsed/60))
         return result
     return wrapper
 
@@ -40,6 +40,15 @@ def timestamp_to_date(stamp):
         return None
     result = datetime.datetime.fromtimestamp(stamp)
     return result
+
+def get_utc_date(in_timestamp: bool = False):
+    """Вернуть текущую дату в utc
+       :param in_timestamp: вернуть не дату, а timestamp
+    """
+    utcnow = datetime.datetime.utcnow()
+    if in_timestamp:
+        return utcnow.timestamp()
+    return utcnow
 
 def count_days_in_month(month, year):
     """Количество дней в месяце

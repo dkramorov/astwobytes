@@ -1,0 +1,5 @@
+mysql> select id from catalogue_rubrics order by case when id=184105246 then -1 
+    WHEN id=10 THEN 0
+    WHEN id=2 THEN 1
+    WHEN id=1 THEN 2
+else id end limit 5;

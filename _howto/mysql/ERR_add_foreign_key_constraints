@@ -1,0 +1,198 @@
+
+
+To find the specific error run this:
+
+SHOW ENGINE INNODB STATUS;
+
+And look in the LATEST FOREIGN KEY ERROR section.
+
+The data type for the child column must match the parent column exactly. For example, since medicalhistory.MedicalHistoryID is an INT, Patient.MedicalHistory also needs to be an INT, not a SMALLINT.
+
+Also, you should run the query set foreign_key_checks=0 before running the DDL so you can create the tables in an arbitrary order rather than needing to create all parent tables before the relevant child tables.
+
+
+
+
+mysql> alter table products_cart add foreign key(product_id) references product(id);
+ERROR 1215 (HY000): Cannot add foreign key constraint
+
+
+
+
+
+
+
+
+
+
+
+
+mysql> SHOW ENGINE INNODB STATUS;
+
+| Type   | Name | Status
+
+| InnoDB |      | 
+=====================================
+2019-01-06 12:59:40 0x700000d95000 INNODB MONITOR OUTPUT
+=====================================
+Per second averages calculated from the last 19 seconds
+-----------------
+BACKGROUND THREAD
+-----------------
+srv_master_thread loops: 55 srv_active, 0 srv_shutdown, 3065 srv_idle
+srv_master_thread log flush and writes: 3120
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 992
+OS WAIT ARRAY INFO: signal count 743
+RW-shared spins 0, rounds 1518, OS waits 732
+RW-excl spins 0, rounds 4685, OS waits 85
+RW-sx spins 189, rounds 3337, OS waits 37
+Spin rounds per wait: 1518.00 RW-shared, 4685.00 RW-excl, 17.66 RW-sx
+------------------------
+LATEST FOREIGN KEY ERROR
+------------------------
+2019-01-06 12:59:08 0x700000dd9000 Error in foreign key constraint of table vallomcrm/#sql-1e1_3a:
+ FOREIGN KEY (`product_id`) REFERENCES `products` (`id`):
+Cannot find an index in the referenced table where the
+referenced columns appear as the first columns, or column types
+in the table and the referenced table do not match for constraint.
+Note that the internal storage type of ENUM and SET changed in
+tables created with >= InnoDB-4.1.12, and such columns in old tables
+cannot be referenced by such columns in new tables.
+Please refer to http://dev.mysql.com/doc/refman/5.7/en/innodb-foreign-key-constraints.html for correct foreign key definition.
+------------
+TRANSACTIONS
+------------
+Trx id counter 16622353
+Purge done for trx's n:o < 16622348 undo n:o < 0 state: running but idle
+History list length 41
+LIST OF TRANSACTIONS FOR EACH SESSION:
+---TRANSACTION 281479462561584, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+--------
+FILE I/O
+--------
+I/O thread 0 state: waiting for i/o request (insert buffer thread)
+I/O thread 1 state: waiting for i/o request (log thread)
+I/O thread 2 state: waiting for i/o request (read thread)
+I/O thread 3 state: waiting for i/o request (read thread)
+I/O thread 4 state: waiting for i/o request (read thread)
+I/O thread 5 state: waiting for i/o request (read thread)
+I/O thread 6 state: waiting for i/o request (write thread)
+I/O thread 7 state: waiting for i/o request (write thread)
+I/O thread 8 state: waiting for i/o request (write thread)
+I/O thread 9 state: waiting for i/o request (write thread)
+Pending normal aio reads: [0, 0, 0, 0] , aio writes: [0, 0, 0, 0] ,
+ ibuf aio reads:, log i/o's:, sync i/o's:
+Pending flushes (fsync) log: 0; buffer pool: 0
+8577 OS file reads, 13830 OS file writes, 7324 OS fsyncs
+0.00 reads/s, 0 avg bytes/read, 0.00 writes/s, 0.00 fsyncs/s
+-------------------------------------
+INSERT BUFFER AND ADAPTIVE HASH INDEX
+-------------------------------------
+Ibuf: size 1, free list len 1728, seg size 1730, 2 merges
+merged operations:
+ insert 0, delete mark 2, delete 0
+discarded operations:
+ insert 0, delete mark 0, delete 0
+Hash table size 34673, node heap has 8 buffer(s)
+Hash table size 34673, node heap has 0 buffer(s)
+Hash table size 34673, node heap has 0 buffer(s)
+Hash table size 34673, node heap has 1 buffer(s)
+Hash table size 34673, node heap has 1 buffer(s)
+Hash table size 34673, node heap has 0 buffer(s)
+Hash table size 34673, node heap has 0 buffer(s)
+Hash table size 34673, node heap has 8 buffer(s)
+0.00 hash searches/s, 0.00 non-hash searches/s
+---
+LOG
+---
+Log sequence number 130628837131
+Log flushed up to   130628837131
+Pages flushed up to 130628837131
+Last checkpoint at  130628837122
+0 pending log flushes, 0 pending chkp writes
+1103 log i/o's done, 0.00 log i/o's/second
+----------------------
+BUFFER POOL AND MEMORY
+----------------------
+Total large memory allocated 137428992
+Dictionary memory allocated 449768
+Buffer pool size   8191
+Free buffers       1024
+Database pages     7149
+Old database pages 2618
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 209, not young 3809
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 3641, created 5687, written 6728
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+No buffer pool page gets since the last printout
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 7149, unzip_LRU len: 0
+I/O sum[3303]:cur[0], unzip sum[0]:cur[0]
+--------------
+ROW OPERATIONS
+--------------
+0 queries inside InnoDB, 0 queries in queue
+0 read views open inside InnoDB
+Process ID=481, Main thread ID=123145310887936, state: sleeping
+Number of rows inserted 5296, updated 0, deleted 0, read 1002358
+0.00 inserts/s, 0.00 updates/s, 0.00 deletes/s, 0.00 reads/s
+----------------------------
+END OF INNODB MONITOR OUTPUT
+============================
+1 row in set (0,00 sec)
+
+
+
+
+insert into vallomcrm.auth_user_user_permissions select * from vallomcrm2.auth_user_user_permissions;
+insert into vallomcrm.avito_categories select * from vallomcrm2.avito_categories;
+insert into vallomcrm.avito_pcategories select * from vallomcrm2.avito_pcategories;
+insert into vallomcrm.cash_accounting select * from vallomcrm2.cash_accounting;
+insert into vallomcrm.contacts select * from vallomcrm2.contacts;
+insert into vallomcrm.contacts_email select * from vallomcrm2.contacts_email;
+insert into vallomcrm.contacts_meta_description select * from vallomcrm2.contacts_meta_description;
+insert into vallomcrm.contacts_phone select * from vallomcrm2.contacts_phone;
+insert into vallomcrm.courses select * from vallomcrm2.courses;
+insert into vallomcrm.django_admin_log select * from vallomcrm2.django_admin_log;
+insert into vallomcrm.django_content_type select * from vallomcrm2.django_content_type;
+insert into vallomcrm.django_session select * from vallomcrm2.django_session;
+insert into vallomcrm.files_files select * from vallomcrm2.files_files;
+insert into vallomcrm.flatcontent_blocks select * from vallomcrm2.flatcontent_blocks;
+insert into vallomcrm.flatcontent_containers select * from vallomcrm2.flatcontent_containers;
+insert into vallomcrm.flatcontent_forest select * from vallomcrm2.flatcontent_forest;
+insert into vallomcrm.flatcontent_linkcontainer select * from vallomcrm2.flatcontent_linkcontainer;
+insert into vallomcrm.flatcontent_sitemap select * from vallomcrm2.flatcontent_sitemap;
+insert into vallomcrm.groups select * from vallomcrm2.groups;
+insert into vallomcrm.lots select * from vallomcrm2.lots;
+insert into vallomcrm.lots_update_stat select * from vallomcrm2.lots_update_stat;
+insert into vallomcrm.main_functions_captchas select * from vallomcrm2.main_functions_captchas;
+insert into vallomcrm.main_functions_config select * from vallomcrm2.main_functions_config;
+insert into vallomcrm.main_functions_tasks select * from vallomcrm2.main_functions_tasks;
+insert into vallomcrm.menu select * from vallomcrm2.menu;
+insert into vallomcrm.offload_log select * from vallomcrm2.offload_log;
+insert into vallomcrm.orders select * from vallomcrm2.orders;
+insert into vallomcrm.orders_products select * from vallomcrm2.orders_products;
+insert into vallomcrm.orders_products_back select * from vallomcrm2.orders_products_back;
+insert into vallomcrm.product_categories select * from vallomcrm2.product_categories;
+insert into vallomcrm.product_categories_char select * from vallomcrm2.product_categories_char;
+insert into vallomcrm.product_categories_char_values select * from vallomcrm2.product_categories_char_values;
+insert into vallomcrm.products select * from vallomcrm2.products;
+insert into vallomcrm.products_cart select * from vallomcrm2.products_cart;
+insert into vallomcrm.products_characteristics select * from vallomcrm2.products_characteristics;
+insert into vallomcrm.reserv select * from vallomcrm2.reserv;
+insert into vallomcrm.reserv_products select * from vallomcrm2.reserv_products;
+insert into vallomcrm.reserv_statuses select * from vallomcrm2.reserv_statuses;
+insert into vallomcrm.settings select * from vallomcrm2.settings;
+insert into vallomcrm.stores_stores select * from vallomcrm2.stores_stores;
+insert into vallomcrm.users select * from vallomcrm2.users;
+insert into vallomcrm.users_email select * from vallomcrm2.users_email;
+insert into vallomcrm.users_login select * from vallomcrm2.users_login;
+insert into vallomcrm.users_meta_description select * from vallomcrm2.users_meta_description;
+insert into vallomcrm.user_phone select * from vallomcrm2.user_phone;

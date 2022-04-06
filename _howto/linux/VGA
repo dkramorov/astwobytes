@@ -1,0 +1,10 @@
+jocker@jockbook:~/android/projects/tictactoe$ lspci|grep VGA
+00:0d.0 VGA compatible controller: NVIDIA Corporation C61 [GeForce 7025 / nForce 630a] (rev a2)
+
+jocker@jockbook:~/android/projects/tictactoe$ glxinfo|grep OpenGL
+OpenGL vendor string: NVIDIA Corporation
+OpenGL renderer string: MCP61/PCI/SSE2/3DNOW!
+OpenGL version string: 2.1.2 NVIDIA 173.14.39
+OpenGL shading language version string: 1.20 NVIDIA via Cg compiler
+OpenGL extensions:
+

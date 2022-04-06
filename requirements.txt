@@ -34,7 +34,7 @@ django-boto==0.3.12
 sphinx==4.2.0
 
 # ImportError: cannot import name 'getStringIO' from 'reportlab.lib.utils'
-reportlab==3.5.68 # hosting(3.4 python): 3.5.23
+reportlab==3.5.68 # hosting(3.4 python): reportlab==3.5.23
 xhtml2pdf==0.2.5 # hosting(3.4 python): xhtml2pdf==0.1a4
 
 matplotlib==3.2.1

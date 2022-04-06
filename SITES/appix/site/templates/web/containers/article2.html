@@ -10,8 +10,8 @@
       </div>
     </div>
 
-    {% for block in blocks %}
-      <div class="row">
+    <div class="row">
+      {% for block in blocks %}
         <div class="col-md-12">
           <div class="col-md-{% if block.img %}6{% else %}12{% endif %}">
             <div class="about-appix-right-content">
@@ -32,7 +32,8 @@
             </div>
           {% endif %}
         </div>
-      </div>
-    {% endfor %}
+        <div class="clearfix clear"></div>
+      {% endfor %}
+    </div>
   </div>
 </section>

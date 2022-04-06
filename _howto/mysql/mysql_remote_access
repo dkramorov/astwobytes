@@ -1,0 +1,65 @@
+# mysql -h irkutskpictures.com -uirkutskpictures -p
+
+ALTER DATABASE db_name
+    [[DEFAULT] CHARACTER SET charset_name]
+    [[DEFAULT] COLLATE collation_name]
+alter database irkutskpictures character set utf8 collate utf8_general_ci;
+
+
+Каждое соединение с mysqld запускается в отдельном потоке. При помощи команды SHOW PROCESSLIST можно просмотреть список запущенных потоков, а при помощи команды KILL thread_id - удалить поток.
+
+Если у вас есть привилегия PROCESS, можно просмотреть все потоки. Обладая привилегией SUPER, можно удалять любые потоки. В противном случае можно просматривать и удалять только свои собственные потоки.
+
+Для просмотра и удаления потоков можно также применять команды mysqladmin processlist и mysqladmin kill. 
+
+#################################################
+# Права
+#################################################
+mysql> select Host, User from mysql.user; # Все пользователи
+
+mysql> SHOW GRANTS FOR 'root'@'localhost';
++---------------------------------------------------------------------+
+| Grants for root@localhost                                           |
++---------------------------------------------------------------------+
+| GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION |
++---------------------------------------------------------------------+
+
+To list the privileges granted to the account that you are using to connect to the server, you can use any of the following statements:
+
+SHOW GRANTS;
+SHOW GRANTS FOR CURRENT_USER;
+SHOW GRANTS FOR CURRENT_USER();
+
+CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 'mypass';
+GRANT ALL ON db1.* TO 'jeffrey'@'localhost';
+GRANT SELECT ON db2.invoice TO 'jeffrey'@'localhost';
+GRANT USAGE ON *.* TO 'jeffrey'@'localhost' WITH MAX_QUERIES_PER_HOUR 90;
+TO 'user'@'%'
+
+mysql> create user 'jocker'@'10.10.10.%' identified by 'reabhxbr';
+mysql> grant all on *.* to 'jocker'@'10.10.10.%';
+
+
+#################################################
+shell> mysql
+Client does not support authentication protocol requested
+by server; consider upgrading MySQL client
+To connect to the server with a pre-4.1 client program, use an account that still has a pre-4.1-style password.
+Reset the password to pre-4.1 style for each user that needs to use a pre-4.1 client program. This can be done using the SET PASSWORD statement and the OLD_PASSWORD() function:
+mysql> SET PASSWORD FOR
+        -> 'some_user'@'some_host' = OLD_PASSWORD('newpwd');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

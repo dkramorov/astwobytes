@@ -434,7 +434,7 @@ def prepare_session(request, phone: str = None):
         try:
             r = requests.get('%s/freeswitch/sms_service/say_code/' % settings.FREESWITCH_DOMAIN, params=params, verify=False, timeout=(5, 0.1))
         except Exception as e:
-            return JsonResponse(result, safe=False, status=status_code)
+            return {'not_waited': True}
 
         result = r.json()
     return result

@@ -24,17 +24,20 @@ from apps.main_functions.views_helper import (show_view,
                                               search_view,
                                               special_model_vars, )
 
-from apps.flatcontent.flatcat import get_filters_for_cat
 from apps.flatcontent.models import Containers, Blocks
-from .models import (Products,
-                     ProductsCats,
-                     ProductsPhotos,
-                     Property,
-                     PropertiesValues,
-                     ProductsProperties,
-                     CostsTypes,
-                     Costs,
-                     CURRENCY_CHOICES, )
+from apps.products.models import (
+    Products,
+    ProductsCats,
+    ProductsPhotos,
+    Property,
+    PropertiesValues,
+    ProductsProperties,
+    CostsTypes,
+    Costs,
+    CURRENCY_CHOICES,
+)
+
+from apps.products.strategy import get_search_strategy
 
 logger = logging.getLogger('main')
 
@@ -1107,7 +1110,10 @@ def facet_filters(request, cat_id):
     method = request.GET if request.method == 'GET' else request.POST
     search_facet = True if method.get('search_facet') else False
     force_new = True if method.get('force_new') else False
-    result = get_filters_for_cat(cat_id,
-                                 search_facet=search_facet,
-                                 force_new=force_new)
+    strategy = get_search_strategy()
+    result = strategy.get_filters_for_cat(
+        cat_id=cat_id,
+        search_facet=search_facet,
+        force_new=force_new,
+    )
     return JsonResponse(result, safe=False)

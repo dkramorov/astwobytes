@@ -1,0 +1,24 @@
+
+sip_profiles/rostelecom.xml
+rtp-ip, sip-ip = 192.168.1.50 - какой адрес слушать
+
+
+НЕ БЫЛО ЗВУКА при звонке с зойпера
+
+У меня локалные пользователи подключаются на 192.168.1.50
+а к ростелекому подключено через 192.168.3.50
+
+И на рутере надо пробросить 5060 +
+    <!-- <param name="rtp-start-port" value="16384"/> -->
+    <!-- <param name="rtp-end-port" value="32768"/> -->
+на мой 192.168.3.50 - тогда появился звук
+
+
+Restricting Port Range
+
+Some firewall providers provide limited support for port forwarding or virtual servers or whatever they are called by the provider. To help, FreeSWITCH can limit the ports it will use for RTP streams, so you don't have to forward 16,000 ports. You will need enough to handle all media channels coming across the firewall. Keep that in mind.
+
+Specify the lower and upper bounds on port numbers in conf/autoload_configs/switch.conf.xml as follows:
+switch.conf.xml
+<param name="rtp-start-port" value="16384"/>
+<param name="rtp-end-port" value="16389"/> 

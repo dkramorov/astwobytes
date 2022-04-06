@@ -25,7 +25,7 @@
                             {% comment %}<!--
                             <span class="onsale">Sale!</span>
                             -->{% endcomment %}
-                            <img src="{% imagine product.img '400x600' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}">
+                            <img src="{% imagine product.img '400x600' product.get_folder True %}" class="img-fluid" alt="{{ product.name|textize }}" loading="lazy">
                           </a>
                           {% comment %}<!--
                           <div class="product-hover-icons">

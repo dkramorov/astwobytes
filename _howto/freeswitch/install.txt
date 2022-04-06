@@ -1,0 +1,183 @@
+качаем openssl-1.1.1
+устанавливаем в /opt
+./config --prefix=/opt/openssl --openssldir=/usr/local/ssl
+
+lsb_release -a # узнаем версию убунты
+
+# wget https://github.com/signalwire/freeswitch/archive/v1.10.1.tar.gz
+
+./bootstrap.sh -j
+./configure --prefix=/opt/freeswitch CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib"
+
+Либо просто
+make clean && ./configure --prefix=/opt/freeswitch CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" && make
+
+repo
+https://files.freeswitch.org/freeswitch-releases/
+
+
+cd /usr/src
+
+apt-get install git-core subversion build-essential autoconf automake libtool libncurses5 libncurses5-dev make libjpeg-dev
+apt-get install git-core build-essential autoconf automake libtool libncurses5 libncurses5-dev gawk libjpeg-dev libz-dev pkg-config
+apt-get install libedit-dev
+apt-get install libldns-dev
+apt-get install libspeexdsp-dev
+apt-get install libspeex-dev
+apt-get install libpcre3-dev
+apt-get install libcurl4-openssl-dev
+apt-get install libsqlite3-dev
+apt-get install libtiff-dev
+apt-get install yasm
+apt-get install libsndfile-dev
+apt-get install libshout3-dev
+apt-get install libmp3lame-dev
+apt-get install libopus-dev
+apt-get install libsndfile-dev
+
+git clone https://freeswitch.org/stash/scm/fs/freeswitch.git
+
+cd /usr/src/freeswitch
+# ----------------------
+# создается modules.conf
+# ----------------------
+./bootstrap.sh –j
+
+
+Подключаем необходимые модули, редактируем modules.conf:
+-mod_lua
+-mod_signalwire
+mod_rtmp
+mod_directory
+mod_callcenter
+mod_tts_commandline
+mod_dingaling
+mod_flite
+mod_shout
+mod_cidlookup
+mod_curl
+mod_xml_curl
+mod_python
+
+
+Продолжаем процесс установки Freeswitch:
+./configure && make
+
+make clean && ./configure -C && make
+make clean && ./configure -C && make && make install
+make install
+
+
+Устанавливаем звуковые файлы, на всякий случай ставим все:
+
+make sounds-install
+make moh-install
+make hd-moh-install
+make hd-sounds-install
+make uhd-moh-install
+make uhd-sounds-install
+make cd-sounds-install
+make cd-moh-install
+
+
+Установим русские звуковые файлы:
+
+make sounds-ru-install
+make cd-sounds-ru-install
+make uhd-sounds-ru-install
+make hd-sounds-ru-install
+
+
+Добавим пользователя Freeswitch:
+
+useradd --system --home-dir /usr/local/freeswitch freeswitch
+passwd -l freeswitch # Users with a locked password are not allowed to change their password.
+
+
+Установим права и владельцев на файлы FreeSwitch:
+
+chown -R freeswitch:freeswitch /usr/local/freeswitch/
+chmod -R g+w  /usr/local/freeswitch/
+cp /usr/src/freeswitch/build/freeswitch.init.redhat /etc/init.d/freeswitch && chmod +x /etc/init.d/freeswitch
+cp /usr/src/freeswitch/build/freeswitch.sysconfig /etc/sysconfig/freeswitch
+
+cat >> /etc/sysconfig/freeswitch <<EOT
+PID_FILE=/var/run/freeswitch/freeswitch.pid
+FS_USER=freeswitch
+FS_FILE=/usr/local/freeswitch/bin/freeswitch
+FS_HOME=/usr/local/freeswitch
+EOT
+
+chkconfig --level 5 freeswitch on
+
+
+Уберем дефолтные конфиги FreeSwitch и добавим ссылку на CLI:
+
+rm -rf /usr/local/freeswitch/conf/dialplan/default/00* /usr/local/freeswitch/conf/dialplan/default/01_Talking_Clock.xml
+cd /usr/local/bin/ && ln -s /usr/local/freeswitch/bin/fs_cli fs_cli
+
+
+Наверное первое что нужно сделать, это поменять пароль по-умолчанию для всех пользователей, а также, сменить пароль для голосовой почты:
+
+/usr/local/freeswitch/conf/vars.xml
+<X-PRE-PROCESS cmd="set" data="default_password=ваш_новый_пароль"/>
+
+
+Включим сообщения на русском:
+
+/usr/local/freeswitch/conf/vars.xml
+<X-PRE-PROCESS cmd="set" data="sound_prefix=$${sounds_dir}/ru/RU/elena"/>
+
+
+Устанавливаем необходимые кодеки, я использовал только G711:
+
+<X-PRE-PROCESS cmd="set" data="global_codec_prefs=PCMU,PCMA"/>
+<X-PRE-PROCESS cmd="set" data="outbound_codec_prefs=PCMU,PCMA"/>
+
+
+Если Вам нужно включить запись разговоров всех внутренних звонков:
+
+/usr/local/freeswitch/conf/dialplan/default.xml
+
+
+Находим “Local_Extension” и добавляем строку:
+
+<action application="record_session" data="$${base_dir}/recordings/${strftime(%Y%m%d_%H%M%S)}_${caller_id_number}_${destination_number}.wav"/>
+
+
+Применяем изменения командой fs_cli -x «reloadxml». Все записи разговоров будут сохраняться в каталог: /usr/local/freeswitch/recordings/.
+
+Переходим к настройке SIPML5. Активируем транспорт Websocket:
+
+/usr/local/freeswitch/conf/sip_profiles/internal.xml
+<param name="ws-binding"  value=":5066"/>
+
+
+Запускаем Freeswitch и проверяем что вебсокет активирован:
+
+fs_cli -x "sofia status profile internal" | grep WS-BIND-URL
+
+WS-BIND-URL     	sip:mod_sofia@X.X.X.X:5066;transport=ws
+
+
+Настройка завершена, но оказалось что в работе связки Freeswitch и SIPML5 есть некоторые проблемы, о которых я собираюсь рассказать:
+
+Проблема № 1:
+
+При звонке с SIPML5 на SIP-телефон или на SIPML5 клиента, происходит сброс звонка через n-секунд (обычно через 60 секунд). Причина такого странного поведения оказалась в проблеме обмена пакетами веб-клиента и сервера «Session-Expires: 120;refresher=uas», проблему можно решить отключив таймер по RFC 4028 SIP Session Timers:
+
+/usr/local/freeswitch/conf/sip_profiles/internal.xml
+<param name="enable-timer" value="false"/>
+
+
+Проблема № 2:
+
+Неожиданно возникли проблемы с DTMF для клиентов SIPML5, которые решились включением двойного режима DTMF (принимаем RFC2833 и INFO, а предлагаем RFC2833):
+
+/usr/local/freeswitch/conf/sip_profiles/internal.xml
+<param name="liberal-dtmf" value="true"/>
+
+
+Проблема № 3:
+
+Как оказалось данная связка не хочет работать на ОС Ubuntu 12.04 из-за бага в openssl, который описан тут: freeswitch.org/jira/browse/FS-6431, решается он обновлением пакета openssl.

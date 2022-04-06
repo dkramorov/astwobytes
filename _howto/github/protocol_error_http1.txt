@@ -1,0 +1,13 @@
+iMac:platform jocker$  git push --set-upstream origin fix/HYB2-4679
+Enumerating objects: 3535, done.
+Counting objects: 100% (2439/2439), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (1114/1114), done.
+Writing objects: 100% (2149/2149), 281.65 KiB | 14.08 MiB/s, done.
+Total 2149 (delta 1137), reused 1146 (delta 539)
+error: RPC failed; curl 92 HTTP/2 stream 0 was not closed cleanly: PROTOCOL_ERROR (err 1)
+
+
+git config --global http.version HTTP/1.1
+git push 
+git config --global http.version HTTP/2

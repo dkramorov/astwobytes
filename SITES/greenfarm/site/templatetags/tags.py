@@ -98,7 +98,7 @@ def random_products(request,
     if inCache:
         return inCache
 
-    products = Products.objects.filter(img__isnull=False).order_by('?')[:size]
+    products = Products.objects.filter(img__isnull=False).order_by('updated')[:size]
     result = {
         'name': name,
         'tag': tag,

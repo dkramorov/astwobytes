@@ -1,0 +1,3 @@
+nohup node server.js &
+Powerful solution (allows you to reconnect to the process if it is interactive):
+screen

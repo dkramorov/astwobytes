@@ -1,0 +1,19 @@
+callcenter_config agent list
+
+callcenter_config queue list
+
+callcenter_config tier list
+
+
+freeswitch@jocker_sip> callcenter_config agent get status jocker
+
+freeswitch@jocker_sip> callcenter_config agent get state jocker
+
+
+callcenter_config tier set state cifrus opertest Ready
+callcenter_config agent set status opertest Available
+callcenter_config agent set state opertest Waiting
+
+callcenter_config tier set state cifrus jocker Ready
+callcenter_config agent set status jocker Available
+callcenter_config agent set state jocker Waiting

@@ -1,0 +1,28 @@
+Options +ExecCGI
+
+RewriteEngine On
+
+# Переадресовывает (без переписывания урлы) с media на bis223/media,
+# запоминает все что шло после media/(.*)$ в $1 - и потом дописывает это
+# [L] говорит о LAST - дальше не шагаем
+RewriteRule ^media/(.*)$ /bis223/media/$1 [L]
+
+RewriteRule ^robots\.txt$ /static/robots\.txt [L]
+
+RewriteRule ^yandex_7b68b65c886a0879\.txt$ /bis223/media/yandex_7b68b65c886a0879\.txt [L]
+
+# Переписывает хост если не начинается с 223223 на 223223
+# например, в случае с www - R=301 переписывает в браузере урлу
+RewriteCond %{HTTP_HOST} !^223223\.ru
+RewriteRule (.*) http://223223\.ru/$1 [R=301,L]
+
+AddHandler wsgi-script .wsgi
+
+# !-f проверяет является ли урл файлом, если не является
+# отправляем все на index.wsgi, 
+# СЛЕДУЕТ ПОМНИТЬ, что КОРНЕВАЯ ДИРЕКТОРИЯ public_html
+# и в ней условие !-f - будет действовать только на /static/
+# выше я прописал media на bis223/media - такое тоже попадет под это условие
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ /index\.wsgi/$1 [QSA,PT,L]
+ 

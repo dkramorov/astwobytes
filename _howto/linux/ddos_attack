@@ -1,0 +1,87 @@
+## Block http user agent - wget ##
+if ($http_user_agent ~* (Wget) ) {
+  return 403;
+}
+ 
+## Block Software download user agents ##
+if ($http_user_agent ~* LWP::Simple|BBBike|wget) {
+  return 403;
+}
+
+if ($http_user_agent ~ (agent1|agent2|Foo|Wget|Catall Spider|AcoiRobot) ) {
+  return 403;
+}
+
+
+52.51.169.4 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 502 173 "-" "WordPress/4.4.2; http://www.canpango.com; verifying pingback from 5.61.41.77"
+85.10.213.9 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 502 173 "-" "WordPress/3.8.28; http://charak.de; verifying pingback from 5.61.41.77"
+188.65.119.119 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 200 29557 "-" "WordPress/3.8.27; http://autoexpressltd.co.uk; verifying pingback from 5.61.41.77"
+52.4.146.248 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 200 29557 "-" "WordPress/4.2.22; http://52.4.146.248; verifying pingback from 5.61.41.77"
+173.255.217.140 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 502 173 "-" "WordPress/3.9.26; http://biologicat.djamil.it; verifying pingback from 5.61.41.77"
+164.39.7.99 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 502 173 "-" "WordPress/3.6; http://www.bowergreen.co.uk"
+178.170.104.6 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 502 173 "-" "WordPress/3.5.1; http://coach-emarketing.fr"
+157.7.210.163 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 200 29557 "-" "WordPress/4.0; http://sns.silverlight.tokyo; verifying pingback from 5.61.41.77"
+178.170.104.6 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 502 173 "-" "WordPress/3.5.1; http://coach-internet.fr"
+94.247.144.144 - - [15/Jan/2019:12:01:00 +0800] "GET / HTTP/1.0" 502 173 "-" "WordPress/3.4.1; http://blog.pichler-haus.at"
+
+
+
+# tail -1000 /var/log/nginx/access.log | sort | grep pingback | uniq -c | awk '{print $1 " " $2}'
+
+
+
+Попробовать через iptables
+
+iptables -A INPUT -p tcp -m tcp --dport 80 -m string --string "WordPress" --algo kmp --to 65535 -j DROP
+iptables -A INPUT -p tcp -m tcp --dport 443 -m string --string "WordPress" --algo kmp --to 65535 -j DROP
+
+
+
+1. Попробуйте включить возможность лимитировать соединения на Nginx
+    limit_conn_zone $binary_remote_addr zone=perip:10m;
+
+2. Включите аналогичные действия, но со стороны iptables
+    -A INPUT-p tcp --dport 80 -m iplimit --iplimit-above 10 -j REJECT
+
+
+
+server{
+  listen 80;
+  server_name open-zamok.com *.open-zamok.com;
+  root /home/jocker/sites/django_new;
+
+  if ($http_user_agent ~* WordPress|BBBike|wget) {
+    return 403;
+  }
+
+  location ~* /media/ {
+    root /home/jocker/sites/django/openlock;
+    access_log off;
+    expires max;
+    add_header Cache-Control public;
+    try_files $uri =404;
+  }
+  location ~* /static/ {
+    access_log off;
+    expires max;
+    add_header Cache-Control public;
+    try_files $uri =404;
+  }
+
+  location / {
+    try_files $uri @django;
+  }
+
+  location @django{
+    uwsgi_pass unix:///run/uwsgi/app/openlock/socket;
+    include uwsgi_params;
+  }
+
+  client_max_body_size 3m;
+
+}
+
+server {
+  server_name www.open-zamok.com;
+  rewrite ^(.+)$ http://open-zamok.com/$1 permanent;
+}

@@ -1,3 +1,21 @@
+
+mysqldump -u root -preabhxbr --all-databases > all_databases.sql
+
+for DB in $(mysql -preabhxbr -e 'show databases' -s --skip-column-names); do
+    mysqldump -preabhxbr $DB > "$DB.sql";
+done
+
+for DB in $(mysql -pcnfylfhnysq -e 'show databases' -s --skip-column-names); do
+    mysqldump -pcnfylfhnysq $DB > "$DB.sql";
+done
+
+Много соединений
+Waiting for table metadata lock
+SHOW ENGINE INNODB STATUS \G
+и ищем TRANSACTIONS
+
+
+
 mysql.server restart
 arch -x86_64 /usr/local/bin/brew services start mysql@5.7
 arch -x86_64 /usr/local/bin/brew services stop mysql@5.7
@@ -21,6 +39,8 @@ mysql --verbose --help|grep cnf
 [mysqld]
 general_log=1
 general_log_file=/Users/wdb/mysql.log
+
+ SET GLOBAL general_log = 1;
 
 mysql> show variables like '%general_log%';
 +------------------+----------------------+

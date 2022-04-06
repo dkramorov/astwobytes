@@ -1,0 +1,607 @@
+{% load mtags %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% block title %}{% endblock %}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="author" content="Ярославцев Денис">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style type="text/css">
+@font-face {
+  font-family: Helvetica;
+  src: url("{{ font }}");}
+@font-face {
+   font-family: Helvetica;
+   src: url("{{ font_bold }}");
+   font-weight: bold;
+}
+
+@font-face {
+  font-family: TimesNewRoman;
+  src: url("{{ font_times }}");}
+@font-face {
+   font-family: TimesNewRoman;
+   src: url("{{ font_times_bold }}");
+   font-weight: bold;
+}
+
+body{
+  font-family: TimesNewRoman;
+  font-size: 11px;
+}
+p, ul, ul li {
+  margin: 0;
+  padding: 5px;
+}
+
+@page {
+  size: {{ pagesize }};
+  /* Это дублирует на каждую страничку контент
+  @frame main_frame {
+    -pdf-frame-content: main_content;
+    left: 1cm; width: 19cm; top: 0.2cm; height: 26.8cm;
+  }
+  */
+  @frame footer_frame {
+    -pdf-frame-content: footer_content;
+    left: 1cm; width: 19cm; top: 27cm; height: 1cm;
+  }
+}
+table {
+  margin: 0 20px;
+  border: 0;
+}
+table.two_col tr th,
+table.two_col tr td {
+  /*padding: 8px 6px 3px 6px;*/
+  /*border: 1px solid #ccc;*/
+  vertical-align: top;
+}
+table.two_col tr th p,
+table.two_col tr td p {
+  /*padding: 8px 6px 3px 6px;*/
+}
+.vtop {
+  vertical-align: top;
+}
+.title {
+  font-size: 1.2em;
+}
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
+table.two_col tr td.noborder {
+  border: 0;
+}
+.logo img {
+  height: 50px;
+  text-align:center;
+  display: block;
+  margin-bottom: 10px;
+}
+.stamp img {
+  height: 200px;
+  text-align:center;
+  display: block;
+}
+
+.bold {
+  font-weight: bold;
+}
+.orange_bg {
+  background-color: #e46c0b;
+  color: #fff;
+  text-align: center;
+}
+.yellow_bg {
+  background-color: #fef3cc;
+}
+.green_bg {
+  background-color: #e3eed9;
+}
+.blue_bg {
+  background-color: #d9e2f4;
+}
+.yellow_bg, .green_bg, .blue_bg, .white_bg {
+  font-size: 16px;
+  text-align: center;
+}
+.black {
+  color: #000;
+}
+.width80 {
+  width: 100px;
+}
+.underline {
+  text-decoration: underline;
+}
+.page-break{
+  page-break-after: always;
+}
+</style>
+</head>
+<body>
+
+{% block content %}
+<br><br>
+<div id="main_content">
+  <table>
+    <tr>
+      <td width="180">
+        <div class="logo"><img src="{{ logo }}" /></div>
+      </td>
+      <td class="text-center">
+        <strong>МЕЖДУНАРОДНЫЙ СТРАХОВОЙ ПОЛИС /
+        <br>INTERNATIONAL INSURANCE POLICY</strong>
+      </td>
+      <td>
+        <p class="text-right">
+           Россия, 129110, г. Москва, ул. Гиляровского, д. 42<br>
+           Тел.: +7 (495) 739-01-01<br>
+           www.soglasie.ru
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <p>Страхование граждан, выезжающих за пределы постоянного места жительства, осуществляется на основании Правил страхования граждан, выезжающих за пределы постоянного места жительства, от 11.06.2020 г. и в соответствии с Условиями страхования граждан, выезжающих за пределы постоянного места жительства (Приложение к настоящему Полису), являющимися неотъемлемой частью настоящего Полиса. </p>
+      </td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td>
+        <p>
+          <strong>Полис (Договор страхования)/</strong>
+          Policy (Insurance contract)
+        </p>
+      </td>
+      <td>
+        <p>0002114-{{ number7 }}/22МП</p>
+      </td>
+      <td>
+        <p>
+          <strong>Сервисная компания/</strong>
+          Service company
+        </p>
+      </td>
+      <td>
+        <p>
+          <strong>AP Companies</strong>
+        </p>
+      </td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td>
+        <p>
+          <strong>Страхователь/</strong>
+          Policyholder
+        </p>
+      </td>
+       <td colspan="3">
+         <p>{{ polis.name }}</p>
+      </td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td>
+        <p>
+          <strong>Адрес/</strong>
+          Address
+        </p>
+      </td>
+      <td colspan="2">
+        <p>-</p>
+      </td>
+      <td>
+        <p>
+          <strong>Дата выдачи полиса/</strong>
+          Dаte of issue
+        </p>
+      </td>
+      <td class="yellow_bg">
+        <p>{{ order.created|date:'d.m.Y' }}</p>
+      </td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td colspan="6">
+        <p>
+          <strong>Период страхования по программам "B" с/</strong><br>Insurance period for programs "B" from
+        </p>
+      </td>
+      <td colspan="2" class="green_bg">
+        <p>{{ polis.from_date|date:'d-m-Y' }}</p>
+      </td>
+      <td>
+        <p>
+          <strong>по/</strong><br>to
+        </p>
+      </td>
+      <td colspan="2" class="blue_bg">
+        <p>{{ polis.to_date|date:'d-m-Y' }}</p>
+      </td>
+      <td>
+        <p>
+          <strong>Дней/</strong><br>Days
+        </p>
+      </td>
+      <td class="white_bg">
+        <p>20</p>
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td>
+        <p>
+          <strong>Территория страхования/</strong><br>Insurance territory
+        </p>
+      </td>
+      <td colspan="2">
+        <p>UNITED STATES OF AMERICA</p>
+      </td>
+    </tr>
+  </table>
+
+  <table class="two_col">
+    <tr>
+      <td rowspan="{{ members_count }}">
+        <p>
+          <strong>Застрахованные лица/</strong><br>The Insured persons
+        </p>
+      </td>
+{% comment %}<!--
+      <td colspan="2">
+        <p>Zaitseva Irina</p>
+      </td>
+      <td>
+        <p>
+          <strong>Дата рождения/</strong><br>Date of birth
+        </p>
+      </td>
+      <td class="white_bg">
+        <p>31230</p>
+      </td>
+-->{% endcomment %}
+    </tr>
+      <tr>
+        <td>
+          <p>{{ polis.name }}</p>
+        </td>
+        <td>
+          <p>
+            <strong>Дата рождения/</strong><br>Date of birth
+          </p>
+        </td>
+        <td class="white_bg">
+          <p>{{ polis.birthday|date:'d-m-Y' }}</p>
+        </td>
+      </tr>
+    {% for member in members %}
+      <tr>
+        <td>
+          <p>{{ member.name }}</p>
+        </td>
+        <td>
+          <p>
+            <strong>Дата рождения/</strong><br>Date of birth
+          </p>
+        </td>
+        <td class="white_bg">
+          <p>{{ member.birthday|date:'d-m-Y' }}</p>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <table>
+    <tr>
+      <td colspan="2">
+        <p>
+          <strong>Программа страхования/</strong><br>Insurance program
+        </p>
+      </td>
+      <td>
+        <p>
+          <strong>Страховая сумма на каждого/</strong><br>Sum insured per person
+        </p>
+      </td>
+      <td>
+        <p>
+          <strong>Страховая премия/</strong><br>Insurance premium
+        </p>
+      </td>
+      <td>
+        <p>
+          <strong>Безусловная франшиза /</strong><br>Unconditional deductible
+        </p>
+      </td>
+    </tr>
+{% comment %}<!--
+    <tr>
+      <td width="50">
+        <p>
+          B
+        </p>
+      </td>
+      <td>
+        <p>
+          <strong>Медицинские и иные расходы/</strong><br>Medical and other expenses
+        </p>
+      </td>
+      <td>
+        <p>
+          35 000 EUR
+        </p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="50">
+        <p>
+          G1
+        </p>
+      </td>
+      <td>
+        <p>
+        <strong>Невозможность совершить поездку/</strong><br>Loss of possibility make the travel
+        </p>
+      </td>
+      <td>
+        <p>
+          1 500 EUR
+        </p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+    </tr>
+-->{% endcomment %}
+    {% for purchase in order.purchases_set.all %}
+    <tr>
+      <td width="50">
+        <p>
+          B
+        </p>
+      </td>
+      <td>
+        <p>
+          <strong>{{ purchase.product_name }}/</strong>
+        </p>
+      </td>
+      <td>
+        <p>
+          {{ purchase.product_price|money_format }} EUR
+        </p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <table>
+    <tr>
+      <td colspan="4">
+        <p>
+          <strong>Период страхования по программе "G1" (п. 1.1.1.13 Условий страхования) с/</strong><br>Insurance period for the "G" program (p. 1.1.1.1-1.1.1.12 of the Insurance Terms) from
+        </p>
+      </td>
+      <td class="yellow_bg">
+        <p>44636</p>
+      </td>
+      <td width="50">
+        <p>
+          <strong>по/</strong><br>to
+        </p>
+      </td>
+      <td class="green_bg">
+        <p>44652</p>
+      </td>
+      <td>
+        <p>
+          <strong>Дней/</strong><br>Days
+        </p>
+      </td>
+      <td width="50" class="white_bg">
+        <p>17</p>
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td colspan="4">
+        <p>
+          <strong>Период страхования по программе "G1" (п. 1.1.2 Условий страхования) с /</strong><br>Insurance period for the "G" program (p. 1.1.2 of the Insurance Terms) from
+        </p>
+      </td>
+      <td class="green_bg">
+        <p>44652</p>
+      </td>
+      <td width="50">
+        <p>
+          <strong>по/</strong><br>to
+        </p>
+      </td>
+      <td class="blue_bg">
+        <p>44671</p>
+      </td>
+      <td>
+        <p>
+          <strong>Дней/</strong><br>Days
+        </p>
+      </td>
+      <td width="50" class="white_bg">
+        <p>20</p>
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td width="50">
+        <p>
+          <strong>Код/</strong><br>Code
+        </p>
+      </td>
+      <td width="50">
+        <p>TI</p>
+      </td>
+      <td>
+        <p>
+          <strong>Вариант действия полиса/</strong><br>Coverage option
+        </p>
+      </td>
+      <td width="50">
+        <p>-</p>
+      </td>
+      <td>
+        <p>
+          <strong>Общая страховая премия/</strong><br>
+          General insurance premium*
+        </p>
+      </td>
+      <td>
+        <p>
+          As agreed
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td>
+        <p>
+          <strong>Особые условия/</strong><br>Special terms
+        </p>
+      </td>
+      <td colspan="4">
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td>
+        <p>* Оплачена единовременно. </p>
+        <p>
+          <strong>Расходы Застрахованного лица по случаям заболевания COVID-19 оплачиваются в соответствии с условиями страхования, изложенными в Приложении к настоящему Полису / The Insured person's expenses in cases of COVID-19 disease are paid in accordance with the insurance conditions set out in the Appendix to this Policy.</strong>
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<pdf:nextpage />
+<br><br>
+
+<div id="page2">
+  <table>
+    <tr>
+      <td>
+        <p>Ответственность Страховщика распространяется на события, наступившие в период действия договора страхования,  при условии пересечения Застрахованным лицом границы РФ в целях совершения поездки на территорию страхования после даты заключения договора страхования, для договора страхования, предусматривающего многократные поездки в период действия договора страхования  – при условии пересечения границы РФ в первой поездке на территорию страхования после даты заключения договора страхования.</p>
+        <p>Настоящее условие не распространяет свое действие на риск возникновения расходов из-за невозможности совершить поездку у Застрахованного лица (при условии заключения договора на случай реализации указанного риска).</p>
+
+        <h3 class="text-center">ПАМЯТКА ЗАСТРАХОВАННОМУ ЛИЦУ</h3>
+        <p>При наступлении события, имеющего признаки страхового случая, Застрахованное лицо (или его представитель) в обязательном порядке должно обратиться в call-центр Сервисной компании <strong>"AP Companies"</strong>, работающий круглосуточно, по телефонам:<br> <strong>в Москве +7 495 152 15 15;</strong> в зарубежных странах: <strong>Австрия</strong> +43 1 2297180; <strong>Болгария</strong> +359 2 4917023; <strong>Германия</strong> +49 711 93709491; <strong>Грузия</strong> +995 32 2470286; <strong>Израиль</strong> +972 3 9155759; <strong>Испания</strong> +34 93 1702286; <strong>Италия</strong> +39 06 90280643; <strong>CША</strong> +1 516 8333174; <strong>Таиланд</strong> +66 60 0035220; <strong>Финляндия</strong> +358 9 42599705; <strong>Хорватия</strong> +385 21 770715; <strong>Чехия</strong> +420 2 26258134; Швеция +46 8 12111183.<br><strong>Дополнительные средства связи:  SMS-номер, Viber - +7 905 736 25 86; E-mail - info@ap-companies.com</strong><br>При обращении в Сервисную компанию Вам необходимо сообщить следующие данные:<br>
+фамилию и имя Застрахованного лица; номер и период действия страхового полиса; описание обстоятельств произошедшего и характер требуемой помощи; местонахождение Застрахованного лица; номер контактного телефона для обратной связи с Вами (Вашим представителем) координатора Сервисной компании.<br>При самостоятельном обращении к врачу без звонка в Сервисную компанию Застрахованному лицу возмещаются расходы за медицинскую и медико-транспортную помощь в размере до 150 долларов США / евро (в зависимости от валюты страховой суммы) в случае признания произошедшего события страховым случаем.
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td>
+        <p>Страхователь подтверждает свое согласие заключить Договор страхования на условиях страхования, изложенных в настоящем Полисе, путем оплаты страховой премии и принятия настоящего Полиса. По всем вопросам, не урегулированным настоящим Полисом, стороны Договора руководствуются Правилами страхования  граждан, выезжающих за пределы постоянного места жительства, от 11.06.2020 г. (далее - Правила страхования) и Условиями страхования граждан, выезжающих за пределы постоянного места жительства (далее - Условия страхования), которые прилагаются к Полису и являются его неотъемлемой частью. Страхователь, заключая настоящий Договор страхования, подтверждает, что с Условиями страхования и Правилами страхования ознакомлен и обязуется их выполнять; Правила страхования размещены на сайте Страховщика по адресу: https://www.soglasie.ru/individuals/puteshestviya/; условия Договора страхования, изложенные в настоящем Полисе, в Правилах страхования и Условиях страхования, ему разъяснены и понятны, с условиями Договора страхования он согласен. Заключая настоящий Договор страхования, Страхователь подтверждает, что с ключевым информационным документом «Страхование граждан, временно пребывающих за пределами постоянного места жительства» ознакомлен. Стороны согласны с использованием в настоящем Договоре страхования, а также в иных документах, подписываемых в процессе исполнения настоящего Договора страхования, подписи и печати Страховщика, выполненных факсимильным способом (статья 160 Гражданского кодекса РФ).
+
+        <h3 class="text-center">СПЕЦИАЛЬНЫЕ ОБОЗНАЧЕНИЯ, УКАЗЫВАЕМЫЕ В ПОЛИСЕ</h3>
+        <h3 class="text-center">Код вида деятельности Застрахованного лица (Код)</h3>
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td width="50">
+        <p>
+          TI
+        </p>
+      </td>
+      <td width="100">
+        <p>
+          Travel Insurance
+        </p>
+      </td>
+      <td>
+        <p>
+          Пребывание с туристическими / деловыми целями за пределами постоянного места жительства
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <p class="text-center">
+          ООО  "СК "Согласие", Лицензии ЦБ РФ от 25.05.2015 г.: СИ № 1307, СЛ №1307
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td>
+        <p>
+          <strong>Подпись представителя Cтраховщика /</strong> Signature of insurer's representative
+        </p>
+        <p>
+          <strong>Директор Департамента андеррайтинга по личным видам страхования /</strong><br>Director of  Department of underwriting for personal types of insurance
+        </p>
+      </td>
+      <td>
+        <div class="stamp"><img src="{{ stamp }}" /></div>
+        <p class="text-right">
+          <strong>Ш.Д. Бузиашвили /</strong><br>
+          Sh.D. Buziashvili
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <p class="text-center">
+          Доверенность № 3727-Д от 06.10.2020 г., выданная сроком до 05.10.2025 г.
+        </p>
+      </td>
+    </tr>
+
+  </table>
+
+
+<div id="footer_content">стр. <pdf:pagenumber> из <pdf:pagecount> <!-- обязательный пробел, чтобы не дублировалось кол-во страничек --></div>
+
+{% endblock %}
+</body>
+</html>

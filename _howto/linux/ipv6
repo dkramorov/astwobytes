@@ -1,0 +1,108 @@
+root@Pr10:~# ip -6 addr show eth0
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qlen 1000
+    inet6 fe80::601:23ff:fe33:6e01/64 scope link 
+       valid_lft forever preferred_lft forever
+root@Pr10:~# ip -6 addr add 2a03:b0c0:0:1010::545:1/64 dev eth0
+root@Pr10:~# ip -6 route add default via 2a03:b0c0:0:1010::1 dev eth0
+
+
+
+
+
+ip -6 addr show eth0
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qlen 1000
+        inet6 fe80::601:1cff:fe11:5b01/64 scope link 
+           valid_lft forever preferred_lft forever
+
+
+The command to set the IPv6 address is:
+
+ip -6 addr add public_ipv6_address/64 dev eth0
+Next, we need to set the route that the Droplet will use to send and receive IPv6 traffic. This is done by setting the gateway. Use the value you find labeled "Public IPv6 Gateway" in the command below:
+
+ip -6 route add default via public_ipv6_gateway dev eth0
+Your IPv6 connection should now be configured in your Droplet. This will be configured until the next boot. Continue on if you want to make these changes persistent.
+
+
+
+
+Making the IPv6 Configuration Persistent
+
+We have now configured our Droplet with our IPv6 connection, but our changes will be lost when our server reboots. To make these changes last beyond this session, you will have to edit some configuration files.
+
+If you are on Ubuntu or Debian, you will need to edit the /etc/network/interfaces file. Open this with sudo privileges in your text editor:
+
+sudo nano /etc/network/interfaces
+Inside, you will see a section for each of the networks that you are already configured to use. First, look for the dns-nameservers parameter and remove this line from the IPv4 section. We will add it to the IPv6 section instead.
+
+We must add a new section for our IPv6 address. It should look like this:
+
+. . .
+iface eth0 inet6 static
+        address primary_ipv6_address
+        netmask 64
+        gateway ipv6_gateway
+        autoconf 0
+        dns-nameservers 2001:4860:4860::8844 2001:4860:4860::8888 209.244.0.3
+. . .
+When you are finished, save and close the file. Your IPv6 connection should be brought up at boot now.
+
+If you are using CentOS or Fedora, you will instead need to edit the /etc/sysconfig/network-scripts/ifcfg-eth0 file. Open this with sudo privileges in your text editor:
+
+sudo nano /etc/sysconfig/network-scripts/ifcfg-eth0
+You will need to add the following parameters and values:
+
+. . .
+IPV6INIT=yes
+IPV6ADDR=primary_ipv6_address/64
+IPV6_DEFAULTGW=ipv6_gateway
+IPV6_AUTOCONF=no
+. . .
+You can change the DNS settings to use some IPv6 name servers as well:
+
+...
+DNS1=2001:4860:4860::8844
+DNS2=2001:4860:4860::8888
+DNS3=209.244.0.3
+Save and close the file when you are finished.
+
+Next, open the /etc/sysconfig/network file as well:
+
+sudo nano /etc/sysconfig/network
+Add the following line to the file to get IPv6 to start at boot:
+
+NETWORKING=yes
+HOSTNAME=centafter
+NETWORKING_IPV6=yes
+Save and close the file when you are finished. When your server is rebooted, it should bring up your IPv6 address properly.
+
+Testing the Connection
+Whether you enabled IPv6 when the Droplet was created or enabled it after the fact, you can test the IPv6 connection in a few ways.
+
+IPv6 communication requires that you have IPv6 enabled and configured at both ends of the connection. Many ISPs do not yet offer IPv6 addresses yet for customers.
+
+You can test whether your home connection supports IPv6 by visiting an IPv6 testing site. Another option is to use the ping6 utility to try to reach Google's IPv6 name servers:
+
+ping6 2001:4860:4860::8888
+Testing with an IPv6 Connection at Both Ends
+
+If your home connection pings correctly or if the test page confirmed an IPv6 connection, then you have IPv6 available through your local provider. In that case, you can test that your Droplet's IPv6 connection is configured correctly by using ping6 to ping the interface:
+
+ping6 public_ipv6_address
+You can also SSH directly into the Droplet using that address:
+
+ssh root@public_ipv6_address
+Testing without an IPv6 Connection on the Local Side
+
+If the test site above told you that you do not have IPv6 available, or if when pinging Google's IPv6 name server you get a message that says:
+
+connect: Network is unreachable
+This means that you do not have IPv6 available on your home connection. You can still test the connection from within Droplet itself.
+
+Log into the Droplet using the control panel console or by using SSH with the IPv4 address:
+
+ssh root@public_ipv4_address
+From within the Droplet, you can test that it can reach the Google IPv6 name server:
+
+ping6 2001:4860:4860::8888
+If this is successful, it means that your IPv6 is configured correctly. It will be able to communicate with other sites and servers that have IPv6 enabled throughout the internet.

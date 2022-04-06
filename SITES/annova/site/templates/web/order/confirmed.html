@@ -14,6 +14,10 @@
   .confirmed h6 {
     color: #333;
   }
+  .brown {
+    text-align: center;
+    color: brown !important;
+  }
 </style>
 {% endblock %}
 
@@ -28,7 +32,13 @@
   <div class="container">
     <h2>Спасибо, ваш заказ оформлен, скоро мы свяжемся с вами</h2>
 
-    <h3>Заказ № {% if order.number %}{{ order.number }}{% else %}{{ order.id }}{% endif %} на сумму {{ order.total|money_format }} ₽ от {{ order.created|date:'d-m-Y H:i:s' }}</h3>
+    <h3>Заказ № {% if order.number %}{{ order.number }}{% else %}{{ order.id }}{% endif %} на сумму {{ order.total|money_format }} {% get_currency_symbol %} от {{ order.created|date:'d-m-Y H:i:s' }}
+      {% if markup %}
+        <div class="brown">{{ markup.product_name }} - {{ markup.cost|money_format }} {% get_currency_symbol %}</div>
+      {% endif %}
+    </h3>
+
+
 
     {% if not order.external_number %}
       <h3 class="link">Ссылка для этого заказа: <a href="{% url 'main:checkout' %}?order_id={{ order.id }}">Ссылка на заказ</a></h3>
@@ -38,7 +48,7 @@
         <ul>
           <li>
             <span>
-              <a class="btn" href="{% url 'main:checkout' %}?order_id={{ order.id }}&pay=sbrf">Оплатить {{ order.total|money_format }} ₽</a>
+              <a class="btn" href="{% url 'main:checkout' %}?order_id={{ order.id }}&pay=sbrf">Оплатить {{ order.total|money_format }} {% get_currency_symbol %}</a>
             </span>
           </li>
         </ul>

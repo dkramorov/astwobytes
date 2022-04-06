@@ -20,6 +20,9 @@ from apps.main_functions.files import (
     ListDir,
     extension,
     move_file,
+    drop_file,
+    file_size,
+    copy_file,
 )
 
 logger = logging.getLogger('main')
@@ -27,6 +30,18 @@ logger = logging.getLogger('main')
 FOLDERS_BLACK_LIST = (
     '.DS_Store',
 )
+
+class Optimizer:
+    """Оптимизатор изображений
+       USAGE:
+       python manage.py clean_media --optimize_images --folder=flatcontent_blocks/43/ --compress=1 --chown
+    """
+    profit = 0
+    platform = None
+    jpegtran = None
+    jpegoptim = None
+    pngquant = None
+    optipng = None
 
 def drop_if_empty(folder: str = ''):
     """Удалить папку если она пустая
@@ -47,83 +62,82 @@ def drop_if_empty(folder: str = ''):
             if isForD(path) == 'folder':
                 drop_if_empty(path)
 
-def optimize_all_images(folder: str = settings.MEDIA_ROOT):
+def optimize_all_images(folder: str = settings.MEDIA_ROOT, compress: int = 90):
     """Скукожить пухлые картинки"""
+    media = settings.MEDIA_ROOT
     dirs = ListDir(folder)
     print(len(dirs), 'total object')
     z = 0
 
     for item in dirs:
-      # -----------------
-      # Немного прогресса
-      # -----------------
-      z += 1
-      if z % 50 == 0:
-        print(z, 'of', len(dirs))
+        # -----------------
+        # Немного прогресса
+        # -----------------
+        z += 1
+        if z % 50 == 0:
+            print(z, 'of', len(dirs))
 
-      cur_path = os.path.join(folder, item)
-      if isForD(cur_path) == 'file':
-        ext = extension(cur_path)
-        if not ext:
-            continue
-
-        if ext.lower() in ('.jpg', '.jpeg'):
-            if folder.endswith('resized'):
-                drop_file(cur_path)
+        cur_path = os.path.join(folder, item)
+        print(cur_path)
+        if isForD(cur_path) == 'file':
+            ext = extension(cur_path)
+            if not ext:
                 continue
-            fsize_before = file_size(cur_path)/1024
-            os.system('%s -optimize -copy none -progressive %s>%s' % (jpegtran, cur_path, cur_path + '_'))
-            move_file(cur_path + '_', cur_path)
-            fsize_after = file_size(cur_path)/1024
-            self.profit += fsize_before - fsize_after
-            # -------------------------------
-            # Дополнительная lose оптимизация
-            # -------------------------------
-            # jpegoptim --size=50% 24.JPG
-            # jpegoptim -m90 24.JPG => (for linux)
-            if compress:
-                copy_file(cur_path, cur_path + '_')
-                cmd = '%s -m%s %s' % (jpegoptim, compress, cur_path + '_')
-                if platform['isMac']:
-                    cmd = '%s --size=%s%s %s' % (jpegoptim, compress, '%', cur_path + '_')
 
-                os.system(cmd)
-                fsize_after_trim = file_size(cur_path + '_')/1024
+            if ext.lower() in ('.jpg', '.jpeg'):
+                if folder.endswith('resized'):
+                    drop_file(cur_path)
+                    continue
+                fsize_before = file_size(cur_path)/1024
+                os.system('%s -optimize -copy none -progressive %s>%s' % (Optimizer.jpegtran, cur_path, cur_path + '_'))
                 move_file(cur_path + '_', cur_path)
-                self.profit += fsize_after - fsize_after_trim
-                print('[COMPRESS]:', cur_path.replace(media, ''), 'before=>', fsize_after, 'Kb, fsize_after_trim=>', fsize_after_trim, 'Kb')
-            else:
-                print(cur_path.replace(media, ''), 'before=>', fsize_before, 'Kb, fsize_after=>', fsize_after, 'Kb')
-
-        elif ext.lower() in ('.png', ):
-            if folder.endswith('resized'):
-                drop_file(cur_path)
-                continue
-            fsize_before = file_size(cur_path)/1024
-            os.system('%s -quiet -o 7 %s' % (optipng, cur_path))
-            fsize_after = file_size(cur_path)/1024
-            self.profit += fsize_before - fsize_after
-            # -------------------------------
-            # Дополнительная lose оптимизация
-            # -------------------------------
-            # pngquant -f --ext .png --quality 70-95 image.png
-            if compress:
-                copy_file(cur_path, cur_path+"_")
-                cmd = '%s --force --ext .png --quality %s-100 %s' % (pngquant, compress, cur_path + '_')
-                #if platform['isMac']:
-                    #cmd = '%s --size=%s%s %s' % (jpegoptim, compress, "%", cur_path+"_")
-                print(cmd)
-                os.system(cmd)
-                fsize_after_trim = file_size(cur_path + '_')/1024
-                move_file(cur_path+"_", cur_path)
-                self.profit += fsize_after - fsize_after_trim
-                print('[COMPRESS]:', cur_path.replace(media, ''), 'before=>', fsize_after, 'Kb, fsize_after_trim=>', fsize_after_trim, 'Kb')
-                ###exit()
-            else:
-                print(cur_path.replace(media, ''), 'before=>', fsize_before, 'Kb, fsize_after=>', fsize_after, 'Kb')
-        else:
-            if isForD(cur_path) == 'dir':
-                optimize_all_images(cur_path)
+                fsize_after = file_size(cur_path)/1024
+                Optimizer.profit += fsize_before - fsize_after
+                # -------------------------------
+                # Дополнительная lose оптимизация
+                # -------------------------------
+                # jpegoptim --size=50% 24.JPG
+                # jpegoptim -m90 24.JPG => (for linux)
+                if compress:
+                    copy_file(cur_path, cur_path + '_')
+                    cmd = '%s -m%s %s' % (Optimizer.jpegoptim, compress, cur_path + '_')
+                    if Optimizer.platform == 'mac':
+                        cmd = '%s --size=%s%s %s' % (Optimizer.jpegoptim, compress, '%', cur_path + '_')
+                    os.system(cmd)
+                    fsize_after_trim = file_size(cur_path + '_')/1024
+                    move_file(cur_path + '_', cur_path)
+                    Optimizer.profit += fsize_after - fsize_after_trim
+                    print('[COMPRESS]:', cur_path.replace(media, ''), 'before=>', fsize_after, 'Kb, fsize_after_trim=>', fsize_after_trim, 'Kb')
+                else:
+                    print(cur_path.replace(media, ''), 'before=>', fsize_before, 'Kb, fsize_after=>', fsize_after, 'Kb')
+            elif ext.lower() in ('.png', ):
+                if folder.endswith('resized'):
+                    drop_file(cur_path)
+                    continue
+                fsize_before = file_size(cur_path)/1024
+                os.system('%s -quiet -o 7 %s' % (Optimizer.optipng, cur_path))
+                fsize_after = file_size(cur_path)/1024
+                Optimizer.profit += fsize_before - fsize_after
+                # -------------------------------
+                # Дополнительная lose оптимизация
+                # -------------------------------
+                # pngquant -f --ext .png --quality 70-95 image.png
+                if compress:
+                    copy_file(cur_path, cur_path+"_")
+                    cmd = '%s --force --ext .png --quality %s-100 %s' % (Optimizer.pngquant, compress, cur_path + '_')
+                    #if Optimizer.platform == 'mac':
+                        #cmd = '%s --size=%s%s %s' % (Optimizer.jpegoptim, compress, "%", cur_path+"_")
+                    print(cmd)
+                    os.system(cmd)
+                    fsize_after_trim = file_size(cur_path + '_')/1024
+                    move_file(cur_path+"_", cur_path)
+                    Optimizer.profit += fsize_after - fsize_after_trim
+                    print('[COMPRESS]:', cur_path.replace(media, ''), 'before=>', fsize_after, 'Kb, fsize_after_trim=>', fsize_after_trim, 'Kb')
+                    ###exit()
+                else:
+                    print(cur_path.replace(media, ''), 'before=>', fsize_before, 'Kb, fsize_after=>', fsize_after, 'Kb')
+        elif isForD(cur_path) == 'dir':
+            optimize_all_images(folder=cur_path, compress=compress)
 
 class Command(BaseCommand):
     """Почистить папку media"""
@@ -144,6 +158,23 @@ class Command(BaseCommand):
             dest = 'optimize_images',
             default = False,
             help = 'Optimize images')
+        parser.add_argument('--compress',
+            action = 'store',
+            dest = 'compress',
+            type = str,
+            default = False,
+            help = 'Set compress ratio for optimize images')
+        parser.add_argument('--folder',
+            action = 'store',
+            dest = 'folder',
+            type = str,
+            default = False,
+            help = 'Set folder for optimize images')
+        parser.add_argument('--chown',
+            action = 'store_true',
+            dest = 'chown',
+            default = False,
+            help = 'Set chown after operation')
 
     def handle(self, *args, **options):
 
@@ -162,8 +193,8 @@ class Command(BaseCommand):
 
         if options.get('optimize_images'):
             """оптимизация jpeg изображений"""
-            platform = get_platform()
-            print('platform is', platform)
+            Optimizer.platform = get_platform()
+            print('platform is', Optimizer.platform)
 
             compress = None
             media = settings.MEDIA_ROOT
@@ -184,33 +215,32 @@ class Command(BaseCommand):
             # -------------------------
             # Сжатие с потерей качества
             # -------------------------
-            jpegoptim = search_binary('jpegoptim')
-            if not jpegoptim:
+            Optimizer.jpegoptim = search_binary('jpegoptim')
+            if not Optimizer.jpegoptim:
                 print('[ERROR]: jpegoptim not found')
                 exit()
-            pngquant = search_binary('pngquant')
-            if not pngquant:
+            Optimizer.pngquant = search_binary('pngquant')
+            if not Optimizer.pngquant:
                 print('[ERROR]: pngquant not found')
                 exit()
             # --------------------------
             # Сжатие без потери качества
             # --------------------------
-            jpegtran = search_binary('jpegtran')
-            if not jpegtran:
+            Optimizer.jpegtran = search_binary('jpegtran')
+            if not Optimizer.jpegtran:
                 print('[ERROR]: jpegtran not found')
                 exit()
-            optipng = search_binary('optipng')
-            if not optipng:
+            Optimizer.optipng = search_binary('optipng')
+            if not Optimizer.optipng:
                 print('[ERROR]: optipng not found')
                 exit()
-            exit()
-            self.profit = 0
+
             # -----------------------------------------
             # imga = full_path("imga.png")
             # os.system("%s %s" % (optipng, imga))
             # -----------------------------------------
-            optimize_all_images()
-            print('[PROFIT]:', self.profit, 'Kb')
+            optimize_all_images(folder=media, compress=compress)
+            print('[PROFIT]:', Optimizer.profit, 'Kb')
             if options.get('chown'):
                 chown = search_binary('chown')
                 os.system('%s -R www-data:www-data %s' % (chown, media))

@@ -1,0 +1,29 @@
+
+2020-01-21 17:48:21.146592 [DEBUG] switch_core_media.c:4324 Searching for rtp candidate.
+2020-01-21 17:48:21.146592 [DEBUG] switch_core_media.c:4333 Choose rtp candidate, index 0, 192.168.0.110:55769
+
+должен выбирать кандидата - если не выбирает - то будет incompatible_destination
+
+помогает для внутреннего профиля задать
+apply-candidate-acl=lan чтобы свич мог выбирать кандидатов из адресов локальной сети
+
+
+попробуйте выставить в sofia-профиле internal параметр
+<param name="apply-candidate-acl" value="ipv4"/>
+в acl.conf.xml добавить
+
+<list name="ipv4" default="deny">
+      <node type="allow" cidr="0.0.0.0/0"/>
+  разрешаем здесь правильные адреса - например впн
+  запрещаем здесь локальные адреса, которые за впн
+</list>
+
+
+    <list name="lan" default="allow">
+      <node type="deny" cidr="192.168.0.0/24"/> НЕЛЬЗЯ домашний адрес брать
+      <node type="allow" cidr="192.168.1.0/24"/>
+      <node type="allow" cidr="10.10.1.0/24"/>
+      <node type="allow" cidr="10.10.2.0/24"/> ВПН АДРЕС НАДО БРАТЬ
+      <node type="allow" cidr="10.10.5.0/24"/>
+      <node type="allow" cidr="172.16.0.0/16"/>
+    </list>

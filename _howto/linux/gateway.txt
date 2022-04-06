@@ -1,0 +1,13 @@
+root@Pr10:/etc/openvpn# cat /proc/sys/net/ipv4/ip_forward
+1
+jocker@tabletka:~/django$ cat /etc/sysctl.conf|grep forward
+# Uncomment the next line to enable packet forwarding for IPv4
+#net.ipv4.ip_forward=1
+# Uncomment the next line to enable packet forwarding for IPv6
+#net.ipv6.conf.all.forwarding=1
+
+iptables -t nat -A POSTROUTING -o ppp+ -j MASQUERADE
+ppp+ - все интерфейсы ppp0, ppp1... - ИНТЕРНЕТ КАНАЛ
+
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+eth0 - интернет канал

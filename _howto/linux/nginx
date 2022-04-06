@@ -1,0 +1,30 @@
+Сервер по умолчанию можно задать явно с помощью параметра default_server в директиве listen:
+
+server {
+    listen      80 default_server;
+    server_name example.net www.example.net;
+    ...
+}
+
+The problem here is that only the "best" location directive gets taken, in this order:
+
+location =  <path>  (longest match wins)
+location ^~ <path>  (longest match wins)
+location ~  <path>  (first defined match wins)
+location    <path>  (longest match wins)
+
+Using this ruleset, your /phpmyadmin location directive is beaten out by the regular expression ".php$" location directive, so the former is ignored entirely. Additionally, your php fastcgi directive is hard-wired to your /home/me/dev directory, which means that phpMyAdmin is totally inaccessible. You can use a rewrite to get the correct root for your phpMyAdmin scripts:
+
+location ~ \.php$ {
+    set $php_root /home/me/dev;
+    if ($request_uri ~* /phpmyadmin) {
+        set $php_root /var/www/nginx-default/phpMyAdmin;
+    }
+
+    fastcgi_pass   127.0.0.1:9000;
+    fastcgi_index  index.php;
+    fastcgi_param  SCRIPT_FILENAME  $php_root$fastcgi_script_name;
+    include /etc/nginx/fastcgi_params;
+}
+
+ 

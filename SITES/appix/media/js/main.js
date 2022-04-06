@@ -1,16 +1,3 @@
-/*------------------------------------------------------------------------------------------------------
-    
-    Template name: Appix - App Landing Page
-    Author: DesigningMarket
-    Template URI: https://themeforest.net/item/appix-super-fast-responsive-ghost-blog-theme/20289667?ref=DesigningMarket
-    Description: Appix is a Clean, Modern and Professional App Landing Page HTML5 Template. It makes for App Developers, App Affiliate Marketers.
-    Design and Developed by: DesigningMarket
-    Version: 1.0
-    Author URI: https://themeforest.net/user/designingmarket
-
-----------------------------------------------------------------------------------------------------*/
-
-
 (function($) {
     "use strict";
 		
@@ -109,6 +96,8 @@ $('.service-slider-section').owlCarousel({
     smartSpeed:2000,
     responsiveClass:true,
     margin:20,
+    nav: true,
+    navText:["<i class=' fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
     responsive:{
         0:{
             items:1,
@@ -263,5 +252,25 @@ smoothScrollWithoutHash( 'a[href*="#"]' );
 
 })(jQuery);
 
-	
- 
+
+form_messages = {
+  ru: {
+    required: "Обязательное поле",
+    remote: "Пожалуйста, исправьте поле",
+    email: "Некорректный email",
+    url: "Некорректная ссылка",
+    date: "Некорректная дата",
+    dateISO: "Некорректная дата (ISO).",
+    number: "Некорректный номер телефона",
+    digits: "Только цифры",
+    creditcard: "Некорректный номер кредитной карты",
+    equalTo: "Нужно ввести такое же значение",
+    maxlength: $.validator.format("Не более {0} символов"),
+    minlength: $.validator.format("Не менее {0} символов"),
+    rangelength: $.validator.format("Количество символов между {0} и {1}"),
+    range: $.validator.format("Значение между {0} и {1}."),
+    max: $.validator.format("Значение меньше или равно {0}."),
+    min: $.validator.format("Значение больше или равно {0}.")
+  },
+};
+$.extend($.validator.messages, form_messages.ru);

@@ -1,0 +1,90 @@
+HOWTO: recover lost partition after unexpected shutdown (Lucid)
+
+    Two days ago "someone" took out brutally (but without intention) the power supply of my box; when I reboot the machine I've got this message just after the Grub was loaded:
+    Code:
+
+    No init found. Try passing init= boot arg
+    BusyBox v1.10.2 (Ubuntu 1:1.10.2.2ubuntu7) built-in shell (ash)
+
+    Mmm, I've never seen this, but I quickly understood that my box was seriously damaged, the access to my data was impossible; user in panic
+
+    After two days of trying to fix the issue I've been able to get back my disk intact; I know, I'm a pretty lucky folk.
+
+    First to all this "guide" worked for me and for my case; for what I've understood the problem was regarding something about EXT4 filesystem that was locking the access to the disk due to the unexpected shutdown (of course); Grub was ok, hardware disk was ok; I'm not so deep involved in the knowledge of the filesystem stuff, but I had the high suspect that the inode structure was denying the system to be mounted/accessed for some pending operations.
+
+    At this moment I've created a USB key with the live of Ubuntu Rescue Remix http://ubuntu-rescue-remix.org/ and I booted the machine with this distro.
+
+    As a first step I've just list my partitions (sda in my case it's the only drive):
+    Code:
+
+    sudo fdisk -l /dev/sda
+
+    Disk /dev/sda: 250.1 GB, 250059350016 bytes
+    255 heads, 63 sectors/track, 30401 cylinders
+    Units = cylinders of 16065 * 512 = 8225280 bytes
+    Sector size (logical/physical): 512 bytes / 512 bytes
+    I/O size (minimum/optimal): 512 bytes / 512 bytes
+    Disk identifier: 0x000619b6
+
+       Device Boot      Start         End      Blocks   Id  System
+    /dev/sda1   *           1       29844   239721898+  83  Linux
+    /dev/sda2           29845       30401     4474102+   5  Extended
+    /dev/sda5           29845       30401     4474071   82  Linux swap / Solaris
+
+    The damaged partition, in my case, was /dev/sda1.
+    Now I've tried to do an fsck:
+    Code:
+
+    sudo fsck -yv /dev/sda1
+
+    but
+    Code:
+
+    fsck: Device or resource busy while trying to open /dev/sda1
+    Filesystem mounted or opened exclusively by another program?
+
+    What? The disk was obviously not mounted (although I did an umount); no way, I was not able to do an fsck on that partition.
+
+    I've tried everything:
+
+        Create an image with dd and mount the image after an fsck (the image was unusable due to an arror in the filesystem)
+        Back-up the partition with PhotoRec (the files saved were really trivial)
+        Mount the disk as slave (the Ubuntu Rescue freezed trying to mount it)
+
+
+    I've was almost to give up and prepare myself to format the disk, when I came across this technical document (for EXT3)
+    http://planet.admon.org/using-altern...to-check-ext3/
+    So I decided to try it as last resource (remove the first inode), based on consideration that all my data was already lost.
+    Code:
+
+    sudo debugfs -w /dev/sda1
+    debugfs 1.41.11 (14-Mar-2010)
+    debugfs:  clri <8>
+    debugfs:  quit
+
+    Then I've launch fsck:
+    Code:
+
+    sudo fsck -yv /dev/sda1
+
+    but
+    Code:
+
+    fsck: Device or resource busy while trying to open /dev/sda1
+    Filesystem mounted or opened exclusively by another program?
+
+    Damn! No way; but I was thinking that maybe a reboot (*) was needed.
+    (*) to reboot with Ubuntu Rescue I've used ALT+PrnScreen+r+e+i+s+u+b instead of normal reboot because the normal reboot was not working
+
+    Then I've launch fsck again:
+    Code:
+
+    sudo fsck -yv /dev/sda1
+
+    and now this time worked!
+    Fsck fix the filesystem errors; I've had not need to do a tune2fs as stated in the document reported above for the re-creation of the journalized filesystem.
+
+    Rebooted the machine with my disk and everything is all there.
+    Happy user. 
+
+ 

@@ -1,0 +1,9 @@
+Убить все процессы, где встречается secure_tables
+
+
+13742 ?        Ss     0:00  |   \_ /bin/sh -c python /home/jocker/sites/django/bin/freeswitch secure_iptables >/dev/null 2>&1
+13744 ?        S      0:00  |       \_ python /home/jocker/sites/django/bin/freeswitch secure_iptables
+ 4095 ?        Ss     0:00  |   \_ /bin/sh -c python /home/jocker/sites/django/bin/freeswitch secure_iptables >/dev/null 2>&1
+
+
+# pkill -f secure_iptables

@@ -1,0 +1,70 @@
+sudo apt-get install php5-cgi nginx spawn-fcgi
+
+sudo vim /etc/init.d/php-fastcgi
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:	     php-fastcgi
+# Required-Start:    $local_fs $network $syslog
+# Required-Stop:     $local_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
+
+# число рабочих запущенных процессов 
+PHP_FCGI_CHILDREN=3
+# число запросов которые один рабочий процесс обработает до завершения
+PHP_FCGI_MAX_REQUESTS=1000
+
+PHP_SCRIPT="/usr/bin/spawn-fcgi -a 127.0.0.1 -p 9000 -u www-data -g www-data -f /usr/bin/php5-cgi"
+RETVAL=0
+case "$1" in
+	start)
+		$PHP_SCRIPT
+		RETVAL=$?
+		;;
+	stop)
+		killall -9 php5-cgi
+		RETVAL=$?
+		;;
+	restart)
+		killall -9 php5-cgi
+		$PHP_SCRIPT
+		RETVAL=$?
+		;;
+	*)
+		echo "Usage: sudo $0 {start|stop|restart}"
+		exit 1
+		;;
+esac
+exit $RETVAL
+
+sudo chmod +x /etc/init.d/php-fastcgi
+
+sudo /etc/init.d/php-fastcgi start
+
+sudo update-rc.d php-fastcgi defaults
+
+sudo vim /etc/nginx/sites-available/default
+server {
+
+	listen   80; ## listen for ipv4
+#	listen   [::]:80 default ipv6only=on; ## listen for ipv6
+
+	server_name  server.domain.ru;
+
+	access_log  /var/log/nginx/localhost.access.log;
+	root   /var/www;
+
+	location / {
+		index  index.php;
+	}
+
+	location ~ \.php$ {
+		fastcgi_pass   127.0.0.1:9000;
+		fastcgi_index  index.php;
+		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+		include        fastcgi_params;
+	}
+
+}

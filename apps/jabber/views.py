@@ -409,6 +409,7 @@ def notification_helper(request, skey: str = None):
             'content_available': True,
             'priority': 'high',
             'registration_ids': tokens, # many recipients
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
         }
     if additional_data and isinstance(additional_data, dict):
         for k, v in additional_data.items():
@@ -432,6 +433,7 @@ def notification_helper(request, skey: str = None):
         except Exception as e:
             result['error'] = str(e)
 
+        result['data'] = data
         result['result'] = r.text
         result['tokens'] = tokens
     else:

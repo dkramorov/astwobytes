@@ -1,0 +1,14 @@
+$ telnet localhost 11211
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+
+flush_all
+OK
+
+quit
+
+Or in several one-liners that you can use in scripts, they rely on nc (netcat; yum install nc):
+
+$ echo "flush_all" | nc localhost 11211
+$ nc localhost 11211 <<< "flush_all"

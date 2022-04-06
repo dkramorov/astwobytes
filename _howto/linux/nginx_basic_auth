@@ -1,0 +1,12 @@
+root@jocker:/etc/nginx# apt-get install apache2-utils
+root@jocker:/etc/nginx/conf.d# htpasswd -c .htpasswd cifrus
+
+
+  # ----------
+  # Basic auth
+  # ----------
+  location ~* /media/basic-auth/ {
+    auth_basic "We need password";
+    auth_basic_user_file /etc/nginx/conf.d/.htpasswd;
+  }
+

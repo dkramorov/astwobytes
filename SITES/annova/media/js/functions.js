@@ -42,7 +42,8 @@ jQuery(function($) {
 					beforeSelect: function( event, state ) {
 						if (!state.isMovingForward)
   						 return true;
-						var inputs = $(this).wizard('state').step.find(':input');
+						var inputs = $(this).wizard('state').step.find(':input:not(.disabled)');
+console.log(inputs);
 						return !inputs.length || !!inputs.valid();
 					}
 			

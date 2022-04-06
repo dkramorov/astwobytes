@@ -1,0 +1,24 @@
+Показать количество активных соединений
+mysql> SHOW STATUS LIKE "Threads_connected";
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| Threads_connected | 2     |
++-------------------+-------+
+1 row in set (0.00 sec)
+
+Показать счетчик (Сколько всего было ) соединений
+mysql> show status like 'Conn%';
++-----------------------------------+--------+
+| Variable_name                     | Value  |
++-----------------------------------+--------+
+| Connection_errors_accept          | 0      |
+| Connection_errors_internal        | 0      |
+| Connection_errors_max_connections | 111608 |
+| Connection_errors_peer_address    | 0      |
+| Connection_errors_select          | 0      |
+| Connection_errors_tcpwrap         | 0      |
+| Connections                       | 548459 |
++-----------------------------------+--------+
+7 rows in set (0.29 sec)
+

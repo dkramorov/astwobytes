@@ -1,0 +1,24 @@
+Looks like <param name="liberal-dtmf" value="true"/> in the profile does the trick!
+
+
+On 18 December 2012 17:00, Richard Brady <[hidden email]> wrote:
+
+    Hi folks
+
+    I have the joy of talking to a Cisco device which behaves in weird and wonderful ways.
+
+    When transferring a caller (in this case FreeSWITCH) to MOH it negotiates RFC2833 out of the SDP.
+
+    When reconnecting the caller to a more meaningful endpoint, it renegotiates the media again, but using delayed offer/answer, which means FreeSWITCH must perform the offer.
+
+    Since FreeSWITCH has seen RFC2833 removed previously:
+
+        [DEBUG] sofia_glue.c:5277 No 2833 in SDP. Disable 2833 dtmf and switch to INFO.
+
+    It does not offer RFC2833 in the new SDP (if it did, the Cisco would now accept it and answer with it).
+
+    Any suggestion for how I can force it to re-offer RFC2833?
+
+    Regards,
+    Richard
+

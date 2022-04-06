@@ -1,0 +1,1 @@
+gunzip -c x.txt.gz >x.txt

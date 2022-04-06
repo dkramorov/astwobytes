@@ -49,7 +49,7 @@
           <div class="col-md-3 col-sm-12 col-xs-12 text-lg-left text-md-center text-sm-center">
             <div class="logo mt-15 mb-15">
               <a href="/">
-                <img src="{{ containers.main.tags.logo.thumb }}" class="img-fluid">
+                <img src="{{ containers.main.tags.logo.thumb }}" class="img-fluid" loading="lazy">
               </a>
             </div>
           </div>
@@ -57,7 +57,7 @@
             <div class="menubar-top d-flex justify-content-between align-items-center flex-sm-wrap flex-md-wrap flex-lg-nowrap mt-sm-15">
               <div class="header-contact d-flex">
                 <div class="phone-icon">
-                  <img src="/media/misc/icon-phone.png" class="img-fluid" alt="">
+                  <img src="/media/misc/icon-phone.png" class="img-fluid" loading="lazy">
                 </div>
                 <div class="phone-number">
                   {{ containers.main.tags.phone.name }}<span class="number">{{ containers.main.tags.phone.html|safe }}</span>
@@ -147,7 +147,7 @@
         <div class="row">
           <div class="col-lg-4 col-md-12 col-sm-12 mb-sm-20 mb-xs-20">
             <div class="newsletter-title">
-              <p class="title"><img src="/media/misc/icon-newsletter.png" alt="Подписаться на новости"> Подписаться на новости</p>
+              <p class="title"><img src="/media/misc/icon-newsletter.png" alt="Подписаться на новости" loading="lazy"> Подписаться на новости</p>
             </div>
           </div>
 
@@ -241,7 +241,7 @@
           <div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
             <div class="payment-info text-center text-md-right">
               <p>{{ containers.main.tags.payments.name }}
-                <img src="{% imagine containers.main.tags.payments.img '600x400' containers.main.tags.payments.get_folder True %}" class="img-fluid" alt="{{ containers.main.tags.description|textize }}">
+                <img src="{% imagine containers.main.tags.payments.img '600x400' containers.main.tags.payments.get_folder True %}" class="img-fluid" alt="{{ containers.main.tags.description|textize }}" loading="lazy">
               </p>
             </div>
           </div>

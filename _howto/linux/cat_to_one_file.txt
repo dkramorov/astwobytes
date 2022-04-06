@@ -1,0 +1,9 @@
+cat file2 >> file1
+
+The >> operator appends the output to the named file or creates the named file if it does not exist.
+
+cat file1 file2 > file3
+
+This concatenates two or more files to one. You can have as many source files as you need. For example,
+
+cat *.txt >> newfile.txt

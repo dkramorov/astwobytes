@@ -1,0 +1,1 @@
+python -m easy_install --upgrade pyOpenSSL чтобы обновить 

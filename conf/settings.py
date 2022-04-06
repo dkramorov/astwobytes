@@ -74,13 +74,16 @@ ALLOWED_HOSTS = [
     #'.example.com.',  # Also allow FQDN and subdomains
 ]
 
+# ISO_4217 => RUB (643), USD (840), EUR (978)
 CURRENCIES = {
-    'RUB': {'symbol': '₽'}, # remove on hosting
-    'USD': {'symbol': '$'},
-    'EUR': {'symbol': '€'},
+    'RUB': {'symbol': '₽', 'code': 643, '': ''}, # remove on hosting?
+    'USD': {'symbol': '$', 'code': 840, '': ''},
+    'EUR': {'symbol': '€', 'code': 978, '': ''},
 }
 
 DEFAULT_CURRENCY = env('DEFAULT_CURRENCY', default='RUB')
+DEFAULT_CURRENCY_CODE = env('DEFAULT_CURRENCY_CODE', cast=int, default='643')
+CURRENCY = CURRENCIES.get(DEFAULT_CURRENCY, {}).get('symbol') or '₽'
 
 # main_functions.tasks create_new_app
 # если надо https локально
@@ -268,6 +271,9 @@ def skip_static_requests(record):
     return True
 
 # telnet localhost 11211
+# echo 'flush_all' | nc localhost 11211
+# /Users/jocker/Library/LaunchAgents/homebrew.mxcl.memcached.plist
+# /etc/sysconfig/memcached memcached -I 32M
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
@@ -275,7 +281,7 @@ CACHES = {
             '127.0.0.1:11211',
         ],
         'OPTIONS': {
-            'server_max_value_length': 1024 * 1024 * 2, # 2Mb object size
+            'server_max_value_length': 1024 * 1024 * 32, # 32Mb object size
         },
         # https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CACHES-KEY_PREFIX
         'KEY_PREFIX': PROJECT_NAME,

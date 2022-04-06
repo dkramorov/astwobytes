@@ -1,0 +1,592 @@
+sudo systemctl stop openvpn@server
+sudo systemctl enable openvpn@server.service
+sudo systemctl start openvpn@server
+
+systemctl restart openvpn@bis223
+
+
+OpenVPN client connection not started on Ubuntu 16.04
+Leave a reply
+Ubuntu 16.04 has systemd as its init system. Usually getting an OpenVPN client configuration going, is a matter of dropping the .conf or .ovpn file together with key and certs, into /etc/openvpn. On Ubuntu 16.04, you can ‘service openvpn restart’ all you like, but no connection is being initiated, and the logs stay silent.
+
+Solution:
+
+mcedit /etc/default/openvpn =>
+  uncomment AUTOSTART="all"
+
+sudo systemctl daemon-reload
+sudo service openvpn restart
+
+
+WARNING: --ns-cert-type is DEPRECATED.  Use --remote-cert-tls instead.
+ns-cert-type server
+заменяем на
+remote-cert-tls server ; нет - все-таки совсем удаляем т/к другая ошибка появляется Certificate does not have key usage extension
+
+
+OpenSSL: error:140AB18E:SSL routines:SSL_CTX_use_certificate:ca md too weak
+tls-cipher "DEFAULT:@SECLEVEL=0"
+
+
+apt-get install openvpn
+
+cd /usr/share/doc/openvpn/easy-rsa/ ?
+
+apt-get install easy-rsa
+cd /usr/share/easy-rsa
+
+# ----------
+# Easy-RSA 3
+# ----------
+apt install easy-rsa
+dpkg -l easy-rsa
+cp -r /usr/share/easy-rsa /etc
+cd /etc/easy-rsa
+cp vars.example vars
+# редактируем
+set_var EASYRSA_DN	"org"
+set_var EASYRSA_REQ_COUNTRY	"RU"
+set_var EASYRSA_REQ_PROVINCE	"Irkutsk"
+set_var EASYRSA_REQ_CITY	"Irkutsk"
+set_var EASYRSA_REQ_ORG	"223-223.ru"
+set_var EASYRSA_REQ_EMAIL	"dk@223-223.ru"
+set_var EASYRSA_REQ_OU		"a223"
+# инициируем
+./easyrsa init-pki
+# файл генерации случайных данных
+touch pki/.rnd
+# CA
+./easyrsa build-ca
+# Диффи-Хеллмана
+./easyrsa gen-dh
+# Создание ключа и сертификата для сервера
+./easyrsa gen-req server nopass
+./easyrsa sign-req server server
+mkdir /etc/openvpn/keys
+cp pki/ca.crt pki/dh.pem /etc/openvpn/keys
+cp pki/private/server.key pki/issued/server.crt /etc/openvpn/keys
+# Создание ключа и сертификата для клиента
+./easyrsa gen-req ivanov_ivan nopass
+./easyrsa sign-req client ivanov_ivan
+cp pki/ca.crt pki/private/ivanov_ivan.key pki/issued/ivanov_ivan.crt /home/andrey
+chown andrey:andrey ca.crt ivanov_ivan.key ivanov_ivan.crt
+
+
+./easyrsa gen-req freeswitch_192_168_1_3 nopass
+./easyrsa sign-req client freeswitch_192_168_1_3
+mkdir /home/openvpn/freeswitch_192_168_1_3
+cp pki/ca.crt pki/private/freeswitch_192_168_1_3.key pki/issued/freeswitch_192_168_1_3.crt /home/openvpn/freeswitch_192_168_1_3
+
+
+
+root@niagara:/usr/share/easy-rsa# . ./vars
+./clean-all
+
+# Если возникает ошибка
+pkitool: KEY_CONFIG (set by the ./vars script) is pointing to the wrong
+version of openssl.cnf: /home/jocker/tmp/easy-rsa-2.2.1/easy-rsa/2.0/openssl.cnf
+The correct version should have a comment that says: easy-rsa version 2.x
+# ln -s openssl-1.0.0.cnf openssl.cnf
+
+root@niagara:/usr/share/easy-rsa# ./build-ca
+Country Name (2 letter code) [RU]:
+State or Province Name (full name) [IRK]:
+Locality Name (eg, city) [Irkutsk]:
+Organization Name (eg, company) [bis223]:
+Organizational Unit Name (eg, section) [bis223_irkutsk]:
+Common Name (eg, your name or your server's hostname) [bis223 CA]:
+Name [niagara]:
+Email Address [dk@223-223.ru]:
+
+root@niagara:/usr/share/easy-rsa# ./build-key-server server
+Country Name (2 letter code) [RU]:
+State or Province Name (full name) [IRK]:
+Locality Name (eg, city) [Irkutsk]:
+Organization Name (eg, company) [bis223]:
+Organizational Unit Name (eg, section) [bis223_irkutsk]:
+Common Name (eg, your name or your server's hostname) [server]:
+Name [niagara]:
+Email Address [dk@223-223.ru]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:hs,jyz
+An optional company name []:223-223
+Using configuration from /usr/share/easy-rsa/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'RU'
+stateOrProvinceName   :PRINTABLE:'IRK'
+localityName          :PRINTABLE:'Irkutsk'
+organizationName      :PRINTABLE:'bis223'
+organizationalUnitName:T61STRING:'bis223_irkutsk'
+commonName            :PRINTABLE:'server'
+name                  :PRINTABLE:'niagara'
+emailAddress          :IA5STRING:'dk@223-223.ru'
+Certificate is to be certified until Aug 16 13:43:24 2024 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+
+#################################################
+root@niagara:/usr/share/easy-rsa# ./build-key jocker
+Country Name (2 letter code) [RU]:
+State or Province Name (full name) [IRK]:
+Locality Name (eg, city) [Irkutsk]:
+Organization Name (eg, company) [bis223]:
+Organizational Unit Name (eg, section) [bis223_irkutsk]:
+Common Name (eg, your name or your server's hostname) [jocker]:
+Name [niagara]:
+Email Address [dk@223-223.ru]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:hs,jyz
+An optional company name []:223-223
+Using configuration from /usr/share/easy-rsa/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'RU'
+stateOrProvinceName   :PRINTABLE:'IRK'
+localityName          :PRINTABLE:'Irkutsk'
+organizationName      :PRINTABLE:'bis223'
+organizationalUnitName:T61STRING:'bis223_irkutsk'
+commonName            :PRINTABLE:'jocker'
+name                  :PRINTABLE:'niagara'
+emailAddress          :IA5STRING:'dk@223-223.ru'
+Certificate is to be certified until Aug 16 13:45:13 2024 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+
+root@niagara:/usr/share/easy-rsa# ./build-dh
+Generating DH parameters, 2048 bit long safe prime, generator 2
+This is going to take a long time
+
+openvpn --genkey --secret ta.key
+
+Ну и создать
+mkdir /var/log/openvpn
+папку бы не мешало
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+root@223-223:/usr/share/easy-rsa# . ./vars
+NOTE: If you run ./clean-all, I will be doing a rm -rf on /usr/share/easy-rsa/keys
+root@223-223:/usr/share/easy-rsa# ./clean-all
+root@223-223:/usr/share/easy-rsa# ./build-ca
+Generating a 2048 bit RSA private key
+.........................................................................................+++
+................................+++
+writing new private key to 'ca.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [RU]:
+State or Province Name (full name) [IRK]:
+Locality Name (eg, city) [Irkutsk]:
+Organization Name (eg, company) [1sprav]:
+Organizational Unit Name (eg, section) [1sprav_irkutsk]:
+Common Name (eg, your name or your server's hostname) [1sprav CA]:
+Name [victoria]:
+Email Address [dk@223-223.ru]:
+root@223-223:/usr/share/easy-rsa# ./build-key-server server
+Generating a 2048 bit RSA private key
+......................................+++
+..+++
+writing new private key to 'server.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [RU]:
+State or Province Name (full name) [IRK]:
+Locality Name (eg, city) [Irkutsk]:
+Organization Name (eg, company) [1sprav]:
+Organizational Unit Name (eg, section) [1sprav_irkutsk]:
+Common Name (eg, your name or your server's hostname) [server]:
+Name [victoria]:
+Email Address [dk@223-223.ru]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:hs,jyz
+An optional company name []:223-223
+Using configuration from /usr/share/easy-rsa/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'RU'
+stateOrProvinceName   :PRINTABLE:'IRK'
+localityName          :PRINTABLE:'Irkutsk'
+organizationName      :PRINTABLE:'1sprav'
+organizationalUnitName:T61STRING:'1sprav_irkutsk'
+commonName            :PRINTABLE:'server'
+name                  :PRINTABLE:'victoria'
+emailAddress          :IA5STRING:'dk@223-223.ru'
+Certificate is to be certified until Oct 18 04:05:10 2027 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+root@223-223:/usr/share/easy-rsa# ./build-key jocker
+Generating a 2048 bit RSA private key
+...............................................................................................................+++
+..........................+++
+writing new private key to 'jocker.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [RU]:
+State or Province Name (full name) [IRK]:
+Locality Name (eg, city) [Irkutsk]:
+Organization Name (eg, company) [1sprav]:
+Organizational Unit Name (eg, section) [1sprav_irkutsk]:
+Common Name (eg, your name or your server's hostname) [jocker]:
+Name [victoria]:
+Email Address [dk@223-223.ru]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:hs,jyz
+An optional company name []:223-223
+Using configuration from /usr/share/easy-rsa/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'RU'
+stateOrProvinceName   :PRINTABLE:'IRK'
+localityName          :PRINTABLE:'Irkutsk'
+organizationName      :PRINTABLE:'1sprav'
+organizationalUnitName:T61STRING:'1sprav_irkutsk'
+commonName            :PRINTABLE:'jocker'
+name                  :PRINTABLE:'victoria'
+emailAddress          :IA5STRING:'dk@223-223.ru'
+Certificate is to be certified until Oct 18 04:07:30 2027 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+root@223-223:/usr/share/easy-rsa# ./build-dh
+Generating DH parameters, 2048 bit long safe prime, generator 2
+This is going to take a long time
+...............................................................................................+............................................+..................................................+.....+.............................................................................................................................................................................................................................................+...................................................................+..................................................................................................................................................................................................................................................................+..+...............................+...............................................................................................................................................................................................................................................................................................................................................................++*++*
+
+root@223-223:/usr/share/easy-rsa# openvpn --genkey --secret ta.key
+
+
+
+
+
+
+
+
+
+# Новый сервак 223-223
+
+
+root@jocker_sip:/usr/share/easy-rsa# ./build-ca
+Generating a 2048 bit RSA private key
+......................+++
+....+++
+writing new private key to 'ca.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [US]:RU
+string is too long, it needs to be no more than 2 bytes long
+Country Name (2 letter code) [US]:RU
+State or Province Name (full name) [CA]:IRK
+Locality Name (eg, city) [SanFrancisco]:Irkutsk
+Organization Name (eg, company) [Fort-Funston]:a223
+Organizational Unit Name (eg, section) [MyOrganizationalUnit]:223-223.ru
+Common Name (eg, your name or your server's hostname) [Fort-Funston CA]a223   r Name [EasyRSA]:a223_server
+Email Address [me@myhost.mydomain]:dk@223-223.ru
+
+
+
+root@jocker_sip:/usr/share/easy-rsa# ./build-key-server server
+Generating a 2048 bit RSA private key
+.........................+++
+........+++
+writing new private key to 'server.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [US]:RU
+string is too long, it needs to be no more than 2 bytes long
+Country Name (2 letter code) [US]:RU
+State or Province Name (full name) [CA]:IRK
+Locality Name (eg, city) [SanFrancisco]:Irkutsk
+Organization Name (eg, company) [Fort-Funston]:a223
+Organizational Unit Name (eg, section) [MyOrganizationalUnit]:223-223.ru
+Common Name (eg, your name or your server's hostname) [server]:a223
+Name [EasyRSA]:a223_server
+Email Address [me@myhost.mydomain]:dk@223-223.ru
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:hs,jyz
+An optional company name []:223-223.ru
+Using configuration from /usr/share/easy-rsa/openssl.cnf
+Can't open /usr/share/easy-rsa/keys/index.txt.attr for reading, No such file or directory
+140621066912192:error:02001002:system library:fopen:No such file or directory:../crypto/bio/bss_file.c:74:fopen('/usr/share/easy-rsa/keys/index.txt.attr','r')
+140621066912192:error:2006D080:BIO routines:BIO_new_file:no such file:../crypto/bio/bss_file.c:81:
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'RU'
+stateOrProvinceName   :PRINTABLE:'IRK'
+localityName          :PRINTABLE:'Irkutsk'
+organizationName      :PRINTABLE:'a223'
+organizationalUnitName:PRINTABLE:'223-223.ru'
+commonName            :PRINTABLE:'a223'
+name                  :T61STRING:'a223_server'
+emailAddress          :IA5STRING:'dk@223-223.ru'
+Certificate is to be certified until Jun 21 07:18:11 2029 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+
+-------------------------------------------------
+CCD:
+
+заводим папку ccd, где размещаем файлы
+с названием сертификата и содержимым
+ifconfig-push 10.10.2.211 255.255.255.0
+
+
+Нужны файлы
+ca.crt
+ta.key
+cert.crt
+cert.key
+для сервера еще dh2048.pem
+
+-------------------------------------------------
+CLIENT:
+
+client
+dev tap
+proto udp
+remote 207.154.244.145
+;remote my-server-2 1194
+
+# Choose a random host from the remote
+# list for load-balancing.  Otherwise
+# try hosts in the order specified.
+;remote-random
+
+resolv-retry infinite
+
+# Most clients don't need to bind to
+# a specific local port number.
+nobind
+
+# Downgrade privileges after initialization (non-Windows only)
+;user nobody
+;group nobody
+
+# Try to preserve some state across restarts.
+persist-key
+persist-tun
+
+ca a223223/ca.crt
+cert a223223/macjocker.crt
+key a223223/macjocker.key
+tls-auth a223223/ta.key 1
+
+ns-cert-type server
+
+cipher BF-CBC
+
+comp-lzo
+
+# Set log file verbosity.
+verb 3
+
+# Silence repeating messages
+;mute 20
+
+-------------------------------------------------
+SERVER:
+
+port 1194
+proto udp
+dev tap
+
+ca ca.crt
+cert server.crt
+key server.key  # This file should be kept secret
+dh dh2048.pem
+server 10.10.2.0 255.255.255.0
+
+;ifconfig-pool-persist ipp.txt
+
+;push "route 192.168.10.0 255.255.255.0"
+;push "route 192.168.20.0 255.255.255.0"
+; ----------
+; SIP SERVER
+; ----------
+;push "route 192.168.1.0 255.255.255.0"
+push "route 192.168.1.3 255.255.255.255"
+
+client-config-dir /etc/openvpn/ccd
+;route 10.9.0.0 255.255.255.252
+# Then add this line to ccd/Thelonious:
+#   ifconfig-push 10.9.0.1 10.9.0.2
+
+;learn-address ./script
+
+client-to-client
+
+;duplicate-cn
+
+keepalive 10 120
+
+tls-auth ta.key 0 # This file is secret
+
+# Select a cryptographic cipher.
+# This config item must be copied to
+# the client config file as well.
+cipher BF-CBC        # Blowfish (default)
+;cipher AES-128-CBC   # AES
+;cipher DES-EDE3-CBC  # Triple-DES
+
+# Enable compression on the VPN link.
+# If you enable it here, you must also
+# enable it in the client config file.
+comp-lzo
+
+# The maximum number of concurrently connected
+# clients we want to allow.
+max-clients 100
+
+# It's a good idea to reduce the OpenVPN
+# daemon's privileges after initialization.
+user nobody
+group nogroup
+
+# The persist options will try to avoid
+# accessing certain resources on restart
+# that may no longer be accessible because
+# of the privilege downgrade.
+persist-key
+persist-tun
+
+# Output a short status file showing
+# current connections, truncated
+# and rewritten every minute.
+status /var/log/openvpn/status.log
+
+log /var/log/openvpn/openvpn.log
+;log-append  openvpn.log
+
+# Set the appropriate level of log
+# file verbosity.
+#
+# 0 is silent, except for fatal errors
+# 4 is reasonable for general usage
+# 5 and 6 can help to debug connection problems
+# 9 is extremely verbose
+verb 3
+
+# Silence repeating messages.  At most 20
+# sequential messages of the same message
+# category will be output to the log.
+;mute 20
+
+
+
+
+
+
+
+
+
+
+
+easy-rsa 3
+
+
+Списки отзыва и отзыв сертификатов
+
+Если вы используете OpenVPN для организации связи между офисами или доступа в интернет, то вряд ли у вас возникнет потребность в отзыве сертификата. Другое дело, если вы предоставляете удаленный доступ к корпоративной сети с домашних ПК сотрудников, подрядчикам или аутсорсерам. Здесь может возникнуть масса ситуаций, когда доступ отдельных лиц следует прекратить: сотрудник уволился, истек срок договора с подрядчиком, сменили аутсорсера и т.д. и т.п.
+
+Прежде всего создадим список отозванных сертификатов (CRL):
+
+./easyrsa gen-crl
+
+Затем создадим символьную ссылку на список в директории с ключами OpenVPN:
+
+ln -s /etc/easy-rsa/pki/crl.pem /etc/openvpn/keys/
+
+И внесем в конфигурационный файл сервера OpenVPN следующую строку:
+
+crl-verify keys/crl.pem
+
+После чего сервер OpenVPN потребуется перезапустить.
+
+Теперь отзовем какой-либо сертификат:
+
+./easyrsa revoke horns_and_hooves
+
+Где horns_and_hooves - имя сертификата клиента (СN), после отзыва следует повторно опубликовать список отозванных сертификатов:
+
+./easyrsa gen-crl
+
+Посмотреть список сертификатов можно командой:
+
+cat pki/index.txt

@@ -1,0 +1,34 @@
+Создаем новый мост
+brctl addbr br0
+
+Подключаем к нему сетевой интерфейс
+brctl addif br0 eth0
+
+Очень важно, что бы на сетевом интерфейсе не было IP адреса. Команда, что бы удалить IP адрес
+ip addr delete 172.16.0.1 dev eth0
+
+Подключаем второй интерфейс
+brctl addif br0 eth1
+
+Назначаем мосту IP адрес
+ip addr add 172.16.200.8/24 dev br0
+
+Отключаем STP(Spanning Tree Protocol) режим
+brctl stp br0 off
+
+Подымаем интерфейсы
+ip link set br0 up
+ip link set eth0 up
+ip link set eth1 up
+
+Дополнительные команды
+
+Информация о сетевых интерфейсах
+ip addr
+ip link
+
+Информация о bridge-е
+brctl show
+
+Таблица MAC-адресов
+brctl showmacs br0 

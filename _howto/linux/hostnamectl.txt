@@ -1,0 +1,14 @@
+root@404035-cc69233:~# hostnamectl
+   Static hostname: 404035-cc69233.tmweb.ru
+         Icon name: computer-vm
+           Chassis: vm
+        Machine ID: ac5401b655f1486ebcc350b91021ad7b
+           Boot ID: 49f7486f79924d41a0819fb152bf5cef
+    Virtualization: kvm
+  Operating System: Ubuntu 18.04.5 LTS
+            Kernel: Linux 4.15.0-112-generic
+      Architecture: x86-64
+
+
+
+# hostnamectl set-hostname new-hostname

@@ -1,0 +1,17 @@
+Open tsip_dialog_invite.js and do the following changes:
+
+    find tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "cache-stream", this.get_stack().network.b_cache_stream),
+    repace it with tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "cache-stream", this.get_stack().media.b_cache_stream),
+
+You can do it even in minified sources. Find .network.b_cache_stream and replace it with .media.b_cache_stream. That's it!
+
+// make sure you enabled simpl getUserMedia stream caching by setting enable_media_stream_cache = true in sipml options
+// __o_jsep_stream_audio global var in which sipml stores stream from getUserMedia request
+__o_jsep_stream_audio = microphoneStream; // or gainController.outputStream
+mute(); // unmute();
+
+With JsSip everything is the same.
+
+// you just need to path microphoneStream to JsSip.UA.call method in options parameter
+jssipClient.call(targer, {mediaStream: microphoneStream});
+mute(); // unmute();

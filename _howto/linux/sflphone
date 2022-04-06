@@ -1,0 +1,7 @@
+Unable to initialize.
+Make sure the daemon is running.
+Error: Process /usr/lib/sflphone/sflphoned exited with status 1
+
+This mean the last process didn't shut down properly and let a PID file lie around. You can delete it with
+
+rm ~/.cache/sflphone/sfl.pid

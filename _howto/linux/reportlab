@@ -1,0 +1,37 @@
+
+down vote
+
+I have been able to go on by monkey-patching Pillow. Don't do this at home:
+
+from PIL import Image
+# Bad hack
+Image.Image.tostring = Image.Image.tobytes
+
+
+
+
+
+The problem is with the installation.
+The __init__ checks for a variable REPORTLAB22. This is imported from util.py.
+The code in util.py is using the following logic
+
+if not (reportlab.Version[0] == "2" and reportlab.Version[2] >= "1"):
+  raise ImportError("Reportlab Version 2.1+ is needed!")
+
+REPORTLAB22 = (reportlab.Version[0] == "2" and reportlab.Version[2] >= "2")
+
+This will fail as the reportlab version is now 3.0.
+
+Just replace this code segment with the following:
+
+if not (reportlab.Version[:3]>="2.1"):
+
+  raise ImportError("Reportlab Version 2.1+ is needed!")
+
+REPORTLAB22 = (reportlab.Version[:3]>="2.1")
+
+and reinstall xhtml2pdf. It will work.
+
+You will need to uninstall xhtml2pdf first.
+
+I am new to google groups and thus, pardon is I have not followed some norms.

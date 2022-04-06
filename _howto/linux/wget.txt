@@ -1,0 +1,25 @@
+wget -r -np -nH http://devitems.com/tf/orion-preview/orion/
+wget -r -np -nH http://pixelcoder.net/html/softdash/template
+wget -r -np -nH http://wp1.themexlab.com/
+
+wget -r -np -nH http://impreza2.us-themes.com
+
+How to download HTTP directory with all files and sub-directories as they appear on the online files/folders list?
+wget -r -np -nH --cut-dirs=3 -R index.html http://hostname/aaa/bbb/ccc/ddd/
+
+Explanation:
+
+    It will download all files and subfolders in ddd directory:
+    recursively (-r),
+    not going to upper directories, like ccc/… (-np),
+    not saving files to hostname folder (-nH),
+    but to ddd by omitting first 3 folders aaa, bbb, ccc (--cut-dirs=3)
+    excluding index.html files (-R index.html)
+
+
+===> http://templates.microthemes.ca/
+
+Если вы хотите, чтобы вспомогательные файлы на других серверах (т.е. через абсолютные ссылки)
+были загружены, используйте:
+
+      wget -E -H -k -K -p http://I<site>/I<document>

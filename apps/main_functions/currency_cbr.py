@@ -1,9 +1,15 @@
 #-*- coding:utf-8 -*-
+import traceback
 import datetime
 import xml.sax
+import json
 import requests
 
+from django.conf import settings
+from django.core.cache import cache
+
 from apps.main_functions.date_time import str_to_date
+from apps.main_functions.files import open_file, check_path
 
 class CBRCurrencyParser(xml.sax.ContentHandler):
     """Парсер валют
@@ -42,9 +48,9 @@ class CBRCurrencyParser(xml.sax.ContentHandler):
 
     def startElement(self, name, attributes):
       if name == self.ValCursName:
-          self.isValCursName = 1
+          self.isValCurs = 1
 
-      if self.isValCursName:
+      if self.isValCurs:
           if name == self.ValuteName:
               self.isValute = 1
               self.currency = {
@@ -81,6 +87,10 @@ class CBRCurrencyParser(xml.sax.ContentHandler):
             self.isValCurs = 0
 
         if name == self.ValuteName:
+            nominal = self.currency['nominal']
+            self.currency['nominal'] = float(nominal.replace(',', '.'))
+            value = self.currency['value']
+            self.currency['value'] = float(value.replace(',', '.'))
             self.result.append(self.currency)
             self.currency = {}
             self.isValute = 0
@@ -107,9 +117,15 @@ class CBRCurrencyParser(xml.sax.ContentHandler):
                 self.isValue = 0
                 self.ValueValue = ""
 
-def get_currency_cbr(date=None):
+def get_currency_cbr(date=None,
+                     url: str = None,
+                     cache_time: int = 60 * 60 * 5,
+                     force_new: bool = False):
     """Получить курс валют за дату
        :param date: дата за которую запрашиваем курс
+       :param url: альтернативный адрес для получения курса валют
+       :param cache_time: время кэширования
+       :param force_new: ключ кэширования
     """
     if not date:
         date = datetime.date.today()
@@ -118,13 +134,46 @@ def get_currency_cbr(date=None):
         if not date:
             return []
 
+    cache_var = '%s_get_currency_cbr_%s' % (
+        settings.PROJECT_NAME,
+        date.strftime('%Y-%m-%d')
+    )
+    inCache = cache.get(cache_var)
+    if inCache and not force_new:
+        print('--- get_currency_cbr from cache ---')
+        return inCache
+
+    currency_file = 'cbr_currency.json'
+    # Ввели твари проверку на бота
     urla = 'https://www.cbr.ru/scripts/XML_daily.asp'
+    if url:
+        urla = url
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B411 Safari/600.1.4 (compatible; YandexMobileBot/3.0; +http://yandex.com/bots)',
+    }
     params = {
         'date_req': date.strftime("%d/%m/%Y"),
     }
-    r = requests.get(urla, params=params)
+    r = requests.get(urla, params=params, headers=headers, stream=True)
     result = r.text
 
-    handler = CBRCurrencyParser()
-    xml.sax.parseString(result, handler)
-    return handler.result
+    try:
+        handler = CBRCurrencyParser()
+        xml.sax.parseString(result, handler)
+        # На всякий случай запишем в файл,
+        # Если будет ошибка, хотя бы из файла вытащим
+        with open_file(currency_file, 'w+', encoding='utf-8') as f:
+            f.write(json.dumps(handler.result))
+        cache.set(cache_var, handler.result, cache_time)
+        return handler.result
+    except Exception as e:
+        print('[RESPONSE]: %s' % r.text)
+        print(traceback.format_exc())
+        print('[ERROR]: %s' % e)
+
+    if not check_path(currency_file):
+        with open_file(currency_file, 'r', encoding='utf-8') as f:
+            result = json.loads(f.read())
+        return result
+
+

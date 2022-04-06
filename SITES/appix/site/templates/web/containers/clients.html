@@ -1,0 +1,26 @@
+{% load mtags %}
+<section>
+  <div class="our-service-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="service-slider-section">
+            {% for block in blocks %}
+              <div class="single-item">
+                <div class="service-main">
+                  <div class="service-icon">
+                    <img src="{{ block.thumb }}" alt="{{ block.name|textize }}">
+                  </div>
+                  <div class="service-content">
+                    <h3 class="themeix-sub-title">{{ block.name }}</h3>
+                    {% if block.html %}<div class="themeix-para-style">{{ block.html|safe }}</div>{% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

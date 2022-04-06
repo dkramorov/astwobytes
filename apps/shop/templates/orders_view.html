@@ -8,6 +8,7 @@
 
 {% include "core/title/page_title_edit.html" %}
 {% include "core/breadcrumbs.html" %}
+
   <h3>{{ singular_obj }} №{{ row.get_number }} от {{ row.created }}</h3>
   <div class="panel">
     <div class="panel-body">
@@ -41,7 +42,7 @@
               <h4>Доставка</h4>
               <p>Время: {{ delivery.time|date:'d-m-Y H:i:s' }}</p>
               <p>Адрес: {{ delivery.address }}</p>
-              <p>Цена: {{ delivery.cost|money_format }} ₽</p>
+              <p>Цена: {{ delivery.cost|money_format }} {% get_currency_symbol %}</p>
               <p>Дополнительно:<br>
                 {% for key, value in delivery.additional_data.items %}
                   {{ key }}: {{ value }}<br>
@@ -90,9 +91,9 @@
               <tr>
                 <td>{{ purchase.name }} (код {{ purchase.code }})</td>
                 <td>{% if purchase.cost_type_name %}{{ purchase.cost_type_name }}{% endif %}</td>
-                <td>{{ purchase.cost|money_format }} ₽</td>
+                <td>{{ purchase.cost|money_format }} {% get_currency_symbol %}</td>
                 <td>{{ purchase.count }}</td>
-                <td class="text-right">{{ purchase.total|money_format }} ₽</td>
+                <td class="text-right">{{ purchase.total|money_format }} {% get_currency_symbol %}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -102,15 +103,15 @@
         <div class="col-sm-offset-8 col-sm-4 pv">
           <div class="clearfix">
             <p class="pull-left">Итого без скидки</p>
-            <p class="pull-right mr">{{ row.total_without_discount|money_format }} ₽</p>
+            <p class="pull-right mr">{{ row.total_without_discount|money_format }} {% get_currency_symbol %}</p>
           </div>
           <div class="clearfix">
             <p class="pull-left">Скидка</p>
-            <p class="pull-right mr">{% if row.discount %}{{ row.discount|money_format }}{% endif %} ₽</p>
+            <p class="pull-right mr">{% if row.discount %}{{ row.discount|money_format }}{% endif %} {% get_currency_symbol %}</p>
           </div>
           <div class="clearfix">
             <p class="pull-left h3">Итого</p>
-            <p class="pull-right mr h3">{{ row.total|money_format }} ₽</p>
+            <p class="pull-right mr h3">{{ row.total|money_format }} {% get_currency_symbol %}</p>
           </div>
         </div>
       </div>
@@ -124,4 +125,5 @@
       </div>
     </div>
   </div>
+
 {% endblock %}

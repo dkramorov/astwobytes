@@ -1,0 +1,19 @@
+To start recording each session add this to the users .profile file
+
+DATE=$(date +”%Y%m%d%H%M”)
+mkdir /log/$DATE
+script -t 2>/log/$DATE/bashlogs.timing -aqf /log/$DATE/bashlogs.script
+
+ 
+
+to playback go to
+
+/log/<timestamp>
+
+and run
+
+scriptreplay  bashlogs.timing bashlogs.script 3
+
+where the 3 is the speed up factor.
+
+nJoy;

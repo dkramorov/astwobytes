@@ -1,0 +1,34 @@
+
+
+If you are using Selenium web driver with Python,you can use PyVirtualDisplay, a Python wrapper for Xvfb and Xephyr.
+
+PyVirtualDisplay needs Xvfb as a dependency. On Ubuntu, first install Xvfb:
+
+sudo apt-get install xvfb
+
+then install PyVirtualDisplay from Pypi:
+
+pip install pyvirtualdisplay
+
+Sample Selenium script in Python in a headless mode with PyVirtualDisplay:
+
+#!/usr/bin/env python
+
+from pyvirtualdisplay import Display
+from selenium import webdriver
+
+display = Display(visible=0, size=(800, 600))
+display.start()
+
+# now Firefox will run in a virtual display. 
+# you will not see the browser.
+browser = webdriver.Firefox()
+browser.get('http://www.google.com')
+print browser.title
+browser.quit()
+
+display.stop()
+
+
+
+For debugging purposes, use driver.save_screenshot('screen.png') at different steps of your code.

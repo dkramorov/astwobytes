@@ -1,0 +1,16 @@
+root@223223:/etc/supervisor# pstree -p
+
+
+init(1)─┬─acpid(919)
+        ├─atd(916)
+        ├─cron(23072)
+        ├─dbus-daemon(414)
+        ├─getty(862)
+        ├─getty(891)
+        ├─getty(896)
+        ├─getty(898)
+        ├─getty(902)
+        ├─getty(11339)
+        ├─irqbalance(928)
+        ├─memcached(956)─┬─{memcached}(959)
+...

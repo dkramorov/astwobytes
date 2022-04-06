@@ -1,0 +1,8 @@
+sed is stream editor, but can edit files directly too, with the following:
+
+sed -i 's/foo/bar/g' filename
+
+s is used to replace the found expression "foo" with "bar" and g used to replace any found matches.
+
+-i option is used to edit in place on filename.
+

@@ -8,6 +8,10 @@ from apps.personal.models import Shopper
 class Passport(Standard):
     """Паспортные данные
     """
+    passport_choices = (
+        (1, 'Паспорт РФ'),
+        (2, 'Загранпаспорт'),
+    )
     shopper = models.ForeignKey(Shopper,
         blank=True, null=True,
         on_delete = models.SET_NULL,
@@ -28,6 +32,10 @@ class Passport(Standard):
     registration = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Адрес регистрации')
+    ptype = models.IntegerField(choices=passport_choices,
+        blank=True, null=True, db_index=True,
+        verbose_name='Тип паспорта: рф/загран'
+    )
 
     class Meta:
         verbose_name = 'Пользователь - Паспортные данные'

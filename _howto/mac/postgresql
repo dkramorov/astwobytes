@@ -1,3 +1,10 @@
+To start postgresql:
+  brew services start postgresql
+Or, if you don't want/need a background service you can just run:
+  /opt/homebrew/opt/postgresql/bin/postgres -D /opt/homebrew/var/postgres
+
+
+
 The Homebrew package manager includes launchctl plists to start automatically. For more information run brew info postgres.
 
 Start manually:
@@ -37,7 +44,7 @@ analyze_fetched = cur.fetchall()
 print(analyze_fetched)
 
 
-Выключить поточный/быстрый/краткий вывод инфы
+Выключить поточный/быстрый/краткий вывод инфы \G
 I just needed to spend more time staring at the documentation. This command:
 \x on
 will do exactly what I wanted. Here is some sample output:

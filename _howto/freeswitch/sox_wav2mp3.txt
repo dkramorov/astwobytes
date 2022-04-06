@@ -1,0 +1,23 @@
+sudo apt-get install libsox-fmt-mp3
+
+If its PCMA or PCMU then you should be fine with wav, and if you want to
+suppress the 2 channels message you can convert it to a mono file, here's
+an example with sox.
+
+sox input.mp3 -c 1 -r 8000 output.wav
+
+
+# объединить, но оно накладывает поверх друг друга
+sox -m in1.mp3 in2.mp3 in3.mp3 out.mp3
+
+sox end.mp3 -p pad 6 0 | sox - -m start.mp3 output.mp3
+
+ffmpeg -f concat -i mylist.txt -c copy output.wav
+
+Файл :
+
+#mylist.txt
+file '1.wav'
+file '2.wav'
+file '3.wav'
+file '4.wav'

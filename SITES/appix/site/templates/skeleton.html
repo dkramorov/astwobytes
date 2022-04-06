@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="/media/css/magnific-popup.css">
 <link rel="stylesheet" href="/media/css/style.css">
 <link rel="stylesheet" href="/media/css/responsive.css" type="text/css">
+<link rel="stylesheet" href="/media/css/custom.css?v=2" type="text/css">
 {% block extrahead %}{% endblock %}
 </head>
 <body data-spy="scroll" data-target="#header-menu">
@@ -141,6 +142,12 @@
   <a id="scrollUp" href="#"></a>
 {% endblock %}
 <script src="/media/js/jquery-1.12.0.min.js"></script>
+
+<script src="/static/js/feedback.js"></script>
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+
 <script src="/media/js/bootstrap.min.js"></script>
 <script src="/media/js/owl.carousel.min.js"></script>
 <script src="/media/js/plugins.js"></script>
@@ -149,7 +156,26 @@
 <script src="/media/js/zenith.min.js"></script>
 <script src="/media/js/jquery.waterwheelCarousel.min.js"></script>
 <script src="/media/js/jquery.magnific-popup.min.js"></script>
-<script src="/media/js/main.js"></script>
+<script src="/media/js/main.js?v=2"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("input[type='text'].phone").mask("8(999)9 999-999");
+  
+    var feedback_form = new FeedBack("contact-form", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Спасибо. Сообщение отправлено.",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": "",
+      "callback_error": "",
+      //"dont_reset_on_submit": 1, // or 1
+      //"errorClass": "invalid",
+    });
+
+  });
+</script>
 {% block extrascripts %}{% endblock %}
 </body>
 </html>

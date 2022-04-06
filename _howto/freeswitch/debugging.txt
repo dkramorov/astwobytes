@@ -1,0 +1,73 @@
+sofia tracelevel - если заглушена ничего не будет выводиться
++
+fsctl loglevel 7
+
+<action application="log" data="DIALING Extension DialURI [${sip_uri_to_dial}]"/>
+<action application="log" data="INFO DIALING Extension DialURI [${sip_uri_to_dial}]"/>
+<action application="log" data="DEBUG DIALING Extension DialURI [${sip_uri_to_dial}]"/>
+
+// Без ната
+freeswitch -nonat
+
+// Проверим, что без ната
+nat_map status
+
+    F1: 'help'
+    F2: 'status'
+    F3: 'show channels'
+    F4: 'show calls'
+    F5: 'sofia status'
+    F6: 'reloadxml'
+    F7: 'console loglevel 0'
+    F8: 'console loglevel 7'
+    F9: 'sofia status profile internal'
+    F10: 'sofia profile internal siptrace on'
+    F11: 'sofia profile internal siptrace off'
+    F12: 'version'
+
+// Перезагрузка профилей
+// в sip_profiles/internal.xml лучше закоментить nat.auto
+sofia profile internal rescan reload restart
+
+status
+
+sofia status
+sofia status gateway prov
+
+
+// Отладка
+sofia global siptrace on
+console loglevel debug
+
+sofia loglevel all 9
+sofia profile external siptrace on
+
+// Перезагрузить внешний шлюз
+sofia profile external restart reloadxml
+
+// Регистрации
+sofia status profile internal reg
+
+The possible values for value are (use only the text value in ""):
+
+0 "CONSOLE",
+1 "ALERT",
+2 "CRIT",
+3 "ERR",
+4 "WARNING",
+5 "NOTICE",
+6 "INFO",
+7 "DEBUG"
+
+[what are the possible name values?]
+
+You may also use the console API to set debug level on FS console.
+
+freeswitch@de> console loglevel [0-7] (numerical value as above)
+
+And you can also set the levels of fsctl.
+
+freeswitch@de> fsctl loglevel [0-7] (numerical value as above)
+
+// SKYPE
+http://dionx.livejournal.com/14894.html

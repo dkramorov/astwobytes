@@ -1,0 +1,12 @@
+
+freeswitch@internal> eval $${domain}
+192.168.1.100
+
+global_getvar varname
+
+
+freeswitch@Anhel> global_getvar
+hostname=Anhel
+local_mask_v4=255.255.240.0
+local_ip_v6=2a03:b0c0:3:d0::54ef:f001
+...

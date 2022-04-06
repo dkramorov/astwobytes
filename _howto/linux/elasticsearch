@@ -1,0 +1,160 @@
+https://www.elastic.co/downloads/past-releases
+будем ставить 6.2 т/к выше x-pack по лицензии с платной подпиской
+
+apt-get install openjdk-8-dbg
+
+root@a223223:/home/jocker/sites# netstat -pantu|grep java
+
+
+если не стартует на убунте:
+root@a223223:/home/jocker/sites# /etc/init.d/elasticsearch status
+● elasticsearch.service - LSB: Starts elasticsearch
+   Loaded: loaded (/etc/init.d/elasticsearch; bad; vendor preset: enabled)
+   Active: active (exited) since Sat 2018-08-11 12:47:40 +08; 24s ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 30579 ExecStop=/etc/init.d/elasticsearch stop (code=exited, status=0/SUCCESS)
+  Process: 30633 ExecStart=/etc/init.d/elasticsearch start (code=exited, status=0/SUCCESS)
+
+
+
+It seems that to get Elasticsearch to run on 16.04 you have to set START_DAEMON to true on /etc/default/elasticsearch
+
+после этого норм
+root@a223223:/home/jocker/sites# service elasticsearch status
+● elasticsearch.service - LSB: Starts elasticsearch
+   Loaded: loaded (/etc/init.d/elasticsearch; bad; vendor preset: enabled)
+   Active: active (running) since Sat 2018-08-11 12:52:17 +08; 7s ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 30736 ExecStop=/etc/init.d/elasticsearch stop (code=exited, status=0/
+  Process: 30899 ExecStart=/etc/init.d/elasticsearch start (code=exited, status=
+    Tasks: 73
+   Memory: 278.5M
+      CPU: 6.657s
+   CGroup: /system.slice/elasticsearch.service
+           └─30951 /usr/lib/jvm/java-8-openjdk-amd64/bin/java -Xms256m -Xmx1g -D
+
+
+root@a223223:/home/jocker/sites# curl -XGET '127.0.0.1:9200/_cluster/health?pretty'
+
+Информация о нагруженности
+root@a223223:/home/jocker/sites# curl -XGET 'localhost:9200/_cluster/stats?human&pretty&pretty'
+
+root@a223223:/home/jocker/sites# netstat -pantu|grep 5601
+tcp        0      0 10.10.10.1:5601         0.0.0.0:*               LISTEN      32252/node   
+
+
+# --------------
+# INSTALL X-PACK
+# ELASTICSEARCH
+# --------------
+root@a223223:/usr/share/elasticsearch# bin/elasticsearch-plugin install x-pack
+-> Downloading x-pack from elastic
+[=================================================] 100%   
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@     WARNING: plugin requires additional permissions     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+* java.io.FilePermission \\.\pipe\* read,write
+* java.lang.RuntimePermission accessClassInPackage.com.sun.activation.registries
+* java.lang.RuntimePermission getClassLoader
+* java.lang.RuntimePermission setContextClassLoader
+* java.lang.RuntimePermission setFactory
+* java.net.SocketPermission * connect,accept,resolve
+* java.security.SecurityPermission createPolicy.JavaPolicy
+* java.security.SecurityPermission getPolicy
+* java.security.SecurityPermission putProviderProperty.BC
+* java.security.SecurityPermission setPolicy
+* java.util.PropertyPermission * read,write
+See http://docs.oracle.com/javase/8/docs/technotes/guides/security/permissions.html
+for descriptions of what these permissions allow and the associated risks.
+
+Continue with installation? [y/N]y
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@        WARNING: plugin forks a native controller        @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+This plugin launches a native controller that is not subject to the Java
+security manager nor to system call filters.
+
+Continue with installation? [y/N]y
+Elasticsearch keystore is required by plugin [x-pack-security], creating...
+-> Installed x-pack with: x-pack-core,x-pack-monitoring,x-pack-ml,x-pack-deprecation,x-pack-security,x-pack-upgrade,x-pack-logstash,x-pack-graph,x-pack-watcher
+
+# --------------
+# INSTALL X-PACK
+# KIBANA
+# --------------
+root@a223223:/usr/share/kibana# bin/kibana-plugin install x-pack
+Attempting to transfer from x-pack
+Attempting to transfer from https://artifacts.elastic.co/downloads/kibana-plugins/x-pack/x-pack-6.2.4.zip
+Transferring 264988487 bytes....................
+Transfer complete
+Retrieving metadata from plugin archive
+Extracting plugin archive
+Extraction complete
+Optimizing and caching browser bundles...
+Plugin installation complete
+
+# ------------------
+# GENERATE PASSWORDS
+# ------------------
+root@a223223:/usr/share/elasticsearch/bin/x-pack# ./setup-passwords auto
+Initiating the setup of passwords for reserved users elastic,kibana,logstash_system.
+The passwords will be randomly generated and printed to the console.
+Please confirm that you would like to continue [y/N]y
+
+Changed password for user kibana
+PASSWORD kibana = WmUZHAHi9LSy64gTNPOa
+
+Changed password for user logstash_system
+PASSWORD logstash_system = KWTwFElQX7H4ORkQFtJ5
+
+Changed password for user elastic
+PASSWORD elastic = WpFsbyP6QdNjh7CErF5C
+
+# ----
+# AUTH
+# ----
+# ElasticSearch
+/etc/elasticsearch/elasticsearch.yml
+xpack.graph.enabled: true
+xpack.ml.enabled: true
+xpack.monitoring.enabled: true
+#xpack.reporting.enabled: true # unknown setting
+xpack.security.enabled: true
+xpack.watcher.enabled: true
+xpack.security.audit.enabled:true
+
+# Add to Kibana
+elasticsearch.username: "user"
+elasticsearch.password: "pass"
+# Add to Logstash output
+user/password
+
+https://www.elastic.co/guide/en/x-pack/current/security-getting-started.html
+
+curl -XPOST -u elastic 'localhost:9200/_xpack/security/role/events_admin' -H "Content-Type: application/json" -d '{
+  "indices" : [
+    {
+      "names" : [ "events*" ],
+      "privileges" : [ "all" ]
+    },
+    {
+      "names" : [ ".kibana*" ],
+      "privileges" : [ "manage", "read", "index" ]
+    }
+  ]
+}'
+
+curl -XPOST -u elastic 'localhost:9200/_xpack/security/user/admin' -H "Content-Type: application/json" -d '{
+  "password" : "cnfylfhnysq",
+  "full_name" : "Kibana user",
+  "email" : "admin@223-223.ru",
+  "roles" : [ "events_admin" ]
+}'
+
+
+GET _xpack/license
+
+?acknowledge=true добавляется если фигня пришла в ответ
+
+POST _xpack/license?acknowledge=true
+{"license":{"uid":"3576ac97-a36f-4f3b-91d3-7670d9ea6cf9","type":"basic","issue_date_in_millis":1535500800000,"expiry_date_in_millis":1567123199999,"max_nodes":100,"issued_to":"Den Kramorov (223-223.ru)","issuer":"Web Form","signature":"AAAAAwAAAA0zV25eJ2Bq18AqdpsHAAABmC9ZN0hjZDBGYnVyRXpCOW5Bb3FjZDAxOWpSbTVoMVZwUzRxVk1PSmkxaktJRVl5MUYvUWh3bHZVUTllbXNPbzBUemtnbWpBbmlWRmRZb25KNFlBR2x0TXc2K2p1Y1VtMG1UQU9TRGZVSGRwaEJGUjE3bXd3LzRqZ05iLzRteWFNekdxRGpIYlFwYkJiNUs0U1hTVlJKNVlXekMrSlVUdFIvV0FNeWdOYnlESDc3MWhlY3hSQmdKSjJ2ZTcvYlBFOHhPQlV3ZHdDQ0tHcG5uOElCaDJ4K1hob29xSG85N0kvTWV3THhlQk9NL01VMFRjNDZpZEVXeUtUMXIyMlIveFpJUkk2WUdveEZaME9XWitGUi9WNTZVQW1FMG1DenhZU0ZmeXlZakVEMjZFT2NvOWxpZGlqVmlHNC8rWVVUYzMwRGVySHpIdURzKzFiRDl4TmM1TUp2VTBOUlJZUlAyV0ZVL2kvVk10L0NsbXNFYVZwT3NSU082dFNNa2prQ0ZsclZ4NTltbU1CVE5lR09Bck93V2J1Y3c9PQAAAQCY6qvkh4+Uo31Xmyk0YRXkZTMcOffMHUzGXG+NYCKsnhzm+9zSW0+5UQSwLqNw+k7lbqGZJDOOIPRTBTtdzW/Etd+P2TDbuod5YgQGd1Gmmo3Q7kyLfH8JTanghod0/Rg1bQDHylcPjOEHgxXVRN2sp9Gam1uQF58zR0u9EQ2MXSqCFOUoUxfemkh1NQXcLefBBH2B3p0dYgTlR4sSvShL6ofALUDQuL++TIDQUw8xMpGU0nCcgzaiXi8gB+n9izTPd5h6Qc15AnXl7bdrMUW9I63GIBm7IvGeSeKOLQtJqzHIyomZXizuUtF49wdT8K25mY4Aie53zQv0TqvAwBj8","start_date_in_millis":1535500800000}}
