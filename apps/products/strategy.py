@@ -26,7 +26,8 @@ class SearchStrategy:
         """
         inCache = cache.get(cache_var)
         if inCache and not force_new:
-            inCache['from_cache'] = True
+            # ломает ответ в некоторых местах
+            #inCache['from_cache'] = True
             return inCache
 
     def get_block(self, block_id: int):
@@ -87,11 +88,11 @@ class SearchStrategy:
 class DBSearchStrategy(SearchStrategy):
     """Класс для поиска по базе данных"""
 
-    def get_filters_for_cat(self,
-                            cat_id: int,
-                            search_facet: bool = True,
-                            cache_time: int = 300,
-                            force_new: bool = False):
+    def get_facet_filters_list(self,
+                               cat_id: int,
+                               search_facet: bool = True,
+                               cache_time: int = 300,
+                               force_new: bool = False):
         """Получение фильтров по рубрике
            :param cat_id: ид выбранной категории
            :param search_facet: только фасеты для поиска (search_facet)
@@ -101,7 +102,7 @@ class DBSearchStrategy(SearchStrategy):
         """
         result = {}
         # 0) Проверяем в кэше
-        cache_var = 'get_filters_for_cat_%s_%s_%s' % (
+        cache_var = 'get_facet_filters_list_%s_%s_%s' % (
             settings.PROJECT_NAME,
             cat_id,
             1 if search_facet else 0,
@@ -158,12 +159,27 @@ class DBSearchStrategy(SearchStrategy):
         cache.set(cache_var, result, cache_time)
         return result
 
-    def get_filters_for_search(self, facet_filters: dict):
+    def get_filters_for_search(self,
+                               facet_filters: dict,
+                               ids_cats: list = None,
+                               without_filter: bool = False,
+                               without_products: bool = False,
+                               without_spies: bool = False):
         """Получаем результат по фасетным фильтрам
            находим по ним товары
            :param facet_filters: словарь с фильтрами, которые выбраны,
                                  например, {2581: [147359, ...], ...}
                                  по принципу {property_id: [value_id, ]}
+           :param ids_cats: список ид категорий по которым собираем фасеты
+           :param without_filter: не ожидать фильтра, вытащить все!
+           :param without_products: не тащить товары в ответ
+           :param without_spies: не тащить кол-во товаров по фильтрам в ответ
+           -----------------------------------------------------
+           TODO: обработать ids_cats, сейчас нету фильтра по ним
+           TODO: не учтен without_filter
+           TODO: не учтен without_products
+           TODO: не учтен without_spies
+           -----------------------------------------------------
         """
         if not facet_filters:
             return {}
@@ -192,23 +208,44 @@ class DBSearchStrategy(SearchStrategy):
         return {
             'ids_products': list(ids_products),
             'facet_filters': facet_filters,
+            'available_facets': {}, # TODO
         }
+
+    def get_facet_filters(self,
+                          facet_filters: dict = None,
+                          cat_id: int = None,
+                          search_facet: bool = True,
+                          force_new: bool = False):
+        """Получение фасетных фильтров
+           Функция обертка для совместимости
+           :param facet_filters: словарь с фильтрами, которые выбраны,
+                                 например, {2581: [147359, ...], ...}
+                                 по принципу {property_id: [value_id, ]}
+           :param cat_id: ид категории по которой фильтруем
+           :param search_facet: поиск только свойств, которые помечены как фасет
+           :param force_new: флаг кэша
+        """
+        return self.get_facet_filters_list(
+            cat_id=cat_id,
+            search_facet=search_facet,
+            force_new=force_new,
+        )
 
 class IndexSearchStrategy(SearchStrategy):
     """Класс для поиска по индексу
        list(Property.indexer.search(xapian.Query.MatchAll))[0].tags
        list(Property.indexer.search('id:2579 OR id:2679'))
     """
-    def get_filters_for_cat(self,
-                            cat_id: int,
-                            search_facet: bool = True,
-                            cache_time: int = 300,
-                            force_new: bool = False):
+    def get_facet_filters_list(self,
+                               cat_id: int,
+                               search_facet: bool = True,
+                               cache_time: int = 300,
+                               force_new: bool = False):
         # TODO: is_active
         result = {}
 
         # 0) Проверяем в кэше
-        cache_var = 'get_filters_for_cat_%s_%s_%s' % (
+        cache_var = 'get_facet_filters_list_%s_%s_%s' % (
             settings.PROJECT_NAME,
             cat_id,
             1 if search_facet else 0,
@@ -265,33 +302,123 @@ class IndexSearchStrategy(SearchStrategy):
         cache.set(cache_var, result, cache_time)
         return result
 
-    def get_filters_for_search(self, facet_filters: dict):
+    def get_filters_for_search(self,
+                               facet_filters: dict,
+                               ids_cats: list = None,
+                               without_filter: bool = False,
+                               without_products: bool = False,
+                               without_spies: bool = False):
         """Получаем результат по фасетным фильтрам
            находим по ним товары
            :param facet_filters: словарь с фильтрами, которые выбраны,
                                  например, {2581: [147359, ...], ...}
                                  по принципу {property_id: [value_id, ]}
+           :param ids_cats: список ид категорий по которым собираем фасеты
+           :param without_filter: не ожидать фильтра, вытащить все!
+           :param without_products: не тащить товары в ответ
+           :param without_spies: не тащить кол-во товаров по фильтрам в ответ
         """
         if not facet_filters:
-            return {}
+            if not without_filter:
+                return {}
+            facet_filters = {}
+
         ids_products = []
         # По одному фильтру при нескольких значениях делаем OR
         # По разным филтрам делаем AND
         query = ''
         for key, value in facet_filters.items():
             subquery = ' OR '.join(['get_values:%s' % int(item) for item in value])
+            query += '(%s) AND ' % subquery
+        if ids_cats:
+            subquery = ' OR '.join(['get_rubrics:%s' % int(item) for item in ids_cats])
             query += '(%s)' % subquery
-        search_result = Products.indexer.search(query)
-        for item in search_result:
-            # Нужно записать какие фасеты с результатами
-            # TODO: enquire.add_matchspy(xapian.ValueCountMatchSpy(index))
+        else:
+            # if query.endswith(' AND '):
+            query = query[:-5]
+        search_result = Products.indexer.search(query, facets=['get_values', ]) # С фасетами
+        #search_result = Products.indexer.search(query) # Без фасетов
+        if not without_products:
+            for item in search_result:
+                ids_products.append(item.pk)
 
-            ids_products.append(item.pk)
+        available_facets = {}
+        # Мы знаем все товары, по ним прошла агрегация фасетов,
+        # на выходе мы имеем по сути списки и каждая запись это список - ид значений свойств
+        # надо разбить по запятой и засуммировать termfreq по всем уникальным
+        # получится кол-во товаров в фасете
+        # Придется самостоятельно следить, что за тип (т/к тут ид через запятую)
+        if not without_spies:
+            spies = search_result.get_spies()
+            facet_get_values = spies.get('get_values')
+            for facet_get_value in facet_get_values.values():
+                terms = facet_get_value.term.decode('utf-8')
+                freq = facet_get_value.termfreq
+                for term in terms.split(','):
+                    term = term.strip()
+                    if not term or not term.isdigit():
+                        continue
+                    term = int(term)
+                    if not term in available_facets:
+                        available_facets[term] = 0
+                    available_facets[term] += freq
+
+        # По фасетным фильтрам надо определить сколько совпадений
+        # чтобы подписать количества, но по товарам это не получится
+        # enquire.add_matchspy(xapian.ValueCountMatchSpy(index))
 
         return {
             'ids_products': ids_products,
             'facet_filters': facet_filters,
+            'available_facets': available_facets,
         }
+
+
+    def get_facet_filters(self,
+                          facet_filters: dict = None,
+                          cat_id: int = None,
+                          search_facet: bool = True,
+                          force_new: bool = False):
+        """Получение фасетных фильтров
+           :param facet_filters: словарь с фильтрами, которые выбраны,
+                                 например, {2581: [147359, ...], ...}
+                                 по принципу {property_id: [value_id, ]}
+           :param cat_id: ид категории по которой фильтруем
+           :param search_facet: поиск только свойств, которые помечены как фасет
+           :param force_new: флаг кэша
+        """
+        if not facet_filters:
+            facet_filters = {}
+        filters_for_cat = self.get_facet_filters_list(
+            cat_id=cat_id,
+            search_facet=search_facet,
+            force_new=force_new,
+        )
+        search_filters = self.get_filters_for_search(
+            facet_filters=facet_filters,
+            ids_cats=[cat_id],
+            without_filter=True,
+            without_products=True,
+        )
+        selected = []
+        for k, v in facet_filters.items():
+            selected += v
+        result = {}
+        # Отбрасываем фасеты, где нет какого-то количества товаров
+        available_facets = search_filters.get('available_facets', {})
+        if available_facets:
+            for prop_key, prop in filters_for_cat.items():
+                good_values = []
+                for value in prop['values']:
+                    if value['id'] in available_facets:
+                        value['count'] = available_facets[value['id']]
+                        if value['id'] in selected:
+                            value['selected'] = 1
+                        good_values.append(value)
+                if good_values:
+                    result[prop_key] = {k: v for k, v in prop.items() if v and k != 'values'}
+                    result[prop_key]['values'] = good_values
+        return result
 
 def get_search_strategy():
     """Возвращает класс для поиска по товарам"""

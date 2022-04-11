@@ -1,3 +1,9 @@
 memcache-top
 
 memcache-top displays statistics about items usage, hit rates, connections, wait times, evicts, commands and read/writes in a top-like interface.
+
+
+# telnet localhost 11211
+# echo 'flush_all' | nc localhost 11211
+# /Users/jocker/Library/LaunchAgents/homebrew.mxcl.memcached.plist
+# /etc/sysconfig/memcached memcached -I 32M

@@ -6,7 +6,7 @@
       <span class="arrow_carrot-right_alt2 mr-2"></span> {{ container.name }}
     </button>
   </div>
-  <nav class="category-menu">
+  <nav class="category-menu" id="main_catalogue" data-count="{{ menus|length }}">
     <ul>
       {% for menu in menus %}
         <li class="{% if menu.sub %}menu-item-has-children{% endif %} {% if forloop.counter > 7 %}hidden{% endif %}">
@@ -25,9 +25,11 @@
           {% endif %}
         </li>
       {% endfor %}
+<!--
       <li>
         <a href="#" id="more-btn"></a>
       </li>
+-->
     </ul>
   </nav>
 </div>

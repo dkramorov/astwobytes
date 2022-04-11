@@ -13,6 +13,7 @@ from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site, get_catalogue_lvl
 from apps.main_functions.views import DefaultFeedback
 from apps.products.models import Products
+from apps.products.strategy import get_search_strategy
 from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import save_user_to_request, remove_user_from_request
 from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site
@@ -87,13 +88,26 @@ def cat_on_site(request, link: str = None):
         raise Http404
     containers = {}
 
-    if request.is_ajax():
+    if request.is_ajax() or request.GET.get('ajax'):
         # Если запрос по фасетному поиску,
         # отдаем отрендеренный шаблон
         if request.GET.get('ff'):
+
+            strategy = get_search_strategy()
+            facet_filters = strategy.get_facet_filters_from_request(request)
+
+            facet_filters_context = strategy.get_facet_filters(
+                facet_filters=facet_filters,
+                cat_id=context['page'].id,
+                search_facet=True,
+                force_new=False,
+            )
+
+            plp = render_to_string('web/cat/plp.html', context)
             context = {
-                'plp': render_to_string('web/cat/plp.html', context),
+                'plp': plp,
                 'my_paginator': context['my_paginator'],
+                'facet_filters': facet_filters_context,
             }
         return JsonResponse(context, safe=False)
     template = 'web/cat/%slist.html' % (mh_vars['template_prefix'], )
@@ -102,7 +116,6 @@ def cat_on_site(request, link: str = None):
     if page:
         context['page'] = page
     context['containers'] = containers
-
     return render(request, template, context)
 
 def cat_lvl(request):

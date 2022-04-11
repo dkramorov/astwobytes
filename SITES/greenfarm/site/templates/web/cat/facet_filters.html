@@ -1,0 +1,15 @@
+{% load mtags %}
+{% for facet_id, facet_value in facets.items %}
+  <div class="sidebar col-md-3">
+    <h3 class="sidebar-title">{{ facet_value.name }}</h3>
+    <div class="product-categories">
+      {% for value in facet_value.values %}
+        <label class="facet_filter facet_filter_{{ value.id }}">
+          <input class="facet_filter facet_filter_{{ value.id }}" id="prop_{{ facet_id }}_{{ value.id }}" type="checkbox" name="prop_{{ facet_id }}" value="{{ value.id }}" autocomplete="off" />
+          {{ value.value }}
+          <span class="count">{{ value.count }}</span>
+        </label>
+      {% endfor %}
+    </div>
+  </div>
+{% endfor %}

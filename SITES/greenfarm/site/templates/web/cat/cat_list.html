@@ -56,6 +56,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  label.facet_filter {
+    display: block;
+  }
+  label.facet_filter span.count{
+    padding-left: 5px;
+    font-weight: bold;
+  }
 </style>
 <script type="text/javascript">window.cat_id = {{ page.id }};</script>
 {% endblock %}
@@ -194,12 +201,63 @@
       beforeSubmit: showLoading,
       success: showResponse,
     });
+    
     function showLoading() {
       $("#products_container").html("<div class='text-center'><div class='lds-dual-ring'></div></div>");
     }
     function showResponse(r, statusText, xhr, $form){
+      fill_facet_filters(r['facet_filters']);
       $("#products_container").html(r['plp']);
       $("#my_paginator").html(r['my_paginator']['total_records'] + " " + r['my_paginator']['ends']);
+    }
+    function fill_facet_filters(r) {
+      var html = "";
+      var name = "";
+      var selected = "";
+      var values_length;
+      var container = $("#facet_filters");
+      container.html("");
+      for(var key in r){
+        if(typeof(r[key]) == "boolean"){
+          continue;
+        }
+        values_length = r[key]['values'].length;
+
+        //if(values_length < 2){
+          //continue;
+        //}
+
+        html += '<div class="sidebar col-md-3">';
+        name = r[key]['name'];
+        if(r[key]['measure'] && r[key]['measure'].length > 0){
+          name += ", " + r[key]['measure'];
+        }
+        html += '<h3 class="sidebar-title">' + name + '</h3>';
+        html += '<div class="product-categories">';
+        for(var i=0; i<values_length; i++){
+          selected = r[key]['values'][i]['selected'] ? 'checked' : '';
+          
+          html += '<label class="facet_filter facet_filter_' + r[key]['values'][i]['id'] + '"><input class="facet_filter facet_filter_' + r[key]['values'][i]['id'] + '" id="prop_' + key + '_' + r[key]['values'][i]['id'] + '" type="checkbox" name="prop_' + key + '" value="' + r[key]['values'][i]['id'] + '" autocomplete="off" ' + selected + ' /> ' + r[key]['values'][i]['value'] + '<span class="count">' + r[key]['values'][i]['count'] + '</count></label>';
+        }
+        html += '</div>';
+        html += '</div>';
+      }
+      html += '<div class="text-center hidden"><button class="contact-form-btn mt-35" type="submit" value="1" name="ff"> Найти</button></div>';
+      container.html(html);
+{% comment %}/*
+      {% if q_string.q.ff %}
+        $("#show_facet_filters").click();
+        {% for key, value in facet_filters.items %}
+          {% for item in value %}
+            $("#prop_{{ key }}_{{ item }}").prop('checked', 'checked');
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+*/{% endcomment %}
+      $("#facet_filters input[type='checkbox']").change(function(){
+        $("#facet_filters button[type='submit']").click();
+      });
+console.log(html);
     }
 
     $("#sort-by").change(function(){
@@ -225,50 +283,7 @@
       url: '{% url "products:facet_filters" page.id %}',
       data: 'search_facet=1',
     }).done(function(r){
-      //console.log(r);
-      var html = "";
-      var name = "";
-      var values_length;
-      var container = $("#facet_filters");
-      container.html("");
-      for(var key in r){
-        if(typeof(r[key]) == "boolean"){
-          continue;
-        }
-        values_length = r[key]['values'].length;
-        if(values_length < 2){
-          continue;
-        }
-        html += '<div class="sidebar col-md-3">';
-        name = r[key]['name'];
-        if(r[key]['measure'] && r[key]['measure'].length > 0){
-          name += ", " + r[key]['measure'];
-        }
-        html += '<h3 class="sidebar-title">' + name + '</h3>';
-        html += '<div class="product-categories">';
-        for(var i=0; i<values_length; i++){
-          //html += '<li><a>' + r[key]['values'][i]['value'] + '</a></li>';
-          html += '<label><input id="prop_' + key + '_' + r[key]['values'][i]['id'] + '" type="checkbox" name="prop_' + key + '" value="' + r[key]['values'][i]['id'] + '" autocomplete="off" /> ' + r[key]['values'][i]['value'] + '</label><br>';
-        }
-        html += '</div>';
-        html += '</div>';
-      }
-      html += '<div class="text-center hidden"><button class="contact-form-btn mt-35" type="submit" value="1" name="ff"> Найти</button></div>';
-      container.html(html);
-
-      {% if q_string.q.ff %}
-        $("#show_facet_filters").click();
-        {% for key, value in facet_filters.items %}
-          {% for item in value %}
-            $("#prop_{{ key }}_{{ item }}").prop('checked', 'checked');
-          {% endfor %}
-        {% endfor %}
-      {% endif %}
-
-      $("#facet_filters input[type='checkbox']").change(function(){
-        $("#facet_filters button[type='submit']").click();
-      });
-
+      fill_facet_filters(r);
     }).fail(function(){
     });
 

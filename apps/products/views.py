@@ -1111,7 +1111,7 @@ def facet_filters(request, cat_id):
     search_facet = True if method.get('search_facet') else False
     force_new = True if method.get('force_new') else False
     strategy = get_search_strategy()
-    result = strategy.get_filters_for_cat(
+    result = strategy.get_facet_filters(
         cat_id=cat_id,
         search_facet=search_facet,
         force_new=force_new,

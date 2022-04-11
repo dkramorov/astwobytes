@@ -4,8 +4,11 @@
 {% if is_tree %}
   <link rel="stylesheet" href="/static/jstree/themes/default/style.min.css" />
   <style type="text/css">
-    .jstree-default-contextmenu{
+    .jstree-default-contextmenu {
       z-index: 12;
+    }
+    .jstree .non-active a {
+      text-decoration: line-through;
     }
   </style>
 {% endif %}

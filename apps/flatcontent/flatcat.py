@@ -278,14 +278,18 @@ def get_catalogue(request,
     count = 0
     if container:
         # Если рубрик дохера, то будет больно, избегаем этого
-        cats = container.blocks_set.filter(is_active=True)
-        count = cats.aggregate(Count('id'))['id__count']
+        query = container.blocks_set.filter(is_active=True)
+        count = query.aggregate(Count('id'))['id__count']
+        new_parents = ''
         if count > MY_FAT_HIER:
             pass_cache = True
-            cats = cats.filter(parents='')
+            cats = query.filter(parents=new_parents)
+            while len(cats) == 1:
+                new_parents = '%s_%s' % (cats[0].parents if cats[0].parents else '', cats[0].id)
+                cats = query.filter(parents=new_parents)
 
         menu_queryset = []
-        recursive_fill(cats, menu_queryset, '')
+        recursive_fill(cats, menu_queryset, new_parents)
         menus = sort_voca(menu_queryset)
     result = {
         'container': container,
@@ -366,14 +370,16 @@ def search_alt_catalogue(link: str, force_new: bool = False):
     cache.set(cache_var, [catalogue_tag, is_root_level], cache_time)
     return catalogue_tag, is_root_level
 
-def get_facet_filters(request):
+def filter_products(request, ids_cats: list = None):
     """Получаем фасетные фильтры из запроса,
-       находим по ним товары
+       находим по ним товары, здесь нам не нужны сами фасеты,
+       т/к фильтруем по товарам
        :param request: HttpRequest
+       :param ids_cats: список ид категорий по которым собираем фасеты
     """
     strategy = get_search_strategy()
     facet_filters = strategy.get_facet_filters_from_request(request)
-    return strategy.get_filters_for_search(facet_filters)
+    return strategy.get_filters_for_search(facet_filters, ids_cats=ids_cats, without_spies=True)
 
 def pick_root_catalogue(tag: str, state: int, force_new: bool = False):
     """Получение каталога (контейнера)
@@ -489,9 +495,11 @@ def get_cat_for_site(request,
     # ----------
     # Фильтрация
     # ----------
-    facet_filters = get_facet_filters(request)
-    if facet_filters:
-        query = query.filter(**{'%sid__in' % (prefix, ): facet_filters['ids_products']})
+    if with_filters:
+        filtered = filter_products(request, ids_cats=[page.id, ])
+        filtered_ids = filtered.get('ids_products')
+        if filtered_ids:
+            query = query.filter(**{'%sid__in' % (prefix, ): filtered_ids})
 
     breadcrumbs.append({'name': page.name, 'link': page.link})
     total_records = query.aggregate(Count('id'))['id__count']
@@ -546,7 +554,6 @@ def get_cat_for_site(request,
         'products': products,
         'cost_filter': cost_filter,
         'search_terms': search_terms,
-        'facet_filters': facet_filters.get('facet_filters'),
     }
 
 def get_props_for_products(products: list, only_props: list = None):

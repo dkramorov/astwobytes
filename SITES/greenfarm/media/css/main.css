@@ -1812,6 +1812,7 @@ a.single-sale-add-to-cart-btn {
  }
 
     .hero-slider-two .hero-slider-item .slider-content {
+      color: #fff;
       padding-top: 80px;
       padding-left: 40px; }
       @media only screen and (max-width: 479px) {
@@ -1847,7 +1848,7 @@ a.single-sale-add-to-cart-btn {
         .hero-slider-two .hero-slider-item .slider-content .h1.change-text {
           font-size: 25px;
           font-weight: 500;
-          color: #777777; }
+          color: #fff; }
           @media only screen and (max-width: 767px) {
             .hero-slider-two .hero-slider-item .slider-content .h1.change-text {
               font-size: 25px; }

@@ -1,3 +1,15 @@
+Cause: INCOMPATIBLE_DESTINATION
+Если включаем запись разговора, однако без записи разговора все гуд
+Поэтому добавляем:
+<action application="export" data="nolocal:absolute_codec_string=PCMA,PCMU"/>
+тогда с записью все будет окей
+
+и надо в профиль
+    <param name="disable-transcoding" value="true"/>
+    <param name="inbound-proxy-media" value="false"/>
+    <param name="inbound-bypass-media" value="false"/>
+-------------------------------------------------
+
 
 2020-01-21 17:48:21.146592 [DEBUG] switch_core_media.c:4324 Searching for rtp candidate.
 2020-01-21 17:48:21.146592 [DEBUG] switch_core_media.c:4333 Choose rtp candidate, index 0, 192.168.0.110:55769

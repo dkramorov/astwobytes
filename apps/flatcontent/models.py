@@ -157,7 +157,7 @@ def prepare_jstree(data, menus, lazy: bool = False, fill_href: bool = False):
         href = '#%s' % menu.id
         if fill_href:
             href = menu.link
-        data.append({
+        branch = {
             'id': menu.id,
             'text': menu.name,
             'state': {'opened': False, 'selected': False},
@@ -165,7 +165,13 @@ def prepare_jstree(data, menus, lazy: bool = False, fill_href: bool = False):
             'a_attr': {
                 'href': href,
             },
-        })
+        }
+        if not menu.is_active:
+            branch['li_attr'] = {
+                'class': 'non-active',
+            }
+        data.append(branch)
+
         if hasattr(menu, 'sub'):
             if menu.sub:
                 prepare_jstree(data[-1]['children'], menu.sub, fill_href)
