@@ -20,7 +20,7 @@ Pillow==8.4.0
 # hosting: pip install lxml==3.4.2
 #lxml==4.4.0
 lxml==4.6.4
-PyJWT==1.7.1
+PyJWT==2.4.0
 websockets==8.0.2 # if errors happens read next:
 # on python3.5
 # AttributeError: module 'ssl' has no attribute 'PROTOCOL_TLS_SERVER'
