@@ -32,6 +32,7 @@ plotly==4.4.1
 sentry-sdk==0.14.1
 django-boto==0.3.12
 sphinx==4.2.0
+oauth2client==4.1.3
 
 # ImportError: cannot import name 'getStringIO' from 'reportlab.lib.utils'
 reportlab==3.5.68 # hosting(3.4 python): reportlab==3.5.23

@@ -6,7 +6,11 @@ function fontawesome_select2(select2_id){
   // например, icon_fontawesome
   // --------------------------
   var cur_value = $("#" + select2_id).val();
-  $.getJSON( "/static/admin/misc/font-awesome.json", function(data){
+  if (window.default_container_font == undefined) {
+    window.default_container_font = "/static/admin/misc/font-awesome.json";
+    window.default_container_font_prefix = "fa fa-";
+  }
+  $.getJSON(window.default_container_font, function(data){
     var items = [];
     var item = null;
     for(var i=0; i<data['results'].length; i++){
@@ -19,10 +23,10 @@ function fontawesome_select2(select2_id){
       width: "100%",
       allowClear: true,
       templateResult: function (data) {
-        return "<i class='fa fa-" + data.id + "'></i> " + data.text;
+        return "<i class='" + window.default_container_font_prefix + data.id + "'></i> " + data.text;
       },
       templateSelection: function (data) {
-        return "<i class='fa fa-" + data.id + "'></i> " + data.text;
+        return "<i class='" + window.default_container_font_prefix + data.id + "'></i> " + data.text;
       },
       escapeMarkup: function (m) { return m; },
     });

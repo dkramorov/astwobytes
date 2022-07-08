@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.db.models import Q
+from django.core import management
 
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import ModelHelper, create_model_helper
@@ -531,7 +532,12 @@ def is_phone_in_white_list(request):
 
     user_key = request.GET.get('user_key')
     if user_key:
-        analog = PersonalUsers.objects.select_related('personal_fs_user').filter(userkey=user_key).first()
+        # В userkey по новому формату у нас приходит типа такого
+        # 89526299569_anhel.1sprav.ru просто найдем такого клоуна
+        # по телефону и дадим ему звонить
+        originator_phone = user_key.split('_')[0]
+
+        analog = PersonalUsers.objects.select_related('personal_fs_user').filter(Q(userkey=user_key)|Q(phone=originator_phone)).first()
         if analog:
             cid = None
             if hasattr(analog, 'personal_fs_user') and analog.personal_fs_user.is_active:
@@ -630,4 +636,10 @@ def sync_personal_users(request):
             analog.phone = phone
             analog.phone_confirmed = phone_confirmed
             analog.save()
+    return JsonResponse(result, safe=False)
+
+@csrf_exempt
+def sync_jabber2fs(request):
+    result = {}
+    result['status'] = management.call_command('directory_manager', '--get_jabber_users')
     return JsonResponse(result, safe=False)

@@ -36,3 +36,4 @@ git remote set-url origin git@github.com:dkramorov/masterme_chat.git
 git remote set-url origin git@github.com:dkramorov/astwobytes.git
 
 
+git remote set-url origin git@github.com:Alex8800help/8800.git

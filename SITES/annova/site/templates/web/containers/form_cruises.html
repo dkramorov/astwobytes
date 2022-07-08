@@ -46,7 +46,7 @@ table.cruise.bordered th {
             </ul>
             <ul class="data-list-2">
               <li>
-                <input name="already_safe" type="checkbox" class="check_radio" value="Застрахован"><label>Страхователь застрахован</label>
+                <input name="already_safe" type="checkbox" class="check_radio" value="1"><label>Страхователь застрахован</label>
               </li>
             </ul>
           </div>
@@ -92,7 +92,7 @@ table.cruise.bordered th {
                         </tr>
                       </table>
                       <label>
-                        <input name="cat_{{ cat_id }}" type="radio" class="required check_radio" value="{{ product.id }}">
+                        <input name="cat_{{ cat_id }}" type="radio" class="required check_radio group group_{{ cat_id }}" value="{{ product.id }}">
                       </label>
                     </li>
                   {% endfor %}
@@ -256,5 +256,35 @@ $(document).ready(function(){
   $("input.passport_type").click(function(){
     select_passport_type();
   });
+
+
+  $(".check_radio").on("ifClicked", function(event){
+    if($(this).hasClass("group") && $(this).prop("checked")){
+      $(this).prop("checked", false);
+      $(this).iCheck("update");
+      if($(".check_radio.group:checked").length > 0){
+        $(".check_radio.group").removeClass("required");
+        console.log("ok");
+      }else{
+        $(".check_radio.group").addClass("required");
+        console.log("nok");
+      }
+      $(".check_radio.group").iCheck("update");
+    }
+  });
+
+  $(".check_radio").on("ifChanged", function(event){
+    if($(this).hasClass("group")){
+      if($(".check_radio.group:checked").length > 0){
+        $(".check_radio.group").removeClass("required");
+        console.log("ok2");
+      }else{
+        $(".check_radio.group").addClass("required");
+        console.log("nok2");
+      }
+      $(".check_radio.group").iCheck("update");
+    }
+  });
+
 });
 </script>

@@ -1,0 +1,39 @@
+{% load mtags %}
+<div class="projects projects2">
+  <div class="row">
+    <div class="recent-case align-center">
+      <div class="case-item-wrap">
+        {% for block in blocks %}
+          <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+            <div class="case-item">
+              <a class="case-item__thumb" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+                <img loading="lazy" src="{% imagine block.img '600x400' block.get_folder True %}" alt="{{ block.description|textize }}">
+                <table>
+                  <tr>
+                    <td class="text"><h6>{{ block.name }}</h6></td>
+                  </tr>
+                  <tr>
+                    <td class="text">{% if block.html %}{{ block.html|safe }}{% endif %}</td>
+                  </tr>
+                </table>
+              </a>
+            </div>
+          </div>
+          {% if forloop.counter|divisibleby:3 %}<div class="clearfix_desktop"></div>{% endif %}
+          {% if forloop.counter|divisibleby:2 %}<div class="clearfix_mobile"></div>{% endif %}
+        {% endfor %}
+      </div>
+      <div class="clearfix"></div>
+      {% with blocks.0 as first_block %}
+        {% if first_block.link and first_block.title %}
+          <div class="button align-center{% if page.class_name %} {{ page.class_name|textize }}{% endif %}">
+            <a href="{{ first_block.link }}" {% if first_block.blank %} target="_blank"{% endif %}>
+              <span class="text">{{ first_block.title }}</span>
+              <i class="fa {% if first_block.icon %}fa-{{ first_block.icon }}{% else %}seoicon-right-arrow{% endif %}"></i>
+            </a>
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+</div>

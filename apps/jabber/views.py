@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
+from oauth2client.service_account import ServiceAccountCredentials
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper
@@ -30,11 +31,7 @@ from apps.main_functions.files import (check_path,
 
 from apps.jabber.models import Registrations, FirebaseTokens
 
-EJABBERD_LOCAL = 'https://127.0.0.1:5443'.rstrip('/')
-
-all_settings = settings.FULL_SETTINGS_SET
-FIREBASE_SERVER_KEY_8800 = all_settings['FIREBASE_SERVER_KEY_8800']
-FIREBASE_SERVER_KEY_223 = all_settings['FIREBASE_SERVER_KEY_223']
+JABBER_API = 'https://%s:5443' % settings.JABBER_DOMAIN
 
 CUR_APP = 'jabber'
 registrations_vars = {
@@ -180,7 +177,6 @@ def search_registrations(request, *args, **kwargs):
                        cur_app = CUR_APP,
                        sfields = ('login', 'token'), )
 
-
 def register_user(request):
     """Апи-метод для регистрации нового пользователя
                      восстановление пароля
@@ -258,10 +254,10 @@ def register_user(request):
         code = method.get('code')
         # Берем только за последний час попытку регистрации
         now = datetime.datetime.now()
-        one_hour = date_plus_days(now, minutes=-30)
+        long_ago = date_plus_days(now, minutes=-30)
         analog = Registrations.objects.filter(phone=phone,
                                               code=code,
-                                              created__gte=one_hour,
+                                              created__gte=long_ago,
                                               is_active=False).first()
         if analog:
             # Все регистрации делаем неактивными
@@ -273,6 +269,8 @@ def register_user(request):
             result = object_fields(analog, pass_fields=('passwd', 'code'))
             # Инкремент версии в связи с новой регистрацией
             update_fs_users_db_version()
+            # Отправляем запрос, чтобы freeswitch обновил пользователей
+            r = requests.get(settings.FULL_SETTINGS_SET.get('FS_UPDATE_USERS_TASK'))
 
             # Делаем запрос на реальную регистрацию пользователя
             # https://docs.ejabberd.im/developer/ejabberd-api/admin-api/
@@ -288,14 +286,14 @@ def reg_user_on_jabber(phone: str, passwd: str):
        :param phone: телефон
        :param passwd: пароль
     """
-    r = requests.post('%s/api/register' % EJABBERD_LOCAL, json={'user': phone, 'host': settings.JABBER_DOMAIN, 'password': passwd}, verify=False)
+    r = requests.post('%s/api/register' % JABBER_API, json={'user': phone, 'host': settings.JABBER_DOMAIN, 'password': passwd}, verify=False)
     try:
         reg_obj = r.json()
     except Exception as e:
         reg_obj = None
     if reg_obj:
         if 'code' in reg_obj and reg_obj['code'] == 10090:
-            r = requests.post('%s/api/change_password' % EJABBERD_LOCAL, json={'user': phone, 'host': settings.JABBER_DOMAIN, 'newpass': passwd}, verify=False)
+            r = requests.post('%s/api/change_password' % JABBER_API, json={'user': phone, 'host': settings.JABBER_DOMAIN, 'newpass': passwd}, verify=False)
             if r.text == '0':
                 return {
                     'msg': 'Пароль пользователя %s успешно изменен' % phone,
@@ -324,11 +322,44 @@ def update_fs_users_db_version():
         f.write(json.dumps({'version': version}))
     return version
 
+def get_firebase_messaging_token(app_id: str):
+    """Получение токена для firebase messaging
+       :param app_id: приложение firebase messaging (Project Id)
+    """
+    fsm_scope = 'https://www.googleapis.com/auth/firebase.messaging'
+    key = settings.FULL_SETTINGS_SET['FIREBASE_KEY_FILE_%s' % app_id.upper().replace('-', '_')]
+    cred = ServiceAccountCredentials.from_json_keyfile_name(key, fsm_scope)
+    token = cred.get_access_token().access_token
+    return token.split('.....')[0]
+
+def get_firebase_messaging_headers(app_id: str):
+    """Получение заголовка авторизации для firebase messaging
+       :param app_id: приложение firebase messaging (Project Id)
+    """
+    return {'Authorization': 'Bearer %s' % get_firebase_messaging_token(app_id=app_id)}
+
+def get_firebase_messaging_url(app_id: str):
+    """Получение ссылки для отправки push для firebase messaging
+       :param app_id: приложение firebase messaging (Project Id)
+    """
+    return 'https://fcm.googleapis.com/v1/projects/%s/messages:send' % (app_id, )
+
+def trim_firebase_message(text):
+    """Срезать размер текста в сообщении
+       :param text: текст сообщения
+    """
+    if text:
+        if len(text) > 30:
+            text = '%s...' % text[:30]
+    return text
+
+
 @csrf_exempt
-def notification_helper(request, skey: str = None):
+def notification_helper(request, app_id: str = None):
     """Апи-метод для отправки уведомления (пуша)
+       https://firebase.google.com/docs/cloud-messaging/migrate-v1
        :param request: HttpRequest
-       :param skey: серверный ключ firebase для отправки сообщения
+       :param app_id: ид приложения (для получения файла json с ключем)
     """
     result = {}
     ip_white_list = ['138.68.109.138']
@@ -347,20 +378,17 @@ def notification_helper(request, skey: str = None):
     only_data = False # только data push
     additional_data = {} # доп параметры в data push
 
-    # Серверный ключ Firebase
-    server_key = FIREBASE_SERVER_KEY_8800
-    if skey:
-        server_key = skey
-
     if request.body:
         try:
             body = json.loads(request.body)
         except Exception as e:
             result['error'] = str(e)
         if body:
+
             credentials = body.get('credentials')
             to_jid = body.get('toJID')
-            from_jid = body.get('fromJID')
+            from_jid = body.get('fromJID') # не преобразуем т/к хэш будет неправильный
+
             msg_body = body.get('body')
             name = body.get('name')
             result['body'] = body
@@ -378,73 +406,62 @@ def notification_helper(request, skey: str = None):
             else:
                 result['error'] = 'Restricted access'
 
-    text = msg_body or 'Новое сообщение от %s' % from_jid
-    if text:
-        if len(text) > 30:
-            text = '%s...' % text[:30]
+    text = trim_firebase_message(msg_body or 'Новое сообщение от %s' % from_jid)
     title = name or 'Новое сообщение'
-
-    url = 'https://fcm.googleapis.com/fcm/send'
-
+    url = url = get_firebase_messaging_url(app_id=app_id)
+    headers = get_firebase_messaging_headers(app_id=app_id)
+    # С ибучим api v 1 нельзя registration_ids, нужно использовать группы или топики
     data = {
-        'data': {
-            'sender': from_jid,
-            'receiver': to_jid,
-        },
-        'notification': {
-            'title': title,
-            'body': text,
-        },
-        #'to': to_token, # one recipient
-        'registration_ids': tokens, # many recipients
-        'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-    }
-
-    if only_data:
-        data = {
+        'message': {
             'data': {
                 'sender': from_jid,
                 'receiver': to_jid,
             },
-            'content_available': True,
-            'priority': 'high',
-            'registration_ids': tokens, # many recipients
-            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'notification': {
+                'title': title,
+                'body': text,
+            },
+        },
+    }
+    if only_data:
+        data = {
+            'message': {
+                'data': {
+                    'sender': from_jid,
+                    'receiver': to_jid,
+                },
+            },
         }
+    data['message']['android'] = {
+        'priority': 'high',
+    }
     if additional_data and isinstance(additional_data, dict):
         for k, v in additional_data.items():
-            data['data'][k] = v
-
-    headers = {'Authorization': 'key=%s' % server_key}
-    if tokens:
+            data['message']['data'][k] = v
+    for token in tokens:
+        data['message']['token'] = token
         r = requests.post(url, json=data, headers=headers)
+        resp = r.text
         try:
-            resp = r.json()
-            results = resp.get('results', [])
-            for item in results:
-                if 'error' in item and item.get('error') == 'NotRegistered':
-                    for token in tokens:
-                        new_data = {k: v for k, v in data.items() if k != 'registration_ids'}
-                        new_data['to'] = token
-                        new_r = requests.post(url, json=new_data, headers=headers)
-                        if 'NotRegistered' in new_r.text:
-                            FirebaseTokens.objects.filter(token=token).delete()
-
+            resp = json.loads(r.text)
         except Exception as e:
-            result['error'] = str(e)
-
-        result['data'] = data
-        result['result'] = r.text
-        result['tokens'] = tokens
-    else:
+            result['json_error_response'] = str(e)
+        result[token] = resp
+        if isinstance(result[token], dict):
+            if 'error' in result[token]:
+                if result[token]['error'].get('code') in (403, 404):
+                    FirebaseTokens.objects.filter(token=token).delete()
+                    result[token]['DELETED'] = True
+    if not tokens:
         result['fail'] = 'tokens not found'
+    result['url'] = url
+    result['app_id'] = app_id
     return JsonResponse(result, safe=False)
-
 
 def get_registered_users():
     """Получение списка всех зарегистрированных пользователей
     """
-    r = requests.post('%s/api/registered_users' % EJABBERD_LOCAL, json={'host': settings.JABBER_DOMAIN}, verify=False)
+    r = requests.post('%s/api/registered_users' % JABBER_API, json={'host': settings.JABBER_DOMAIN}, verify=False)
     return r.json()
 
 @csrf_exempt
@@ -491,9 +508,5 @@ def notification(request, app_id: int):
     """Апи-метод для отправки пуша
        :param app_id: ид приложения
     """
-    if app_id == '8800':
-        return notification_helper(request, skey=FIREBASE_SERVER_KEY_8800)
-    elif app_id == '223':
-        return notification_helper(request, skey=FIREBASE_SERVER_KEY_223)
-    return notification_helper(request)
+    return notification_helper(request, app_id=app_id)
 

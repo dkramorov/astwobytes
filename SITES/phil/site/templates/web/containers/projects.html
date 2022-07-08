@@ -1,16 +1,14 @@
 {% load mtags %}
 <div class="container projects">
-  <div class="row">
-    <div class="recent-case align-center">
-      <div class="col-lg-12">
-        <div class="row">
 
-          <div class="col-md-12 pb30 portfolio_title_container">
-            <div class="portfolio_title">
-              {{ container.description|safe }}
-            </div>
+    <div class="row sticky_container">
+      <div class="col-lg-12">
+        <div class="article3">
+          <div class="title">
+            {{ container.description|safe }}
           </div>
-          <div class="clearfix"></div>
+        </div>
+
 {% comment %}<!--
           <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-12 col-xs-12">
             <div class="heading align-center">
@@ -26,7 +24,6 @@
             </div>
           </div>
 -->{% endcomment %}
-        </div>
         <div class="row">
           {% for block in blocks %}
             {% if not block.tag %}
@@ -41,7 +38,7 @@
                 <div class="case-item-wrap">
                   {% for block in block_container %}
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                      <div class="case-item">
+                      <div class="case-item align-center">
                         <a class="case-item__thumb" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
                           <img loading="lazy" src="{% imagine block.img '600x400' block.get_folder True %}" alt="{{ block.description|textize }}">
                           <table>
@@ -94,5 +91,4 @@
         {% endwith %}
       </div>
     </div>
-  </div>
 </div>

@@ -1,0 +1,35 @@
+{% load mtags flatcontent_tags tags %}
+<div class="container project project2">
+  <div class="row pt60 pb30 sticky_container">
+    <div class="clearfix"></div>
+    <div class="sticky_container">
+      {% if blocks.0.link %}
+        <div class="button">
+          <a href="{{ blocks.0.link }}" class="square_button">{{ blocks.0.title }}</a>
+        </div>
+      {% else %}
+        <div class="button">
+          <a href="javascript:void();" class="square_button">Order design</a>
+        </div>
+      {% endif %}
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 images">
+        {% for block in blocks %}
+          {% if block.img %}
+            <div class="project_img">
+              <img src="{{ block.imagine }}" alt="{{ block.name|quotes2apostrophe }}" loading="lazy" />
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</div>
+{% comment %}<!-- Выводим другие проекты раздела -->{% endcomment %}
+{% with request|dynamic_portfolio2 as portfolio %}
+{% for item in portfolio %}
+  {% if item.menu.link in request.META.PATH_INFO %}
+    {% include "web/tags/dynamic_portfolio_helper.html" %}
+  {% endif %}
+{% endfor %}
+{% endwith %}

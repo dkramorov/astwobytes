@@ -107,7 +107,6 @@ class Command(BaseCommand):
                 'group': group,
             })
         write_dest(dest_xml=xml, users=users)
-
         print(json_pretty_print(users))
 
 def check_fs_users_db_version():

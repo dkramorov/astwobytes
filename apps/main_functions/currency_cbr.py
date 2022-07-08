@@ -119,7 +119,7 @@ class CBRCurrencyParser(xml.sax.ContentHandler):
 
 def get_currency_cbr(date=None,
                      url: str = None,
-                     cache_time: int = 60 * 60 * 5,
+                     cache_time: int = 60 * 30,
                      force_new: bool = False):
     """Получить курс валют за дату
        :param date: дата за которую запрашиваем курс
@@ -144,6 +144,16 @@ def get_currency_cbr(date=None,
         return inCache
 
     currency_file = 'cbr_currency.json'
+    # проверка на альтернативный адрес получения курса валют
+    all_settings = settings.FULL_SETTINGS_SET
+    if 'ALT_CBR_URL' in all_settings:
+        url = all_settings['ALT_CBR_URL']
+        print('ALT_CBR_URL', url)
+        r = requests.get(url)
+        resp = r.json()
+        cache.set(cache_var, resp, cache_time)
+        return resp
+
     # Ввели твари проверку на бота
     urla = 'https://www.cbr.ru/scripts/XML_daily.asp'
     if url:

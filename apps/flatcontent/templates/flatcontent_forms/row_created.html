@@ -1,0 +1,8 @@
+<div class="form-group">
+  <label class="col-lg-2 control-label">
+    <span class="label_for_translate row_created_label" attr-class_name="row_created_label" attr-edit_mode="popup" attr-placement="bottom">Дата создания</span>
+  </label>
+  <div class="col-lg-10">
+    <input type="text" placeholder="Дата создания" class="form-control datetime" name="created" value="{% if row.created %}{{ row.created }}{% endif %}" autocomplete="off">
+  </div>
+</div>

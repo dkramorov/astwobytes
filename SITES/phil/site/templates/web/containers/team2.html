@@ -1,0 +1,51 @@
+{% load mtags %}
+<div class="container article3 team2">
+  <div class="row pt120 mb30">
+    <div class="col-lg-12">
+      <div class="title">
+        {% for block in blocks|filter_by_tag:'info' %}
+        <h4 class="heading-title">{{ block.name }}</h4>
+{% comment %}<!-- Движущееся при наведении подчеркивание
+        <div class="heading-line">
+          <span class="short-line"></span>
+          <span class="long-line"></span>
+        </div>
+-->{% endcomment %}
+        <div class="heading-text">{{ block.html|safe }}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for block in blocks|filter_by_tag %}
+      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="teammembers-item">
+          <img loading="lazy" src="{% imagine block.img '600x600' block.get_folder True %}" alt="{{ block.name|quotes2apostrophe }}">
+          <h5 class="teammembers-item-name">{{ block.name }}</h5>
+          <div class="teammembers-item-prof">{{ block.html|safe }}</div>
+{% comment %}<!--
+          <div class="socials">
+            <a href="" class="social__item">
+              <img loading="lazy" src="svg/circle-facebook.svg" alt="facebook">
+            </a>
+            <a href="" class="social__item">
+              <img loading="lazy" src="svg/twitter.svg" alt="twitter">
+            </a>
+          </div>
+-->{% endcomment %}
+        </div>
+      </div>
+    {% endfor %}
+    <div class="clearfix"></div>
+    <br><br>
+    {% for block in blocks|filter_by_tag:'info' %}
+      <div class="button align-center">
+        <a href="{{ block.link }}">
+          <span class="text">{{ block.title }}</span>
+          <i class="seoicon-right-arrow"></i>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>

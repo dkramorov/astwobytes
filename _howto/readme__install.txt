@@ -199,3 +199,13 @@ MAILTO='dkramorov@mail.ru'
 # новое django
 */2 * * * * /home/v/vallom/vallomcrm_new/public_html/env/bin/python /home/v/vallom/vallomcrm_new/public_html/manage.py jdocs_get_lots --get_lots
 
+
+
+
+WARNING: The scripts pip, pip2 and pip2.7 are installed in '/home/a/a223223/.local/bin' which is not on PATH.
+export PYTHONPATH="${PYTHONPATH}:/home/a/a223223/.local/bin"
+export PATH="${PATH}:/home/a/a223223/.local/bin"
+pip --user install MySQL-python
+pip install MySQL-python config --global http.sslVerify false
+pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org MySQL-python
+

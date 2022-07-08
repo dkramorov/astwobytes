@@ -10,7 +10,10 @@
     <ul>
       {% for menu in menus %}
         <li class="{% if menu.sub %}menu-item-has-children{% endif %} {% if forloop.counter > 7 %}hidden{% endif %}">
-          <a href="{{ menu.link }}">{{ menu.name }}</a>
+          <a href="{{ menu.link }}">
+            {% if menu.icon %}<span class="kr kr-{{ menu.icon }}"></span>{% endif %}
+            {{ menu.name }}
+          </a>
           {% if menu.sub %}
             <ul class="category-mega-menu">
               {% for item in menu.sub %}

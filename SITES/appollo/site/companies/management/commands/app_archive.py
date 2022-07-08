@@ -9,11 +9,11 @@ from django.conf import settings
 from django.db.models import Count
 
 from apps.flatcontent.models import Containers, Blocks
-from apps.main_functions.files import make_folder, drop_folder, open_file
+from apps.main_functions.files import make_folder, drop_folder, open_file, full_path
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.files import open_file, ListDir, check_path, copy_file
 from apps.main_functions.functions import object_fields
-from apps.main_functions.fortasks import search_process
+from apps.main_functions.fortasks import search_process, search_binary
 from apps.telegram.telegram import TelegramBot
 from apps.addresses.models import Address
 
@@ -114,11 +114,10 @@ class Command(BaseCommand):
             f.write(json.dumps({
                 'version': version + 1
             }))
+        fp = full_path(app_json_folder)
+        tar = search_binary('tar')
+        os.system('%s -czf %s/companies_db_helper.tar.gz -C %s .' % (tar, settings.MEDIA_ROOT, fp))
         TelegramBot().send_message('Обновление завершено, версия %s=>%s' % (version, version+1))
-
-        #fp = full_path(app_folder)
-        #tar = search_binary('tar')
-        #os.system('%s -czf %s/app4.tar.gz -C %s .' % (tar, settings.MEDIA_ROOT, fp))
 
 def fill_contacts(json_obj: dict):
     """Заполнение контактов

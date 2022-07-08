@@ -1,6 +1,13 @@
 {% extends "core/base.html" %}
 
+{% comment %}<!--
+Используется на страничке в режиме дерева
+-->{% endcomment %}
+
+
 {% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+
 {% if is_tree %}
   <link rel="stylesheet" href="/static/jstree/themes/default/style.min.css" />
   <style type="text/css">
@@ -65,6 +72,8 @@
 <!-- В любом случае оставляем логику,
      т/к на is_tree она используется
      для редактирования рубрик -->
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+
 <script src="/static/redactor/jquery.browser.js"></script>
 <script src="/static/redactor/redactor.js"></script>
 <script src="/static/admin/js/parsley.min.js"></script>
@@ -269,6 +278,16 @@
       var select = new $.upload.select($('#upload-select-files'), settings),
       drop   = new $.upload.drop($('#upload-drop-files'), settings);
     {% endif %}
+
+    $("input.datetime").datepicker({
+      onSelect: function (fd, d, calendar) {
+        calendar.hide();
+      },
+      todayButton: new Date(),
+      dateFormat: 'dd-mm-yyyy',
+      timepicker: true,
+      timeFormat: 'hh:ii',
+    });
   });
   function update_links(r){
     {% if is_tree %}

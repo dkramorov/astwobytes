@@ -234,7 +234,7 @@ table.two_col tr td.noborder {
         </p>
       </td>
       <td class="white_bg">
-        <p>20</p>
+        <p>{{ polis.days }}</p>
       </td>
     </tr>
   </table>
@@ -247,7 +247,7 @@ table.two_col tr td.noborder {
         </p>
       </td>
       <td colspan="2">
-        <p>UNITED STATES OF AMERICA</p>
+        <p>Турция</p>
       </td>
     </tr>
   </table>
@@ -375,10 +375,11 @@ table.two_col tr td.noborder {
     </tr>
 -->{% endcomment %}
     {% for purchase in order.purchases_set.all %}
+    {% if purchase.product_code != 'markup' %}
     <tr>
       <td width="50">
         <p>
-          B
+          {% if 'G' in purchase.product_code %}G1{% else %}B{% endif %}
         </p>
       </td>
       <td>
@@ -388,16 +389,17 @@ table.two_col tr td.noborder {
       </td>
       <td>
         <p>
-          {{ purchase.product_price|money_format }} EUR
+          {% if 'G' in purchase.product_code %}до {% endif %}{{ purchase.product_price|money_format }} EUR
         </p>
       </td>
       <td>
-        <p>-</p>
+        <p>As Agreed</p>
       </td>
       <td>
         <p>-</p>
       </td>
     </tr>
+    {% endif %}
     {% endfor %}
   </table>
 
@@ -409,7 +411,7 @@ table.two_col tr td.noborder {
         </p>
       </td>
       <td class="yellow_bg">
-        <p>44636</p>
+        <p>{{ order.created|date:'d.m.Y' }}</p>
       </td>
       <td width="50">
         <p>
@@ -417,7 +419,7 @@ table.two_col tr td.noborder {
         </p>
       </td>
       <td class="green_bg">
-        <p>44652</p>
+        <p>{{ polis.from_date|date:'d-m-Y' }}</p>
       </td>
       <td>
         <p>
@@ -425,7 +427,7 @@ table.two_col tr td.noborder {
         </p>
       </td>
       <td width="50" class="white_bg">
-        <p>17</p>
+        <p>{{ sdate_days }}</p>
       </td>
     </tr>
   </table>
@@ -438,7 +440,7 @@ table.two_col tr td.noborder {
         </p>
       </td>
       <td class="green_bg">
-        <p>44652</p>
+        <p>{{ polis.from_date|date:'d-m-Y' }}</p>
       </td>
       <td width="50">
         <p>
@@ -446,7 +448,7 @@ table.two_col tr td.noborder {
         </p>
       </td>
       <td class="blue_bg">
-        <p>44671</p>
+        <p>{{ polis.to_date|date:'d-m-Y' }}</p>
       </td>
       <td>
         <p>
@@ -454,7 +456,7 @@ table.two_col tr td.noborder {
         </p>
       </td>
       <td width="50" class="white_bg">
-        <p>20</p>
+        <p>{{ polis.days }}</p>
       </td>
     </tr>
   </table>

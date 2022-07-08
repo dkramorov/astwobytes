@@ -1,0 +1,4 @@
+<div class="info_logo">{% include "web/components/logo.html" %}</div>
+{% if containers.main.tags.info_chat %}
+  <a class="info_chat" href="{% if containers.main.tags.info_chat.link %}{{ containers.main.tags.info_chat.link }}{% else %}javascript:void(0);{% endif %}"><span>{{ containers.main.tags.info_chat.name }}</span></a>
+{% endif %}

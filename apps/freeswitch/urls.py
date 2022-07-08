@@ -43,4 +43,6 @@ urlpatterns = [
     path('sms_service/say_code/', views.say_code, name='say_code'),
     # api для синхронизации
     path('personal_users/sync/', views.sync_personal_users, name='sync_personal_users'),
+    # Обновить пользователей fs из jabber (пользователи приложения)
+    path('sync_jabber2fs/', views.sync_jabber2fs, name='sync_jabber2fs'),
 ]

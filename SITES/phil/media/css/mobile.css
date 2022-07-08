@@ -1,5 +1,5 @@
-body {
-  padding-top: 130px;
+.only_desktop {
+  display: block;
 }
 .only_mobile {
   display: none;
@@ -7,9 +7,13 @@ body {
 .clearfix_desktop {
   clear: both;
 }
+.clearfix_pad {
+  clear: both;
+}
 .clearfix_mobile {
   clear: none;
 }
+
 /* header */
 #site-header .mobile {
   display: none;
@@ -136,22 +140,53 @@ body {
   padding-top: 0 !important;
 }
 
-.article,
-.features-item *,
-#team .simple_article,
-.simple_contacts .row.pb30 *,
-.logo-text {
-  font-weight: 300;
-}
 .wechat {
   max-width: 200px;
 }
+
+@media (max-width: 1199px){
+  .clearfix_desktop {
+    clear: none;
+  }
+  .clearfix_mobile {
+    clear: both;
+  }
+}
+
+@media (max-width: 1023px){
+  .header nav {
+    padding: 0px 0 5px 0;
+  }
+  .info_chat {
+    margin-left: 5px;
+  }
+  .nav-add {
+    margin: 0 5px 0 0;
+  }
+
+  .article2 .big_text,
+  .article3 .title {
+    padding: 0 20px;
+  }
+  .article3 .title:before {
+    left: 0;
+  }
+  .article3 .flex {
+    display: block;
+  }
+  .article3 .desc {
+    width: 100%;
+  }
+  .team_details2 .button {
+    position: relative;
+    top: auto;
+  }
+}
+
+/* Стили под мобилку */
 @media (max-width: 799px) {
   html {
     font-family: "GillSans", sans-serif;
-  }
-  body {
-    padding-top: 0;
   }
   .flex_column {
     flex-direction: column;
@@ -163,11 +198,42 @@ body {
   .only_mobile {
     display: block;
   }
-  .clearfix_desktop {
-    clear: none;
+  .variative_header .flex {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
   }
-  .clearfix_mobile {
-    clear: both;
+  .variative_header .flex .phil_logo{
+    -webkit-flex: auto;
+    flex: auto;
+  }
+  .variative_header nav {
+    height: 100px;
+  }
+
+  .variative_header nav ul {
+    width: 100%;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+  .variative_header nav ul li {
+    -webkit-flex: 25%;
+    flex: 25%;
+    text-align: center;
+    height: 40px;
+  }
+
+  .primary-menu-menu > li > a{
+    font-size: 15px;
   }
   /* simple_contacts, simple_clients, team */
   .article .portfolio_title:before,
@@ -230,6 +296,7 @@ body {
     display: block;
   }
   #site-header {
+    display: none; /* Пока убираем - другая реализация будет */
     background-color: #651d74;
     padding: 10px;
   }
@@ -410,3 +477,25 @@ body {
   }
 }
 
+/* Под телефон */
+@media (max-width: 570px){
+  .header_logo .phil_logo img {
+    width: 100px;
+  }
+  .info_chat {
+    font-size: 13px;
+    margin-left: 0;
+    padding: 5px 10px;
+  }
+  .nav-add {
+    margin: 0px;
+    font-size: 13px;
+  }
+
+  .article2 .normal_text {
+    display: none;
+  }
+  .article2 .big_text img {
+    left: 0;
+  }
+}

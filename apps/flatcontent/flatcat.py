@@ -190,12 +190,15 @@ def get_catalogue_products_count(tag: str,
 def get_catalogue_lvl(request,
                       container_id: int,
                       cat_id: int = None,
+                      pass_top_solo: bool = False,
                       cache_time: int = 300,
                       force_new: bool = False):
     """Вытаскиваем jstree категории (подкатегории)
        :param request: HttpRequest
        :param container_id: ид контейнера
        :param cat_id: ид категории
+       :param pass_top_solo: пропускать верхний уровень
+                             и отдавать следующий, если это одна категория
        :param cache_time: время кэширования
        :param force_new: получить каталог без кэша
     """
@@ -211,13 +214,25 @@ def get_catalogue_lvl(request,
     result = []
     if not container_id or not container_id.isdigit():
         return []
+
+    query = Blocks.objects.filter(is_active=True,
+                                  container=container_id)
+
     if not cat_id:
-        menus = Blocks.objects.filter(container=container_id, parents='').order_by('position')
+        menus = query.filter(parents='')
     else:
         if cat_id.isdigit():
-            menus = Blocks.objects.filter(container=container_id, parents__endswith='_%s' % cat_id).order_by('position')
+            menus = query.filter(parents__endswith='_%s' % cat_id)
         else:
-            menus = Blocks.objects.filter(container=container_id, parents='').order_by('position')
+            menus = query.filter(parents='')
+
+    menus = menus.order_by('position')
+
+    # Если 1 рубрики выводить не надо, ищем ниже
+    if pass_top_solo:
+        while len(menus) == 1:
+            new_parents = '%s_%s' % (menus[0].parents if menus[0].parents else '', menus[0].id)
+            menus = query.filter(parents=new_parents).order_by('position')
 
     prepare_jstree(result, menus, lazy=True, fill_href=True)
 
@@ -283,10 +298,10 @@ def get_catalogue(request,
         new_parents = ''
         if count > MY_FAT_HIER:
             pass_cache = True
-            cats = query.filter(parents=new_parents)
+            cats = query.filter(parents=new_parents).order_by('position')
             while len(cats) == 1:
                 new_parents = '%s_%s' % (cats[0].parents if cats[0].parents else '', cats[0].id)
-                cats = query.filter(parents=new_parents)
+                cats = query.filter(parents=new_parents).order_by('position')
 
         menu_queryset = []
         recursive_fill(cats, menu_queryset, new_parents)

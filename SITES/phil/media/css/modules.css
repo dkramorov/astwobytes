@@ -154,7 +154,7 @@
   .header.absolute {
     position: absolute; }
   .header nav {
-    padding: 10px 0; }
+    padding: 10px 0 5px 0; }
     .header nav .menu {
       display: inline-block; }
       .header nav .menu .menu-item {
@@ -274,7 +274,8 @@
 
 .nav-add {
   padding: 10px 0;
-  margin: 0; }
+  margin: 0 20px 0 0;
+  min-width: 85px;}
   .nav-add li {
     display: inline-block; }
     .nav-add li.cart {
@@ -335,8 +336,7 @@
  }
 
   .logo img {
-    float: left;
-    margin-right: 15px; }
+    float: left;}
   .logo .logo-text {
     float: left;
     margin-top: 10px;
@@ -348,6 +348,18 @@
     .logo .logo-text .logo-sub-title {
       font-size: 10px;
       text-transform: uppercase; }
+  /* Логотип сверху, над меню */
+  .header_logo .phil_logo .full-block-link {
+    position: relative;
+  }
+  .header_logo .phil_logo .logo {
+    text-align: center;
+  }
+  .header_logo .phil_logo img {
+    padding-top: 10px;
+    max-height: 100px;
+    float: none;
+  }
 
 .user-menu {
   position: absolute;
@@ -1754,6 +1766,9 @@
     color: #582371;
   }
 }
+.projects2 .row.sticky_container {
+  margin: 0;
+}
 .project .project_desc {
   color: #582371;
 }
@@ -1774,7 +1789,25 @@
   margin: 15px 0;
   text-align: center;
 }
+.projects2 table .text {
+  padding: 0 30px;
+}
+.project2 .button {
+  position: absolute;
+  top: -15px;
+  right: 15px;
+  z-index: 100;
+}
+.project2 .sticky_container {
+  position: relative;
+}
 @media (max-width: 799px) {
+  .project2 .button {
+    position: relative;
+    top: auto;
+    right: 20px;
+    text-align: right;
+  }
   .project #portfolio_mini_menu_container li {
     width: 33%;
     display: inline-block;
@@ -1786,6 +1819,7 @@
     width: 100%;
   }
 }
+
 /* --- Меню для проекта --- */
 .sidebar .primary-menu-menu,
 .project .images {
@@ -4716,8 +4750,11 @@ Main Components
   .teammembers-item img {
     margin-bottom: 30px; }
   .teammembers-item .teammembers-item-name {
+    font-size:1.3em;
+    font-weight: bold;
     margin-bottom: 5px; }
   .teammembers-item .teammembers-item-prof {
+    color: #582371;
     margin-bottom: 15px; }
   .teammembers-item .socials .social__item {
     margin-left: 10px; }
@@ -5945,3 +5982,127 @@ Main Components
   }
 }
 */
+.article2 .normal_text img {
+  display: none;
+}
+.article2 .normal_text,
+.article3 .desc {
+  color: #582371;
+  text-align: left;
+  margin: 0;
+  padding: 7px 0;
+}
+.article2 .big_text p,
+.article2 .big_text {
+  color: #e53863;
+  text-align: left;
+  margin-top: 20px;
+  font-size: 1.5em;
+  line-height: 1.5em;
+  font-weight: bold;
+}
+.article2 .big_text img {
+  position: absolute;
+  left:-10px;
+  top: -40px;
+  width: 80px;
+}
+.article2 .normal_text:before,
+.article3 .title:before {
+  content: " ";
+  position: absolute;
+  top: 3px;
+  left: -20px;
+  display: block;
+  width: 2px;
+  height: 40px;
+  font-weight: bold;
+  background: -moz-linear-gradient(top, #582371 0%, #e53863 60%);
+  background: -webkit-linear-gradient(top, #582371 0%,#e53863 60%);
+  background: -o-linear-gradient(top, #582371 0%,#e53863 60%);
+  background: -ms-linear-gradient(top, #582371 0%,#e53863 60%);
+  background: linear-gradient(top, #582371 0%,#e53863 60%);
+}
+.article3 .title {
+  color: #582371;
+  text-align: left;
+  font-size: 2em;
+  position: relative;
+  margin-bottom: 30px;
+}
+.article3 .subtitle {
+  color: #582371;
+  padding-bottom: 30px;
+}
+.article3 .flex {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.article3 .desc {
+  width: calc(100% - 160px);
+}
+.article3 .button {
+  align-self: flex-end;
+}
+.projects2 {
+  padding-top: 0;
+}
+.projects2 .case-item-wrap > div {
+  padding: 0 5px;
+}
+.projects2 .case-item {
+  margin-bottom: 10px;
+}
+.projects2 .case-item .case-item__thumb {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.projects2 .case-item .case-item__thumb img {
+  width: 100%;
+}
+.projects2 .button,
+.team2 .button {
+  position: relative;
+  padding-bottom: 30px;
+  font-weight: bold;
+}
+.projects2 .button i,
+.team2 .button i {
+  background: -moz-linear-gradient(top, #e53863 60%, #582371 100%);
+  background: -webkit-linear-gradient(top, #e53863 60%,#582371 100%);
+  background: -o-linear-gradient(top, #e53863 60%,#582371 100%);
+  background: -ms-linear-gradient(top, #e53863 60%,#582371 100%);
+  background: linear-gradient(top, #e53863 60%,#582371 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.team_details2 .title{
+  font-size: 1.5em;
+  font-weight: bold;
+}
+.team_details2 .title,
+.team_details2 .subtitle,
+.team_details2 .desc {
+  color: #582371;
+}
+.team_details2 .button {
+  align-self: flex-start;
+  position: relative;
+  top: -60px;
+}
+.team_details2 .thumb .line {
+  margin-top: 5px;
+  height: 2px;
+  width: 100%;
+  background: -moz-linear-gradient(left, #e53863 10%, #582371 100%);
+  background: -webkit-linear-gradient(left, #e53863 10%,#582371 100%);
+  background: -o-linear-gradient(left, #e53863 10%,#582371 100%);
+  background: -ms-linear-gradient(left, #e53863 10%,#582371 100%);
+  background: linear-gradient(left, #e53863 10%,#582371 100%);
+}
+.fwidth img {
+  width: 100%;
+}

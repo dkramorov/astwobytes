@@ -1,3 +1,6 @@
+https://asterisk-pbx.ru/wiki/freeswitch/sip/fs_sofia_xml
+
+поставил <action application="set" data="bypass_media=true"/> в диалплан и звук сразу при соединении
 
 sip_profiles/rostelecom.xml
 rtp-ip, sip-ip = 192.168.1.50 - какой адрес слушать

@@ -1,0 +1,20 @@
+{% load mtags %}
+{% for block in news %}
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+    <div class="case-item">
+      <a class="case-item__thumb" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+        <img loading="lazy" src="{% imagine block.img '600x400' block.get_folder True %}" alt="{{ block.description|textize }}">
+        <table>
+          <tr>
+            <td class="text"><h6>{{ block.name }}</h6></td>
+          </tr>
+          <tr>
+            <td class="text">{% if block.description %}{{ block.description|safe }}{% endif %}</td>
+          </tr>
+        </table>
+      </a>
+    </div>
+  </div>
+  {% if forloop.counter|divisibleby:3 %}<div class="clearfix_desktop"></div>{% endif %}
+  {% if forloop.counter|divisibleby:2 %}<div class="clearfix_mobile"></div>{% endif %}
+{% endfor %}

@@ -327,6 +327,7 @@ $(document).ready(function(){
       var is_active_checked = 'checked' ? row['is_active'] : '';
       container.find('input[name="is_active"]').prop('checked', is_active_checked);
       container.find('input[name="grab_img_by_url"]').val('');
+      container.find('input[name="created"]').val(row['created']);
 
       var translate_fields = ['name', 'title', 'description', 'keywords', 'class_name'];
       {% for domain in domains %}

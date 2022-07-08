@@ -1,0 +1,29 @@
+
+@font-face{
+  font-family:'Kristal';
+  src:url('/media/fonts/kristal.ttf');
+  font-weight:normal;
+  font-style:normal
+}
+.kr{
+  display:inline-block;
+  font:normal normal normal 14px/1 Kristal;
+  font-size:inherit;
+  text-rendering:auto;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale
+}
+i.kr, span.kr {
+  font-size: 22px !important;
+  color: #4b7ea9;
+}
+.kr-04_chimiya:before{content:"\370"} 
+.kr-02_karkas_bassein:before{content:"\372"} 
+.kr-07_atrakcion:before{content:"\373"} 
+.kr-01_bassein_oborudovanie:before{content:"\374"} 
+.kr-05_uchod:before{content:"\375"} 
+.kr-03_oborudovanie:before{content:"\376"} 
+.kr-09_spa:before{content:"\377"} 
+.kr-08_zashita:before{content:"\378"} 
+.kr-06_otdelka:before{content:"\379"} 
+.kr-010_sport:before{content:"\380"} 

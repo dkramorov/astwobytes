@@ -146,13 +146,22 @@ def update_blocks_vars(ftype, mh_vars):
         'submenu': ftype,
     })
 
-def prepare_jstree(data, menus, lazy: bool = False, fill_href: bool = False):
+def prepare_jstree(data,
+                   menus,
+                   lazy: bool = False,
+                   fill_href: bool = False):
     """Вспомогательная функция для построения
        меню из queryset в формат jstree
        :param data: результат
        :param menus: иерархия менюшек
        :param lazy: если хотим получать только текущий уровень
     """
+    custom_font = None
+    if menus:
+        container = menus[0].container
+        if container.custom_font:
+            custom_font = '%s %s-' % (container.custom_font[:2], container.custom_font[:2])
+
     for menu in menus:
         href = '#%s' % menu.id
         if fill_href:
@@ -170,6 +179,12 @@ def prepare_jstree(data, menus, lazy: bool = False, fill_href: bool = False):
             branch['li_attr'] = {
                 'class': 'non-active',
             }
+
+        #if menu.icon:
+        #   branch['icon'] = 'fa fa-%s' % menu.icon
+        if custom_font and menu.icon:
+            branch['icon'] = '%s%s' % (custom_font, menu.icon)
+
         data.append(branch)
 
         if hasattr(menu, 'sub'):
@@ -183,9 +198,12 @@ class Containers(Standard):
     """
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     description = models.TextField(blank=True, null=True)
-    tag = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    template_position = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    class_name = models.CharField(max_length=255, blank=True, null=True, db_index=True, verbose_name='Класс css')
+    tag = models.CharField(max_length=128, blank=True, null=True, db_index=True)
+    template_position = models.CharField(max_length=128, blank=True, null=True, db_index=True)
+    class_name = models.CharField(max_length=128, blank=True, null=True, db_index=True, verbose_name='Класс css')
+    custom_font = models.CharField(max_length=128,
+        blank=True, null=True, db_index=True,
+        verbose_name='Название своего шрифта (например, для иконок)')
 
     class Meta:
         verbose_name = 'Стат.контент - Контейнеры'

@@ -1,6 +1,7 @@
 {% load mtags %}
 {% ifequal tag "mainmenu" %}
 <nav id="primary-menu" class="primary-menu">
+
   <a href='javascript:void(0)' id="menu-icon-trigger" class="menu-icon-trigger showhide">
     <span class="mob-menu--title">Menu</span>
     <span id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: hidden">
@@ -32,6 +33,38 @@
           </ul>
         {% endif %}
       </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endifequal %}
+
+{% ifequal tag "newsmenu" %}
+<nav class="primary-menu">
+  <ul class="primary-menu-menu">
+    {% for menu in menus %}
+      {% if menu.link == '/news/' %}
+        <li{% ifequal menu.link request.META.PATH_INFO %} class="active"{% endifequal %}>
+          <a href="{{ menu.link }}">{{ menu.name }}</a>
+        </li>
+      {% else %}
+        <li{% if menu.link in request.META.PATH_INFO %} class="active"{% endif %}>
+          <a href="{{ menu.link }}">{{ menu.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+{% endifequal %}
+
+{% ifequal tag "mobilemenu" %}
+<nav>
+  <ul class="primary-menu-menu">
+    {% for menu in menus %}
+      <li{% ifequal menu.link request.META.PATH_INFO %} class="active"{% endifequal %}>
+        <a href="{% ifnotequal request.META.PATH_INFO '/' %}{% if '#' in menu.link and not menu.link == '#' %}/{% endif %}{{ menu.link }}{% else %}{{ menu.link }}{% endifnotequal %}"{% if menu.class_name %} class="{{ menu.class_name|textize }}"{% endif %}>{{ menu.name }}</a>
+      </li>
+      {% cycle '' '' '' '<div class="clearfix"></div>' %}
     {% endfor %}
   </ul>
 </nav>

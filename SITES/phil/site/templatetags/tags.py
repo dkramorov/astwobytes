@@ -137,7 +137,6 @@ def dynamic_portfolio(request):
     cache.set(cache_var, result, cache_time)
     return result
 
-
 @register.inclusion_tag('web/tags/portfolio_menu.html')
 def portfolio_menu(request):
     """Портфолио менюшка"""
@@ -183,4 +182,75 @@ def portfolio_menu(request):
         result['menus'] = menus
         cache.set(cache_var, result, cache_time)
     result['request'] = request
+    return result
+
+@register.filter(name = 'dynamic_portfolio2')
+def dynamic_portfolio2(request):
+    cache_time = 300
+    cache_var = '%s_dynamic_portfolio2' % (settings.PROJECT_NAME, )
+    domains = get_domains()
+    domain = get_domain(request, domains)
+    if domain:
+        cache_var += '_%s' % domain['pk']
+
+    inCache = cache.get(cache_var)
+    if inCache and not request.GET.get('force_new') and not request.GET.get('ignore_cache'):
+        return inCache
+
+    # Вытаскиваем менюшку portfolio
+    # Там лежат верхние разделы Identity, Illustration, Toys
+    # В каждом из разделов лежит по 1 привязанному контейнеру с нужным контентом
+    portfolio_menu = Blocks.objects.filter(tag='portfolio', link='/portfolio/', state=4).first()
+    if not portfolio_menu:
+        return {}
+    parents = '_%s' % portfolio_menu.id
+    if portfolio_menu.parents:
+        parents = '%s%s' % (portfolio_menu.parents, parents)
+    portfolio_menus = Blocks.objects.filter(parents=parents)
+    ids_menus = [item.id for item in portfolio_menus]
+    linked_containers = LinkContainer.objects.filter(block__in=ids_menus)
+    # Запоминаем привязки к portfolio_menus
+
+    containers = [cont.container for cont in linked_containers]
+    containers_blocks = Blocks.objects.select_related('container').filter(container__in=containers)
+
+    if domain:
+        domains = [domain]
+        get_translate(containers_blocks, domains)
+        translate_rows(containers_blocks, domain)
+        get_translate(containers, domains)
+        translate_rows(containers, domain)
+
+    portfolio = {}
+    for menu in portfolio_menus:
+        portfolio[menu.id] = {
+            'menu': menu,
+            'containers': {},
+        }
+        for link in linked_containers:
+            if link.block_id == menu.id:
+                portfolio[menu.id]['containers'][link.container.id] = {
+                  'container': link.container,
+                  'blocks': [],
+                }
+                cur_blocks = []
+                for block in containers_blocks:
+                    if block.container_id == link.container.id:
+                        #portfolio[menu.id]['containers'][link.container.id]['blocks'].append(block)
+                        cur_blocks.append(block)
+                menu_queryset = []
+                recursive_fill(cur_blocks, menu_queryset, '')
+                portfolio[menu.id]['containers'][link.container.id]['blocks'] = sort_voca(menu_queryset)
+    result = []
+    sorted_keys = []
+    for data in sorted(portfolio.values(), key=lambda x:x['menu'].position):
+        containers = []
+        for cont_key, cont_value in data['containers'].items():
+            containers.append(cont_value)
+        if not containers:
+            continue
+        data['containers'] = containers
+        result.append(data)
+
+    cache.set(cache_var, result, cache_time)
     return result

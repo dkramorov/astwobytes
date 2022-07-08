@@ -7,6 +7,8 @@ import fontforge
 # virtualenv --system-site-packages env либо без env - я предпочитаю без
 
 IMPORT_OPTIONS = ('removeoverlap', 'correctdir')
+#FONT_NAME = 'Funtya'
+FONT_NAME = 'Kristal'
 
 
 def loadConfig():
@@ -23,17 +25,19 @@ def loadConfig():
             'ascent': 800,
             'descent': 200,
             'em': 1000,
-            'family': 'Funtya',
+            'family': FONT_NAME,
         },
         'input': folder,
-        'output': ['funtya.ttf'],
+        'output': ['%s.ttf' % FONT_NAME.lower()],
         'glyphs': {
              #'0x41': '24-hours.svg',
              #'0x42': '360-degree.svg',
         },
     }
     icons_folder = os.listdir(folder)
-    indexes = [i + 370 for i in range(len(icons_folder))]
+
+    start_index = 370
+    indexes = [i + start_index for i in range(len(icons_folder))]
 
     for i, item in enumerate(icons_folder):
         index = indexes[i]
@@ -92,9 +96,9 @@ With the 0x prefix, Python can distinguish hex and decimal automatically.
         g = font.createMappedChar(int(k, 0))
         print(g)
 
-        css_styles.append('.fu-%s:before{content:"\%s"} ' % (icon_name, icon_key))
+        css_styles.append('.%s-%s:before{content:"\%s"} ' % (FONT_NAME[:2].lower(), icon_name, icon_key))
         html_icons.append(
-            '<div class="icon"><span class="fu fu-%s"></span> %s <em>%s</em></div>' % (icon_name, icon_name, k))
+            '<div class="icon"><span class="%s %s-%s"></span> %s <em>%s</em></div>' % (FONT_NAME[:2].lower(), FONT_NAME[:2].lower(), icon_name, icon_name, k))
 
         # Get outlines
         src = '%s.svg' % k
@@ -110,31 +114,32 @@ With the 0x prefix, Python can distinguish hex and decimal automatically.
                     v2 = tuple(v2)
                 setattr(g, k2, v2)
 
-    with open('funtya.css', 'w+', encoding='utf-8') as f:
+    with open('%s.css' % FONT_NAME.lower(), 'w+', encoding='utf-8') as f:
         f.write("""
 @font-face{
-  font-family:'Funtya';
-  src:url('funtya.ttf');
+  font-family:'%s';
+  src:url('%s.ttf');
   font-weight:normal;
   font-style:normal
 }
-.fu{
+.%s{
   display:inline-block;
-  font:normal normal normal 14px/1 Funtya;
+  font:normal normal normal 14px/1 %s;
   font-size:inherit;
   text-rendering:auto;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale
 }
-i.fu {
+i.%s {
   font-size: 28px !important;
-}""")
+}
+""" % (FONT_NAME, FONT_NAME.lower(), FONT_NAME[:2].lower(), FONT_NAME, FONT_NAME[:2].lower()))
         f.write('\n'.join(css_styles))
 
     with open('demo.html', 'w+', encoding='utf-8') as f:
         f.write("""<html>
 <head>
-<link href="funtya.css" rel="stylesheet"/>
+<link href="%s.css" rel="stylesheet"/>
 <style type="text/css">
 body {
   padding-left: 50px;
@@ -154,11 +159,11 @@ body {
 }
 </style>
 </head>
-<body>""")
+<body>""" % (FONT_NAME.lower(), ))
         f.write('\n'.join(html_icons))
         f.write("""</body>
 </html>""")
-    with open('font-funtya.json', 'w+', encoding='utf-8') as f:
+    with open('font-%s.json' % FONT_NAME.lower(), 'w+', encoding='utf-8') as f:
         mapping = {
             'results': [{
                 'id': v.split('.svg')[0].replace('-', '_'), 'text': v.split('.svg')[0] + ' ' + k

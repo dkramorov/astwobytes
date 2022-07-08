@@ -1,0 +1,21 @@
+Проблема 
+(env) iMac:locust_megafon jocker$ nslookup sezam-irk.ru
+Server:		8.8.8.8
+Address:	8.8.8.8#53
+
+Non-authoritative answer:
+Name:	sezam-irk.ru
+Address: 188.225.73.29
+
+(env) iMac:locust_megafon jocker$ ping sezam-irk.ru
+PING sezam-irk.ru (188.226.219.56): 56 data bytes
+Request timeout for icmp_seq 0
+
+Решение
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder
+
+Результат
+(env) iMac:locust_megafon jocker$ ping sezam-irk.ru
+PING sezam-irk.ru (188.225.73.29): 56 data bytes
+64 bytes from 188.225.73.29: icmp_seq=0 ttl=57 time=79.348 ms

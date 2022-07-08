@@ -1,0 +1,39 @@
+{% extends "skeleton.html" %}
+{% load flatcontent_tags mtags %}
+
+{% block extrahead %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block content %}
+  {% for container in page.containers %}
+    {% flatcontent request page container.container.tag %}
+  {% endfor %}
+
+<div class="container">
+  <div class="align-center mb30">
+    {% flatmenu request "newsmenu" %}
+  </div>
+</div>
+
+<div class="projects projects2">
+  <div class="row sticky_container">
+    <div class="recent-case align-center">
+      <div class="case-item-wrap" id="news_container">
+        {% include "web/news/news_grid.html" %}
+      </div>
+      <div class="clearfix"></div>
+
+      {% if raw_paginator.cur_page != raw_paginator.next_page and raw_paginator.onepage != 1 %}
+        <div class="button align-center">
+          <a class="show_more_news" href="javascript:void(0);" data-attr-next_page="{% if raw_paginator.next_page %}{{ raw_paginator.next_page }}{% else %}-1{% endif %}">
+            <span class="text">Show more</span>
+            <i class="fa fa-chevron-down"></i>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

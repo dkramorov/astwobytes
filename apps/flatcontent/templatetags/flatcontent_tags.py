@@ -22,16 +22,22 @@ if settings.IS_DOMAINS:
         translate_rows, )
 
 @register.inclusion_tag('web/flat_menu.html')
-def flatmenu(request, tag: str = None, containers: list = []):
+def flatmenu(request, tag: str = None, containers: list = [], copyfrom: str = None):
     """Все виды меню в шаблоне
        :param tag: Тег контейнера меню
-       :param containers: Контейнеры, которые нужно передать в шаблон"""
+       :param containers: Контейнеры, которые нужно передать в шаблон
+       :param copyfrom: взять менюшку по тегу copyfrom, вместо tag
+                        например, хотим вывести главное меню для мобилы и десктопа,
+                        зачем в этом случе вести разные менюшки?
+    """
     result = {}
     all_blocks = [] # Для перевода
     if not tag:
         return result
+    tag_code = copyfrom or tag # Выбираем по тегу или copyfrom - не дублируем кэш
+
     cache_time = 60 # 60 секунд
-    cache_var = '%s_flatmenu_%s' % (settings.PROJECT_NAME, tag)
+    cache_var = '%s_flatmenu_%s' % (settings.PROJECT_NAME, tag_code)
     if settings.IS_DOMAINS:
         domain = get_domain(request)
         if domain:
@@ -42,7 +48,7 @@ def flatmenu(request, tag: str = None, containers: list = []):
     if inCache and not ignore_cache:
         result = inCache
     else:
-        search_blocks = Blocks.objects.filter(container__tag=tag, state=4, is_active=True, container__is_active=True)
+        search_blocks = Blocks.objects.filter(container__tag=tag_code, state=4, is_active=True, container__is_active=True)
         for item in search_blocks:
             all_blocks.append(item)
         menu_queryset = []

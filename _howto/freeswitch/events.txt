@@ -1,0 +1,5 @@
+freeswitch@your_host> /event ALL
+
+event plain <listof events to log or all>
+event xml <listof events to log or all>
+event json <listof events to log or all>

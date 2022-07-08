@@ -1,0 +1,40 @@
+<div class="panel panel-default">
+  <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+    <input type="hidden" name="state" value="1" />
+    <input type="hidden" name="container" value="{{ container.id }}" />
+
+    <div class="panel-heading">
+      {% include "core/forms/default_singular_obj.html" %}
+    </div>
+    <div class="panel-body">
+      {% csrf_token %}
+      {% include "core/forms/row_name.html" %}
+      <div class="form-group">
+        <label class="col-lg-2 control-label">
+          <span class="label_for_translate row_flatnews_label" attr-class_name="row_flatnews_label" attr-edit_mode="popup" attr-placement="bottom">Новость / Блог</span>
+        </label>
+        <div class="col-lg-10">
+          <input type="text" placeholder="Стат. страничка" class="form-control" name="container_name" value="{% if row.container %}{{ row.container.name }} ({{ row.container.tag }}){% else %}{{ container.name }} ({{ container.tag }}){% endif %}" autocomplete="off" readonly>
+        </div>
+      </div>
+
+      {% include "flatcontent_forms/row_link.html" %}
+      {% include "flatcontent_forms/row_blocks_products.html" %}
+      {% include "flatcontent_forms/row_tag.html" %}
+      {% include "flatcontent_forms/row_html.html" %}
+      {% include "flatcontent_forms/row_new_window.html" %}
+      {% include "flatcontent_forms/row_icon.html" %}
+      {% include "flatcontent_forms/row_seo_fields.html" %}
+      {% include "flatcontent_forms/row_class_name.html" %}
+
+      {% include "core/forms/row_image.html" %}
+      {% include "core/forms/row_position.html" %}
+      {% include "core/forms/row_is_active.html" %}
+    </div>
+    {% if is_tree %}
+      {% include "flatcontent_forms/simple_save_button.html" %}
+    {% else %}
+      {% include "core/forms/footer_buttons.html" %}
+    {% endif %}
+  </form>
+</div>

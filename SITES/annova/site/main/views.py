@@ -113,6 +113,12 @@ def pdf_order(request,
         context['stamp'] = full_path('misc/soglasie_stamp_en.png')
         context['members'] = list(polis.polismember_set.all())
         context['members_count'] = len(context['members']) + 2
+        try:
+            created = datetime.date(polis.created.year, polis.created.month, polis.created.day)
+            context['sdate_days'] = (polis.from_date - created).days
+        except Exception as e:
+            print(e)
+            context['sdate'] = 1
     template = 'web/order/pdf/order_%s.html' % ptype
 
     return render_pdf(

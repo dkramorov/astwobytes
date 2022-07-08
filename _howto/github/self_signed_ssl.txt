@@ -1,0 +1,74 @@
+
+
+I'm not a huge fan of the [EDIT: original versions of the] existing answers, because disabling security checks should be a last resort, not the first solution offered. Even though you cannot trust self-signed certificates on first receipt without some additional method of verification, using the certificate for subsequent git operations at least makes life a lot harder for attacks which only occur after you have downloaded the certificate. In other words, if the certificate you downloaded is genuine, then you're good from that point onwards. In contrast, if you simply disable verification then you are wide open to any kind of man-in-the-middle attack at any point.
+
+To give a specific example: the famous repo.or.cz repository provides a self-signed certificate. I can download that file, place it somewhere like /etc/ssl/certs, and then do:
+
+# Initial clone
+GIT_SSL_CAINFO=/etc/ssl/certs/rorcz_root_cert.pem \
+    git clone https://repo.or.cz/org-mode.git
+
+# Ensure all future interactions with origin remote also work
+cd org-mode
+git config http.sslCAInfo /etc/ssl/certs/rorcz_root_cert.pem
+
+Note that using local git config here (i.e. without --global) means that this self-signed certificate is only trusted for this particular repository, which is nice. It's also nicer than using GIT_SSL_CAPATH since it eliminates the risk of git doing the verification via a different Certificate Authority which could potentially be compromised.
+
+--- MAC ---
+GIT_SSL_CAINFO=/Users/jocker/KVINT/ca-gitlab-prod-kvint-io.crt git clone https://gitlab.prod.kvint.io/integration/service-ubrr-calls.git
+git config http.sslCAInfo /Users/jocker/KVINT/ca-gitlab-prod-kvint-io.crt
+
+--- KVINT ---
+GIT_SSL_CAINFO=/opt/ca-gitlab-prod-kvint-io.crt git clone https://gitlab.prod.kvint.io/integration/service-ubrr-calls.git
+git config http.sslCAInfo /opt/ca-gitlab-prod-kvint-io.crt
+
+
+root@kvint-host-0:/opt/service-ubrr-calls-new/service-ubrr-calls# git remote set-url origin https://gitlab.prod.kvint.io/integration/service-ubrr-calls.git
+root@kvint-host-0:/opt/service-ubrr-calls-new/service-ubrr-calls# git pull
+Username for 'https://gitlab.prod.kvint.io': dkramorov@mail.ru
+Password for 'https://dkramorov@mail.ru@gitlab.prod.kvint.io': 
+Already up to date.
+
+
+ssh-keygen -t ed25519 -C "dkramorov@mail.ru"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/dkramorov
+
+chown 700 id_rsa
+ssh-add id_rsa
+
+
+Все время спрашивал парольку пока не поставил url = ssh://git@gitlab.prod.kvint.io:1122/integration/service-ubrr-calls.git
+
+root@kvint-host-0:/opt/service-ubrr-calls-new/service-ubrr-calls/.git# cat config
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = ssh://git@gitlab.prod.kvint.io:1122/integration/service-ubrr-calls.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[http]
+	sslCAInfo = /opt/ca-gitlab-prod-kvint-io.crt
+
+
+В докере для теста:
+RUN ssh -Tv git@gitlab.prod.kvint.io
+RUN ssh-keyscan -t rsa gitlab.prod.kvint.io >> ~/.ssh/known_hosts
+RUN ssh-keyscan -t rsa gitlab.prod.kvint.io | ssh-keygen -lf -
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+RUN GIT_SSL_CAINFO=/root/ca-gitlab-prod-kvint-io.crt git clone ssh://git@gitlab.prod.kvint.io:1122/kvint-services/service_core.git
+
+
+
+ssh-keygen -t rsa -b 4096 -C "dkramorov@mail.ru"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/dkramorov_rsa
+добавляем в github
+cat /root/.ssh/dkramorov_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCvwrDpZri4yxGnS1kXgnwf3XE3MTX46JxQ/94uAXydhnVmBmmsPwBEYa7CDderRYXjNAoaWbZ1oUatpepn5Ef0grTvVEipYgfVX0OzfL8sylsBcJrve9kAFliW15VAq1FGg1/8d3fmcft3vsmXejikfUUvwRkiyrTw2sr3AOapvAHvorxcpCxZjnPuvJVkwMOFFtwl4rJ83pml7vDSKOuyGeKZUiX318Ny/ftihWSLUjhIC2bIj9+tkG3gmyyJxu3to2rQswMv0Fh6n3CjRFj748JilzCuEw5/OMbGXYQh1hBkvs4lgP30gFuSX21uaVGOxdIicgYCxcKoOXqbqppj0rGpwEk3jZBpjh2wwPyqyu7OzrjQOPRK20w5VPrwdg/67RWQv1CpskmZQ3hz8cJzHS5lYg3h+CuL4y8++o8pR/47SuAp9prarzvev8M07X1+1yTrLJfZAl4K5+sgKXN7N7lJ1oPIOBTc3/5f5RfZkKFw1Es0I3DESR8GHZA+QVZGWNEOgY5l5BoRF/nIKzBZt9L78byHIid9efN1PGA9IeRtoMyC1sQ8H1vqtb2rL/MAgJgZNfPTuZe66f33ho/IYrIGKxaU95gb/Kh7f7lQ7trAag0NbIE+PeDqix/FyEaxq3tre3akRBfsZP5H52CT9Q+RbLWXPBav4clnZkiPbQ== dkramorov@mail.ru
+

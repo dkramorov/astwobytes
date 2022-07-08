@@ -259,6 +259,26 @@ def accumulate(blocks: list):
                 container.append(item)
     return container
 
+@register.filter(name='filter_by_tag')
+def filter_by_tag(blocks: list, tag: str = None):
+    """Оставлять блоки по тегу/без тега
+       Если тег не указан, оставляем без тега
+       :param blocks: блоки
+       :param tag: тег
+    """
+    if not blocks:
+        return []
+    container = []
+    for block in blocks:
+        if hasattr(block, 'tag'):
+            if not tag:
+                if not block.tag:
+                    container.append(block)
+            else:
+                if block.tag == tag:
+                    container.append(block)
+    return container
+
 @register.filter(name='pass_by_tag')
 def pass_by_tag(blocks: list, tag: str = None):
     """Пропускать блоки по тегу/без тега
@@ -276,6 +296,44 @@ def pass_by_tag(blocks: list, tag: str = None):
                     container.append(block)
             else:
                 if not block.tag == tag:
+                    container.append(block)
+    return container
+
+@register.filter(name='filter_by_img')
+def filter_by_img(blocks: list, has_image: bool = False):
+    """Оставлять блоки по картинке/без картинки
+       :param blocks: блоки
+       :param has_image: наличие картинки
+    """
+    if not blocks:
+        return []
+    container = []
+    for block in blocks:
+        if hasattr(block, 'img'):
+            if has_image:
+                if block.img:
+                    container.append(block)
+            else:
+                if not block.img:
+                    container.append(block)
+    return container
+
+@register.filter(name='pass_by_img')
+def pass_by_img(blocks: list, has_image: bool = False):
+    """Пропускать блоки по картинке/без картинки
+       :param blocks: блоки
+       :param has_image: наличие картинки
+    """
+    if not blocks:
+        return []
+    container = []
+    for block in blocks:
+        if hasattr(block, 'img'):
+            if has_image:
+                if block.img:
+                    container.append(block)
+            else:
+                if not block.img:
                     container.append(block)
     return container
 

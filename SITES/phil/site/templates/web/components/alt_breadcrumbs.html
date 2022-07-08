@@ -1,0 +1,37 @@
+{% load flatcontent_tags %}
+{% if breadcrumbs %}
+<div class="stunning-header stunning-header-bg-breez" id="custom_breadcrumbs">
+  <div class="stunning-header-content container">
+
+    <ul class="breadcrumbs">
+      <li class="breadcrumbs-item">
+        <a href="/"><span class="fa fa-home"></span></a>
+        <i class="seoicon-right-arrow"></i>
+        {% for crumb in breadcrumbs %}
+          {% if not forloop.last %}
+            <a href="{{ crumb.link }}">{{ crumb.name }}</a>
+            <i class="seoicon-right-arrow"></i>
+          {% endif %}
+        {% endfor %}
+      </li>
+      <li class="breadcrumbs-item active">
+        {% for crumb in breadcrumbs %}
+          {% if forloop.last %}
+            <span>{{ crumb.name }}</span>
+          {% endif %}
+        {% endfor %}
+      </li>
+    </ul>
+    <div class="article3">
+      <h1 class="title">
+        {% block page_title %}{{ page.name }}{% endblock %}
+      </h1>
+      {% if page.html %}
+        <div class="subtitle">
+          {{ page.html|safe }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}

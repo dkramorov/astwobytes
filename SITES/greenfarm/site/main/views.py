@@ -123,10 +123,11 @@ def cat_lvl(request):
     """
     container_id = request.GET.get('container_id')
     cat_id = request.GET.get('node_id')
-    force_new = True if request.GET.get('force_new') else False
+    force_new = True if request.GET.get('force_new') or request.GET.get('ignore_cache') else False
     context = get_catalogue_lvl(request,
                                 container_id=container_id,
                                 cat_id=cat_id,
+                                pass_top_solo=True,
                                 force_new=force_new)
     selected_id = request.GET.get('selected_id')
     selected = Blocks.objects.filter(pk=selected_id).first()
@@ -145,7 +146,9 @@ def cat_lvl(request):
                 item['state']['selected'] = True
 
     for item in context:
-        item['icon'] = '/media/misc/crystall_icon.png'
+        if 'icon' not in item:
+            item['icon'] = '/media/misc/crystall_icon.png'
+    #    item['icon'] = 'fa fa-folder'
 
     return JsonResponse(context, safe=False)
 

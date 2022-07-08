@@ -1,1 +1,14 @@
+<script type="text/javascript">
+/* Контейнер тут должен быть {{ container.id }} => {{ container.custom_font }}
+   В настройках контейнера будем хранить шрифт
+   Можно проставить
+   window.default_container_font = "/static/admin/misc/font-awesome.json";
+   scripts/gen_font
+   префикс fa fa-icon заменяем на первые 2 буквы названия шрифта
+*/
+{% if container.custom_font %}
+  window.default_container_font = "/media/fonts/font-{{ container.custom_font }}.json";
+  window.default_container_font_prefix = "{{ container.custom_font }}".substr(0, 2) + " " + "{{ container.custom_font }}".substr(0, 2) + "-";
+{% endif %}
+</script>
 <script src="/static/admin/js/fontawesome_select2.js"></script>

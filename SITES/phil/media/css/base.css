@@ -1075,6 +1075,10 @@ h6, .h6 {
   color: #582371;
   line-height: 28px;
 }
+.contact_row .icon {
+  max-width: 40px;
+  display: inline-block;
+}
 .wechat {
   color: #582371;
   padding-top: 10px;
@@ -1140,6 +1144,7 @@ h6, .h6 {
 .upload_confirm {
   font-size: 14px;
 }
+.square_button,
 .upload_file_button,
 .submit_button {
   color: #fff;
@@ -1160,10 +1165,10 @@ h6, .h6 {
   margin-bottom: 8px;
 }
 #site-header .nav-add .lang a{
-  color: #a1a1a1;
+  color: #582371;
 }
 #site-header .nav-add .lang.active a{
-  color: #582371;
+  color: #e53863;
 }
 label.error {
   color: #d70000 !important;

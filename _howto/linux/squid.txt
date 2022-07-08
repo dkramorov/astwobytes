@@ -1,3 +1,8 @@
+wget https://rutracker.org --secure-protocol=TLSv1 --debug
+
+squid -v чтобы позырить как собран
+squid -k parse чтобы позырить результирующий конфиг
+
 -A POSTROUTING -o ppp+ -j MASQUERADE
 
 

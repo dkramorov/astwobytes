@@ -19,7 +19,9 @@
 		var menu = $(menu_container).children(".primary-menu-menu");
 		var menu_li = $(menu).find("li");
 		var showHideButton;
-		var mobileWidthBase = 1023;
+		//var mobileWidthBase = 1023;
+    var mobileWidthBase = 799;
+    //var mobileWidthBase = 1;
 		var bigScreenFlag = 2000; // a number greater than "mobileWidthBase"
 		var smallScreenFlag = 200; // a number less than "mobileWidthBase"
 
@@ -189,8 +191,7 @@
 				if(settings.responsive){
 					showMobileBar();
 					portraitMode();
-				}
-				else{
+				} else {
 					landscapeMode();
 				}
 			}

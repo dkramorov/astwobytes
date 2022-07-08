@@ -223,9 +223,18 @@ def order_form_cruise(request):
     }
 
     if request.method == 'POST':
-        for key in request.POST.keys():
+
+        already_safe = 1 if request.POST.get('already_safe') == '1' else None
+        polis_members = []
+        for key, value in request.POST.items():
             if key and key.startswith('name_'):
                 digit = key.split('_')[-1]
+                birthday = request.POST.get('birthday_%s' % digit)
+                if value and birthday:
+                    polis_members.append({
+                        'name': value,
+                        'birthday': str_to_date(birthday),
+                    })
                 kwargs['fields'].append({
                     'name': key,
                     'value': 'Застрахованный %s. Имя' % digit,
@@ -302,14 +311,21 @@ def order_form_cruise(request):
             ids_purchases = []
             price = 0
 
+            count = 0
+            # Галка страховщик +1
+            if already_safe:
+                count += 1
+            # Кол-во застрахованных + n
+            count += len(polis_members)
+
             for product in products:
-                price += product.price
+                price += product.price * count
                 purchase = Purchases.objects.create(
                     product_id=product.id,
                     product_name=product.name,
                     product_price=product.min_count, # страховая премия
                     product_code=product.code,
-                    count=1,
+                    count=count,
                     cost=product.price,
                     shopper=shopper,
                 )
@@ -351,7 +367,12 @@ def order_form_cruise(request):
 
             cruise = Blocks.objects.filter(pk=request.POST.get('cruise')).first()
             started = cruise.created
-            ended = date_plus_days(started, days=20) 
+
+            try:
+                days = int(cruise.description)
+            except ValueError:
+                days = 1
+            ended = date_plus_days(started, days=days) 
 
             polis = Polis.objects.create(
                 order = order,
@@ -362,14 +383,15 @@ def order_form_cruise(request):
                 insurance_sum = product.min_count,
                 insurance_program = product.stock_info,
                 from_date = started,
-                already_safe = 1 if request.POST.get('already_safe') == '1' else None,
-                to_date = ended)
-            for key, value in request.POST.items():
-                if key and key.startswith('name_'):
-                    digit = key.split('_')[-1]
-                    birthday = request.POST.get('birthday_%s' % digit)
-                    if value and birthday:
-                        PolisMember.objects.create(polis=polis, name=value, birthday=str_to_date(birthday))
+                already_safe = already_safe,
+                to_date = ended,
+                days=days)
+            for polis_member in polis_members:
+                PolisMember.objects.create(
+                    polis=polis,
+                    name=polis_member['name'],
+                    birthday=polis_member['birthday'],
+                )
 
         DefaultFeedback(request, **kwargs)
 

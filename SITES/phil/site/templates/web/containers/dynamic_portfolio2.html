@@ -1,0 +1,6 @@
+{% load mtags tags %}
+{% with request|dynamic_portfolio2 as portfolio %}
+  {% for item in portfolio %}
+    {% include "web/tags/dynamic_portfolio_helper.html" %}
+  {% endfor %}
+{% endwith %}

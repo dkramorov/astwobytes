@@ -2,6 +2,7 @@
 import hashlib
 from django.db import models
 
+from apps.main_functions.string_parser import kill_quotes
 from apps.main_functions.models import Standard
 
 class FirebaseTokens(Standard):
@@ -19,6 +20,11 @@ class FirebaseTokens(Standard):
     ip = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='IP пользователя')
+
+    def save(self, *args, **kwargs):
+        if self.login:
+            self.login = kill_quotes(self.login, 'int')
+        super(FirebaseTokens, self).save(*args, **kwargs)
 
 class Registrations(Standard):
     """Регистрации с приложений
@@ -55,6 +61,8 @@ class Registrations(Standard):
         default_permissions = []
 
     def save(self, *args, **kwargs):
+        if self.phone:
+            self.phone = kill_quotes(self.phone, 'int')
         super(Registrations, self).save(*args, **kwargs)
 
     def get_hash(self):

@@ -1,8 +1,8 @@
 {% load mtags %}
 <div class="logo">
-  <a href="/" class="full-block-link" title="{{ containers.main.tags.logo.title|quotes2apostrophe }}"></a>
-  <!-- not lazy -->
-  <img src="{{ containers.main.tags.logo.imagine }}" alt="{{ containers.main.tags.logo.description|quotes2apostrophe }}">
+  <a href="/" class="full-block-link" title="{{ containers.main.tags.logo.title|quotes2apostrophe }}">
+    <img src="{{ containers.main.tags.logo.imagine }}" alt="{{ containers.main.tags.logo.description|quotes2apostrophe }}" loading="lazy">
+  </a>
   <div class="logo-text">
 {% comment %}<!--
     <div class="logo-title">{{ containers.main.tags.logo.description }}</div>

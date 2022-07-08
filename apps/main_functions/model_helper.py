@@ -281,24 +281,34 @@ class ModelHelper:
         pos = obj['position__max']
         return pos or 1
 
-    def post_vars(self, pass_fields: list = None):
+    def post_vars(self, pass_fields: list = None, include_fields: list = None):
         """Получаем переменные из формы
            :param pass_fields: пропускаем поля
+           :param include_fields: системные поля, которые хотим отредактировать (created)
         """
         if not self.request:
             self.error = 1
             return None
 
+        if not include_fields:
+            include_fields = []
+
+        system_fields = ('id', 'created', 'updated', 'img')
         if not pass_fields:
             pass_fields = []
+        else:
+            # т/к обычно передается tuple
+            pass_fields = [field for field in pass_fields]
 
         types = object_fields_types(self.model())
         auto_now_fields = object_auto_now_fields(self.model)
-        pass_fields += ('id', 'created', 'updated', 'img')
+        pass_fields += [field for field in system_fields if field not in include_fields]
+
         row_vars = {}
 
         form_fields = [field.name for field in self.model().__class__._meta.fields
                        if not field.name in pass_fields]
+
         for key in form_fields:
             value = self.request.POST.get(key, '')
             if value:
@@ -326,9 +336,14 @@ class ModelHelper:
                     except ValueError:
                         value = None
                 elif types[key] in ('date', 'datetime'):
-                    if key in auto_now_fields:
-                        continue
-                    value = str_to_date(value)
+                    if key in include_fields:
+                        value = str_to_date(value)
+                        if not value:
+                            continue
+                    else:
+                        if key in auto_now_fields:
+                            continue
+                        value = str_to_date(value)
             else:
                 logger.warning('there is no field %s in %s model types' % (key, self.model))
             row_vars[key] = value
@@ -521,7 +536,8 @@ class ModelHelper:
             query = query.filter(**{key: value})
         return query
 
-    def standard_show(self, only_query: bool = False,
+    def standard_show(self,
+                      only_query: bool = False,
                       only_fields: list = None,
                       related_fields: list = ()):
         """Стандартный вывод данных по модели

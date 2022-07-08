@@ -737,7 +737,11 @@ def update_productscats(request, container, row):
                                             product_id=item)
 
 @login_required
-def edit_block(request, ftype: str, action: str, container_id: int, row_id: int = None, *args, **kwargs):
+def edit_block(request,
+               ftype: str,
+               action: str,
+               container_id: int,
+               row_id: int = None, *args, **kwargs):
     """Создание/редактирование блока"""
     mh_vars = blocks_vars.copy()
     update_blocks_vars(ftype, mh_vars)
@@ -826,7 +830,7 @@ def edit_block(request, ftype: str, action: str, container_id: int, row_id: int 
 
     elif request.method == 'POST':
         pass_fields = ('parents', )
-        mh.post_vars(pass_fields=pass_fields)
+        mh.post_vars(pass_fields=pass_fields, include_fields=['created'])
 
         # Специфическая операция - обновление сео-полей
         # редактируем, но прав нет, но есть сео-права

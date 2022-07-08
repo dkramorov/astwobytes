@@ -39,7 +39,7 @@ h1,h2 {
 }
 .main-title {
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
-	color:#fff;
+	color:#333;
 }
 .main-title h1{
 	font-size:44px;
@@ -262,7 +262,11 @@ a.button_medium_2:hover {background:#00aeef; color:#fff; border:2px solid  #00ae
 header {
 	padding:10px 0;
 	width:100%;
+/*
 	background:url(../img/line_header.png) repeat-x left bottom;
+*/
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
 }
 #logo a{
 	text-indent:-99999px;
@@ -275,8 +279,8 @@ header {
 }
 
 #top-nav ul{ float:right; margin:0; padding:0; margin-top:8px;  margin-right:-10px; font-weight:700; text-transform:uppercase;}
-#top-nav ul a { color:#fff; text-decoration:none;}
-#top-nav ul a:hover, #top-nav ul a#active{ color:#323232;}
+#top-nav ul a { color:#333; text-decoration:none;}
+#top-nav ul a:hover, #top-nav ul a#active{ color:#1ab9a7;;}
 #top-nav ul li {float:left; padding-left:10px; margin-right:10px }
 #top-nav ul li:first-child{ background:none;}
 #top-nav ul li a#purchase { color: #fff200;}
@@ -367,7 +371,7 @@ ul#footer-nav li {
 #survey_container {
 	background-color:#fff;
 	 box-shadow: 0 0 5px #777;
-	 margin-top:-300px;
+	 /*margin-top:-300px;*/
 	 margin-bottom:60px;
 	 z-index:9;
 	 position:relative;

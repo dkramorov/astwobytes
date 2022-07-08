@@ -56,7 +56,7 @@ def count_days_in_month(month, year):
        Год високосный, если он кратен 400 (если не сработало первое условие)"""
     return calendar.monthrange(year, month)[1]
 
-def str_to_date(date):
+def str_to_date(date: str):
     """Дату из строки в datetime
        :param date: дата строкой
     """

@@ -21,6 +21,11 @@
         <span class="item-text">Контент для всех страничек</span>
       </a>
     </li>
+    <li{% ifequal submenu 'flatnews' %} class="active"{% endifequal %} id="left_menu_flatcontent_app_flatnews">
+      <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatnews' %}">
+        <span class="item-text">Новости / блог</span>
+      </a>
+    </li>
     <li{% ifequal submenu 'flatcat' %} class="active"{% endifequal %} id="left_menu_flatcontent_app_flatcat">
       <a class="no-submenu" data-toggle="" href="{% url 'flatcontent:show_containers' 'flatcat' %}">
         <span class="item-text">Каталоги</span>

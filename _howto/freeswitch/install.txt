@@ -1,3 +1,34 @@
+https://freeswitch.org/confluence/display/FREESWITCH/FreeSWITCH+1.10.x+Release+notes
+-mod_av
+-mod_verto
+-mod_signalware
+
+# Видео так и не заработало mod_av https://github.com/signalwire/freeswitch/issues/175
+# apt install libavformat-dev libswscale-dev
+# apt-get install ffmpeg
+# apt install libavcodec-extra libavfilter-dev libavl-dev
+
+apt install liblua5.2-dev # установка 5.2 + ldconfig помогли (заново ./configure)
+
+sofia-sip + spandsp выведены во внешние зависимости
+checking for spandsp >= 3.0... configure: error: no usable spandsp; please install spandsp3 devel package or equivalent
+
+(git clone https://github.com/freeswitch/sofia-sip.git)
+git clone https://github.com/freeswitch/spandsp.git
+cd spandsp
+./bootstrap.sh
+./configure
+make
+make install
+Если все сработало, то можно возвращаться к компиляции из исходных кодов FreeSWITCH.
+Если после компиляции при запуске будет вылазить ошибка:
+    freeswitch: error while loading shared libraries: libspandsp.so.3: cannot open shared object file: No such file or directory
+То можно попробовать выполнить следующую команду:
+ldconfig
+
+
+
+
 качаем openssl-1.1.1
 устанавливаем в /opt
 ./config --prefix=/opt/openssl --openssldir=/usr/local/ssl
@@ -181,3 +212,97 @@ WS-BIND-URL     	sip:mod_sofia@X.X.X.X:5066;transport=ws
 Проблема № 3:
 
 Как оказалось данная связка не хочет работать на ОС Ubuntu 12.04 из-за бага в openssl, который описан тут: freeswitch.org/jira/browse/FS-6431, решается он обновлением пакета openssl.
+
+
+----- POSTGRESQL -----
+apt install libpq-dev
+apt install postgresql postgresql-contrib
+systemctl restart postgresql
+sudo -u postgres psql
+\l
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+
+\password postgres
+
+create user root with password 'postgres';
+ALTER USER root WITH PASSWORD 'new_password';
+alter user root createdb;
+
+mcedit /etc/postgresql/9.5/main/pg_hba.conf
+The problem is still your pg_hba.conf file*.
+
+This line:
+local   all             postgres                                peer
+
+Should be:
+local   all             postgres                                md5
+
+create database freeswitch;
+
+
+./configure --enable-core-pgsql-support
+
+    1.10 incompatible change
+
+    because now Fs1.10 packages are installed even if you still use the 1.8 repo, you better aware of an incompatible change:
+
+    pgsql is no more in core, but in aptly named mod_pgsql.
+
+    You MUST NOT load mod_pgsql in modules.conf.xml (do not work), but in a special additional xml file, in same "autoload_configs" directory.
+
+    Filename: pre_load_modules.conf.xml
+
+    <configuration name="pre_load_modules.conf" description="Modules">
+      <modules>
+        <!-- Databases -->
+        <!-- <load module="mod_mariadb"/> -->
+        <load module="mod_pgsql"/>
+      </modules>
+    </configuration>
+
+
+Таблицы внутренней БД (native db):
+
+../autoload_configs/db.conf.xml
+    group_data
+    limit_data
+    db_data
+   <param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password=''"/>
+
+таблицы FS CORE:
+../autoload_configs/switch.conf.xml
+<param name="core-db-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password='' options='-c client_min_messages=NOTICE'" />
+    aliases
+    calls
+    channels
+    complete
+    interfaces
+    nat
+    recovery
+    registrations
+
+Таблицы LCR (опционально):
+модуль mod_lcr
+../autoload_configs/lcr.conf.xml
+  <settings>
+   <param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password=''"/>
+  </settings>
+    carrier_gateway
+    carriers
+    lcr
+
+Таблицы SIP профилей(опция):
+Здесь будут храниться данные о регистрациях.
+../sip_profiles/internal.xml
+     <param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch  user=freeswitch password=''"/>
+    sip_authentication
+    sip_dialogs
+    sip_presence
+    sip_registrations
+    sip_shared_appearance_dialogs
+    sip_shared_appearance_subscriptions
+    sip_subscriptions

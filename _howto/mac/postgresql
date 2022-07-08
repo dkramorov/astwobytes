@@ -263,6 +263,9 @@ ALTER DATABASE name OWNER TO new_owner
 alter user sdvordev createdb;
 # alter user postgres createdb;
 
+# change password сменить пароль
+ALTER USER root WITH PASSWORD 'new_password';
+
 # -------------------------------
 django.db.utils.ProgrammingError:
 permission denied for relation django_migrations

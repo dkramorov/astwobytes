@@ -1045,6 +1045,10 @@
   var flat_tree = $("#flat_tree");
   if(flat_tree.length > 0) {
     var container_id = flat_tree.attr('data-attr-container_id');
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var ignore_cache = urlParams.get('force_new') || urlParams.get('ignore_cache');
+
     flat_tree.jstree({
       // state будет помнить состояние
       "plugins": ["wholerow"],
@@ -1055,11 +1059,15 @@
           "cache": false,
           "url" : "/cat/lvl/",
           "data" : function (node) {
-            return {
+            var json = {
               "node_id" : node.id == "#" ? "" : node.id,
               "container_id": container_id,
               "selected_id": window.cat_id,
             };
+            if (ignore_cache == "1"){
+              json['force_new'] = 1
+            }
+            return json;
           },
           "worker": false,
         }

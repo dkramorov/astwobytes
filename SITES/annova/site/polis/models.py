@@ -38,6 +38,8 @@ class Polis(Standard):
         blank=True, null=True, db_index=True,
         verbose_name='Тип полиса (для формы)'
     )
+    days = models.IntegerField(blank=True, null=True, db_index=True,
+        verbose_name='Количество дней')
     class Meta:
         verbose_name = 'Страховка - Полис'
         verbose_name_plural = 'Страховка - Полисы'

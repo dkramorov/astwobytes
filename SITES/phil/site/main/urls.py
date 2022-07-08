@@ -2,7 +2,8 @@
 from django.urls import path, include, re_path
 from django.conf.urls import url
 
-from . import views
+from apps.site.main import views
+from apps.site.news import views as news
 
 app_name = 'main'
 urlpatterns = [
@@ -27,6 +28,9 @@ urlpatterns = [
     path('shop/cart/', views.show_cart, name='show_cart'),
     path('shop/checkout/', views.checkout, name='checkout'),
 
-    path('api/ecom/1/orders', views.test),
+    # Новости
+    path('news/', news.show_news, name='news'),
+    url('^news/(?P<link>[a-z0-9_-]+)/$', news.show_news, name='news'),
+    url('^news/(?P<link>[a-z0-9_-]+)/(?P<sublink>[a-z0-9_-]+)/$', news.show_news, name='news'),
 ]
 

@@ -1,0 +1,87 @@
+{% load mtags %}
+{% for container in item.containers %}
+  <div class="container article3">
+    <div class="row pt60 pb30 sticky_container">
+      <div class="col-lg-12">
+        <div class="title">
+          {{ container.container.name }}
+        </div>
+      </div>
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="flex">
+          {% for top_block in container.blocks %}
+            {% if not top_block.tag %}
+              {% for block in top_block.sub %}
+                <div class="desc">
+                  {{ block.html|safe }}
+                  </div>
+              {% endfor %}
+            {% endif %}
+            {% if forloop.last %}
+              {% if block.link %}
+                <div class="button">
+                  <a href="{{ block.link }}" class="square_button">{{ block.title }}</a>
+                </div>
+              {% else %}
+                <div class="button">
+                  <a href="javascript:void();" class="square_button">Order design</a>
+                </div>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+  <div class="container-fluid projects projects2" id="projects2_container_{{ container.container.id }}">
+    <div class="row">
+      <div class="recent-case align-center">
+        <div class="case-item-wrap">
+          {% for top_block in container.blocks|pass_by_tag:"" %}
+            {% for block in top_block.sub %}
+              <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12{% if forloop.counter > 6 %} hidden{% endif %} projects2_imga">
+                <div class="case-item">
+                  <a class="case-item__thumb" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+                    <img loading="lazy" src="{% imagine block.img '600x400' block.get_folder True %}" alt="{{ block.description|textize }}">
+                    <table>
+                      <tr>
+                        <td class="text"><h6>{{ block.name }}</h6></td>
+                      </tr>
+                      <tr>
+                        <td class="text">{% if block.html %}{{ block.html|safe }}{% endif %}</td>
+                      </tr>
+                    </table>
+                  </a>
+                </div>
+              </div>
+              {% if forloop.counter|divisibleby:3 %}
+                <div class="clearfix_desktop"></div>
+              {% endif %}
+              {% if forloop.counter|divisibleby:2 %}
+                <div class="clearfix_mobile"></div>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="clearfix"></div>
+        {% if containers.blocks.0.link and containers.blocks.0.title %}
+          <div class="button align-center">
+            <a class="show_more_projects2" href="{{ containers.blocks.0.link }}" data-attr-container_id="projects2_container_{{ container.container.id }}">
+              <span class="text">{{ containers.blocks.0.title }}</span>
+              <i class="fa {% if containers.blocks.0.icon %}fa-{{ containers.blocks.0.icon }}{% else %}seoicon-right-arrow{% endif %}"></i>
+            </a>
+          </div>
+        {% else %}
+          <div class="button align-center">
+            <a class="show_more_projects2" href="javascript:void(0);" data-attr-container_id="projects2_container_{{ container.container.id }}">
+              <span class="text">Show more {{ container.container.name }}</span>
+              <i class="fa fa-chevron-down"></i>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endfor %}

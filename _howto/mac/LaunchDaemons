@@ -1,3 +1,47 @@
+launchctl remove com.apple.geod
+launchctl remove com.apple.distnoted.xpc.agent
+launchctl remove com.valvesoftware.steamclean
+launchctl remove com.valvesoftware.steam.ipctool
+launchctl remove com.apple.cloudphotod
+com.apple.SafariBookmarksSyncAgent
+com.apple.AddressBook.ContactsAccountsService
+com.apple.scopedbookmarksagent.xpc
+com.apple.AddressBook.abd
+com.apple.AirPlayUIAgent
+com.apple.photolibraryd
+launchctl remove com.apple.Safari.SafeBrowsing.Service
+launchctl remove com.apple.cloudd
+launchctl remove com.apple.diagnostics_agent
+launchctl remove com.apple.speech.speechsynthesisd.x86_64
+launchctl remove com.apple.CallHistoryPluginHelper
+launchctl remove com.apple.avatarsd
+launchctl remove com.apple.siri.context.service
+launchctl remove com.apple.followupd
+launchctl remove com.apple.telephonyutilities.callservicesd
+launchctl remove com.apple.storedownloadd
+launchctl remove com.apple.rapportd
+launchctl remove com.apple.SoftwareUpdateNotificationManager
+launchctl remove com.apple.CalendarAgent
+launchctl remove com.apple.familycircled
+launchctl remove com.apple.imagent
+launchctl remove com.apple.photoanalysisd
+launchctl remove com.apple.suggestd
+launchctl remove com.apple.icloud.fmfd
+launchctl remove com.apple.scopedbookmarksagent.xpc
+launchctl remove com.apple.ReportCrash
+launchctl remove com.apple.UsageTrackingAgent
+launchctl remove com.apple.Maps.mapspushd
+launchctl remove com.apple.knowledge-agent
+launchctl remove com.apple.wifi.WiFiAgent
+launchctl remove com.apple.podcasts.PodcastContentService
+launchctl remove com.apple.spindump_agent
+launchctl remove com.apple.amsengagementd
+launchctl remove com.apple.SafariLaunchAgent
+launchctl remove com.apple.appstoreagent
+launchctl remove com.apple.speech.speechsynthesisd.arm64
+launchctl remove com.apple.MRTa
+launchctl remove com.apple.triald
+
 brew cask install launchcontrol - устанавливаем графический интерфейс для запуска скриптов
 $ brew search launchcontrol
 ==> Casks

@@ -1,0 +1,8 @@
+brew install libimobiledevice
+
+$ idevice_id -l
+d964030a5e2b1a835970f75409c941e66c5bccba
+
+idevicesyslog -u d964030a5e2b1a835970f75409c941e66c5bccba
+
+May 16 09:26:11 Runner(TCC)[519] <Error>: This app has crashed because it attempted to access privacy-sensitive data without a usage description.  The app's Info.plist must contain an NSMicrophoneUsageDescription key with a string value explaining to the user how the app uses this data.

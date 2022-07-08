@@ -80,6 +80,22 @@ console.log(inputs);
 		});
 		
 		//Check and radio input styles
+
+/*
+All callbacks and functions are documented here: http://fronteed.com/iCheck/#usage
+
+$('input').iCheck('check'); — change input's state to checked
+$('input').iCheck('uncheck'); — remove checked state
+$('input').iCheck('toggle'); — toggle checked state
+$('input').iCheck('disable'); — change input's state to disabled
+$('input').iCheck('enable'); — remove disabled state
+$('input').iCheck('indeterminate'); — change input's state to indeterminate
+$('input').iCheck('determinate'); — remove indeterminate state
+$('input').iCheck('update'); — apply input changes, which were done outside the plugin
+$('input').iCheck('destroy'); — remove all traces of iCheck
+*/
+
+
 		$('input.check_radio').iCheck({
     	checkboxClass: 'icheckbox_square-aero',
    	    radioClass: 'iradio_square-aero'

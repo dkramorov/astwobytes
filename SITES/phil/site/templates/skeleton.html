@@ -29,6 +29,7 @@
 <!-- нужен для прокрутки в popup не влазящих на экран -->
 <link rel="stylesheet" type="text/css" href="/media/css/jquery.mCustomScrollbar.css">
 <link rel="stylesheet" type="text/css" href="/media/css/swiper.min.css">
+
 <link rel="stylesheet" type="text/css" href="/media/css/primary-menu.css?v=7">
 {% comment %}<!-- Пока погасил, возможно, понадобится
 <link rel="stylesheet" type="text/css" href="/media/css/magnific-popup.css">
@@ -53,6 +54,23 @@
 {% include "web/components/top_line.html" %}
 -->{% endcomment %}
 
+<section class="variative_header">
+  <div class="header_logo">
+    <div class="flex">
+      <div class="only_mobile left">
+        {% include "web/components/chat_button.html" %}
+      </div>
+      <div class="phil_logo">{% include "web/components/logo.html" %}</div>
+      <div class="only_mobile right">
+        {% include "web/components/languages.html" %}
+      </div>
+    </div>
+  </div>
+  <div class="only_mobile">
+    {% flatmenu request "mobilemenu" copyfrom="mainmenu" %}
+  </div>
+</section>
+<div class="clear clearfix"></div>
 <header class="header" id="site-header">
 <!-- Стрелочка в мобилке для открытия top_line.primary-menu-responsive .primary-menu-menu.scrollable
   <a href="#" id="top-bar-js" class="top-bar-link">
@@ -60,24 +78,25 @@
   </a>
 -->
 
-  <div class="container">
-    <div class="header-content-wrapper">
+  <div class="header-content-wrapper">
 
+{% comment %}<!--
+Логотип теперь сверху, над меню
       <div class="desktop">
         {% include "web/components/logo.html" %}
       </div>
       <div class="mobile">
         {% include "web/components/logo_mobile.html" %}
       </div>
+-->{% endcomment %}
+
+      {% include "web/components/chat_button.html" %}
       {% flatmenu request "mainmenu" %}
-
       {% include "web/components/languages.html" %}
-
 
 {% comment %}<!--
       {% include "web/components/cart.html" %}
 -->{% endcomment %}
-
 {% comment %}<!-- Кнопка под меню для открытия правого сайдбара
       <div class="user-menu open-overlay">
         <a href="#" class="user-menu-content js-open-aside">
@@ -87,14 +106,16 @@
         </a>
       </div>
 -->{% endcomment %}
-    </div>
-  </div>
   </div>
 </header>
 
 {% include "web/components/right_panel.html" %}
 <div class="content-wrapper">
-  {% include "web/components/breadcrumbs.html" %}
+  {% if page.class_name == "portfolio" %}
+    {% include "web/components/alt_breadcrumbs.html" %}
+  {% else %}
+    {% include "web/components/breadcrumbs.html" %}
+  {% endif %}
   {% block content %}{% endblock %}
 </div>
 

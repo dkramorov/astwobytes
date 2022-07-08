@@ -1,6 +1,12 @@
 {% extends "core/base.html" %}
 
+{% comment %}<!--
+Используется на страничке редактирования
+-->{% endcomment %}
+
 {% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+
 <link media="all" rel="stylesheet" href="/static/redactor/redactor.css" />
 <link media="all" rel="stylesheet" href="/static/redactor/redactor_air.css" />
 {% endblock %}
@@ -25,6 +31,8 @@
 
 {% block extrascripts %}
 {% include "font_icons_script.html" %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+
 <script src="/static/redactor/jquery.browser.js"></script>
 <script src="/static/redactor/redactor.js"></script>
 <script src="/static/admin/js/parsley.min.js"></script>
@@ -207,6 +215,16 @@ $(document).ready(function(){
   // и подстановка их в select2
   // --------------------------
   fontawesome_select2("icon_fontawesome");
+
+  $("input.datetime").datepicker({
+    onSelect: function (fd, d, calendar) {
+      calendar.hide();
+    },
+    todayButton: new Date(),
+    dateFormat: 'dd-mm-yyyy',
+    timepicker: true,
+    timeFormat: 'hh:ii',
+  });
 });
 </script>
 {% include "flatcontent_forms/linked_menus.html" %}

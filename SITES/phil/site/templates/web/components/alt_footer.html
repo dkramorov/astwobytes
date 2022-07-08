@@ -1,11 +1,11 @@
 {% load mtags %}
 <div class="mobile"><br /></div>
-<div class="container-fluid simple_contacts pt60" id="simple_contacts">
+<div class="container-fluid simple_contacts article3 pt60" id="simple_contacts">
   <div class="row">
     <div class="container nopadding">
 
       <div class="col-lg-12">
-        <div class="portfolio_title">
+        <div class="title">
           <span>
           {% if containers.main.tags.footer.name %}
             {{ containers.main.tags.footer.name }}
@@ -35,6 +35,13 @@
           <div class="contact_row">
             <div>{{ containers.main.tags.address3.html|safe }}</div>
             <div>{{ containers.main.tags.email3.html|safe }}</div>
+
+            <div><strong>{{ containers.main.tags.social.name }}</strong></div>
+            {% for block in containers.main.tags.social.sub %}
+              <a class="icon" href="{{ block.link }}" target="_blank">
+                <img src="{{ block.thumb }}">
+              </a>
+            {% endfor %}
           </div>
         </div>
         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 pt30 wechat">
