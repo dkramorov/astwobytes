@@ -54,7 +54,9 @@
         </ul>
       </div>
     {% else %}
+
       <h3>Статус оплаты заказа: {{ order_status.status }}</h3>
+      {% if order_status.orderStatus == 2 %}
       <div class="btn-theme center">
         <ul>
           <li>
@@ -64,6 +66,7 @@
           </li>
         </ul>
       </div>
+      {% endif %}
     {% endif %}
 
   </div>

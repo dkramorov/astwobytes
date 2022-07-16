@@ -1,6 +1,8 @@
 import xlsxwriter
+import datetime
 from django.conf import settings
 
+from apps.shop.sbrf import SberPaymentProvider
 from apps.main_functions.files import full_path
 from apps.main_functions.api_helper import open_wb
 
@@ -66,8 +68,18 @@ def polis_report_cruises():
             sheet.write(row_number, i + inc, item)
     row_number +=2
 
-    polises = Polis.objects.select_related('order__shopper', 'order').all()
+    sber = SberPaymentProvider()
+    now = datetime.datetime.now()
+    prev_week = now - datetime.timedelta(days=7)
+    polises = Polis.objects.select_related('order__shopper', 'order').filter(order__isnull=False, created__gt=prev_week)
+    print('polises count: %s' % len(polises))
     for polis in polises:
+        order = polis.order
+        # Проверяем, что оплачен
+        order_status = sber.get_order_status(order.external_number, order.id)
+        if order_status['orderStatus'] != 2:
+            continue
+
         ind = indexes['number']
         zfill7 = 7 - len('%s' % polis.id)
         number = '0002114-%s%s/22МП' % ('0' * zfill7, polis.number)
@@ -82,50 +94,57 @@ def polis_report_cruises():
             if item and not first_name:
                 first_name = item
 
-        ind = indexes['surname']
-        sheet.write(row_number, ind, surname)
+        for purchase in order.purchases_set.all():
+            if purchase.product_code == 'markup':
+                continue
+            code = 'B'
+            if 'G' in purchase.product_code:
+                code = 'G1'
 
-        ind = indexes['first_name']
-        sheet.write(row_number, ind, first_name)
+            ind = indexes['surname']
+            sheet.write(row_number, ind, surname)
 
-        ind = indexes['from_date']
-        sheet.write(row_number, ind, polis.from_date.strftime('%Y-%m-%d') if polis.from_date else '')
+            ind = indexes['first_name']
+            sheet.write(row_number, ind, first_name)
 
-        ind = indexes['to_date']
-        sheet.write(row_number, ind, polis.to_date.strftime('%Y-%m-%d') if polis.to_date else '')
+            ind = indexes['from_date']
+            sheet.write(row_number, ind, polis.from_date.strftime('%Y-%m-%d') if polis.from_date else '')
 
-        ind = indexes['birthday']
-        sheet.write(row_number, ind, polis.birthday.strftime('%d-%m-%Y'))
+            ind = indexes['to_date']
+            sheet.write(row_number, ind, polis.to_date.strftime('%Y-%m-%d') if polis.to_date else '')
 
-        ind = indexes['days']
-        sheet.write(row_number, ind, polis.days)
+            ind = indexes['birthday']
+            sheet.write(row_number, ind, polis.birthday.strftime('%d-%m-%Y'))
 
-        ind = indexes['program']
-        sheet.write(row_number, ind, 'B')
+            ind = indexes['days']
+            sheet.write(row_number, ind, polis.days)
 
-        ind = indexes['insurance_limit']
-        sheet.write(row_number, ind, '')
+            ind = indexes['program']
+            sheet.write(row_number, ind, code)
 
-        ind = indexes['currency']
-        sheet.write(row_number, ind, 'EUR')
+            ind = indexes['insurance_limit']
+            sheet.write(row_number, ind, purchase.product_price)
 
-        ind = indexes['country']
-        sheet.write(row_number, ind, 'United States of America')
+            ind = indexes['currency']
+            sheet.write(row_number, ind, 'EUR')
 
-        ind = indexes['code']
-        sheet.write(row_number, ind, 'Code /Код')
+            ind = indexes['country']
+            sheet.write(row_number, ind, 'Турция')
 
-        ind = indexes['coverage']
-        sheet.write(row_number, ind, '')
+            ind = indexes['code']
+            sheet.write(row_number, ind, 'TI')
 
-        ind = indexes['created']
-        sheet.write(row_number, ind, polis.created.strftime('%d-%m-%Y'))
+            ind = indexes['coverage']
+            sheet.write(row_number, ind, '')
 
-        ind = indexes['franchise']
-        sheet.write(row_number, ind, '')
+            ind = indexes['created']
+            sheet.write(row_number, ind, polis.created.strftime('%d-%m-%Y'))
 
-        ind = indexes['additional']
-        sheet.write(row_number, ind, '')
+            ind = indexes['franchise']
+            sheet.write(row_number, ind, '')
+
+            ind = indexes['additional']
+            sheet.write(row_number, ind, '')
 
         #for purchase in polis.order.purchases_set.all():
         #    ind = indexes['insuranse_sum']

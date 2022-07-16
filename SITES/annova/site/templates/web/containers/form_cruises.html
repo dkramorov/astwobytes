@@ -12,6 +12,10 @@ table.cruise.bordered td,
 table.cruise.bordered th {
     border:1px solid #ccc;
 }
+.red_alert {
+  color:red;
+  text-align: center;
+}
 </style>
 {% with request|cruises as cruises %}
 <!-- Форма помощник -->
@@ -47,6 +51,8 @@ table.cruise.bordered th {
             <ul class="data-list-2">
               <li>
                 <input name="already_safe" type="checkbox" class="check_radio" value="1"><label>Страхователь застрахован</label>
+                <div class="clear clearfix"></div>
+                <p class="red_alert">Выбрать, если страхователь страхует себя</p>
               </li>
             </ul>
           </div>
@@ -284,6 +290,17 @@ $(document).ready(function(){
       }
       $(".check_radio.group").iCheck("update");
     }
+  });
+
+  $("#wrapped_cruises button.forward").click(function() {
+    console.log("forward");
+    if (!$("#wrapped_cruises input[name='already_safe']").prop("checked")) {
+      console.log("add member");
+      var members_count = $(".member.show").length;
+      if (members_count < 1) {
+          new_member();
+      }
+    };
   });
 
 });

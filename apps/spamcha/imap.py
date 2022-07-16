@@ -78,6 +78,8 @@ class ImapProvider():
     def select_folder(self, folder):
         """Выбирает папку на сервере
            :param folder: папка в зажопинском формате
+           :param page: страница
+           :param by: количество писем
         """
         logger.info('[IMAP]: select folder %s' % folder)
         result = self.conn.select(folder)

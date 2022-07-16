@@ -79,14 +79,18 @@ class Command(BaseCommand):
             default = False,
             help = 'Encode to utf-8 for hosting (python 3.4)')
 
+        parser.add_argument('--full',
+            action = 'store_true',
+            dest = 'full',
+            default = False,
+            help = 'Full iport from 1c')
+
+
     def handle(self, *args, **options):
         """
 python manage.py import_from_1cv8 --get_cats --import_xml_path=exchange_1cv8/all/import0_1.xml --with_encode
-
 python manage.py import_from_1cv8 --get_props --import_xml_path=exchange_1cv8/all/import0_1.xml --with_encode
-
 python manage.py import_from_1cv8 --get_products --import_xml_path=exchange_1cv8/all/import0_1.xml --with_encode
-
 python manage.py import_from_1cv8 --get_prices --offers_xml_path=exchange_1cv8/all/offers0_1.xml --with_encode
         """
         global with_encode
@@ -98,9 +102,21 @@ python manage.py import_from_1cv8 --get_prices --offers_xml_path=exchange_1cv8/a
         if options.get('with_encode'):
             with_encode = True
 
-        import_xml = 'exchange_1cv8/import0_1.xml'
+        import_xml = 'exchange_1cv8/all/import0_1.xml'
         if options.get('import_xml_path'):
             import_xml = options['import_xml_path']
+
+        offers_xml = 'exchange_1cv8/all/offers0_1.xml'
+        if options.get('offers_xml_path'):
+            offers_xml = options['offers_xml_path']
+
+        if options.get('full'):
+            get_cats(import_xml)
+            get_props(import_xml)
+            get_products(import_xml)
+            get_prices(offers_xml)
+            return
+
         if options.get('get_cats'):
             #for cat in Blocks.objects.filter(container__tag='catalogue'):
             #    cat.save()
@@ -113,10 +129,6 @@ python manage.py import_from_1cv8 --get_prices --offers_xml_path=exchange_1cv8/a
             #for product in Products.objects.all():
             #    product.delete()
             get_products(import_xml)
-
-        offers_xml = 'exchange_1cv8/offers0_1.xml'
-        if options.get('offers_xml_path'):
-            offers_xml = options['offers_xml_path']
         if options.get('get_prices'):
             get_prices(offers_xml)
 
@@ -490,8 +502,8 @@ def get_products(path: str):
         print('[ERROR]: %s empty' % path)
         return
     dest = 'products.json'
-    #with open_file(dest, 'w+', encoding='utf-8') as f:
-    #    f.write(json.dumps(handler.result))
+    with open_file(dest, 'w+', encoding='utf-8') as f:
+        f.write(json.dumps(handler.result))
     #print(json_pretty_print(handler.result), len(handler.result))
     update_products(handler.result)
 

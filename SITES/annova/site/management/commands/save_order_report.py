@@ -14,6 +14,16 @@ logger = logging.getLogger(__name__)
 """Формирование отчета по заказам
 """
 
+def check_markup():
+    prices = list(Products.objects.all().values_list('price', flat=True))
+    for price in prices:
+        if not price:
+            continue
+        markup = get_markup_product(price)
+        price_with_markup = float(price) + markup.price
+        diff = price_with_markup * 2.3 / 100
+        print(price, markup.price, diff, price_with_markup - diff)
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
         # Named (optional) arguments
@@ -31,13 +41,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         started = time.time()
-        #polis_report()
-        prices = list(Products.objects.all().values_list('price', flat=True))
-        for price in prices:
-            if not price:
-                continue
-            markup = get_markup_product(price)
-            price_with_markup = float(price) + markup.price
-            diff = price_with_markup * 2.3 / 100
-            print(price, markup.price, diff, price_with_markup - diff)
+        polis_report()
+
 
