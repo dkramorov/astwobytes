@@ -46,6 +46,14 @@ $(document).ready(function(){
       headerFilterFunc: "like",
       width: 150,
     },
+    {
+      title: "APNS Токен",
+      field: "apns_token",
+      headerFilterPlaceholder: "Токен",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
     {% include "core/tabulator_cell/created_updated.html" %}
     {% include "core/tabulator_cell/is_active.html" %}
     {% include "core/tabulator_cell/position.html" %}

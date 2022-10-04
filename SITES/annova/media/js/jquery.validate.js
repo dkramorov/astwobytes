@@ -306,8 +306,10 @@ $.extend($.validator, {
 		dateISO: "Пожалуйста, введите правильную дату (ISO).",
 		number: "Пожалуйста, введите число.",
 		digits: "Пожалуйста, введите только цифры.",
+		letters: "Пожалуйста, введите только английские буквы.",
+		rus_letters: "Пожалуйста, введите только русские буквы.",
 		creditcard: "Пожалуйста, введите правильный номер кредитной карты.",
-		equalTo: "Please enter the same value again.",
+		equalTo: "Пожалуйста, повторите введенное значение",
 		maxlength: $.validator.format("Пожалуйста, введите не более {0} символов."),
 		minlength: $.validator.format("Пожалуйста, введит не менее {0} символов."),
 		rangelength: $.validator.format("Пожалуйста введите от {0} до {1} символов."),
@@ -830,6 +832,8 @@ validator.settings[eventType] && validator.settings[eventType].call(validator, t
 		dateISO: {dateISO: true},
 		number: {number: true},
 		digits: {digits: true},
+		letters: {letters: true},
+		rus_letters: {rus_letters: true},
 		creditcard: {creditcard: true}
 	},
 
@@ -1085,6 +1089,14 @@ validator.settings[eventType] && validator.settings[eventType].call(validator, t
 		// http://docs.jquery.com/Plugins/Validation/Methods/digits
 		digits: function( value, element ) {
 			return this.optional(element) || /^\d+$/.test(value);
+		},
+
+		letters: function( value, element ) {
+			return this.optional(element) || /^[a-zA-Z]+$/g.test(value);
+		},
+
+		rus_letters: function( value, element ) {
+			return this.optional(element) || /^[а-яА-Я]+$/g.test(value);
 		},
 
 		// http://docs.jquery.com/Plugins/Validation/Methods/creditcard

@@ -1,3 +1,7 @@
+https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
+
+show modules
+
 fs_cli -x "module_exists mod_say_ru"
 freeswitch@internal> module_exists mod_fifo
 true

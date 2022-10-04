@@ -17,6 +17,9 @@ class FirebaseTokens(Standard):
     token = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Токен приложения пользователя')
+    apns_token = models.CharField(max_length=255,
+        blank=True, null=True, db_index=True,
+        verbose_name='Токен APNS приложения пользователя')
     ip = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='IP пользователя')

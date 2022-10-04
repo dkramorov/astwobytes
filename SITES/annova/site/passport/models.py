@@ -9,8 +9,8 @@ class Passport(Standard):
     """Паспортные данные
     """
     passport_choices = (
-        (1, 'Паспорт РФ'),
-        (2, 'Загранпаспорт'),
+        (1, 'Паспорт гражданина РФ'),
+        (2, 'Загранпаспорт гражданина РФ'),
     )
     shopper = models.ForeignKey(Shopper,
         blank=True, null=True,

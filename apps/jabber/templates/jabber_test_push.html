@@ -1,0 +1,123 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>
+  <span class="label_for_translate page_title_{{ menu }}_{{ submenu }}_label" attr-class_name="page_title_{{ menu }}_{{ submenu }}_label">{{ singular_obj }}</span><br />
+  <small class="label_for_translate page_subtitle_{{ menu }}_{{ submenu }}_label" attr-class_name="page_subtitle_{{ menu }}_{{ submenu }}_label">Настройки {{ rp_singular_obj }}</small>
+</h3>
+
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{{ root_url }}" id="current_edit_form">
+        {% csrf_token %}
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Приложение:</label>
+            <div class="col-lg-6">
+              <select name="chat_app">
+                <option value="mastermechat" selected>mastermechat</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Действие:</label>
+            <div class="col-lg-6">
+              <select name="action">
+                <option value="chat" selected>chat</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Логин:</label>
+            <div class="col-lg-6">
+              <input type="text" name="login" value="89148959223" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Пароль:</label>
+            <div class="col-lg-6">
+              <input type="text" name="passwd" value="123" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Кому:</label>
+            <div class="col-lg-6">
+              <input type="text" name="to_phone" value="89016598623" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Тип:</label>
+            <div class="col-lg-6">
+              <input type="checkbox" value="1" name="only_data" checked /> data-push
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Тестовое сообщение:</label>
+            <div class="col-lg-6">
+              <textarea type="text" name="text" placeholder="Тестовое сообщение" class="form-control" autocomplete="off"></textarea>
+            </div>
+            <div class="col-lg-2">
+              <a class="btn btn-default" href="javascript:void(0);" id="send_test_push_message">Отправить</a>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-lg-6">
+              <div class="result_push_message"></div>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#send_test_push_message").click(function() {
+    $(".result_push_message").html("");
+    console.log($("#test_push_message").val());
+    var $form = $("#current_edit_form");
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      //data: {csrfmiddlewaretoken: getCookie('csrftoken')},
+      data: $form.serialize(),
+    }).done(function(r) {
+/*
+      var html = "<h2>Сообщение отправлено</h2>";
+      var keys = Object.keys(r);
+      var key;
+      for(var i=0; i<keys.length; i++){
+        key = keys[i];
+        if (key == 'additional_data'){
+          html += "<p>" + key + ":" + JSON.stringify(r[key]) + "</p>";
+          continue;
+        }
+        html += "<p>" + key + ":" + r[key] + "</p>";
+      }
+      $(".result_push_message").html(html);
+*/
+      $(".result_push_message").html("<pre>" + JSON.stringify(r, null, 2) + "</pre>");
+    }).fail(function() {
+      $.notify({
+        message: 'Произошла ошибка',
+      },{
+        status: 'danger',
+      });
+    });
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,75 @@
+https://www.digitalocean.com/community/tutorials/how-to-set-up-a-video-streaming-server-using-nginx-rtmp-on-ubuntu-20-04
+
+apt install libnginx-mod-rtmp
+
+/etc/nginx/nginx.conf
+
+. . .
+rtmp {
+        server {
+                listen 1935;
+                chunk_size 4096;
+                allow publish 127.0.0.1;
+                deny publish all;
+
+                application live {
+                        live on;
+                        record off;
+
+                        # for web browsers
+                        hls on;
+                        hls_path /var/www/html/stream/hls; # https://cheap.1sprav.ru/hls/stream.m3u8
+                        hls_fragment 3;
+                        hls_playlist_length 60;
+
+                        dash on;
+                        dash_path /var/www/html/stream/dash; # https://cheap.1sprav.ru/dash/stream.mpd
+                }
+        }
+}
+
+You should now have an HLS stream available at http://your_domain:8088/hls/stream.m3u8 and a DASH stream available at http://your_domain:8088/dash/stream.mpd. These endpoints will generate any necessary metadata on top of your RTMP video feed in order to support modern APIs.
+
+
+/etc/nginx/sites-available/rtmp
+
+server {
+    listen 8080;
+    server_name  localhost;
+
+    # rtmp stat
+    location /stat {
+        rtmp_stat all;
+        rtmp_stat_stylesheet stat.xsl;
+    }
+    location /stat.xsl {
+        root /var/www/html/rtmp;
+    }
+
+    # rtmp control
+    location /control {
+        rtmp_control all;
+    }
+}
+
+nginx -t
+
+
+pip install youtube-dl (brew/apt)
+
+youtube-dl -F https://www.youtube.com/watch?v=iom_nhYQIYk # list available formats
+youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4' https://www.youtube.com/watch?v=iom_nhYQIYk
+
+
+ffmpeg -re -i "Introducing App Platform by DigitalOcean-iom_nhYQIYk.mkv" -c:v copy -c:a aac -ar 44100 -ac 1 -f flv rtmp://cheap.1sprav.ru/live/stream
+
+-re specifies that input will be read at its native framerate.
+-i "Introducing App Platform by DigitalOcean-iom_nhYQIYk.mkv" specifies the path to our input file.
+-c:v is set to copy, meaning that you’re copying over the video format you got from YouTube natively.
+-c:a has other parameters, namely aac -ar 44100 -ac 1, because you need to resample the audio to an RTMP-friendly format. aac is a widely supported audio codec, 44100 hz is a common frequency, and -ac 1 specifies the first version of the AAC spec for compatibility purposes.
+-f flv wraps the video in an flv format container for maximum compatibility with RTMP
+
+rtmp://cheap.1sprav.ru/live/stream
+
+The video is sent to rtmp://localhost/live/stream because you defined the live configuration block in Step 1, and stream is an arbitrarily chosen URL for this video.
+

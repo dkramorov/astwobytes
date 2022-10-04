@@ -1,0 +1,51 @@
+docker info|grep Root
+ Docker Root Dir: /var/lib/docker
+но папки нету, надо смотреть в ~/Library/Containers/com.docker.docker/Data/vms/0/
+
+
+https://hub.docker.com/_/microsoft-azure-sql-edge - идет в месте с менеджмент студией
+https://blogs.msmvps.com/deborahk/deploying-a-dacpac-with-sql-server-management-studio/
+
+m1: docker run --platform linux/x86_64 <image> ?
+https://medium.com/geekculture/docker-express-running-a-local-sql-server-on-your-m1-mac-8bbc22c49dc9
+
+docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=MyPass@word" -e "MSSQL_PID=Developer" -e "MSSQL_USER=SA" -p 1433:1433 -d --name=sql mcr.microsoft.com/azure-sql-edge
+
+docker exec -it --user root sql bash
+
+docker exec -it sql /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P <your_password>
+
+
+-----
+The cp command can be used to copy files.
+
+One specific file can be copied TO the container like:
+docker cp foo.txt container_id:/foo.txt
+
+One specific file can be copied FROM the container like:
+docker cp container_id:/foo.txt foo.txt
+
+For emphasis, container_id is a container ID, not an image ID. (Use docker ps to view listing which includes container_ids.)
+
+Multiple files contained by the folder src can be copied into the target folder using:
+docker cp src/. container_id:/target
+docker cp container_id:/src/. target
+
+# copy dacpac to sql container
+docker cp commerce-stage-270722.dacpac sql:/home/mssql/commerce-stage-270722.dacpac
+
+# Скачивание и установка SqlPackage
+# https://docs.microsoft.com/ru-ru/sql/tools/sqlpackage/sqlpackage-download?view=sql-server-ver16
+https://go.microsoft.com/fwlink/?linkid=2196335
+
+apt install p7zip-full
+# 7za x SqlPackage.zip -osqlpackage/
+
+# Установка программ командной строки SQL Server sqlcmd и bcp в Linux
+# https://docs.microsoft.com/ru-ru/sql/linux/sql-server-linux-setup-tools?view=sql-server-ver16
+curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+
+
+apt-get update && apt-get install mssql-tools unixodbc-dev mssql-tools:amd64

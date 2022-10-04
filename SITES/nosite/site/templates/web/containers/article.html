@@ -1,0 +1,40 @@
+{% load mtags %}
+<section class="about-section section-ptb-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 ">
+        <div class="themeix-section-heading-title">
+          <h2 class="head-title">{{ container.name }}</h2>
+          <p class="light-300 color-change">{% if container.description %}{{ container.description|safe }}{% endif %}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      {% for block in blocks %}
+
+        <div class="col-md-12">
+          {% if block.img %}
+            <div class="col-md-6">
+              <div class="about-appix-left-img">
+                <img src="{% imagine block.img '800x600' block.get_folder True %}" alt="{{ block.name|textize }}" class="img-responsive">
+              </div>
+            </div>
+          {% endif %}
+          <div class="col-md-{% if block.img %}6{% else %}12{% endif %}">
+            <div class="about-appix-right-content">
+              <h2 class="themeix-title-h1">{{ block.name }}</h2>
+              {% if block.html %}<div class="para-mb">{{ block.html|safe }}</div>{% endif %}
+              <div class="themeix-button-group">
+                {% if block.link %}
+                  <a href="{{ block.link }}" class="themeix-btn bg-change themeix-info smoothScroll">{{ block.description }}</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix clear"></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

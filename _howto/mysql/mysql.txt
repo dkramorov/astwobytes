@@ -7,6 +7,17 @@ mysql> SHOW STATUS LIKE "Threads_connected";
 +-------------------+-------+
 1 row in set (0.00 sec)
 
+mysql> SHOW STATUS WHERE `variable_name` = 'Max_used_connections';
++----------------------+-------+
+| Variable_name        | Value |
++----------------------+-------+
+| Max_used_connections | 1592  |
++----------------------+-------+
+1 row in set (0,15 sec)
+
+
+
+
 Показать счетчик (Сколько всего было ) соединений
 mysql> show status like 'Conn%';
 +-----------------------------------+--------+
@@ -58,6 +69,7 @@ ALTER SCHEMA phil DEFAULT CHARACTER SET utf8mb4  DEFAULT COLLATE utf8mb4_general
 
 CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 'mypass';
 GRANT ALL ON db1.* TO 'jeffrey'@'localhost';
+grant all on *.* to 'jocker'@'10.10.10.%';
 # --------------------------
 # Наблюдение за логами mysql
 # mysql> show variables like '%log%';

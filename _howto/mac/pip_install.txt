@@ -1,3 +1,34 @@
+pip cache
+Usage
+Unix/macOS
+
+python -m pip cache dir
+python -m pip cache info
+python -m pip cache list [<pattern>] [--format=[human, abspath]]
+python -m pip cache remove <pattern>
+python -m pip cache purge
+
+Windows
+Description
+
+Inspect and manage pip’s wheel cache.
+
+Subcommands:
+
+    dir: Show the cache directory.
+
+    info: Show information about the cache.
+
+    list: List filenames of packages stored in the cache.
+
+    remove: Remove one or more package from the cache.
+
+    purge: Remove all items from the cache.
+
+-----
+
+
+
 (env) iMac:astwobytes jocker$ pip cache dir
 /Users/jocker/Library/Caches/pip
 
@@ -5,3 +36,30 @@
 curl https://bootstrap.pypa.io/get-pip.py | python
 
 wget https://bootstrap.pypa.io/pip/2.7/get-pip.py
+
+-----
+
+      ld: library not found for -lssl
+      clang: error: linker command failed with exit code 1 (use -v to see invocation)
+      error: command '/usr/bin/clang' failed with exit code 1
+      [end of output]
+
+
+
+(env) iMac:data_migration jocker$ brew info openssl
+openssl@3: stable 3.0.0 (bottled) [keg-only]
+
+If you need to have openssl@3 first in your PATH, run:
+  echo 'export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"' >> ~/.profile
+
+For compilers to find openssl@3 you may need to set:
+  export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
+
+For pkg-config to find openssl@3 you may need to set:
+  export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
+
+
+# Так сработает
+export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
+pip install pymssql

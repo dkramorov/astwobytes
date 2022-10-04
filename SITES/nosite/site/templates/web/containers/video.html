@@ -1,0 +1,13 @@
+{% load mtags %}
+<section class="section-ptb" id="video">
+  <div class="vidoverlay"></div>
+  <div class="container">
+    {% for block in blocks %}
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+          <a class="autoplay" href="{{ block.link }}"><i class="fa fa-play-circle"></i></a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>

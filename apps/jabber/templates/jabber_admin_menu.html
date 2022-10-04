@@ -16,6 +16,11 @@
         <span class="item-text">Токены FCM</span>
       </a>
     </li>
+    <li{% ifequal submenu 'test_push' %} class="active"{% endifequal %} id="left_menu_jabber_test_push">
+      <a class="no-submenu" data-toggle="" href="{% url 'jabber:test_push' %}">
+        <span class="item-text">Отправка PUSH</span>
+      </a>
+    </li>
   </ul>
 </li>
 {% endif %}

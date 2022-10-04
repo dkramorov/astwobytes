@@ -5,10 +5,20 @@
 {% endblock %}
 
 {% block content %}
-  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm ml-sm" href="{% url 'main:orders_report' %}">
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm ml-sm" href="{% url 'main:orders_report' %}?ptype=simple">
     <em class="fa fa-copy fa-fw mr-sm"></em> Отчет по заказам
   </a>
-
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm ml-sm" href="{% url 'main:orders_report' %}?ptype=global">
+    <em class="fa fa-copy fa-fw mr-sm"></em> Отчет по заказам (GLOBAL)
+  </a>
+{% comment %}<!--
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm ml-sm" href="{% url 'main:orders_report' %}?ptype=dsu_old">
+    <em class="fa fa-copy fa-fw mr-sm"></em> Отчет по заказам (ДСУ СТАРЫЙ)
+  </a>
+-->{% endcomment %}
+  <a target="_blank" class="btn btn-primary pull-right mb-sm mr-sm ml-sm" href="{% url 'main:orders_report' %}?ptype=dsu">
+    <em class="fa fa-copy fa-fw mr-sm"></em> Отчет по заказам (ДСУ)
+  </a>
 {% include "core/forms/default_create.html" %}
 
 {% include "core/title/page_title_table.html" %}

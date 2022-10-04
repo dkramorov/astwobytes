@@ -81,29 +81,29 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-3 col-md-4 leftcol pconly">
-            {% block left %}
-              {% catalogue request %}
+      {% block left %}
+        {% catalogue request %}
 {% comment %}<!--
-              {% include "web/containers/sidebar_news.html" %}
-              {% include "web/containers/sidebar_images.html" %}
+        {% include "web/containers/sidebar_news.html" %}
+        {% include "web/containers/sidebar_images.html" %}
 -->{% endcomment %}
-            {% endblock %}
+      {% endblock %}
     </div>
     <div class="maincol pcctyle col-lg-9 col-md-8" id="mainblock">
-            <div id="searchpanel" class="pcstyle jsonly">
-              <div id="searchrun" rel="0" class="mobileonly searchrunopen"></div>
-              <form action="/cat/" method="GET" id="searchform" class="pcstyle">
-                <input type="text" name="q" placeholder="Поиск товаров"  class="pcstyle kdwn" id="search" autocomplete="off" tabindex="1" value="{% if q_string.q.q %}{{ q_string.q.q }}{% endif %}" />
-              </form>
-              <div class="pconly">
-                <div class="cont" id="mini-cart">
-                  {% ajax_cart request %}
-                </div>
-              </div>
-            </div>
-            {% block content %}
-              {% include "web/containers/products_tabs.html" %}
-            {% endblock %}
+      <div id="searchpanel" class="pcstyle jsonly">
+        <div id="searchrun" rel="0" class="mobileonly searchrunopen"></div>
+        <form action="/cat/" method="GET" id="searchform" class="pcstyle">
+          <input type="text" name="q" placeholder="Поиск товаров"  class="pcstyle kdwn" id="search" autocomplete="off" tabindex="1" value="{% if q_string.q.q %}{{ q_string.q.q }}{% endif %}" />
+        </form>
+        <div class="pconly">
+          <div class="cont" id="mini-cart">
+            {% ajax_cart request %}
+          </div>
+        </div>
+      </div>
+      {% block content %}
+        {% include "web/containers/products_tabs.html" %}
+      {% endblock %}
     </div>
   </div>
 </div>

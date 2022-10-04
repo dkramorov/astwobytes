@@ -142,7 +142,6 @@ def get_jabber_users():
         return
     jaba_domain = 'https://%s' % settings.JABBER_DOMAIN.rstrip('/')
     endpoint = '/jabber/get_jabber_users'
-    token = settings.FS_TOKEN
     url = '%s%s' % (jaba_domain, endpoint)
     headers = {
         'token': settings.FS_TOKEN,

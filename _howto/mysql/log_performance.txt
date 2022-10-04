@@ -1,0 +1,19 @@
+Symptom
+
+On the InnoDB tab under the Logfiles section be sure to set the innodb_flush_log_at_trx_commit option to 0 in order to improve performance drastically.
+
+The hybris Commerce Suite automatically determines whether the innodb_flush_log_at_trx_commit is set to 0 or not and display a warning if not.
+Environment
+
+Hybris with MySql
+Cause
+
+In combination with InnoDB-based database tables, the innodb_flush_log_at_trx_commit setting has a massive impact on database performance. 
+
+    The default value of 1 is required for full ACID compliance. With this value, the contents of the InnoDB log buffer are written out to the log file at each transaction commit and the log file is flushed to disk.
+
+    With a value of 0, the contents of the InnoDB log buffer are written to the log file approximately once per second and the log file is flushed to disk. No writes from the log buffer to the log file are performed at transaction commit. Once-per-second flushing is not guaranteed to happen every second due to process scheduling issues. Because the flush to disk operation only occurs approximately once per second, you can lose up to a second of transactions with any mysqld process crash.
+
+Resolution
+
+Set innodb_flush_log_at_trx_commit = 0

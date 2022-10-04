@@ -1,3 +1,6 @@
+docker info|grep Root
+ Docker Root Dir: /var/lib/docker
+
 docker inspect run-service_megafon_integration
 
 

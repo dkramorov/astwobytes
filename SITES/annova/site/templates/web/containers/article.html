@@ -21,11 +21,11 @@
     {% endfor %}
   </div>
   {% for block in blocks %}
-    {% if block.tag %}
+    {% if block.img %}
       <div class="col-md-6">
         <div class="thumbnail">
           <div class="project-item-image-container">
-            {% if block.img %}{% imagine block.img '600x600' block.get_folder %}{% endif %}
+            {% imagine block.img '600x600' block.get_folder %}
           </div>
         </div>
       </div>

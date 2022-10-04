@@ -1,3 +1,17 @@
+
+
+
+launchctl unload -w /usr/local/opt/mysql@5.7/homebrew.mxcl.mysql@5.7.plist
+launchctl load -w /usr/local/opt/mysql@5.7/homebrew.mxcl.mysql@5.7.plist
+
+iMac:~ jocker$ ps -fax|grep mysql
+  501   401     1   0 10:42   ??         0:00.03 /bin/sh /usr/local/opt/mysql@5.7/bin/mysqld_safe --datadir=/usr/local/var/mysql
+  501   560   401   0 10:42   ??         0:10.01 /usr/local/opt/mysql@5.7/bin/mysqld --basedir=/usr/local/opt/mysql@5.7 --datadir=/usr/local/var/mysql --plugin-dir=/usr/local/opt/mysql@5.7/lib/plugin --log-error=iMac.local.err --pid-file=iMac.local.pid
+
+
+
+
+
 #python3.8
 
 symbols /opt/homebrew/opt/mysql-client@5.7/lib/libmysqlclient.dylib | grep mysql_affected_rows

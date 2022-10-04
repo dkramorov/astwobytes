@@ -32,14 +32,51 @@ table.cruise.bordered th {
     <div id="middle-wizard">
       <input type="hidden" name="ptype" value="2" />
 
+      <div class="step row">
+        <div class="col-md-10">
+          <h3>Пожалуйста, выберите круиз</h3>
+          <ul class="data-list-2">
+            {% for cruise in cruises %}
+              <li>
+                <table class="cruise bordered">
+                  <thead>
+                    <th>Дата</th>
+                    <th>Дней</th>
+                    <th>Круиз</th>
+                    <th>Рейс</th>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ cruise.created|date:'d-m-Y' }}</td>
+                      <td>{{ cruise.description }}</td>
+                      <td>{{ cruise.name }}</td>
+                      <td>{{ cruise.title }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <label>
+                  <input name="cruise" type="radio" class="required check_radio scruise" value="{{ cruise.id }}" {% if cruise.without_G1 %} data-attr_wg1="1"{% endif %}>
+                </label>
+              </li>
+              <div class="clear clearfix"></div>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+
       <div class="step">
         <div class="row">
           <h3 class="col-md-10">Данные о страхователе:</h3>
 
           <div class="col-md-6">
             <ul class="data-list">
-              <li><input type="text" name="name" class="required form-control" placeholder="ФИО страхователя на русском языке"></li>
-              <li><input type="text" name="fname" class="required form-control" placeholder="ФИО страхователя на латинице"></li>
+              <li><input type="text" name="last_name" class="required form-control rus_letters" placeholder="Фамилия страхователя на русском языке"></li>
+              <li><input type="text" name="first_name" class="required form-control rus_letters" placeholder="Имя страхователя на русском языке"></li>
+              <li><input type="text" name="middle_name" class="required form-control rus_letters" placeholder="Отчество страхователя на русском языке"></li>
+
+              <li><input type="text" name="last_fname" class="required form-control letters" placeholder="Фамилия страхователя на латинице"></li>
+              <li><input type="text" name="first_fname" class="required form-control letters" placeholder="Имя страхователя на латинице"></li>
               <li>
                 <input type="text" name="passport_birthday" class="required date form-control" placeholder="Дата рождения страхователя"  max='{% adult_date %}'>
                 <span class="input_helper">Условие: совершеннолетие ({% adult_date %})</span>
@@ -50,9 +87,8 @@ table.cruise.bordered th {
             </ul>
             <ul class="data-list-2">
               <li>
-                <input name="already_safe" type="checkbox" class="check_radio" value="1"><label>Страхователь застрахован</label>
+                <input name="already_safe" type="checkbox" class="check_radio" value="1"><label>Выбрать, если страхователь страхует себя</label>
                 <div class="clear clearfix"></div>
-                <p class="red_alert">Выбрать, если страхователь страхует себя</p>
               </li>
             </ul>
           </div>
@@ -98,11 +134,12 @@ table.cruise.bordered th {
                         </tr>
                       </table>
                       <label>
-                        <input name="cat_{{ cat_id }}" type="radio" class="required check_radio group group_{{ cat_id }}" value="{{ product.id }}">
+                        <input name="cat_{{ cat_id }}" type="radio" class="{% if not data.G1 %}required {% endif %}check_radio group group_{{ cat_id }}" value="{{ product.id }}">
                       </label>
                     </li>
                   {% endfor %}
-                <div class="clear clearfix"></div>
+                  <div class="clear clearfix"></div>
+                  {% if data.G1 %}<p class="red_alert wg1" data-original="{{ data.G1 }}" data-cat_id="{{ cat_id }}">{{ data.G1 }}</p>{% endif %}
                 </ul>
               {% endfor %}
             {% endwith %}
@@ -127,44 +164,14 @@ table.cruise.bordered th {
         </div>
       </div>
 
-
-
-
-      <div class="step row">
-        <div class="col-md-10">
-          <h3>Пожалуйста, выберите круиз</h3>
-          <ul class="data-list-2">
-            {% for cruise in cruises %}
-              <li>
-                <table class="cruise bordered">
-                  <thead>
-                    <th>Дата</th>
-                    <th>Дней</th>
-                    <th>Круиз</th>
-                    <th>Рейс</th>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ cruise.created|date:'d-m-Y' }}</td>
-                      <td>{{ cruise.description }}</td>
-                      <td>{{ cruise.name }}</td>
-                      <td>{{ cruise.title }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <label>
-                  <input name="cruise" type="radio" class="required check_radio" value="{{ cruise.id }}">
-                </label>
-              </li>
-              <div class="clear clearfix"></div>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-
-
       <div class="step">
         <div class="row">
+
+          <div class="self_insurance hidden">
+            <div class="col-md-10">
+              <h4 class="self"></h4>
+            </div>
+          </div>
 
           {% for item in '11111111111111111111111111111111111111111111111111111111111111111111111111111111' %}
           <div class="member member{{ forloop.counter }} hidden">
@@ -174,9 +181,14 @@ table.cruise.bordered th {
 
             <div class="col-md-10">
               <ul class="data-list">
-                <li><input type="text" name="name_{{ forloop.counter }}" class="form-control disabled" placeholder="Фамилия и имя на латинице Застрахованного лица (в пользу кого заключен договор страхования)"></li>
                 <li>
-                  <input type="text" name="birthday_{{ forloop.counter }}" class="date form-control disabled" placeholder="Дата рождения Застрахованного лица">
+                  <input type="text" name="surname_{{ forloop.counter }}" class="form-control disabled letters surname" placeholder="Фамилия на латинице Застрахованного лица (в пользу кого заключен договор страхования)">
+                </li>
+                <li>
+                  <input type="text" name="name_{{ forloop.counter }}" class="form-control disabled letters name" placeholder="Имя на латинице Застрахованного лица (в пользу кого заключен договор страхования)">
+                </li>
+                <li>
+                  <input type="text" name="birthday_{{ forloop.counter }}" class="date form-control disabled birthday" placeholder="Дата рождения Застрахованного лица">
                 </li>
               </ul>
             </div>
@@ -250,6 +262,7 @@ function new_member() {
   $(".member" + members_count).removeClass("hidden");
   $(".member" + members_count + " input").removeClass("disabled");
   $(".member" + members_count).addClass("show");
+  $("input[name='surname_" + members_count + "'").addClass("required");
   $("input[name='name_" + members_count + "'").addClass("required");
   $("input[name='birthday_" + members_count + "'").addClass("required");
 }
@@ -263,16 +276,39 @@ $(document).ready(function(){
     select_passport_type();
   });
 
+  var selected_cruise = $(".scruise:checked");
+  if (selected_cruise) {
+    check_wg1(selected_cruise);
+  }
+  function check_wg1(selected) {
+    if(selected.prop("checked")){
+      var wg1 = selected.attr("data-attr_wg1");
+      var cat_id = $("p.wg1").attr("data-cat_id");
+      if(wg1 == "1"){
+        $("p.wg1").html("Недоступно т/к до круиза меньше трех дней");
+        $(".group_" + cat_id).attr("disabled", true);
+        $(".group_" + cat_id).attr("checked", false);
+        $(".group_" + cat_id).iCheck("update");
+      } else {
+        $("p.wg1").html($("p.wg1").attr("data-original"));
+        $(".group_" + cat_id).attr("disabled", false);
+      }
+    }
+  }
+
+  $(".scruise").on("ifChanged", function(){
+    check_wg1($(this));
+  });
 
   $(".check_radio").on("ifClicked", function(event){
     if($(this).hasClass("group") && $(this).prop("checked")){
       $(this).prop("checked", false);
       $(this).iCheck("update");
       if($(".check_radio.group:checked").length > 0){
-        $(".check_radio.group").removeClass("required");
+        //$(".check_radio.group").removeClass("required");
         console.log("ok");
       }else{
-        $(".check_radio.group").addClass("required");
+        //$(".check_radio.group").addClass("required");
         console.log("nok");
       }
       $(".check_radio.group").iCheck("update");
@@ -282,10 +318,10 @@ $(document).ready(function(){
   $(".check_radio").on("ifChanged", function(event){
     if($(this).hasClass("group")){
       if($(".check_radio.group:checked").length > 0){
-        $(".check_radio.group").removeClass("required");
+        //$(".check_radio.group").removeClass("required");
         console.log("ok2");
       }else{
-        $(".check_radio.group").addClass("required");
+        //$(".check_radio.group").addClass("required");
         console.log("nok2");
       }
       $(".check_radio.group").iCheck("update");
@@ -300,6 +336,21 @@ $(document).ready(function(){
       if (members_count < 1) {
           new_member();
       }
+      $(".self_insurance").addClass("hidden");
+    } else {
+      $(".self_insurance").removeClass("hidden");
+      $(".self_insurance .self").html($("input[name='last_fname']").val() + " " + $("input[name='first_fname']").val() + ", дата рождения " + $("input[name='passport_birthday']").val() + " +<br><br>");
+
+      $(".member.show").each(function(){
+        if($(this).find("input.surname").val() == '' && $(this).find("input.name").val() == '' && $(this).find("input.birthday").val() == ''){
+          $(this).addClass("hidden");
+          $(this).find("input").addClass("disabled");
+          $(this).removeClass("show");
+          $(this).find("input.surname").removeClass("required");
+          $(this).find("input.name").removeClass("required");
+          $(this).find("input.birthday").removeClass("required");
+        }
+      });
     };
   });
 

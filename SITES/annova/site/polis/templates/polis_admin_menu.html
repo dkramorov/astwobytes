@@ -1,0 +1,8 @@
+{% if perms.polis.view_polis %}
+<li{% ifequal menu 'polis' %} class="active"{% endifequal %} id="left_menu_polis_app">
+  <a href="{% url 'polis:show_polises' %}">
+    <em class="fa fa-file-text"></em>
+    <span class="item-text">Полюсы</span>
+  </a>
+</li>
+{% endif %}

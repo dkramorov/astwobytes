@@ -132,8 +132,6 @@ function unregister(){
   if (!ua) return;
   if (ua.isRegistered()) {
     ua.unregister();
-  } else {
-    ua.register();
   }
 }
 // -------------
@@ -232,6 +230,18 @@ function createNewSessionUI(uri, session) {
   sessionUI.session        = session;
   sessionUI.node           = node;
   sessionUI.video          = node.querySelector('video');
+
+  sessionUI.displayName    = node.querySelector('.display-name');
+  sessionUI.uri            = node.querySelector('.uri');
+  sessionUI.green          = node.querySelector('.green');
+  sessionUI.red            = node.querySelector('.red');
+  sessionUI.gray           = node.querySelector('.gray');
+  sessionUI.gray_transfer  = node.querySelector('.gray_transfer');
+  sessionUI.dtmf           = node.querySelector('.dtmf');
+  sessionUI.dtmfInput      = node.querySelector('.dtmf input[type="text"]');
+  sessionUI.video          = node.querySelector('video');
+  sessionUI.messages       = node.querySelector('.messages');
+
   sessionUI.renderHint     = {
     remote: sessionUI.video
   };
@@ -241,6 +251,20 @@ function createNewSessionUI(uri, session) {
 
   // SIP.js event listeners
   function setUpListeners(session) {
+
+    if (session.accept) {
+      sessionUI.green.disabled = false;
+      sessionUI.green.innerHTML = "<i class=\"icon-thumbs-up\"></i>";
+      sessionUI.red.innerHTML = "<i class=\"icon-thumbs-down\"></i>";
+      // Дилинь-дилинь
+      startRingTone();
+    } else {
+      sessionUI.green.innerHMTL = "x";
+      sessionUI.red.innerHTML = "<i class=\"icon-thumbs-down\"></i>";
+      // Дилинь-дилинь
+      stopRingTone();
+    }
+
     session.on('accepted', function () {
       session.mediaHandler.render(sessionUI.renderHint);
       stopRingTone();

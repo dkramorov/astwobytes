@@ -39,8 +39,11 @@ class FreeswitchBackend(object):
            :param script: вызываемый python script
            :param args: аргументы для скрипта
         """
+        application = 'python'
+        if script.endswith('.lua'):
+            application = 'lua'
         cmd = '%s %s' % (script, ' '.join(args))
-        self.server.freeswitch.api('python', cmd)
+        self.server.freeswitch.api(application, cmd)
 
     def agent_set_status(self, agent: str, status: int):
         """Задать статус агенту в коллцентре"""

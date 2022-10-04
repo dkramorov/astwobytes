@@ -26,10 +26,9 @@ from apps.shop.models import Orders, Purchases
 from apps.products.models import Products
 from apps.products.views import show_products
 from apps.shop.sbrf import SberPaymentProvider
-from apps.main_functions.pdf_helper import render_pdf
 
 from apps.site.passport.models import Passport
-from apps.site.polis.models import Polis
+from apps.site.polis.models import Polis, pdf_order
 from apps.site.polis.report import polis_report
 
 from . import order_forms
@@ -62,6 +61,8 @@ def home(request):
 
     return render(request, template, context)
 
+def show_pdf_order(request, order_id: int):
+    return pdf_order(order_id=order_id)
 
 @login_required
 def custom_show_products(request):
@@ -79,58 +80,6 @@ def custom_show_products(request):
             'stock_info', # Стараховая программа
             'count', # Период страхования (в мес)
         ), })
-
-def pdf_order(request,
-              order_id,
-              template_vars: dict = None,
-              write2file: bool = False):
-    context = {}
-    order = Orders.objects.select_related('polis', 'shopper').filter(pk=order_id).first()
-    polis = order.polis
-    shopper = order.shopper
-    passport = Passport.objects.filter(shopper=shopper).first()
-    zfill7 = 7 - len('%s' % order.polis.id)
-    context.update({
-        'logo': full_path('misc/soglasie_logo.png'),
-        'stamp': full_path('misc/soglasie_stamp.png'),
-        'order': order,
-        'polis': polis,
-        'shopper': shopper,
-        'passport': passport,
-        'number7': '%s%s' % ('0' * zfill7, order.polis.number)
-    })
-
-    template = 'web/order/pdf/order.html'
-
-    ptype = 'hockey'
-    if polis.ptype == 1:
-        ptype = 'hockey'
-        context['logo'] = full_path('misc/soglasie_logo.png')
-        context['stamp'] = full_path('misc/soglasie_stamp.png')
-    elif polis.ptype == 2:
-        ptype = 'cruise'
-        context['logo'] = full_path('misc/soglasie_logo_en.jpg')
-        context['stamp'] = full_path('misc/soglasie_stamp_en.png')
-        context['members'] = list(polis.polismember_set.all())
-        context['members_count'] = len(context['members']) + 2
-        try:
-            created = datetime.date(polis.created.year, polis.created.month, polis.created.day)
-            context['sdate_days'] = (polis.from_date - created).days
-        except Exception as e:
-            print(e)
-            context['sdate'] = 1
-    template = 'web/order/pdf/order_%s.html' % ptype
-
-    return render_pdf(
-        request,
-        template = template,
-        context = context,
-        download = False,
-        fname = 'insurance_%s' % (
-            order.id,
-        ),
-        write2file = write2file,
-    )
 
 demo_vars = {
     'singular_obj': 'Демо-страничка',
@@ -519,7 +468,8 @@ def checkout(request):
     if request.GET.get('order_id'):
         order_id = request.GET['order_id']
         if order_id.isdigit():
-            order = Orders.objects.filter(pk=order_id, shopper=shopper).first()
+            #order = Orders.objects.filter(pk=order_id, shopper=shopper).first()
+            order = Orders.objects.filter(pk=order_id).first()
             if order:
                 template = 'web/order/confirmed.html'
                 context['order'] = order
@@ -546,9 +496,9 @@ def checkout(request):
             'returnUrl': '%s/payment/sbrf/success/' % host,
             'failUrl': '%s/payment/sbrf/fail/' % host,
             #'description': 'Тестовый заказ',
-            'clientId': shopper.id,
-            'email': shopper.email,
-            'phone': shopper.phone,
+            'clientId': order.shopper.id,
+            'email': order.shopper.email,
+            'phone': order.shopper.phone,
         }
         sber = SberPaymentProvider()
         register_order = sber.register_do(**params)
@@ -649,7 +599,8 @@ def payment(request, provider: str, action: str):
 
     if request.GET.get('orderId'):
         order_id = request.GET['orderId']
-        order = Orders.objects.filter(shopper=shopper, external_number=order_id).first()
+        #order = Orders.objects.filter(shopper=shopper, external_number=order_id).first()
+        order = Orders.objects.select_related('shopper').filter(external_number=order_id).first()
         if order:
             sber = SberPaymentProvider()
             order_status = sber.get_order_status(order.external_number, order.id)
@@ -657,14 +608,14 @@ def payment(request, provider: str, action: str):
             context['order'] = order
 
             if action == 'success' and order.polis.state != 1:
+                shopper = order.shopper
                 Polis.objects.filter(pk=order.polis.id).update(state=1)
                 msg = 'Онлайн оплата прошла успешно. В приложении ваш полис.'
                 host = request.META['HTTP_HOST'].encode('idna').decode('idna')
                 mail = EmailMessage('%s полис' % host, msg, settings.EMAIL_HOST_USER, [shopper.email])
                 mail.content_subtype = 'html'
 
-                pdf_order(request,
-                          order.id,
+                pdf_order(order.id,
                           write2file=True)
                 fname = 'insurance_%s.pdf' % order.id
                 with open_file(fname, 'rb') as f:
@@ -681,13 +632,17 @@ def orders_report(request):
     """Отчет по заказам (страховкам)
        :param request: HttpRequest
     """
+    from django.utils.encoding import escape_uri_path
     context = {}
-    # TODO: сделать разными
-    polis_report()
-    path = 'report.xlsx'
-    ### settings.FULL_SETTINGS_SET.get('REPORT_TYPE') == 'hockey' # 'cruises'
+    now = datetime.datetime.now()
+    start_date = now - datetime.timedelta(days=365)
+    ptype = request.GET.get('ptype', 'simple')
+    if settings.FULL_SETTINGS_SET.get('REPORT_TYPE') == 'hockey':
+        if ptype == 'dsu':
+            ptype = 'dsu_hockey'
+    path = polis_report(start_date=start_date, end_date=now, payed_status='all_payed', ptype=ptype)
     with open(full_path(path), 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Length'] = file_size(path)
-        response['Content-Disposition'] = 'inline; filename=%s' % (path, )
+        response['Content-Disposition'] = 'attachment; filename=%s' % (escape_uri_path(path), )
         return response

@@ -1,0 +1,390 @@
+{% extends "skeleton.html" %}
+{% load tags mtags flatcontent_tags %}
+
+{% block webmaster %}{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  window.sip_config = {
+    traceSip: false,
+    register: true,
+    userAgentString: 'sipjs',
+    // без stun будет INCOMPATIBLE DESTINATION (candidates)
+    stunServers: [],
+  };
+</script>
+<script type="text/javascript" src="/static/call_from_site/js/sip-0.7.8.js"></script>
+<script type="text/javascript" src="/static/call_from_site/js/ua-0.7.3.js"></script>
+<script type="text/javascript" src="/static/call_from_site/js/DetectRTC.js"></script>
+
+<script type="text/javascript">
+  var is_connected2freeswitch = false;
+  function connected_to_server(){
+    is_connected2freeswitch = true;
+  }
+
+  function make_user_call(phone_value){
+    var digits = "";
+    for(var i=0; i<phone_value.length; i++){
+      if("0123456789".indexOf(phone_value[i]) > -1){
+        digits += phone_value[i];
+      }
+    }
+    var new_call = make_call(phone_value);
+    if(new_call !== 1){
+      show_error(new_call);
+    }
+    if(digits === "83952505000"){}
+  }
+
+  var is_webrtc_supported = false;
+  DetectRTC.load(function(){
+    is_webrtc_supported = DetectRTC.isWebRTCSupported;
+
+    if(is_webrtc_supported){
+      set_call_controls($(".make_call"), $(".hangup"), $(".call_timer"));
+      $(".make_call").show();
+      $(".make_call").click(function(){
+        if(!is_connected2freeswitch){
+          connect_to_server(connected_to_server);
+          $("#ext_dial").val("");
+          make_user_call($("#phone_number").val());
+          return;
+        }
+        $("#ext_dial").val("");
+        make_user_call($("#phone_number").val());
+      });
+
+      $(".hangup").click(function(){
+        hangup_call();
+      });
+      $(".keypad-toggle-link").click(function(){
+        $("div.digits").toggleClass("visible");
+        $(this).toggleClass("active");
+      });
+
+      $(".js-call_phone_btn").click(function(){
+        var key = $(this).find("span").html();
+        console.log("key pressed "+key);
+        if(active_session){
+          var dtmf_value = $("#ext_dial").val();
+          $("#ext_dial").val(dtmf_value + key);
+        }else{
+          var phone = $("#phone_number").val();
+          $("#phone_number").val(phone + key);
+        }
+      });
+      $(".clear_phone").click(function(){
+        if(active_session){
+          $("#ext_dial").val("");
+        }else{
+          $("#phone_number").val("");
+        }
+      });
+      $(".ext_dial_button").click(function(){
+        var dtmf = $("#ext_dial").val();
+        $(".dtmf input[type=\"text\"]").val(dtmf);
+        console.log("sending dtmf "+dtmf);
+        send_dtmf(dtmf);
+        $("#ext_dial").val("");
+      });
+    }
+  });
+
+  $(document).ready(function(){
+    $(".call_buttons .recall").click(function(){
+      $(this).parent().find("p").removeClass("hidden");
+      $(this).hide();
+    });
+    $("#authorizationUser").change(function(){
+      unregister();
+      $("#config-form input[name='displayName']").val($(this).val());
+      $("#config-form input[name='uri']").val($(this).val() + "@cheap.1sprav.ru");
+      $("#config-form input[name='authorizationUser']").val($(this).val());
+    });
+
+    $("#configSubmit").click(function(){
+      connect_to_server(connected_to_server);
+    });
+  });
+
+  function show_error(error){
+    $("#call_error").html(error);
+    $("#call_error").show();
+    setTimeout(function(){
+      $("#call_error").hide();
+    }, 2500);
+  }
+
+</script>
+{% endblock %}
+
+{% block body %}
+  <!-- 400x600 -->
+  <main class="page-main hidden">
+    <a id="contentarea"></a>
+    <div class="columns col2-layout">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="column main">
+              <div class="home-style-1">
+                <div class="container">
+                  <h1>Бесплатный звонок из браузера</h1>
+                  {% block content %}
+                  <fieldset>
+                    <a name="free_call_from_browser"></a>
+                    <p>Звонок бесплатный и не требует установки программ, вам нужен только микрофон и наушники</p>
+                    <p>Пожалуйста, не закрывайте это окно до окончания беседы, т/к при его закрытии звонок будет прерван</p>
+                    <p>Обратите внимание, что вам необходимо разрешить использовать ваш микрофон на этой страничке, в противном случае звонок не будет работать</p>
+
+                    <input type="text" id="authorizationUser" value="jocker" />
+                    <div class="keypad">
+                      <input type="text" value="{% if phone %}{{ phone }}{% else %}83952505000{% endif %}" id="phone_number" class="phone" autocomplete="off" />
+                      {% include "web/phone_utils/keypad.html" %}
+                    </div>
+                    {% include "web/phone_utils/call_buttons.html" %}
+                  </fieldset>
+                  <input type="button" id="configSubmit" value="Вход" />
+                  {% endblock %}
+
+<div style="display:block;">
+  <form id="config-form" action="">
+<!--
+    <input type="text" name="displayName" value="demo1000" />
+    <input type="text" name="uri" value="demo1000@calls.223-223.ru" />
+    <input type="text" name="authorizationUser" value="demo1000" />
+    <input type="password" name="password" value="cnfylfhnysq" />
+    <input type="text" name="wsServers" value="wss://calls.223-223.ru:7443" />
+-->
+    <input type="hidden" name="displayName" value="jocker" />
+    <input type="hidden" name="uri" value="jocker@cheap.1sprav.ru" />
+    <input type="hidden" name="authorizationUser" value="jocker" />
+    <input type="hidden" name="password" value="cnfylfhnysq" />
+    <input type="hidden" name="wsServers" value="wss://cheap.1sprav.ru:7443" />
+  </form>
+  <div id="ua">
+    <div id="ua-status">Disconnected</div>
+  </div>
+  <ul id="session-list"></ul>
+  <ul id="templates">
+    <li id="session-template" class="template session">
+      <strong class="display-name" style="display:none;"></strong>
+      <span class="uri"></span>
+      <span class="name"></span>
+      <button class="green">Green</button>
+      <button class="red">Red</button>
+      <input type="text" class="gray_transfer" value="" style="display:none;"/>
+      <button class="gray">=></button>
+      <button class="blue"><i class="icon icon-info"></i></button>
+      <div style="display:none;">
+      <form class="dtmf" action="" style="display:none;">
+        <label><input type="text" maxlength="4" /></label>
+        <input type="submit" value="DTMF" />
+      </form>
+      </div>
+      <video autoplay style="display:none;">Video Disabled or Unavailable</video>
+      <ul class="messages" style="display:none;"></ul>
+      <form class="message-form" action="" style="display:none;">
+        <input type="text" placeholder="Type to send a message"/><input type="submit" value="Send" />
+      </form>
+    </li>
+  </ul>
+</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<audio id="ringtone" loop src="/static/call_from_site/sounds/ringtone2.wav"></audio>
+<audio id="ringbacktone" loop src="/static/call_from_site/sounds/ringbacktone.wav"></audio>
+
+
+
+----
+
+<h1 id="console" class="text-center"></h1>
+<script src="/media/js/speech.js"></script>
+<button id="left" onmousedown="collect(0)" onmouseup="collect(null)">Left</button>
+<button id="right" onmousedown="collect(1)" onmouseup="collect(null)">Right</button>
+<button id="noise" onmousedown="collect(2)" onmouseup="collect(null)">Noise</button>
+<button id="train" onclick="train()">Train</button>
+<button id="listen" onclick="listen()">Listen</button>
+<input type="range" id="output" min="0" max="10" step="0.1">
+{% endblock %}
+
+{% block extrahead %}
+<script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands"></script>
+
+
+<style type="text/css">
+  #templates {
+    display: none;
+  }
+  .page-main{
+    padding:0;
+    margin: 0 10px 50px;
+    overflow-x:hidden;
+  }
+  .page-main fieldset{
+    margin:5px 5px 20px 5px;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+  }
+  .container{
+    padding:0;
+  }
+  .call_buttons{
+    text-align:center;
+  }
+  div.keypad{
+    position:relative;
+  }
+  .keypad-toggle-link {
+    font-size:24px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    height: 40px;
+    width: 40px;
+    line-height:46px;
+    color:#999;
+    cursor: pointer;
+  }
+  .keypad-toggle-link.active{
+    color:#ffa800;
+  }
+
+  div.digits{
+    display:none;
+  }
+  div.digits.visible{
+    display:block;
+  }
+  button.action.btn{
+    display:none;
+    margin: 20px auto;
+    background: #c93939;
+    color: #ffffff;
+    text-decoration: none;
+    font-size:20px;
+  }
+  p.green{
+    color: #7ac060;
+    font-size:1.2em;
+    font-weight:bold;
+    line-height:1.4em;
+  }
+  button.action.btn.recall{
+    background: #7ac060;
+    display:inline-block;
+  }
+
+  button.action.btn:hover{
+    background: -webkit-gradient(linear, left top, left bottom, from(#ff4a4a), to(#992727));
+    background: -moz-linear-gradient(top, #ff4a4a, #992727);
+    background: linear-gradient(to bottom, #ff4a4a, #992727);
+    -webkit-box-shadow: #ff5959 0px 0px 20px 0px;
+    -moz-box-shadow: #ff5959 0px 0px 20px 0px;
+    box-shadow: #ff5959 0px 0px 20px 0px;
+    text-shadow: #591717 1px 1px 1px;
+  }
+
+  button.action.btn.make_call{
+    background: #7ac060;
+  }
+  button.action.btn.make_call:hover, button.action.btn.recall:hover{
+    display:inline;
+    background: #8ddb4f;
+    background: -webkit-gradient(linear, left top, left bottom, from(#8ddb4f), to(#568530));
+    background: -moz-linear-gradient(top, #8ddb4f, #568530);
+    background: linear-gradient(to bottom, #8ddb4f, #568530);
+    -webkit-box-shadow: #94e453 0px 0px 20px 0px;
+    -moz-box-shadow: #94e453 0px 0px 20px 0px;
+    box-shadow: #94e453 0px 0px 20px 0px;
+    text-shadow: #3e5f23 1px 1px 1px;
+  }
+  table.digits{
+    width:100%;
+    border-right:1px solid #dae1ec;
+    border-bottom:1px solid #dae1ec;
+  }
+  table.digits td>span{
+    height:45px;
+    line-height:45px;
+  }
+  table.digits td{
+    width:33%;
+    border-top:1px solid #dae1ec;
+    border-left:1px solid #dae1ec;
+    padding:0;
+    background-color:#f8f9fb;
+    cursor:pointer;
+    -webkit-transition:all .2s ease 0s;
+    -moz-transition:all .2s ease 0s;
+    -o-transition:all .2s ease 0s;
+    transition:all .2s ease 0s;
+    font-size:25px;
+    color:#0060c4;
+    text-align:center;
+  }
+  .ext_dial_button{
+    font-size:13px;
+    width:100%;
+    height:100%;
+    display:block;
+    margin:0;
+    padding:0;
+  }
+  table.digits td span.ext_dial_button{
+    padding-top:8px;
+    line-height:15px;
+  }
+  #ext_dial{
+    margin:1px 0 0 0;
+  }
+input[type="text"], input[type="password"], input[type="url"], input[type="tel"], input[type="search"], input[type="number"], input[type="datetime"], input[type="email"], select, textarea, body .action.primary, .login-container .block-content, .vacancy-container .block-content, .contact-container .block-content, .password-strength-meter, .password-strength-meter:before, .messages .message {
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+input, textarea, select {
+    border: 1px solid #dfdfdf;
+    font-size: 16px;
+    padding: 10px 15px;
+    width: 100%;
+    margin: 0 0 20px 0;
+    max-width: 100%;
+    resize: none;
+}
+.action.primary {
+    background-image: none;
+    background: #333;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: normal;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+.phone_make_call{
+  margin:10px 20px 0 0;
+  float:left;
+}
+</style>
+{% endblock %}

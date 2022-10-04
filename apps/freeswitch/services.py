@@ -158,6 +158,8 @@ def voice_code(dest, digit, script: str = 'hello.say_digit'):
        :param digit: число, которое сообщаем в назначение
        Вызывается скрипт hello/say_digit.py
     """
+    if not script in ['hello.say_digit', 'reg_call.lua']:
+        return 'error: script not supported'
     if not dest or not digit:
         return 'error: phone or digit is absent'
     if len(dest) != 11:

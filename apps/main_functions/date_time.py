@@ -28,6 +28,14 @@ def calc_elapsed_time(func):
         return result
     return wrapper
 
+def create_utc_datetime(date: datetime.datetime):
+    """Создает offset-naive из offset-awaire datetime.datetime для сравнения,
+       чтобы избежать ошибки
+       can't compare offset-naive and offset-aware datetimes
+       :param date: datetime.datetime время
+    """
+    return datetime.datetime(date.year, date.month, date.day, date.hour, date.minute, date.second, tzinfo=datetime.timezone.utc)
+
 def date_to_timestamp(date):
     """datetime.datetime to time.time()"""
     return time.mktime(date.timetuple())

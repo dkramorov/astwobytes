@@ -1,10 +1,11 @@
+
 https://freeswitch.org/confluence/display/FREESWITCH/FreeSWITCH+1.10.x+Release+notes
 -mod_av
 -mod_verto
 -mod_signalware
 
 # Видео так и не заработало mod_av https://github.com/signalwire/freeswitch/issues/175
-# apt install libavformat-dev libswscale-dev
+# apt install libavformat-dev libswscale-dev libtiff-dev
 # apt-get install ffmpeg
 # apt install libavcodec-extra libavfilter-dev libavl-dev
 
@@ -13,7 +14,7 @@ apt install liblua5.2-dev # установка 5.2 + ldconfig помогли (з
 sofia-sip + spandsp выведены во внешние зависимости
 checking for spandsp >= 3.0... configure: error: no usable spandsp; please install spandsp3 devel package or equivalent
 
-(git clone https://github.com/freeswitch/sofia-sip.git)
+git clone https://github.com/freeswitch/sofia-sip.git
 git clone https://github.com/freeswitch/spandsp.git
 cd spandsp
 ./bootstrap.sh
@@ -26,7 +27,20 @@ make install
 То можно попробовать выполнить следующую команду:
 ldconfig
 
+sudo apt install -y cmake
+cd /usr/src
+sudo git clone https://github.com/signalwire/libks.git
+cd libks
+sudo cmake .
+sudo make
+sudo make install
 
+cd /usr/src
+git clone https://github.com/signalwire/signalwire-c.git
+cd signalwire-c
+sudo cmake .
+sudo make
+sudo make install
 
 
 качаем openssl-1.1.1
@@ -128,7 +142,7 @@ passwd -l freeswitch # Users with a locked password are not allowed to change th
 Установим права и владельцев на файлы FreeSwitch:
 
 chown -R freeswitch:freeswitch /usr/local/freeswitch/
-chmod -R g+w  /usr/local/freeswitch/
+chmod -R g+w /usr/local/freeswitch/
 cp /usr/src/freeswitch/build/freeswitch.init.redhat /etc/init.d/freeswitch && chmod +x /etc/init.d/freeswitch
 cp /usr/src/freeswitch/build/freeswitch.sysconfig /etc/sysconfig/freeswitch
 
@@ -306,3 +320,26 @@ create database freeswitch;
     sip_shared_appearance_dialogs
     sip_shared_appearance_subscriptions
     sip_subscriptions
+
+
+
+apt install bison
+uncomment mod_pocketsphinx, mod_v8 modules.conf
+cp -drp <freeswitch-src-dir>/scripts/javascript/js_modules /usr/local/freeswitch/scripts/
+cp <freeswitch-src-dir>/scripts/javascript/ps_pizza.js /usr/local/freeswitch/scripts/
+<include>
+ <extension name="pizza_demo">
+   <condition field="destination_number" expression="^(pizza|74992)$"/>
+   <condition field="${module_exists(mod_spidermonkey)}" expression="true"/>
+   <condition field="${module_exists(mod_pocketsphinx)}" expression="true">
+    <action application="javascript" data="ps_pizza.js"/>
+   </condition>
+ </extension>
+</include>
+cd /usr/local/freeswitch/grammar
+wget http://files.freeswitch.org/pizza_gram.tar.gz
+tar xvzf pizza_gram.tar.gz
+
+We don't have libv8 for Ubuntu.
+
+module_exists mod_pocketsphinx 

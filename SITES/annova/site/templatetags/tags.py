@@ -25,9 +25,13 @@ def adult_date():
     now = datetime.datetime.today()
     return datetime.datetime(now.year - 18, now.month, now.day).strftime('%d-%m-%Y')
 
-@register.filter(name = 'replace_quotes')
+@register.filter(name='replace_quotes')
 def replace_quotes(text):
     return text.replace('"', '\'')
+
+@register.filter(name='plus1day')
+def plus1day(date):
+    return date_plus_days(date, days=1)
 
 @register.inclusion_tag('web/order/ajax_cart.html')
 def ajax_cart(request):
@@ -180,7 +184,13 @@ def cruises(request,
     inCache = cache.get(cache_var)
     if inCache:
         return inCache
-    products = list(Blocks.objects.filter(container__tag='cruises').order_by('position'))
+    products = list(Blocks.objects.filter(container__tag='cruises', is_active=True).order_by('position'))
+    now = datetime.datetime.now()
+    for product in products:
+        created = product.created
+        delta = created - now
+        if delta.days < 3:
+            product.without_G1 = True
     cache.set(cache_var, products, cache_time)
     return products
 
@@ -211,6 +221,8 @@ def insurance_products_cruise(request,
         cat = pcat.cat
         if cat.id not in result:
             result[cat.id] = {'cat': cat, 'products': []}
+            if pcat.product.code and 'G' in pcat.product.code:
+                result[cat.id]['G1'] = 'Можно выбрать только если выбрана Медицинская страховка'
         result[cat.id]['products'].append(pcat.product)
 
     cache.set(cache_var, result, cache_time)

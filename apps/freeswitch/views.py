@@ -597,7 +597,11 @@ def say_code(request):
     result = {}
     dest = request.GET.get('phone')
     digit = request.GET.get('digit')
-    result['result'] = voice_code(dest=dest, digit=digit)
+    # Если надо вызвать альтернативный скрипт вместо hello.say_digit
+    script = 'hello.say_digit'
+    if request.GET.get('script'):
+        script = request.GET['script']
+    result['result'] = voice_code(dest=dest, digit=digit, script=script)
     return JsonResponse(result, safe=False)
 
 @csrf_exempt

@@ -21,7 +21,7 @@ urlpatterns = [
     url('^shop/order/(?P<order_id>[0-9]{1,11})/$', views.show_order, name='show_order'),
     url('payment/(?P<provider>sbrf)/(?P<action>success|fail)/$', views.payment, name='payment'),
 
-    url('shop/order/(?P<order_id>[0-9]{1,11})/pdf/$', views.pdf_order, name='pdf_order'),
+    url('shop/order/(?P<order_id>[0-9]{1,11})/pdf/$', views.show_pdf_order, name='pdf_order'),
 
     # Переопределение вывода товаров
     path('products/admin/', views.custom_show_products, name='custom_show_products'),

@@ -147,6 +147,7 @@ def order_form_hockey(request):
                 product_name=product.name,
                 product_price=product.min_count, # страховая премия
                 product_code=product.code,
+                product_measure=product.measure,
                 count=1,
                 cost=product.price,
                 shopper=shopper,
@@ -206,7 +207,15 @@ def order_form_cruise(request):
         #'do_not_send': 1, # Не отправляем письмо
         'fields':[
           {'name': 'cruise', 'value': 'Круиз'},
-          {'name': 'fname', 'value': 'Имя страхователя на латинице'},
+
+          #{'name': 'fname', 'value': 'Имя страхователя на латинице'},
+          {'name': 'last_fname', 'value': 'Фамилия страхователя на латинице'},
+          {'name': 'first_fname', 'value': 'Имя страхователя на латинице'},
+
+          {'name': 'last_name', 'value': 'Фамилия страхователя на русском языке'},
+          {'name': 'first_name', 'value': 'Имя страхователя на русском языке'},
+          {'name': 'middle_name', 'value': 'Отчество страхователя на русском языке'},
+
           {'name': 'insurance_type', 'value': 'Тип страховки'},
 
           {'name': 'already_safe', 'value': 'Страхователь застрахован'},
@@ -232,12 +241,16 @@ def order_form_cruise(request):
                 birthday = request.POST.get('birthday_%s' % digit)
                 if value and birthday:
                     polis_members.append({
-                        'name': value,
+                        'name': '%s %s' % (request.POST.get('surname_%s' % digit) or '', value),
                         'birthday': str_to_date(birthday),
                     })
                 kwargs['fields'].append({
                     'name': key,
                     'value': 'Застрахованный %s. Имя' % digit,
+                })
+                kwargs['fields'].append({
+                    'name': 'surname_%s' % digit,
+                    'value': 'Застрахованный %s. Фамилия' % digit,
                 })
                 kwargs['fields'].append({
                     'name': 'birthday_%s' % digit,
@@ -280,6 +293,9 @@ def order_form_cruise(request):
         else:
             shopper = Shopper()
         shopper_fields = {
+            'first_name': '',
+            'last_name': '',
+            'middle_name': '',
             'name': '',
             'phone': '',
             'email': '',
@@ -289,6 +305,11 @@ def order_form_cruise(request):
             if not shopper_fields[key]:
                 continue
             setattr(shopper, key, shopper_fields[key])
+        setattr(shopper, 'name', '%s %s %s' % (
+            request.POST.get('last_name') or '',
+            request.POST.get('first_name') or '',
+            request.POST.get('middle_name') or '',
+        ))
         shopper.save()
         request.session['shopper'] = shopper.to_dict()
 
@@ -325,6 +346,7 @@ def order_form_cruise(request):
                     product_name=product.name,
                     product_price=product.min_count, # страховая премия
                     product_code=product.code,
+                    product_measure=product.measure,
                     count=count,
                     cost=product.price,
                     shopper=shopper,
@@ -378,7 +400,10 @@ def order_form_cruise(request):
                 order = order,
                 ptype = ptype,
                 number = order_id,
-                name = request.POST.get('fname'),
+                name = '%s %s' % (
+                    request.POST.get('last_fname') or '',
+                    request.POST.get('first_fname') or '',
+                ),
                 birthday = birthday,
                 insurance_sum = product.min_count,
                 insurance_program = product.stock_info,

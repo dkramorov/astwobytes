@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
 import json
+import random
 import requests
 import datetime
 
@@ -11,6 +12,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count
 
 from oauth2client.service_account import ServiceAccountCredentials
 from apps.main_functions.functions import object_fields
@@ -51,6 +53,11 @@ registrations_vars = {
     'model': Registrations,
     #'custom_model_permissions': Registrations,
 }
+
+FS_REG_CODES = []
+for item in settings.FULL_SETTINGS_SET.get('FREESWITCH_REG_PHONES', '').split(','):
+    FS_REG_CODES.append(item.strip()[-4:])
+FS_REG_CODES_LEN = len(FS_REG_CODES)
 
 def get_jabber_users(request):
     """Отдаем пользователей джаббера, например, для свича,
@@ -202,6 +209,7 @@ def register_user(request):
         analog = FirebaseTokens.objects.filter(token=token).first()
         if not analog:
             analog = FirebaseTokens(token=token)
+        analog.apns_token = method.get('apns_token')
         analog.login = phone
         analog.ip = get_request_ip(request)
         analog.save()
@@ -220,6 +228,35 @@ def register_user(request):
             passwd = method.get('passwd')
             name = method.get('name')
 
+            # Скрипт отправляет на свич телефон и код,
+            # свич звонит и диктует
+            params = {
+                'phone': phone,
+                'digit': code,
+            }
+
+            # Для упрощенной первичной регистрации надо отправлять
+            # simple_reg=1 в параметрах (чтобы регнуться по 4 последним цифрам входящего)
+            simple_reg = method.get('simple_reg')
+            # Если регистрация новая (нет активных регистраций),
+            # тогда отправляем звонок со сбросом
+            # и подтверждение будет по 4 последним цифрам номера,
+            # если активные регистрации есть,
+            # тогда отправляем звонок и код проговаривается
+            ind = 0
+            if simple_reg:
+                active_registrations = Registrations.objects.filter(
+                    phone=phone,
+                    is_active=True
+                ).aggregate(Count('id'))['id__count']
+                if not active_registrations:
+                    ind = random.randint(0, FS_REG_CODES_LEN-1)
+                    code = FS_REG_CODES[ind]
+                    # в луа скрипте в table индекс первого элемента = 1
+                    params['digit'] = '%s' % (ind + 1, )
+                    params['script'] = 'reg_call.lua'
+                    params['simple_reg'] = 1
+
             # Заносим пользователя как отключенного (is_active=False)
             analog = Registrations(is_active=False)
             analog.phone = phone
@@ -232,13 +269,9 @@ def register_user(request):
             # Код передаем на свич - поэтому,
             # он секретная инфа, как паролька
             result = object_fields(analog, pass_fields=('passwd', 'code'))
+            if 'simple_reg' in params:
+                result['simple_reg'] = True
 
-            # Скрипт отправляет на свич телефон и код,
-            # свич звонит и диктует
-            params = {
-                'phone': phone,
-                'digit': code,
-            }
             uri = '%s/freeswitch/sms_service/say_code/' % settings.FREESWITCH_DOMAIN
             if not uri.startswith('https://'):
                 uri = 'https://%s' % uri
@@ -248,7 +281,8 @@ def register_user(request):
             try:
                 r = requests.get(uri, params=params, timeout=(5, 0.1))
             except Exception as e:
-                return JsonResponse(result, safe=False, status=status_code)
+                pass
+            return JsonResponse(result, safe=False, status=status_code)
 
     elif action == 'confirm' and phone:
         code = method.get('code')
@@ -429,6 +463,7 @@ def notification_helper(request, app_id: str = None):
                 'data': {
                     'sender': from_jid,
                     'receiver': to_jid,
+                    'body': text,
                 },
             },
         }
@@ -510,3 +545,86 @@ def notification(request, app_id: int):
     """
     return notification_helper(request, app_id=app_id)
 
+def credentials_hash(login: str, passwd: str):
+    """Делаем хэш или логина + парольки
+       :param login: логин
+       :param passwd: пароль
+    """
+    import hashlib
+    m = hashlib.sha256()
+    m.update(kill_quotes(login, 'int').encode('utf-8'))
+    m.update(kill_quotes(passwd, 'int').encode('utf-8'))
+    return m.hexdigest()
+
+@login_required
+def test_push(request):
+    """Тест отправки push сообщения
+    """
+    result = {}
+    name = 'Тест отправки push сообщения'
+    root_url = reverse('jabber:test_push', current_app=CUR_APP)
+    context = {
+         'app': CUR_APP,
+         'title': name,
+         'singular_obj': name,
+         'rp_singular_obj': 'Теста отправки push сообщения',
+         'breadcrumbs': [{
+             'name': 'Чат Jabber',
+             'link': root_url,
+         }, {
+             'name': name,
+             'link': root_url,
+         }],
+         'menu': tokens_vars['menu'],
+         'submenu': 'test_push',
+    }
+
+    # Переменные
+    chat_app = 'mastermechat'
+    action = 'chat'
+    login = '89148959223'
+    passwd = '123'
+    to_phone = '89016598623'
+    text = 'test'
+    only_data = True
+    notify_endpoint = '/jabber/notification/%s/' % chat_app;
+    url = 'https://%s%s' % (settings.JABBER_DOMAIN, notify_endpoint)
+
+    if request.is_ajax() and request.method == 'POST':
+        if request.POST.get('chat_app'):
+            chat_app = request.POST['chat_app']
+        if request.POST.get('action'):
+            action = request.POST['action']
+        if request.POST.get('chat'):
+            chat = request.POST['chat']
+        if request.POST.get('login'):
+            login = request.POST['login']
+        if request.POST.get('passwd'):
+            passwd = request.POST['passwd']
+        if request.POST.get('to_phone'):
+            to_phone = request.POST['to_phone']
+        if request.POST.get('text'):
+            text = request.POST['text']
+        if request.POST.get('only_data'):
+            only_data = True
+        else:
+            only_data = False
+
+        data = {
+            'additional_data': {
+                'action': action,
+            },
+            'name': login, # от кого
+            'toJID': kill_quotes(to_phone, 'int'),
+            'fromJID': kill_quotes(login, 'int'),
+            'credentials': credentials_hash(login, passwd),
+            'body': text,
+        }
+        if only_data:
+            data['only_data'] = True
+        #return JsonResponse(data, safe=False)
+        r = requests.post(url, json=data)
+        return JsonResponse(r.json(), safe=False)
+
+    template = '%s_test_push.html' % (CUR_APP, )
+    return render(request, template, context)

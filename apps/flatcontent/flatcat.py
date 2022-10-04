@@ -260,7 +260,7 @@ def get_catalogue(request,
        :param with_count: вытащить по каждой рубрике кол-во товара
        :param cache_time: кэш
        :param force_new: получить каталог без кэша
-       :param custom_fat_hier: сколько рубрик считать жирной иерархией?
+       :param fat_hier: сколько рубрик считать жирной иерархией?
     """
     if not tag:
         tag = settings.DEFAULT_CATALOGUE_TAG
@@ -270,9 +270,10 @@ def get_catalogue(request,
         MY_FAT_HIER = fat_hier
 
     pass_cache = False
-    cache_var = '%s_%s_catalogue' % (
+    cache_var = '%s_%s_%s_catalogue' % (
         settings.PROJECT_NAME,
         tag,
+        fat_hier if fat_hier else 0,
     )
     if not force_new:
         if request.GET.get('force_new') or request.GET.get('ignore_cache'):
@@ -295,16 +296,18 @@ def get_catalogue(request,
         # Если рубрик дохера, то будет больно, избегаем этого
         query = container.blocks_set.filter(is_active=True)
         count = query.aggregate(Count('id'))['id__count']
+
         new_parents = ''
+        cats = query.filter(parents=new_parents).order_by('position')
+
         if count > MY_FAT_HIER:
             pass_cache = True
-            cats = query.filter(parents=new_parents).order_by('position')
             while len(cats) == 1:
                 new_parents = '%s_%s' % (cats[0].parents if cats[0].parents else '', cats[0].id)
                 cats = query.filter(parents=new_parents).order_by('position')
 
         menu_queryset = []
-        recursive_fill(cats, menu_queryset, new_parents)
+        recursive_fill(cats, menu_queryset, '')
         menus = sort_voca(menu_queryset)
     result = {
         'container': container,

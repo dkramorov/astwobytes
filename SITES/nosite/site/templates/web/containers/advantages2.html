@@ -1,0 +1,68 @@
+{% load mtags %}
+<section id="features" class="section-ptb">
+  <div class="exclusive-features-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="themeix-section-heading-title">
+            <h2 class="head-title">{{ container.name }}</h2>
+            {% if container.description %}<div class="light-300">{{ container.description|safe }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="zenith-wrapper">
+        <div class="row">
+          <div class="col-sm-4">
+            {% for item in blocks %}
+              {% ifequal item.tag 'left' %}
+                {% for block in item.sub %}
+                  <div class="feature-section highlight" data-index="{{ forloop.counter0 }}">
+                    <div class="feature-icon">
+                      <i class="fa fa-{{ block.icon }}"></i>
+                    </div>
+                    <div class="feature-content">
+                      <h3 class="themeix-feature-title">{{ block.name }}</h3>
+                      {% if block.html %}<div class="themeix-feature-style">{{ block.html|safe }}</div>{% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endifequal %}
+            {% endfor %}
+          </div>
+          <div class="col-sm-4 hidden-xs padding-zero">
+            <div class="phone-holder">
+              <div id="fon"></div>
+              {% for item in blocks %}
+                {% ifequal item.tag 'center' %}
+                  {% for block in item.sub %}
+                    <div class="hgh-linner hgi" data-index="{{ forloop.counter0 }}">
+                      <img src="{% imagine block.img '800x600' block.get_folder True %}" class="attachment-highlight wp-post-image" alt="{{ block.name|textize }}" />
+                    </div>
+                  {% endfor %}
+                {% endifequal %}
+              {% endfor %}
+            </div>
+          </div>
+          <div class="col-sm-4">
+            {% for item in blocks %}
+              {% ifequal item.tag 'right' %}
+                {% for block in item.sub %}
+                  <div class="feature-section highlight" data-index="{{ forloop.counter0 }}">
+                    <div class="feature-icon">
+                      <i class="fa fa-{{ block.icon }}"></i>
+                    </div>
+                    <div class="feature-content">
+                      <h3 class="themeix-feature-title">{{ block.name }}</h3>
+                      {% if block.html %}<div class="themeix-feature-style">{{ block.html|safe }}</div>{% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endifequal %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

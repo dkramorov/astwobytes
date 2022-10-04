@@ -3,8 +3,10 @@ from django.urls import path
 from django.conf.urls import url
 
 from . import views
+from . import exchange
 
 app_name = 'shop'
+# TODO: 'shop/...' у нас итак префикс /shop/ зачем тут делать /shop/shop/ ?
 urlpatterns = [
     # получение по апи всех данных (т/к не секретно)
     url('^(?P<action>orders)/api/$', views.api, name='api'),
@@ -55,4 +57,7 @@ urlpatterns = [
     path('admin/promocodes/positions/', views.promocodes_positions, name='promocodes_positions'),
     # аякс-поиск
     path('shop/search/promocodes/', views.search_promocodes, name='search_promocodes'),
+
+    # выгрузка из 1с Управление торговлей по формату битрикса
+    path('exchange1c/', exchange.exchange1c, name='exchange1c'),
 ]

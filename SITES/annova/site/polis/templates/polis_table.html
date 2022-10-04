@@ -1,0 +1,131 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+{% include "core/title/page_title_table.html" %}
+{% include "core/breadcrumbs.html" %}
+
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+
+$(document).ready(function(){
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "Ид заказа",
+      field: "order.id",
+      headerFilterPlaceholder: "Ид заказа",
+      headerFilter: "input",
+      headerFilterFunc: "=",
+      width: 120,
+    },
+    {
+      title: "Номер полюса",
+      field: "number",
+      headerFilterPlaceholder: "Номер полюса",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "ФИО страховщика",
+      field: "name",
+      headerFilterPlaceholder: "ФИО страховщика",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 90,
+    },
+    {
+      title: "Дата рождения страховщика",
+      field: "birthday",
+      headerFilterPlaceholder: "Дата рождения страховщика",
+      headerFilter: "input",
+      headerFilterFunc: "=",
+      width: 120,
+    },
+    {
+      title: "Общая страховая сумма",
+      field: "insurance_sum",
+      headerFilterPlaceholder: "Общая страховая сумма",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "Страховая программа",
+      field: "insurance_program",
+      headerFilterPlaceholder: "Страховая программа",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "Период страхования с",
+      field: "from_date",
+      headerFilterPlaceholder: "Период страхования с",
+      headerFilter: "input",
+      headerFilterFunc: "=",
+      width: 120,
+    },
+    {
+      title: "Период страхования до",
+      field: "to_date",
+      headerFilterPlaceholder: "Период страхования до",
+      headerFilter: "input",
+      headerFilterFunc: "=",
+      width: 120,
+    },
+    {
+      title: "Страховка, включая себя",
+      field: "already_safe",
+      headerFilterPlaceholder: "Страховка, включая себя",
+      headerFilter: true,
+      headerFilterFunc: "=",
+      headerFilterParams: {
+        values: {"": "Без фильтра", true: "Да", false: "Нет"},
+      },
+      editable: false,
+      editor: "select",
+      formatter: booleanFormatter,
+      width: 90,
+       downloadTitle: "already_safe",
+      accessorDownload: accessor_is_active,
+      //accessorDownloadParams: {test: 'test'},
+    },
+    {% include "core/tabulator_cell/image.html" %}
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ]
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
+  $(".tabulator-headers .tabulator-col").each(function(){
+    var tabulator_field = $(this).attr("tabulator-field");
+    if(tabulator_field == "birthday" || tabulator_field == "from_date" || tabulator_field == 'to_date'){
+      $(this).find("input").datepicker({
+        onSelect: function (fd, d, calendar) {
+          calendar.hide();
+        },
+        position: "left top",
+        todayButton: new Date(),
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

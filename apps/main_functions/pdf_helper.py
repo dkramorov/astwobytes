@@ -28,8 +28,7 @@ def link_callback(uri, rel):
         raise Exception('media URI not found %s' % path)
     return path
 
-def render_pdf(request,
-               template: str,
+def render_pdf(template: str,
                context: dict = None,
                fname: str = None,
                download: bool = False,
@@ -37,7 +36,6 @@ def render_pdf(request,
                page_orientation: str = 'portrait',
                write2file: bool = False):
     """Формирует пдф
-       :param request: HttpRequest
        :param template: шаблон для pdf, например, 'web/test_pdf.html'
        :param context: словарь для шаблона
        :param fname: название файла
@@ -54,6 +52,8 @@ def render_pdf(request,
     font_bold = os.path.join(settings.STATIC_ROOT, 'fonts/DejaVuSans-Bold.ttf')
     font_times = os.path.join(settings.STATIC_ROOT, 'fonts/TimesNewRomanPSMT.ttf')
     font_times_bold = os.path.join(settings.STATIC_ROOT, 'fonts/TimesNewRomanPS-BoldMT.ttf')
+    font_tahoma = os.path.join(settings.STATIC_ROOT, 'fonts/Tahoma.ttf')
+    font_tahoma_bold = os.path.join(settings.STATIC_ROOT, 'fonts/Tahoma-Bold.ttf')
     default_context = {
         'pagesize': pagesize,
         'page_orientation': page_orientation,
@@ -62,6 +62,8 @@ def render_pdf(request,
         'font_bold': font_bold,
         'font_times': font_times,
         'font_times_bold': font_times_bold,
+        'font_tahoma': font_tahoma,
+        'font_tahoma_bold': font_tahoma_bold,
     }
     context.update(default_context)
 

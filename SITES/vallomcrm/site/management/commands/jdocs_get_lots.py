@@ -13,7 +13,7 @@ logger = logging.getLogger('main')
 
 
 class Command(BaseCommand):
-    """Проверка формирования файла с заказами"""
+    """Получение лотов с jdocs"""
     def add_arguments(self, parser):
         parser.add_argument('--start_date',
             action = 'store',

@@ -2,9 +2,6 @@
 import os
 import logging
 
-from openpyxl import load_workbook
-from io import BytesIO
-
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db.models import Q

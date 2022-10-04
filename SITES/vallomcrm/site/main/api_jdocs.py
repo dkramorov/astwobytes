@@ -15,12 +15,15 @@ env.read_envfile(os.path.join(settings.BASE_DIR, 'conf', '.env'))
 logger = logging.getLogger('simple')
 
 class APIJDOCS():
-    """Класс для работы с jdocs (получение лотов)
+    """Класс для работы с jdocs (получение лотов + автолотов)
     """
     login = env('API_JDOCS_USER')
     passwd = env('API_JDOCS_PASSWD')
-    domain = 'https://users.jsmjapan.com'
-    lots_endpoint = '/ru/site/get-user-records'
+
+    domain = 'https://users.jsmjapan.com/ru/site'
+    lots_endpoint = '/get-user-records'
+    autolots_endpoint = '/get-user-cars'
+
     default_params = {
         'key': passwd,
         'start_date': '2021-05-01',
@@ -30,16 +33,13 @@ class APIJDOCS():
     def __init__(self):
         pass
 
-    def get_lots(self, start_date: str, end_date: str):
-        """Получение лотов
-           :param start_date: Дата начала
-           :param end_date: Дата окончания
+    def do_request(self, url: str, params: dict, out: str):
+        """Запрос к апи
+           :param url: ссылка
+           :param params: параметры запроса
+           :param out: имя выходного файла
         """
-        urla = '%s%s' % (self.domain, self.lots_endpoint)
-        params = self.default_params.copy()
-        params['start_date'] = start_date
-        params['end_date'] = end_date
-        r = requests.get(urla, params=params, verify=False)
+        r = requests.get(url, params=params, verify=False)
         result = {}
         try:
             result = r.json()
@@ -47,8 +47,38 @@ class APIJDOCS():
             logger.info('[URL]: %s' % r.url)
             logger.info('[ERROR]: %s, %s' % (e, r.text))
         if result:
-            with open_file('jdocs_get_lots.json', 'w+', encoding='utf-8') as f:
+            with open_file(out, 'w+', encoding='utf-8') as f:
                 f.write(json.dumps(result))
+        return result
+
+    def dates2params(self, start_date, end_date):
+        """Даты в параметры для запроса
+           :param start_date: Дата начала
+           :param end_date: Дата окончания
+        """
+        params = self.default_params.copy()
+        params['start_date'] = start_date
+        params['end_date'] = end_date
+        return params
+
+    def get_autolots(self, start_date, end_date):
+        """Получение автолотов
+           :param start_date: Дата начала
+           :param end_date: Дата окончания
+        """
+        urla = '%s%s' % (self.domain, self.autolots_endpoint)
+        params = self.dates2params(start_date, end_date)
+        result = self.do_request(url=urla, params=params, out='jdocs_get_autolots.json')
+        return result
+
+    def get_lots(self, start_date: str, end_date: str):
+        """Получение лотов
+           :param start_date: Дата начала
+           :param end_date: Дата окончания
+        """
+        urla = '%s%s' % (self.domain, self.lots_endpoint)
+        params = self.dates2params(start_date, end_date)
+        result = self.do_request(url=urla, params=params, out='jdocs_get_lots.json')
         return result
 
     def load_exmple_from_old_format(self, lot_number: str):
@@ -130,4 +160,53 @@ class APIJDOCS():
             f.write(json.dumps(lots_old_format))
         return lots_old_format
 
+
+    def prepare_autolots_data(self, lots):
+        """Подготавливаем лоты для вставки в таблицу
+           :param lots: лоты, которые будем подготавливать
+        """
+        lots_old_format = []
+        # Маппинг на старый формат
+
+        mapping = {
+            'car_id': 'doko_id',
+            'date': 'doko_created',
+            'lot_no': 'number',
+            'car_maker': 'mark',
+            'yearMonth': 'year',
+            'm3': 'volume',
+            'price_c': 'price',
+            'tax_c': 'tax',
+            'auction_fee': 'auction_tax',
+            'recycle_fee': 'recycle_tax',
+            # 'shaken_c',
+            'commission': 'deduction',
+            'delivery_c': 'delivery',
+            'dismantling': 'disassemble',
+            'freight_c': 'freight',
+            'agent_fee_k': 'exp_cert',
+            'notes': 'notice',
+            'car_options': 'options',
+            'export_port': 'deliveryman',
+            'shipping_line': 'provider',
+            'type_of_export': 'export_method',
+            'stock_yard': 'parking', # date
+            # 'bl_date', # date
+            'documents_sent': 'shipment', # date
+            'ship_loading': 'ship_loading',
+            'ETA': 'ho',
+            'voyage_No': 'flight',
+            'bl_number': 'bl',
+            'discharge_port': 'from_port',
+            # 'destination',
+        }
+        for lot in lots:
+            lot_old_format = {}
+            for new_key, old_key in mapping.items():
+                lot_old_format[old_key] = lot[new_key]
+            lots_old_format.append(lot_old_format)
+
+        with open_file('jdocs_prepared_autolots_data.json', 'w+', encoding='utf-8') as f:
+            f.write(json.dumps(lots_old_format))
+        return lots_old_format
 

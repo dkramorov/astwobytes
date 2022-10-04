@@ -1,0 +1,337 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+
+{% include "core/title/page_title_edit.html" %}
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Заказ</label>
+            <div class="col-lg-10">
+              <select id="order_select2" name="order" autocomplete="off" data-parsley-required>
+                {% if row.order %}
+                  <option value="{{ row.order.id }}" selected>{{ row.order.id }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Номер полюса</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Номер полюса" class="form-control" name="number" value="{% if row.number %}{{ row.number }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">ФИО</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="ФИО" class="form-control" name="name" value="{% if row.name %}{{ row.name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Дата рождения</label>
+            <div class="col-lg-10">
+              <input type="text" id="birthday_date" placeholder="Дата рождения" class="form-control" name="birthday" value="{% if row.birthday %}{{ row.birthday }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Общая страховая сумма</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Общая страховая сумма" class="form-control" name="insurance_sum" value="{% if row.insurance_sum %}{{ row.insurance_sum }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Страховая программа</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Страховая программа" class="form-control" name="insurance_program" value="{% if row.insurance_program %}{{ row.insurance_program }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Период страхования с</label>
+            <div class="col-lg-10">
+              <input type="text" id="from_date" placeholder="Период страхования с" class="form-control" name="from_date" value="{% if row.from_date %}{{ row.from_date }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Период страхования до</label>
+            <div class="col-lg-10">
+              <input type="text" id="to_date" placeholder="Период страхования до" class="form-control" name="to_date" value="{% if row.to_date %}{{ row.to_date }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="1" name="already_safe" checked autocomplete="off">
+                  <span class="fa fa-check"></span>
+                  <strong attr-edit_mode="popup" attr-placement="bottom"> Страховка, включая себя</strong>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Тип полюса</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Тип полюса" class="form-control" name="ptype" value="{% if row.ptype %}{{ row.ptype }}{% endif %}" autocomplete="off" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Количество дней</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Количество дней" class="form-control" name="days" value="{% if row.days %}{{ row.days }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          {% include "core/forms/row_image.html" %}
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Статус</label>
+            <div class="col-lg-10">
+              <select id="polis_state" name="state" autocomplete="off">
+                <option value="0" selected>Не проверен</option>
+                <option value="2"{% ifequal row.state 2 %} selected{% endifequal %}>Оплачен</option>
+                <option value="3"{% ifequal row.state 3 %} selected{% endifequal %}>Оплачен, отправлен</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="insurance_members_form"></div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Застрахованные</label>
+            <div class="col-lg-10">
+              <div id="main-table" class="tabulator_table"></div>
+              <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+                <a id="add_insurance_member" href="javascript:void(0);" class="btn btn-default">
+                  <span attr-edit_mode="popup" attr-placement="left">Добавить застрахованного</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+
+<script type="text/javascript">
+  var main_table = null;
+  var main_table_columns = null;
+
+  function fill_insurance_members(){
+    // Заполнение формы настройками,
+    // вызываем перед отправкой в $("#current_edit_form").submit
+    $("#insurance_members_form").html('');
+    var members_data = "";
+    var members = main_table.getRows();
+    var member = null;
+    for(var i=0; i<members.length; i++){
+      member = members[i].getData();
+      members_data += "<input type='hidden' name='insurance_member_name_" + i + "' value='" + member['insurance_member_name'] + "' />";
+      members_data += "<input type='hidden' name='insurance_member_birthday_" + i + "' value='" + member['insurance_member_birthday'] + "' />";
+    }
+    members_data += "<input type='hidden' name='members' value='" + members.length + "' />";
+    $("#insurance_members_form").html($(members_data));
+  }
+
+  $(document).ready(function(){
+    $("#current_edit_form").parsley();
+    $("#current_edit_form").submit(function(e) {
+      // --------------------------------
+      // Добавляем застрахованных в форму
+      // --------------------------------
+      fill_insurance_members();
+
+      var $form = $(this);
+      var msg = 'Произошла ошибка, обновите страничку';
+      var status = 'danger'; // success, warning, info, danger
+      $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+      }).done(function(r) {
+        if(r.error){
+          msg = r.error;
+        }else if(r.success){
+          msg =  r.success;
+          status = 'success';
+          //$("#current_edit_form").attr("action", r.redirect);
+          {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+        }
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+        // Обновление ссылок
+        update_links(r);
+      }).fail(function() {
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      });
+      //отмена действия по умолчанию для кнопки submit
+      e.preventDefault();
+    });
+
+    $("#birthday_date").datepicker({
+      onSelect: function (fd, d, calendar) {
+        calendar.hide();
+      },
+      todayButton: new Date(),
+    });
+    $("#from_date").datepicker({
+      onSelect: function (fd, d, calendar) {
+        calendar.hide();
+      },
+      todayButton: new Date(),
+    });
+    $("#to_date").datepicker({
+      onSelect: function (fd, d, calendar) {
+        calendar.hide();
+      },
+      todayButton: new Date(),
+    });
+
+    $('#polis_state').select2({});
+
+    $('#order_select2').select2({
+      placeholder: 'Заказ',
+      allowClear: true,
+      width: '100%',
+      tags: false,
+      ajax: {
+        url: "{% url 'shop:search_orders' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        cache: false,
+        dataType: 'json',
+      }
+    });
+
+    function update_links(r){
+      var thumb = r['row']['thumb'];
+      if(thumb === ''){
+        thumb = '/static/img/empty.png';
+      }
+      $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+    }
+    {% if row %}
+      var progressbar = $('#progressbar-files'),
+        bar         = progressbar.find('.progress-bar-files'),
+        settings    = {
+          action: '{% url "polis:edit_polis" "img" row.id %}', // upload url
+          allow : '*.*',
+          param: 'img',
+          params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+          loadstart: function() {
+            bar.css('width', '0%').text('0%');
+            progressbar.removeClass('hidden');
+          },
+          progress: function(percent) {
+            percent = Math.ceil(percent);
+            bar.css('width', percent+'%').text(percent+'%');
+          },
+          allcomplete: function(response) {
+            bar.css('width', '100%').text('100%');
+            setTimeout(function(){
+              progressbar.addClass('hidden');
+            }, 750);
+            // Upload Completed
+              //alert(response);
+
+            // Обновление ссылок
+            var r = JSON.parse(response);
+            update_links(r);
+          }
+        };
+      var select = new $.upload.select($('#upload-select-files'), settings),
+      drop   = new $.upload.drop($('#upload-drop-files'), settings);
+    {% endif %}
+
+
+    var tableData = [
+      {% for member in insurance_members %}
+        {
+          'id': '{{ member.id }}',
+          'insurance_member_name': '{{ member.name }}',
+          'insurance_member_birthday': '{{ member.birthday }}',
+        },
+      {% endfor %}
+    ]
+
+    main_table_columns = [
+      {
+        title: "Имя",
+        field: "insurance_member_name",
+        headerFilterPlaceholder: "Имя",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        editor: "input",
+        width: 150,
+      },
+      {
+        title: "День рождения",
+        field: "insurance_member_birthday",
+        headerFilterPlaceholder: "День рождения",
+        headerFilter: "input",
+        headerFilterFunc: "like",
+        editor: "input",
+        width: 150,
+      },
+      {
+        title: "Действия",
+        field: "actions",
+        formatter: "buttonCross",
+        width: 120,
+        align:"center",
+        cellClick:function(e, cell){
+          cell.getRow().delete();
+        }
+      },
+    ];
+
+    main_table = new Tabulator("#main-table", {
+      data: tableData,
+      persistentLayout: true,
+      persistentSort: true,
+      persistenceID: "{{ root_url }}",
+      persistentFilter: false,
+      layout: "fitColumns",
+      columns: main_table_columns,
+    });
+
+    $("#add_insurance_member").click(function(){
+      var rows = main_table.getRows();
+      main_table.addRow({
+        'insurance_member_name': 'Иванов Иван Иванович',
+        'insurance_member_birthday': '1970-01-01',
+      });
+    });
+
+  });
+</script>
+{% endblock %}
