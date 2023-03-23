@@ -526,9 +526,13 @@ def is_phone_in_white_list(request):
     phone = request.GET.get('phone', '')
     if not phone:
         return JsonResponse({'error': 'phone absent'})
+    originator_phone = ''
+    is_city_call = False
 
+    # Не пускаем на город и 8800 даже, а то балуются, пусть регаются в PersonalUsers
     if phone.startswith('83952') or phone.startswith('8800'):
-        result['success'] = True
+        is_city_call = True
+        #result['success'] = True
 
     user_key = request.GET.get('user_key')
     if user_key:
@@ -544,6 +548,7 @@ def is_phone_in_white_list(request):
                 result['success'] = True
                 cid = analog.personal_fs_user.cid
             elif analog.phone_confirmed and analog.phone:
+                result['success'] = True
                 cid = analog.phone
             if cid:
                 if len(cid) == 11 and cid.startswith('8'):
@@ -562,17 +567,31 @@ def is_phone_in_white_list(request):
             if analog:
                 cid = None
                 if hasattr(analog, 'personal_fs_user') and analog.personal_fs_user.is_active:
-                    result['success'] = True
                     cid = analog.personal_fs_user.cid
                 elif analog.phone_confirmed and analog.phone:
                     cid = analog.phone
                 if cid:
                     if len(cid) == 11 and cid.startswith('8'):
                         result['cid'] = '7%s' % (cid[1:], )
+                        result['success'] = True
+    # Балуются в фирмы, пусть регаются в PersonalUsers
     if not 'success' in result:
         analog = PhonesWhiteList.objects.filter(phone=phone).first()
         if analog:
-            result['success'] = True
+            is_city_call = True
+            #result['success'] = True
+
+    # Зареганным даем звонить куда угодно
+    if not 'success' in result and originator_phone and is_city_call:
+        fs_app_uri = settings.FULL_SETTINGS_SET.get('FREESWITCH_APP_URI')
+        if fs_app_uri:
+            fs = FreeswitchBackend(fs_app_uri)
+            registrations = fs.get_list_users(originator_phone)
+            if registrations and originator_phone in registrations:
+                reg = registrations[originator_phone]
+                result['success'] = True
+                result['cid'] = '7%s' % (reg['effective_caller_id_number'][1:], )
+    result['is_city_call'] = is_city_call
     return JsonResponse(result, safe=False)
 
 def send_sms(request):
@@ -597,11 +616,19 @@ def say_code(request):
     result = {}
     dest = request.GET.get('phone')
     digit = request.GET.get('digit')
+    additional_params = {
+        'ms': request.GET.get('ms'), # ms for sleep (additional param for reg_call.lua)
+    }
     # Если надо вызвать альтернативный скрипт вместо hello.say_digit
     script = 'hello.say_digit'
     if request.GET.get('script'):
         script = request.GET['script']
-    result['result'] = voice_code(dest=dest, digit=digit, script=script)
+    result['result'] = voice_code(
+        dest=dest,
+        digit=digit, script=script,
+        allowed_phones=['8888', ],
+        additional_params=additional_params,
+    )
     return JsonResponse(result, safe=False)
 
 @csrf_exempt

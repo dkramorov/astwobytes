@@ -494,3 +494,48 @@ def punto(text: str, direction: str = 'eng2rus'):
     for letter in text:
         result += get_letter(letter)
     return result
+
+def convert2camelcase(text: str, capitalize_flag: bool = True):
+    """Преобразовываем в camelCase
+       :param text: исходный текст
+       :param capitalize_flag: нужно ли делать первую букву заглавной
+    """
+    if not text:
+        return text
+    if '_' not in text:
+        return text
+    new_text = []
+    flag_underline = False
+    for i, letter in enumerate(text):
+       if i == 0:
+           letter = letter.upper()
+       if letter == '_':
+           flag_underline = True
+           continue
+       if flag_underline:
+           flag_underline = False
+           new_text.append(letter.upper())
+       else:
+           new_text.append(letter)
+    return ''.join(new_text)
+
+def convert2snakecase(text: str):
+    """Преобразовываем в snake_case
+       :param text: исходный текст
+    """
+    if not text:
+        return text
+    text_len = len(text)
+    new_text = []
+    for i, letter in enumerate(text):
+        if letter.isupper():
+            # Если после этой буквы идет нижний регистр,
+            # тогда нужно подчеркивание
+            next_index_exists = i + 1 < text_len
+            if next_index_exists and text[i+1].islower():
+                new_text.append('_')
+            new_text.append(letter.lower())
+            continue
+        new_text.append(letter)
+    return ''.join(new_text)
+

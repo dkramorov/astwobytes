@@ -8,8 +8,8 @@ class DemoModel(Standard):
     name = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
     class Meta:
-        verbose_name = 'DemoApp - demo_object'
-        verbose_name_plural = 'DemoApp - demo_objects'
+        verbose_name = 'DemoApp - DemoModel'
+        verbose_name_plural = 'DemoApp - DemoModels'
         #permissions = (
         #    ('view_obj', 'Просмотр объектов'),
         #    ('create_obj', 'Создание объектов'),

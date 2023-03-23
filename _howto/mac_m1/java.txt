@@ -1,3 +1,95 @@
+
+$ /usr/libexec/java_home -V
+Matching Java Virtual Machines (2):
+    17.0.6 (arm64) "Amazon.com Inc." - "Amazon Corretto 17" /Users/jocker/Library/Java/JavaVirtualMachines/corretto-17.0.6/Contents/Home
+    11.0.13 (arm64) "Azul Systems, Inc." - "Zulu 11.52.13" /Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home
+/Users/jocker/Library/Java/JavaVirtualMachines/corretto-17.0.6/Contents/Home
+
+$ /usr/libexec/java_home -v11
+/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home
+
+
+$ export JAVA_HOME=$(/usr/libexec/java_home -v11)
+$ javac -version
+javac 11.0.13
+
+---
+Сохранить можно прямо из браузера сертификат, чтобы импортнуть в хранилище
+
+Посмотреть cacerts
+The default password of the keystore is: changeit.
+
+cd /Users/jocker/Library/Java/JavaVirtualMachines/corretto-17.0.6/Contents/Home/lib/security
+cd $JAVA_HOME/lib/security
+
+keytool -list -keystore cacerts
+
+Импортнуть java cacerts
+keytool -importcert -alias hybris -file /Users/jocker/Downloads/hybris.pem -keystore cacerts
+
+Проверить импорт
+keytool -v -list -keystore cacerts -alias hybris
+---
+
+Сменить java
+
+1 - Install Homebrew.
+
+$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+2 - Install Homebrew Cask.
+
+$ brew tap homebrew/cask-versions 
+$ brew update 
+$ brew tap homebrew/cask
+
+3 - Install the latest version of Java
+
+$ brew cask install java
+
+4 - Install the other needed versions of Java (Java8, Java11, Java13).
+
+$ brew tap adoptopenjdk/openjdk
+
+$ brew cask install adoptopenjdk8
+$ brew cask install adoptopenjdk11
+$ brew cask install adoptopenjdk13
+$ brew cask install adoptopenjdk14
+
+5 - Switch between different versions of Java
+
+Switching between different versions of Java, you only need to add the following to your .bash_profile or .zshrc.
+
+In this case, we want to be able to switch between Java8, Java11, Java13 and Java14:
+
+export JAVA_8_HOME=$(/usr/libexec/java_home -v1.8)
+export JAVA_11_HOME=$(/usr/libexec/java_home -v11)
+export JAVA_13_HOME=$(/usr/libexec/java_home -v13)
+export JAVA_14_HOME=$(/usr/libexec/java_home -v14)
+
+alias java8='export JAVA_HOME=$JAVA_8_HOME'
+alias java11='export JAVA_HOME=$JAVA_11_HOME'
+alias java13='export JAVA_HOME=$JAVA_13_HOME'
+alias java14='export JAVA_HOME=$JAVA_14_HOME'
+
+# default to Java 14
+java14
+
+6 - Reload .bash_profile or .zshrc for the aliases to take effect:
+
+$ source ~/.bash_profile
+
+or
+
+$ source ~/.zshrc
+
+7 - Finally you can use the aliases to switch between different Java versions.
+
+$ java8
+$ java -version
+java version "1.8.0_261"
+
+
 ---
 можно азул взять жаву
 https://www.azul.com/downloads/?os=macos&architecture=arm-64-bit&package=jdk

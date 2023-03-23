@@ -16,6 +16,17 @@
         <div class="panel-body">
           {% csrf_token %}
           {% include "core/forms/row_name.html" %}
+          <!-- Привязанные категории -->
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Категория</label>
+            <div class="col-lg-10">
+              <select id="cats_select2" name="cat" autocomplete="off">
+                {% if row.cat %}
+                  <option value="{{ row.cat.id }}" selected>{{ row.cat.container.name }} #{{ row.cat.container.id }} >{% for parent in parents_array %} {{ parent.name }} #{{ parent.id }} >{% endfor %} {{ row.cat.name }} #{{ row.cat.id }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">Единица измерения</label>
             <div class="col-lg-10">
@@ -70,6 +81,26 @@
   {% endif %}
   $(document).ready(function(){
     $("#prop_ptype").select2();
+    $('#cats_select2').select2({
+      placeholder: 'Какую категорию привязать',
+      width: '100%',
+      //tags: true,
+      ajax: {
+        delay: 150,
+        url: "{% url 'flatcontent:search_blocks' %}",
+        data: function (params) {
+          var query = {
+            q: params.term,
+            only_cats: 1,
+            page: params.page || 1,
+          }
+          return query;
+        },
+        //data: "only_cats=1",
+        cache: false,
+        dataType: 'json',
+      }
+    });
     {% if row %}
       main_table = new Tabulator("#main-table", {
         data: [{% for pvalue in pvalues %}

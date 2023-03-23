@@ -425,7 +425,7 @@ def get_cat_for_site(request,
                      link: str = None,
                      with_props: bool = True,
                      with_filters: bool = True, **kwargs):
-    """Для ображения каталога на сайте по link
+    """Для отображения каталога на сайте по link
        :param link: ссылка на рубрику (без /cat/ префикса)
        :param with_props: Вытащить свойства товаров
        :param with_filters: Вытащить свойства для фильтров, например,
@@ -469,7 +469,7 @@ def get_cat_for_site(request,
             is_search = True
             query = Products.objects.filter(pk__in=ids_products)
         else:
-            query = ProductsCats.objects.filter(product__isnull=False, container=catalogue)
+            query = ProductsCats.objects.filter(container=catalogue, product__is_active=True)
     else:
         page = Blocks.objects.select_related('container').filter(link=link, container__state=cat_type).first()
         if page:
@@ -599,13 +599,13 @@ def get_props_for_products(products: list, only_props: list = None):
             ids_products_props[product_id][pvalue_id] = None
             ids_pvalues[pvalue_id] = None
     # Достаем значения свойств
-    pvalues = PropertiesValues.objects.filter(pk__in=ids_pvalues.keys()).values('id', 'prop', 'str_value', 'digit_value')
+    pvalues = PropertiesValues.objects.filter(pk__in=ids_pvalues.keys(), is_active=True).values('id', 'prop', 'str_value', 'digit_value')
     for pvalue in pvalues:
         pvalue_id = pvalue['id']
         ids_pvalues[pvalue_id] = pvalue
     # Достаем свойства
     ids_props = {p['prop']: None for p in ids_pvalues.values()}
-    props = Property.objects.filter(pk__in=ids_props.keys()).values('id', 'name', 'code', 'ptype', 'measure')
+    props = Property.objects.filter(pk__in=ids_props.keys(), is_active=True).values('id', 'name', 'code', 'ptype', 'measure')
     for prop in props:
         ids_props[prop['id']] = prop
         # Доливаем свойство к значению свойства
@@ -613,21 +613,34 @@ def get_props_for_products(products: list, only_props: list = None):
             prop_id = pvalue['prop']
             if prop_id in ids_props:
                 pvalue['property'] = ids_props[prop_id]
+
     # Дополняем товары найдеными свойствами
     for product in products:
         product.props = []
         if product.id in ids_products_props:
-
+            # По товару фиксируем какие свойства заполняли,
+            # чтобы если встретилось свойство уже заполненное, то дополнить его
+            filled = {
+                'cur_index': 0,
+                'prop_id_index': -1, # код свойства: индекс
+            }
             # Все свойства товара
             pvalues = ids_products_props[product.id].keys()
             props = [p['prop'] for p in ids_pvalues.values() if p['id'] in pvalues]
             for prop_id in props:
-                product.props.append({
-                    'prop': ids_props[prop_id],
-                    'values': [{
-                        'id': p['id'],
-                        'str_value': p['str_value'],
-                        'digit_value': p['digit_value'],
-                    } for p in ids_pvalues.values()
-                        if p['id'] in pvalues and p['prop'] == prop_id]
-                })
+                # Если не заполнено свойство, то значит, оно было выключено (is_active=False)
+                if not ids_props[prop_id]:
+                    continue
+
+                if prop_id not in filled:
+                    product.props.append({
+                        'prop': ids_props[prop_id],
+                        'values': [{
+                            'id': p['id'],
+                            'str_value': p['str_value'],
+                            'digit_value': p['digit_value'],
+                        } for p in ids_pvalues.values()
+                            if p['id'] in pvalues and p['prop'] == prop_id]
+                    })
+                    filled[prop_id] = filled['cur_index']
+                    filled['cur_index'] += 1

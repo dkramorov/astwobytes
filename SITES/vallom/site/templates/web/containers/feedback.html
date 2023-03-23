@@ -1,0 +1,49 @@
+{% load mtags %}
+<div class="feedback feedback2 section-space pt-50 pb-50">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7">
+        <div class="section-title">
+          <h2>{{ container.name }}<span class="new"></span></h2>
+          <div class="clearfix"></div>
+          {% for block in blocks %}
+          <div class="mobile">
+            {% if block.img %}
+            <div class="rect"></div>
+            <div class="imga">
+              <img src="{% imagine block.img '800x600' block.get_folder True %}" />
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+          <form action="/feedback/" method="post" id="feedback_{{ container.id }}">
+            {% csrf_token %}
+            <input type="hidden" name="msg" value="-" />
+            <input type="hidden" name="phone" value="-" />
+              <div class="form-group">
+                <input type="text" name="name" class="required" value="" autocomplete="off" placeholder="Ваше имя"/>
+              </div>
+              <div class="form-group">
+                <input type="text" name="surname" class="required" value="" autocomplete="off" placeholder="Ваша фамилия"/>
+              </div>
+              <div class="form-group">
+                <input type="text" name="email" class="email required" value="" autocomplete="off" placeholder="Ваш эл. адрес"/>
+              </div>
+              <div class="feedback_alerts"></div>
+              <div class="contact-btn">
+                <button class="btn btn-secondary" type="submit">Подписаться</button>
+              </div>
+          </form>
+        </div>
+      </div>
+      {% for block in blocks %}
+      <div class="col-md-5 desktop">
+        {% if block.img %}
+          <div class="rect"></div>
+          <div class="imga"><img src="{% imagine block.img '800x600' block.get_folder True %}" /></div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

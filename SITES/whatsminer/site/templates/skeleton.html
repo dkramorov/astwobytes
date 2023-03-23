@@ -1,0 +1,98 @@
+{% load mtags tags flatcontent_tags %}﻿<!doctype html><html lang="en"><head>
+{% include "skeleton_header.html" %}
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="/media/css/backend-plugin.min.css">
+<link rel="stylesheet" href="/media/css/backend.css">
+<link rel="stylesheet" href="/media/css/all.min.css">
+<link rel="stylesheet" href="/media/css/remixicon.css">
+<link rel="stylesheet" href="/media/css/line-awesome.min.css">
+
+<!--PDF
+<link rel="stylesheet" href="/media/css/pdf.viewer.css">
+-->
+<!--PPTX
+<link rel="stylesheet" href="/media/css/pptxjs.css">
+<link rel="stylesheet" href="/media/css/nv.d3.min.css">
+-->
+<!--All Spreadsheet
+<link rel="stylesheet" href="/media/css/handsontable.full.min.css">
+-->
+<!--Image viewer
+<link rel="stylesheet" href="/media/css/jquery.verySimpleImageViewer.css">
+-->
+<!--officeToHtml
+<link rel="stylesheet" href="/media/css/officeToHtml.css">
+-->
+{% block extrahead %}{% endblock %}
+</head>
+<body>
+{% block body %}
+<div id="loading">
+  <div id="loading-center">
+  </div>
+</div>
+<div class="wrapper">
+  {% include "web/sidebar.html" %}
+  {% include "web/topbar.html" %}
+  <div class="content-page">
+    <div class="container-fluid">
+      {% include "web/crumbs.html" %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<footer class="iq-footer">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-6">
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item">
+            <a href="javascript:void(0);">Политика конфиденциальности</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="javascript:void(0)">Условия пользования</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-lg-6 text-right">
+        <span class="mr-1"><script>document.write(new Date().getFullYear())</script>&copy;</span> 
+        <a href="javascript:void(0);" class="">jocker</a>
+      </div>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+<script src="/media/js/backend-bundle.min.js"></script>
+<script src="/media/js/customizer.js" defer></script>
+<script src="/media/js/chart-custom.js" defer></script>
+<!--PDF
+<script src="/media/js/pdf.js"></script>
+-->
+<!--Docs
+<script src="/media/js/jszip-utils.js"></script>
+-->
+<script src="/media/js/mammoth.browser.min.js"></script>
+<!--PPTX
+<script src="/media/js/filereader.js"></script>
+<script src="/media/js/d3.min.js"></script>
+<script src="/media/js/nv.d3.min.js"></script>
+<script src="/media/js/pptxjs.js"></script>
+<script src="/media/js/divs2slides.js"></script>
+-->
+<!--All Spreadsheet
+<script src="/media/js/handsontable.full.min.js"></script>
+<script src="/media/js/xlsx.full.min.js"></script>
+<script src="/media/js/jquery.verySimpleImageViewer.js"></script>
+-->
+<!--officeToHtml
+<script src="/media/js/officeToHtml.js"></script>
+-->
+<script src="/media/js/app.js" defer></script>
+<!--
+<script src="/media/js/doc-viewer.js" defer></script>
+-->
+{% include "web/modal.html" %}
+{% block extrascripts %}{% endblock %}
+</body>
+</html>

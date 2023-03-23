@@ -3,3 +3,13 @@
 sudo defaults write /var/db/launchd.db/com.apple.launchd/overrides.plist com.apple.screensharing -dict Disabled -bool false
 
 sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.screensharing.plist
+
+
+Альтернативно
+sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -off -restart -agent -privs -all -allowAccessFor -allUsers
+
+
+# Спрятать иконку (уже не работает)
+sudo chmod 000 /System/Library/CoreServices/Menu\ Extras/RemoteDesktop.menu
+
+надо зажать command и утащить иконку

@@ -1,8 +1,6 @@
 
 https://freeswitch.org/confluence/display/FREESWITCH/FreeSWITCH+1.10.x+Release+notes
--mod_av
--mod_verto
--mod_signalware
+
 
 # Видео так и не заработало mod_av https://github.com/signalwire/freeswitch/issues/175
 # apt install libavformat-dev libswscale-dev libtiff-dev
@@ -17,6 +15,8 @@ checking for spandsp >= 3.0... configure: error: no usable spandsp; please insta
 git clone https://github.com/freeswitch/sofia-sip.git
 git clone https://github.com/freeswitch/spandsp.git
 cd spandsp
+make distclean # если есть ошибки
+
 ./bootstrap.sh
 ./configure
 make
@@ -27,29 +27,32 @@ make install
 То можно попробовать выполнить следующую команду:
 ldconfig
 
-sudo apt install -y cmake
+sudo apt install -y cmake uuid-dev
 cd /usr/src
-sudo git clone https://github.com/signalwire/libks.git
+git clone https://github.com/signalwire/libks.git
 cd libks
-sudo cmake .
-sudo make
-sudo make install
+cmake .
+make
+make install
 
 cd /usr/src
 git clone https://github.com/signalwire/signalwire-c.git
 cd signalwire-c
-sudo cmake .
-sudo make
-sudo make install
+cmake .
+make
+make install
 
 
 качаем openssl-1.1.1
 устанавливаем в /opt
 ./config --prefix=/opt/openssl --openssldir=/usr/local/ssl
 
+# если ws.h:28:10: fatal error: openssl/ssl.h: No such file or directory
+apt-get install libssl-dev
+
 lsb_release -a # узнаем версию убунты
 
-# wget https://github.com/signalwire/freeswitch/archive/v1.10.1.tar.gz
+# wget https://github.com/signalwire/freeswitch/archive/v1.10.8.tar.gz
 
 ./bootstrap.sh -j
 ./configure --prefix=/opt/freeswitch CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib"
@@ -79,6 +82,7 @@ apt-get install libshout3-dev
 apt-get install libmp3lame-dev
 apt-get install libopus-dev
 apt-get install libsndfile-dev
+apt-get install libmpg123-dev
 
 git clone https://freeswitch.org/stash/scm/fs/freeswitch.git
 
@@ -88,10 +92,13 @@ cd /usr/src/freeswitch
 # ----------------------
 ./bootstrap.sh –j
 
-
 Подключаем необходимые модули, редактируем modules.conf:
 -mod_lua
 -mod_signalwire
+-mod_av
+-mod_verto
+-mod_signalware
+
 mod_rtmp
 mod_directory
 mod_callcenter
@@ -145,6 +152,7 @@ chown -R freeswitch:freeswitch /usr/local/freeswitch/
 chmod -R g+w /usr/local/freeswitch/
 cp /usr/src/freeswitch/build/freeswitch.init.redhat /etc/init.d/freeswitch && chmod +x /etc/init.d/freeswitch
 cp /usr/src/freeswitch/build/freeswitch.sysconfig /etc/sysconfig/freeswitch
+(ON UBUNTU cp build/freeswitch.sysconfig /etc/default/freeswitch)
 
 cat >> /etc/sysconfig/freeswitch <<EOT
 PID_FILE=/var/run/freeswitch/freeswitch.pid

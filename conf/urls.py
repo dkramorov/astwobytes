@@ -13,6 +13,8 @@ urlpatterns = [
     re_path(r'^files/', include('apps.files.urls')),
     # main_functions
     re_path(r'^', include('apps.main_functions.urls')),
+    # Telegram
+    re_path(r'^telegram/', include('apps.telegram.urls')),
     # статика
     re_path(r'^', include('apps.files.urls_static'))
 ]
@@ -96,10 +98,10 @@ if 'apps.shop' in settings.INSTALLED_APPS:
     urlpatterns += [
         re_path(r'^shop/', include('apps.shop.urls')),
     ]
-if 'apps.weld' in settings.INSTALLED_APPS:
-    # Модуль сварки стыков
+if 'apps.net_tools' in settings.INSTALLED_APPS:
+    # Модуль сетевых утилит
     urlpatterns += [
-        re_path(r'^weld/', include('apps.weld.urls')),
+        re_path(r'^net_tools/', include('apps.net_tools.urls')),
     ]
 if 'apps.addresses' in settings.INSTALLED_APPS:
     # Адреса объектов

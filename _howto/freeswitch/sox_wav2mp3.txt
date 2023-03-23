@@ -21,3 +21,7 @@ file '1.wav'
 file '2.wav'
 file '3.wav'
 file '4.wav'
+
+
+# wav2mp3
+sox -r 8000 -c 1 <wavfilename> <mp3filename>

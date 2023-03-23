@@ -1,0 +1,2 @@
+https://demo.smartaddons.com/templates/html/destino/home2.php
+https://demo.smartaddons.com/templates/html/destino/category-v3.html

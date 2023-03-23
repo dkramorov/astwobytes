@@ -1,0 +1,14 @@
+ioping -c 100 .
+
+
+hdparm -Tt /dev/sda1
+
+
+dd if=/dev/zero of=/tmp/output conv=fdatasync bs=384k count=1k; rm -f /tmp/output
+
+
+atop 5 (update interval)
+atop -d (disk specifics)
+atop -y (thread based)
+atop -au (Number of processes for each user in the system)
+z - pause

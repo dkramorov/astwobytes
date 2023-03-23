@@ -71,6 +71,10 @@
     {% include "former_admin_menu.html" %}
   {% endif %}
 
+  {% if 'net_tools' in apps %}
+    {% include "net_tools_admin_menu.html" %}
+  {% endif %}
+
   {% include "users_admin_menu.html" %}
   {% include "main_functions_admin_menu.html" %}
 </ul>

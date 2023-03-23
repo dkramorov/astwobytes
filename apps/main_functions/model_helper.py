@@ -517,7 +517,7 @@ class ModelHelper:
            :param types: типы полей
            :param query: QuerySet
         """
-        if types[key] in ('int', 'float', 'primary_key', 'boolean'):
+        if types[key] in ('int', 'float', 'primary_key', 'boolean', 'foreign_key'):
             query = query.filter(**{key: value})
         # --------------------------------------
         # По дате производим нестандартный поиск

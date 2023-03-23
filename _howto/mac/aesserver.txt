@@ -1,0 +1,3 @@
+В защита и безопасность в универсальном доступе сидит aesserver
+
+defaults write /Library/Preferences/com.apple.AEServer RestrictAccessToUserSession -bool false

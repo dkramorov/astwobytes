@@ -1,8 +1,0 @@
-plugins = python3
-
-в /usr/lib/uwsgi/plugins и посмотри какие плагины есть по типу python3_plugin.so python_plugin.so
-
-если нет нужного установить
-
-sudo apt install uwsgi-plugin-python3
-sudo apt install uwsgi-plugin-python

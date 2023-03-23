@@ -1,0 +1,102 @@
+{% load mtags flatcontent_tags %}
+<div class="footer-container footer-style-1">
+  <div class="footer">
+    <div class="footer-top">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 col-md-4">
+            <div class="block-footer block-footer-contact">
+              <h4 class="title-footer">Контакты</h4>
+              <ul>
+                <li>
+                  <span>
+                    <em class="fa fa-home"></em><b>{{ containers.main.tags.address.name }}</b>
+                  </span>{{ containers.main.tags.address.html|safe }}
+                </li>
+                <li>
+                  <span>
+                    <em class="fa fa-paper-plane"></em><b>{{ containers.main.tags.email.name }}</b>
+                  </span> {{ containers.main.tags.email.html|safe }}
+                </li>
+                <li>
+                  <span>
+                    <em class="fa fa-phone"></em><b>{{ containers.main.tags.phone.name }}</b>
+                  </span>{{ containers.main.tags.phone.html|safe }}
+                </li>
+                <li>
+                  <span>
+                    <em class="fa fa-phone"></em><b>{{ containers.main.tags.worktime.name }}</b>
+                  </span>{{ containers.main.tags.worktime.html|safe }}
+                </li>
+              </ul>
+            </div>
+            <div class="socials-block">
+              <div class="title-follow">Сообщества</div>
+              <ul>
+                {% for block in containers.main.tags.social.sub %}
+                  <li class="li-social {{ block.tag }}-social">
+                    <a title="{{ block.name|textize }}" href="{{ block.link }}" target="_blank">
+                      <span class="fa fa-{{ block.tag }} icon-social"></span>
+                      <span class="name-social">{{ block.name }}</span>
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          {% flatmenu request "bottommenu" %}
+        </div>
+      </div>
+    </div>
+    <div class="footer-middle">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-md-6">
+            <div class="newsletter-info-footer">
+              <div class="title-footer">У вас есть вопросы?</div>
+              <div>Звоните круглосуточно {{ containers.main.tags.phone.html|safe }}</div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6">
+            <div class="block-subscribe-footer">
+              <form action="" method="post" id="newsletter-validate-detail">
+                <div class="block-content-subscribe">
+                  <div class="form-subscribe-footer">
+                    <div class="title-subscribe">Подпишитесь на новости</div>
+                    <div class="input-box">
+                      <input type="text" name="email" id="newsletter" title="Подпишитесь на новости" class="input-text" />
+                    </div>
+                    <button type="submit" class="button">
+                      <span><span>Подписаться</span></span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-md-12">
+            <div class="app-block">
+              <div class="title-footer">Приложение</div>
+              <ul>
+                <li><a title="AppStore" href="javascript:void(0);"><img src="/media/misc/appstore.png" alt="App Store" /></a></li>
+                <li><a title="PlayStore" href="javascript:void(0);"><img src="/media/misc/playstore.png" alt="Play Store" /></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12">
+            <div class="payment-coppyright">
+              <p><img src="/media/misc/payment.png" alt="Варианты оплаты" /></p>
+              {{ containers.main.tags.copyright.html|safe }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

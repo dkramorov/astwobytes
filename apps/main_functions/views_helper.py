@@ -153,10 +153,16 @@ def edit_view(request,
     mh_vars = model_vars.copy()
     mh = create_model_helper(mh_vars, request, cur_app, action)
     context = mh.context
-    if extra_vars:
-        context.update(extra_vars)
     special_model_vars(mh, mh_vars, context)
     row = mh.get_row(row_id)
+    if extra_vars:
+        # Если значение для extra_vars[key] не задано,
+        # предполагаем, что надо вытащить его из экземпляра модельки
+        for key, value in extra_vars.items():
+            if value is None and hasattr(row, key):
+                extra_vars[key] = getattr(row, key)
+        context.update(extra_vars)
+
     if mh.error:
         return redirect('%s?error=not_found' % (mh.root_url, ))
     if request.method == 'GET':

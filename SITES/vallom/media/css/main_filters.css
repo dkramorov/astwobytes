@@ -1,0 +1,107 @@
+/* FILTERS */
+.mainFilters {
+  margin: 40px 0;
+}
+.mainFilters .filtersTable {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-weight: bold;
+  align-items: stretch;
+}
+.mainFilters .filterItem {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #000;
+  border-radius: 36px;
+  margin-bottom: 20px;
+}
+.mainFilters .filterTitle,
+.mainFilters .filterBody {
+  position: relative;
+}
+.mainFilters .filterTitle {
+  background-color: black;
+  border-top-left-radius: 36px;
+  border-top-right-radius: 36px;
+  color: #fff;
+}
+.mainFilters .filterTitle h3 {
+  padding: 15px 120px 15px 25px;
+  width: 360px;
+}
+.mainFilters .filterBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-bottom-left-radius: 36px;
+  border-bottom-right-radius: 36px;
+  padding: 20px 15px;
+  height: 100%;
+}
+.mainFilters .filterBody fieldset {
+  padding-bottom: 10px;
+}
+.mainFilters .filterTitle .img {
+  position: absolute;
+  right: 30px;
+  top: 7px;
+}
+.mainFilters .filterTitle .img img {
+  width: 80px;
+  height: 80px;
+}
+.mainFilters .center {
+  margin-top: 20px;
+}
+@media (min-width: 992px) and (max-width: 1200px) {
+  .mainFilters .filterTitle h3 {
+    width: 306px;
+    font-size: 18px;
+  }
+  .mainFilters .filterTitle .img img {
+    width: 60px;
+    height: 60px;
+  }
+}
+@media (max-width: 992px) {
+  .mainFilters .filtersTable {
+    flex-direction: column;
+  }
+}
+@media (max-width: 480px) {
+  .mainFilters .filterTitle h3 {
+    width: 306px;
+    font-size: 18px;
+    padding: 15px 60px 15px 25px;
+  }
+  .mainFilters .filterTitle .img img {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+#catalog-listing .mainFilters .filterItem {
+  width: 100%;
+}
+#catalog-listing .mainFilters .filterTitle h3 {
+  width: auto;
+}
+#catalog-listing .mainFilters .filterTitle .img img {
+  width: 45px;
+  height: 45px;
+}
+#catalog-listing .mainFilters .filtersTable .filterBody .filters {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+#catalog-listing .mainFilters .filtersTable .filterBody .filters fieldset {
+  width: 100%;
+  padding: 5px;
+}
+@media (max-width: 992px) {
+  #catalog-listing .mainFilters .filtersTable .filterBody .filters {
+    flex-direction: column;
+  }
+}

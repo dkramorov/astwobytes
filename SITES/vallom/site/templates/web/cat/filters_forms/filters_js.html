@@ -1,0 +1,72 @@
+{% load tags mtags %}
+<script type="text/javascript">
+  function fill_facet_filters(r, allowed_facets, form_id) {
+    var html = "";
+    var name = "";
+    var selected = "";
+    var params = {
+      {% for k, v in q_string.q.items %}
+        '{{ k }}': [{{ v|q_string_q2javascript }}],
+      {% endfor %}
+    };
+    var values_length;
+    var sorted_facets = [];
+    for (var i in allowed_facets) {
+      for(var j in r['facets']){
+        if (allowed_facets[i] == r['facets'][j]['code']) {
+          sorted_facets.push(r['facets'][j]);
+        }
+      }
+    }
+    for(var i=0; i<sorted_facets.length; i++){
+      var rkey = sorted_facets[i];
+      var key = rkey['id'];
+      values_length = rkey['values'].length;
+      name = rkey['name'];
+      if(rkey['measure'] && rkey['measure'].length > 0){
+        name += ", " + rkey['measure'];
+      }
+      if (form_id == undefined) {
+          form_id = '';
+      } else {
+          form_id += ' ';
+      }
+      var select_container = $(form_id + 'select.' + rkey['code'].replace('/', ''));
+      select_container.attr('name', 'prop_' + key);
+      select_container.attr('autocomplete', 'off');
+      html = '';
+      html += '<optgroup label="' + name + '">';
+      html += '<option value="" selected>Не выбрано</option>';
+      for(var j=0; j<values_length; j++){
+        selected = '';
+        if (params['prop_' + key] && params['prop_' + key].indexOf(rkey['values'][j]['id']) > -1) {
+          selected = 'selected';
+        }
+        html += '<option value="' + rkey['values'][j]['id'] + '" ' + selected + ' >';
+        html += rkey['values'][j]['value'];
+        html += '</option>';
+      }
+      select_container.html(html);
+      select_container.select2({
+        placeholder: name,
+        width: '100%',
+        allowClear: true,
+        /*
+        ajax: {
+          delay: 150,
+          url: "/",
+          data: function (params) {
+            var query = {
+              q: params.term,
+              page: params.page || 1,
+            }
+            return query;
+          },
+          cache: false,
+          dataType: 'json',
+        }
+        */
+      });
+    }
+  }
+</script>

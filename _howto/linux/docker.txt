@@ -29,5 +29,10 @@ tcp        0      0 172.21.46.5:57118       185.130.212.71:mysql    ESTABLISHED
 tcp        0      0 172.21.46.5:39992       185.130.212.71:27017    ESTABLISHED
 Active UNIX domain sockets (w/o servers)
 Proto RefCnt Flags       Type       State         I-Node   Path
-unix  3      [ ]         STREAM     CONNECTED     3169442558 
-unix  3      [ ]         STREAM     CONNECTED     3169442557 
+unix  3      [ ]         STREAM     CONNECTED     3169442558
+unix  3      [ ]         STREAM     CONNECTED     3169442557
+
+Показать окружение
+docker exec container env
+
+docker logs bot_service_test --follow (аналог tail -f)

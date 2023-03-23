@@ -1,0 +1,30 @@
+{% if perms.comp.view_comp %}
+<li{% ifequal menu 'miners' %} class="active"{% endifequal %} id="left_menu_comp_app">
+  <a class="has-submenu" data-toggle="collapse-next" href="">
+    <em class="fa fa-inbox"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">Парк машин</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'miners' %} in{% endifequal %}">
+
+    <li{% ifequal submenu 'comps' %} class="active"{% endifequal %} id="left_menu_miners_app_comps">
+      <a class="no-submenu" data-toggle="" href="{% url 'miners:show_comps' %}">
+        <span class="item-text">Все компьютеры</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'scan_ips' %} class="active"{% endifequal %} id="left_menu_miners_app_scan_ips">
+      <a class="no-submenu" data-toggle="" href="{% url 'miners:scan_ips' %}">
+        <span class="item-text">Сканирование сети</span>
+      </a>
+    </li>
+{% comment %}<!--
+    <li{% ifequal submenu 'ipgroups' %} class="active"{% endifequal %} id="left_menu_miners_app_ipgroups">
+      <a class="no-submenu" data-toggle="" href="{% url 'miners:show_ipgroups' %}">
+        <span class="item-text">Диапазоны ip-адресов</span>
+      </a>
+    </li>
+-->{% endcomment %}
+  </ul>
+</li>
+{% endif %}
+

@@ -4,6 +4,7 @@ import math
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.conf import settings
+from django.db.models import Q
 
 from apps.main_functions.views import DefaultFeedback
 from apps.main_functions.date_time import str_to_date, date_plus_days
@@ -48,7 +49,11 @@ def get_markup_product(total_price: float):
 
 
 def order_form_hockey(request):
-    """Страничка оформления заказа для страховки Хоккей"""
+    """Страничка оформления заказа для страховки Хоккей
+       У нас теперь 2 паспорта фигирирует, страхователя и застрахованного
+       Ребенка привязываем к PolisMember (к нему паспорт)
+       Родителя привязываем к Shopper (по нему найдем паспорт)
+    """
     mh_vars = main_vars.copy()
     context = {}
     q_string = {}
@@ -63,13 +68,31 @@ def order_form_hockey(request):
           {'name': 'test_field', 'value': 'Тестовое поле'},
           {'name': 'insurance_type', 'value': 'Тип страховки'},
           {'name': 'started', 'value': 'Дата начала программы'},
-          {'name': 'passport_birthday', 'value': 'Дата рождения'},
-          {'name': 'passport_series', 'value': 'Паспорт, серия'},
-          {'name': 'passport_number', 'value': 'Паспорт, номер'},
-          {'name': 'passport_issued', 'value': 'Паспорт, кем выдан'},
-          {'name': 'passport_issued_date', 'value': 'Паспорт, когда выдан'},
-          {'name': 'passport_registration', 'value': 'Паспорт, место регистрации'},
+          # Страхователь
+          {'name': 'last_name', 'value': 'Фамилия родителя'},
+          {'name': 'first_name', 'value': 'Имя родителя'},
+          {'name': 'middle_name', 'value': 'Отчество родителя'},
 
+          {'name': 'passport_birthday', 'value': 'Дата рождения родителя'},
+          {'name': 'passport_series', 'value': 'Паспорт родителя, серия'},
+          {'name': 'passport_number', 'value': 'Паспорт родителя, номер'},
+          {'name': 'passport_issued', 'value': 'Паспорт родителя, кем выдан'},
+          {'name': 'passport_issued_date', 'value': 'Паспорт родителя, когда выдан'},
+          {'name': 'passport_registration', 'value': 'Паспорт родителя, место регистрации'},
+
+          # Ребенок
+          {'name': 'child_last_name', 'value': 'Фамилия ребенка'},
+          {'name': 'child_first_name', 'value': 'Имя ребенка'},
+          {'name': 'child_middle_name', 'value': 'Отчество ребенка'},
+
+          {'name': 'child_passport_birthday', 'value': 'Дата рождения ребенка'},
+          {'name': 'child_passport_series', 'value': 'Паспорт ребенка, серия'},
+          {'name': 'child_passport_number', 'value': 'Паспорт ребенка, номер'},
+          {'name': 'child_passport_issued', 'value': 'Паспорт ребенка, кем выдан'},
+          {'name': 'child_passport_issued_date', 'value': 'Паспорт ребенка, когда выдан'},
+          {'name': 'child_passport_registration', 'value': 'Паспорт ребенка, место регистрации'},
+
+          {'name': 'birthday_cert', 'value': 'Свидетельство о рождении ребенка'},
         ],
     }
 
@@ -84,45 +107,77 @@ def order_form_hockey(request):
             'registration': '',
             'birthday': '',
         }
+        parent_passport_fields = {}
+        child_passport_fields = {}
+
         for key in passport_fields.keys():
-            passport_fields[key] = request.POST.get('passport_%s' % key)
-        passport = Passport.objects.select_related('shopper').filter(
-            series=passport_fields['series'],
-            number=passport_fields['number'],
-        ).first()
-        if not passport:
-            passport = Passport()
-        for key, value in passport_fields.items():
-            if not value:
-                continue
+            parent_passport_fields[key] = request.POST.get('passport_%s' % key)
+            child_passport_fields[key] = request.POST.get('child_passport_%s' % key)
+
+        # TODO: если искать имеющиеся паспорта, тогда будет проблема с PolisMember
+        # т/к polis_member.passport OneToOneField на Passport
+        # пока просто создаем новые паспорта,
+        # по-хорошему, нужно Shopper-Passport связь сделать тоже OneToOneField
+        passports = []
+        #passports = Passport.objects.select_related('shopper').filter(
+        #    Q(series=parent_passport_fields['series'], number=parent_passport_fields['number'])|
+        #    Q(series=child_passport_fields['series'], number=child_passport_fields['number'])
+        #)
+        parent_passport = Passport(ptype=1)
+        child_passport = Passport(ptype=1)
+        for passport in passports:
+            if passport.series == parent_passport_fields['series'] and passport.number == parent_passport_fields['number']:
+                parent_passport = passport
+            elif passport.series == child_passport_fields['series'] and passport.number == child_passport_fields['number']:
+                child_passport = passport
+
+        for key in passport_fields.keys():
+            pvalue = parent_passport_fields[key]
+            cvalue = child_passport_fields[key]
             if key in ('birthday', 'issued_date'):
-                value = str_to_date(value)
-            setattr(passport, key, value)
-        passport.save()
+                pvalue = str_to_date(pvalue)
+                cvalue = str_to_date(cvalue)
+            setattr(parent_passport, key, pvalue)
+            setattr(child_passport, key, cvalue)
+        parent_passport.save()
+        # Фикс на свидетельство о рождении
+        if request.POST.get('passport_ptype') in (2, '2'):
+            child_passport.ptype = 3
+            child_passport.registration = request.POST.get('birthday_cert')
+        child_passport.save()
         # Заполняем пользователя
-        if passport.shopper:
-            shopper = passport.shopper
+        if parent_passport.shopper:
+            shopper = parent_passport.shopper
         else:
             shopper = Shopper()
         shopper_fields = {
             'name': '',
             'phone': '',
             'email': '',
+            'first_name': '',
+            'last_name': '',
+            'middle_name': '',
         }
         for key in shopper_fields.keys():
             shopper_fields[key] = request.POST.get(key)
             if not shopper_fields[key]:
                 continue
             setattr(shopper, key, shopper_fields[key])
+        if not shopper.name:
+            shopper.name = '%s %s %s' % (
+                shopper.last_name if shopper.last_name else '',
+                shopper.first_name if shopper.first_name else '',
+                shopper.middle_name if shopper.middle_name else '',
+            )
         shopper.save()
         request.session['shopper'] = shopper.to_dict()
 
-        passport.shopper = shopper
-        passport.save()
+        parent_passport.shopper = shopper
+        parent_passport.save()
+
         # Заполняем заказ
         product = Products.objects.filter(pk=request.POST.get('product')).first()
 
-        birthday = passport.birthday.strftime('%Y-%m-%d') if passport.birthday else None
         started = str_to_date(request.POST.get('started'))
         if product:
             markup = get_markup_product(product.price)
@@ -132,13 +187,12 @@ def order_form_hockey(request):
                 shopper_name=shopper.name,
                 shopper_email=shopper.email,
                 shopper_phone=shopper.phone,
-                shopper_address=passport.registration,
-                comments='Паспорт: \nСерия: %s, номер: %s \nДата рождения: %s \nКем выдан: %s, когда выдан: %s' % (
-                    passport.series,
-                    passport.number,
-                    birthday,
-                    passport.issued,
-                    passport.issued_date.strftime('%Y-%m-%d') if passport.issued_date else None,
+                shopper_address=parent_passport.registration,
+                comments='Паспорт: \nСерия: %s, номер: %s\nКем выдан: %s\nКогда выдан: %s' % (
+                    parent_passport.series,
+                    parent_passport.number,
+                    parent_passport.issued,
+                    parent_passport.issued_date.strftime('%Y-%m-%d') if parent_passport.issued_date else None,
                 )
             )
             order_id = order.id
@@ -176,11 +230,19 @@ def order_form_hockey(request):
                 ptype=ptype,
                 number = order_id,
                 name = shopper.name,
-                birthday = birthday,
+                #birthday = birthday, # depricated
                 insurance_sum = product.min_count,
                 insurance_program = product.stock_info,
                 from_date = started,
                 to_date = ended)
+            # Заполняем для ребенка (в name пишем свидетельство о рождении)
+            first_name = request.POST.get('child_first_name')
+            last_name = request.POST.get('child_last_name')
+            middle_name = request.POST.get('child_middle_name')
+            child_member = PolisMember(polis=polis,
+                                       passport=child_passport,
+                                       name='%s %s %s' % (last_name, first_name, middle_name))
+            child_member.save()
 
         DefaultFeedback(request, **kwargs)
 

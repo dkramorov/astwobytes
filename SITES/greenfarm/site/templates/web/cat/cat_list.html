@@ -201,7 +201,7 @@
       beforeSubmit: showLoading,
       success: showResponse,
     });
-    
+
     function showLoading() {
       $("#products_container").html("<div class='text-center'><div class='lds-dual-ring'></div></div>");
     }
@@ -217,7 +217,8 @@
       var values_length;
       var container = $("#facet_filters");
       container.html("");
-      for(var key in r){
+      for(var key in r['facets']){
+        // TODO: ----------- r['facets']
         if(typeof(r[key]) == "boolean"){
           continue;
         }

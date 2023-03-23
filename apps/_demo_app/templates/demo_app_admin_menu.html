@@ -1,13 +1,13 @@
-{% if perms.demo_app.view_demo_app %}
-<li{% ifequal menu 'demo_app' %} class="active"{% endifequal %} id="left_menu_demo_app">
-  <a{% comment %} class="has-submenu" data-toggle="collapse-next"{% endcomment %} href="{% url 'demo_app:show_demo_app' %}">
+{% if perms.demo_app.view_demo_model %}
+<li{% ifequal menu 'demo_model' %} class="active"{% endifequal %} id="left_menu_demo_app">
+  <a{% comment %} class="has-submenu" data-toggle="collapse-next"{% endcomment %} href="{% url 'demo_app:show_demo_model' %}">
     <em class="fa fa-file"></em>
     <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
     <span class="item-text">Объекты</span>
   </a>
   <ul class="nav collapse{% ifequal menu 'demo_app' %} in{% endifequal %}">
-    <li{% ifequal submenu 'demo_app' %} class="active"{% endifequal %} id="left_menu_demo_app_objects">
-      <a class="no-submenu" data-toggle="" href="{% url 'demo_app:show_demo_app' %}">
+    <li{% ifequal submenu 'demo_model' %} class="active"{% endifequal %} id="left_menu_demo_app_objects_demo_model">
+      <a class="no-submenu" data-toggle="" href="{% url 'demo_app:show_demo_model' %}">
         <span class="item-text">Объекты</span>
       </a>
     </li>

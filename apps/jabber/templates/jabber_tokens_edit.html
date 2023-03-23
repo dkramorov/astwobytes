@@ -39,7 +39,7 @@
           <div class="form-group">
             <label class="col-lg-2 control-label">APNS Токен</label>
             <div class="col-lg-10">
-              <input type="text" placeholder="APNS Токен" class="form-control" name="apns_token" value="{% if row.apns_token %}{{ row.apns_token }}{% endif %}" autocomplete="off" data-parsley-required>
+              <input type="text" placeholder="APNS Токен" class="form-control" name="apns_token" value="{% if row.apns_token %}{{ row.apns_token }}{% endif %}" autocomplete="off">
             </div>
           </div>
           {% include "core/forms/row_position.html" %}

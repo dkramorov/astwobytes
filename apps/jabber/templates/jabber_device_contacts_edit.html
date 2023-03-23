@@ -1,0 +1,146 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+
+{% include "core/title/page_title_edit.html" %}
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Владелец</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Владелец" class="form-control phone" name="jid_owner" value="{% if row.jid_owner %}{{ row.jid_owner }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Отображаемое имя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Отображаемое имя" class="form-control" name="display_name" value="{% if row.display_name %}{{ row.display_name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Имя</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Имя" class="form-control" name="given_name" value="{% if row.given_name %}{{ row.given_name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Отчество</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Отчество" class="form-control" name="middle_name" value="{% if row.middle_name %}{{ row.middle_name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Фамилия</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Фамилия" class="form-control" name="family_name" value="{% if row.family_name %}{{ row.family_name }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Компания</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Компания" class="form-control" name="company" value="{% if row.company %}{{ row.company }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Должность</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Должность" class="form-control" name="job_title" value="{% if row.job_title %}{{ row.job_title }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Emails</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Emails" class="form-control" name="emails" value="{% if row.emails %}{{ row.emails }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Телефоны</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Телефоны" class="form-control" name="phones" value="{% if row.phones %}{{ row.phones }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Почтовый адрес</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Почтовый адрес" class="form-control" name="postal_addresses" value="{% if row.postal_addresses %}{{ row.postal_addresses }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">День рождения</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="День рождения" class="form-control" name="birthday" value="{% if row.birthday %}{{ row.birthday }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+    });
+  </script>
+{% endblock %}

@@ -108,7 +108,7 @@ def login_view(request, *args, **kwargs):
                     next_page = request.POST.get('next')
                     if next_page:
                         return redirect(next_page)
-                    urla = reverse('%s:welcome' % (CUR_APP, ))
+                    urla = kwargs.get('redirect') or reverse('%s:welcome' % (CUR_APP, ))
                     return redirect(urla)
 
     attempts_elapsed = MAX_ATTEMPTS
@@ -121,7 +121,8 @@ def login_view(request, *args, **kwargs):
         'singular_obj': 'Авторизация',
         'plural_obj': 'Панель управления',
     }
-    return render(request, 'core/auth_form.html', context)
+    template = kwargs.get('template') or 'core/auth_form.html'
+    return render(request, template, context)
 
 def logout_view(request, *args, **kwargs):
     """Выход пользователя из админки"""
@@ -738,7 +739,6 @@ def search_extra_fields(request, *args, **kwargs):
                        model_vars = extra_fields_vars,
                        cur_app = CUR_APP,
                        sfields = ('name', 'field'), )
-
 
 @login_required
 def demo(request, action='panels'):

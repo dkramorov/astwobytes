@@ -1,0 +1,48 @@
+{% load mtags %}
+<div class="header-middle">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-6 col-sm-3 logo-container">
+        <h1 class="logo">
+          <a href="/" title="{{ containers.main.tags.logo.description|textize }}" class="logo">
+{% comment %}<!--
+            <img src="{{ containers.main.tags.logo.imagine }}" alt="{{ containers.main.tags.logo.description|textize }}" />
+-->{% endcomment %}
+            <div class="fontArchivo logoName">VALLOM<span class="dot"></span>RU</div>
+            <div class="fontArchivo logoItems">
+              <span>шины</span><b></b>
+              <span>диски</span><b></b>
+              <span>запчасти</span>
+            </div>
+          </a>
+        </h1>
+      </div>
+      <div class="col-xs-6 col-sm-9 right-container">
+        <div class="search-wrapper">
+
+          <div class="headerContacts">
+            <div class="shopAddresses">
+              <a href="/">Адреса магазинов</a>
+            </div>
+            <div class="email">
+              <a href="{{ containers.main.tags.email.link }}">{{ containers.main.tags.email.html|safe }}</a>
+            </div>
+            <div class="phone">
+              <a href="{{ containers.main.tags.phone.link }}"><strong>{{ containers.main.tags.phone.html|safe }}</strong></a>
+            </div>
+          </div>
+
+          <form id="search_mini_form" action="/cat/" method="get">
+            <div class="form-search">
+              <input id="search" type="text" name="q" value="{{ q_string.q.q }}" class="input-text" />
+              <button type="submit" title="Поиск" class="button-search fa fa-search"><span><span>Поиск</span></span></button>
+              <div id="search_autocomplete" class="search-autocomplete"></div>
+            </div>
+          </form>
+        </div>
+
+        {% include "web/header/mini_cart.html" %}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+[client]
+database = vallomcrm
+user = root
+password = ''
+default-character-set = utf8

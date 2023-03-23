@@ -11,40 +11,10 @@ from django.conf import settings
 
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.fortasks import search_process
+from apps.main_functions.string_parser import convert2camelcase, convert2snakecase
 
 logger = logging.getLogger(__name__)
 
-def capitalize(app_name, verbose: bool = False):
-    """Делаем кэмел-кейс из строки
-       первая - заглавная,
-       после подчеркивания - заглавная,
-       подчеркивания удаляем"""
-    if not app_name:
-        return app_name
-    result = ''
-    for i in range(len(app_name)):
-        if app_name[i] == '_':
-            continue
-        if (i == 0) or (i - 1 >= 0 and app_name[i - 1] == '_'):
-            result += app_name[i].upper()
-        else:
-            result += app_name[i]
-    if verbose:
-        logger.info('capitalize %s => %s' % (app_name, result))
-    return result
-
-def test_capitalize():
-    """Тестирование преобразований кэмэл-кейса"""
-    capitalize('', True)
-    capitalize('_', True)
-    capitalize('1_', True)
-    capitalize('_1', True)
-    capitalize('_ab', True)
-    capitalize('ab_', True)
-    capitalize('_abc_', True)
-    capitalize('__abcd__', True)
-    capitalize('__ab_cde__', True)
-    capitalize('__abc__defg__', True)
 
 def app2settings(app_name):
     """Добавляем новое приложение в settings.py
@@ -123,47 +93,50 @@ class Command(BaseCommand):
         if os.path.exists(new_app_path):
             logger.info('app %s already exists' % (app_name, ))
             return
-        shutil.copytree(demo_app_path, new_app_path)
 
+        shutil.copytree(demo_app_path, new_app_path)
         RENAME_TASKS = {
             'apps.py': [{
                 'from': 'demo_app',
                 'to': app_name,
             }, {
                 'from': 'DemoAppConfig',
-                'to': '%sAppConfig' % (capitalize(app_name), ),
+                'to': '%sAppConfig' % (convert2camelcase(app_name), ),
             }],
             'models.py': [{
                 'from': 'DemoModel',
-                'to': capitalize(model_name),
+                'to': convert2camelcase(model_name),
+            }, {
+                'from': 'DemoApp',
+                'to': convert2camelcase(app_name),
             }],
             'urls.py': [{
                 'from': 'demo_app',
                 'to': app_name,
             }, {
                 'from': 'demo_model',
-                'to': model_name,
+                'to': convert2snakecase(model_name),
             }],
             'views.py': [{
                 'from': 'demo_model',
-                'to': model_name,
+                'to': convert2snakecase(model_name),
             }, {
                 'from': 'demo_app',
                 'to': app_name,
             }, {
                 'from': 'DemoModel',
-                'to': capitalize(model_name),
+                'to': convert2camelcase(model_name),
             }],
             'templates/demo_app_admin_menu.html': [{
                 'from': 'demo_model',
-                'to': model_name,
+                'to': convert2snakecase(model_name),
             }, {
                 'from': 'demo_app',
                 'to': app_name,
             }],
-            'templates/demo_app_edit.html': [{
+            'templates/demo_model_edit.html': [{
                 'from': 'demo_model',
-                'to': model_name,
+                'to': convert2snakecase(model_name),
             }, {
                 'from': 'demo_app',
                 'to': app_name,
@@ -182,11 +155,11 @@ class Command(BaseCommand):
             'from': 'templates/demo_app_admin_menu.html',
             'to': 'templates/%s_admin_menu.html' % (app_name, ),
         }, {
-            'from': 'templates/demo_app_edit.html',
-            'to': 'templates/%s_edit.html' % (app_name, ),
+            'from': 'templates/demo_model_edit.html',
+            'to': 'templates/%s_edit.html' % (convert2snakecase(model_name), ),
         }, {
-            'from': 'templates/demo_app_table.html',
-            'to': 'templates/%s_table.html' % (app_name, ),
+            'from': 'templates/demo_model_table.html',
+            'to': 'templates/%s_table.html' % (convert2snakecase(model_name), ),
         }]
         for task in REPLACE_TASKS:
             source = os.path.join(apps_path, app_name, task['from'])

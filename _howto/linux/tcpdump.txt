@@ -1,0 +1,1 @@
+sudo tcpdump -nvvvvvi any -s0 host 172.24.40.39  -w /samba/dump/vova1/8800_Help_09.pcap

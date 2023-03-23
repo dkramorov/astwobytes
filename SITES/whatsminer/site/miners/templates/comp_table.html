@@ -1,0 +1,67 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<link href="/static/datetimepicker/datepicker.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+{% include "core/forms/default_create.html" %}
+
+{% include "core/title/page_title_table.html" %}
+
+{% include "core/breadcrumbs.html" %}
+{% include "core/tabulator_table.html" %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="/static/datetimepicker/datepicker.min.js"></script>
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+$(document).ready(function(){
+
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "IP",
+      field: "ip__ip",
+      headerFilterPlaceholder: "IP",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "MAC",
+      field: "ip__mac",
+      headerFilterPlaceholder: "MAC",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "API включено",
+      field: "api_enabled",
+      headerFilterPlaceholder: "Включен",
+      headerFilter: true,
+      headerFilterFunc: "=",
+      headerFilterParams: {
+        values: {"": "Без фильтра", true: "Да", false: "Нет"},
+      },
+      editable: false,
+      editor: "select",
+      formatter: booleanFormatter,
+      width: 90,
+    },
+    {% comment %}/*{% include "core/tabulator_cell/image.html" %}*/{% endcomment %}
+    {% include "core/tabulator_cell/is_active.html" %}
+    {% include "core/tabulator_cell/position.html" %}
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
+});
+</script>
+{% endblock %}

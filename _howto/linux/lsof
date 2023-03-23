@@ -1,3 +1,0 @@
-lsof -i tcp|grep LISTEN
-
-lsof -Pni4 | grep LISTEN | grep php

@@ -1,0 +1,110 @@
+{% load mtags %}
+<style type="text/css">
+/* TABS BRANDS - REQUIRED TABS styles */
+.roundedImgTabs.brands {
+  background-image:url('/media/img/texture_diag2.png');
+  padding-bottom: 50px;
+}
+.roundedImgTabs.brands .title {
+  font-size:30px;
+  text-align: center;
+  color: #000;
+  margin: 20px 0 40px 0;
+}
+.roundedImgTabs.brands .resp-tabs-container {
+  background-color: transparent;
+}
+.roundedImgTabs.brands .resp-tabs-list li {
+  padding-left: 0;
+}
+.roundedImgTabs.brands .resp-tabs-list li .img {
+  position: relative;
+  left: auto;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  max-width: 130px;
+  padding: 5px 10px;
+}
+.roundedImgTabs.brands .resp-tabs-list li .img img {
+  width: 100%;
+  vertical-align: middle;
+}
+@media (max-width: 1200px) {
+}
+@media (max-width: 768px) { /* 768 для верхней границы */
+  .roundedImgTabs.brands .resp-tabs-container .img {
+    position: relative;
+    padding-top: 10px;
+  }
+  .roundedImgTabs.brands .resp-tabs-container .img img {
+    width: 180px;
+  }
+}
+</style>
+<div class="container-fluid">
+  <div class="roundedImgTabs brands">
+    <div class="container">
+      <h3 class="title">{{ container.name }}</h3>
+      <div id="tab-brands-{{ container.id }}">
+        <ul class="resp-tabs-list">
+          {% for block in blocks %}
+            <li>
+              {% if block.img %}
+                <div class="img"><img src="{{ block.thumb }}" /></div>
+              {% endif %}
+              <!--<div class="title">{{ block.name }}</div>-->
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="resp-tabs-container">
+          {% for block in blocks %}
+            <div>
+              {% if block.sub %}
+                <ul class="tabSubmenu">
+                  {% for item in block.sub %}
+                    <li>
+                      <a href="{% if item.link %}{{ item.link }}{% else %}javascript:void(0);{% endif %}">
+                        <span>{{ item.name }}</span>
+                        {% if item.img %}<img src="{{ item.thumb }}" {% if item.class_name %}class="{{ item.class_name }}"{% endif %} />{% endif %}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+                <div class="clearfix"></div>
+              {% endif %}
+              {% if block.html %}
+                <div>
+                  {{ block.html|safe }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+var tabs_brands_{{ container.id }} = function() {
+  function tabs_brands_{{ container.id }}() {
+    $('#tab-brands-{{ container.id }}').easyResponsiveTabs({
+      type: 'default', //Types: default, vertical, accordion
+      width: 'auto', //auto or any width like 600px
+      fit: true,   // 100% fit in a container
+      closed: 'accordion', // Start closed if in accordion view
+      /* activate: function(event) {
+        console.log('actived');
+      } */
+    });
+  }
+  load_lazy_css('/media/css/tabs.css');
+  var isReadyEasyResponsiveTabs = $("").easyResponsiveTabs;
+  if(isReadyEasyResponsiveTabs == undefined) {
+    load_lazy_js('/media/js/easyResponsiveTabs.js', tabs_brands_{{ container.id }});
+  } else {
+    tabs_brands_{{ container.id }}();
+  }
+};
+window.inline_scripts.push(tabs_brands_{{ container.id }});
+</script>

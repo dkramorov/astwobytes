@@ -1,0 +1,175 @@
+{% load mtags %}
+<link rel="stylesheet" type="text/css" href="/media/css/main_filters.css" media="all" />
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12 col-md-12">
+
+      <div class="mainFilters">
+        <div class="filtersTable">
+          <div class="filterItem">
+            <div class="filterTitle">
+              <h3>Подобрать шины по параметрам</h3>
+              <div class="img"><img src="/media/misc/tire_black.png" /></div>
+            </div>
+
+            <form class="filterBody filtersForm" action="/cat/shiny/" id="tires_form">
+              <div class="filters">
+                <div class="col-md-6">
+                  <fieldset><select class="TireSectionWidth"><option>Ширина</option></select></fieldset>
+                  <fieldset><select class="TireAspectRatio"><option>Высота профиля</option></select></fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset><select class="TireType"><option>Протектор</option></select></fieldset>
+                  <fieldset><select class="RunFlat"><option>RunFlat</option></select></fieldset>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                  <fieldset><select class="InSetQuantity"><option>Количество шин в комплекте</option></select></fieldset>
+                  <fieldset><select class="RimDiameter"><option>Посадочный диаметр</option></select></fieldset>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="center">
+                <button title="Найти" class="button orange">
+                  <span><span>Подобрать</span></span>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="filterItem">
+            <div class="filterTitle">
+              <h3>Подобрать диски по параметрам</h3>
+              <div class="img"><img src="/media/misc/disc_black.png" /></div>
+            </div>
+            <form class="filterBody filtersForm" action="/cat/diski/" id="discs_form">
+              <div class="filters">
+                <div class="col-md-6">
+                  <fieldset><select class="RimDiameter"><option>Диаметр</option></select></fieldset>
+                  <fieldset><select class="RimBoltsDiameter"><option>Сверловка (PCD)</option></select></fieldset>
+                  <fieldset><select class="RimOffset"><option>Вылет (ET)</option></select></fieldset>                </div>
+                <div class="col-md-6">
+                  <fieldset><select class="RimType"><option>Тип</option></select></fieldset>
+                  <fieldset><select class="Condition"><option>Состояние товара</option></select></fieldset>
+                  <fieldset><select class="RimWidth"><option>Ширина диска</option></select></fieldset>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                  <fieldset><select class="InSetQuantity"><option>Количество дисков в комплекте</option></select></fieldset>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="center">
+                  <button title="Найти" class="button orange">
+                  <span><span>Подобрать</span></span>
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="filterItem">
+            <div class="filterTitle">
+              <h3>Подобрать шины и диски по авто</h3>
+              <div class="img"><img src="/media/misc/car_black.png" /></div>
+            </div>
+            <form class="filterBody filtersForm" action="/cat/kolesa/" id="wheels_form">
+              <div class="filters">
+                <div class="col-md-6">
+                  <fieldset><select class="TireSectionWidth"><option>Ширина</option></select></fieldset>
+                  <fieldset><select class="RimDiameter"><option>Диаметр</option></select></fieldset>
+                  <fieldset><select class="RimWidth"><option>Ширина диска</option></select></fieldset>
+                  <fieldset><select class="WheelTireWear"><option>Износ</option></select></fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset><select class="TireType"><option>Протектор</option></select></fieldset>
+                  <fieldset><select class="RunFlat"><option>RunFlat</option></select></fieldset>
+                  <fieldset><select class="RimBoltsDiameter"><option>Сверловка (PCD)</option></select></fieldset>
+                  <fieldset><select class="RimType"><option>Тип</option></select></fieldset>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                  <fieldset><select class="TireAspectRatio"><option>Высота профиля</option></select></fieldset>
+                  <fieldset><select class="InSetQuantity"><option>Количество шин в комплекте</option></select></fieldset>
+                  <fieldset><select class="DIA"><option>Диаметр ЦО (DIA) (мм.)</option></select></fieldset>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="center">
+                <button title="Найти" class="button orange" type="submit">
+                  <span><span>Подобрать</span></span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% include "web/cat/filters_forms/filters_js.html" %}
+<script type="text/javascript">
+
+var allowed_tires_facets = [
+    'TireSectionWidth', // Ширина
+    'TireAspectRatio', // Высота профиля
+    'RimDiameter', // Посадочный диаметр
+    'TireType', // Протектор
+    'InSetQuantity', // Количество шин в комплекте
+    'RunFlat', // RunFlat
+  ];
+
+var allowed_discs_facets = [
+  'RimDiameter', // Диаметр
+  'RimBoltsDiameter', // Сверловка (PCD)
+  'RimOffset', // Вылет (ET)
+  'RimWidth', // Ширина диска
+  'RimType', // Тип
+  'InSetQuantity', // Количество дисков в комплекте
+  'Condition', // Состояние товара
+];
+
+var allowed_wheels_facets = [
+  'TireSectionWidth', // Ширина
+  'TireAspectRatio', // Высота профиля
+  'RimDiameter', // Диаметр
+  'TireType', // Протектор
+  'InSetQuantity', // Количество шин в комплекте
+  'RunFlat', // RunFlat
+  'DIA', // Диаметр ЦО (DIA) (мм.)
+  'RimBoltsDiameter', // Сверловка (PCD)
+  'RimWidth', // Ширина диска
+  'RimType', // Тип
+  //'InSetQuantity', // Количество дисков в комплекте
+  'WheelTireWear', // Износ
+];
+
+var load_main_filers = function() {
+  $.ajax({
+    type: "GET",
+    url: '{% url "products:facet_filters" 340 %}', // шины
+    data: 'search_facet0=1&allowed_facets=' + allowed_tires_facets.join(), // + "&force_new=1",
+  }).done(function(r){
+    console.log(r, allowed_tires_facets);
+    fill_facet_filters(r, allowed_tires_facets, "#tires_form");
+  }).fail(function(){
+  });
+  $.ajax({
+    type: "GET",
+    url: '{% url "products:facet_filters" 341 %}', // диски
+    data: 'search_facet0=1&allowed_facets=' + allowed_discs_facets.join(), // + "&force_new=1",
+  }).done(function(r){
+    console.log(r, allowed_discs_facets);
+    fill_facet_filters(r, allowed_discs_facets, "#discs_form");
+  }).fail(function(){
+  });
+  $.ajax({
+    type: "GET",
+    url: '{% url "products:facet_filters" 342 %}', // колеса
+    data: 'search_facet0=1&allowed_facets=' + allowed_wheels_facets.join(), // + "&force_new=1",
+  }).done(function(r){
+    console.log(r, allowed_wheels_facets);
+    fill_facet_filters(r, allowed_wheels_facets, "#wheels_form");
+  }).fail(function(){
+  });
+};
+window.inline_scripts.push(load_main_filers);
+</script>

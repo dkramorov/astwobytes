@@ -23,8 +23,18 @@ def atomic_update(model, update_tasks: dict):
             del update_task['id']
             model.objects.filter(pk=pk).update(**update_task)
 
+def bulk_create(model, entryset: list):
+    """Массовое создание записей (batch)
+       https://docs.djangoproject.com/en/dev/ref/models/querysets/#bulk-create
+       :param model: модель через которую делаем создание
+       :param entryset: список моделей, например, [IPAddress(ip='10.10.10.1')]
+    """
+    if not entryset or not model:
+        return
+    return model.objects.bulk_create(entryset)
+
 def bulk_replace(queryset, field, old_value, new_value):
-    """Массовое обновление записей методом замены"""
+    """Массовое обновление записей методом замены (batch)"""
     if smartReplace:
         queryset.update(**{field:Replace(field, Value(old_value), Value(new_value))})
     else:

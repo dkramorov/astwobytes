@@ -12,13 +12,13 @@ from django.conf import settings
 from django.db.models import Q, Count
 
 from apps.main_functions.files import check_path, copy_file
-from apps.main_functions.functions import object_fields
+from apps.main_functions.functions import object_fields, fill_parents
 from apps.main_functions.model_helper import (create_model_helper,
                                               get_user_permissions,
                                               ModelHelper,
                                               tabulator_filters_and_sorters, )
 from apps.main_functions.api_helper import ApiHelper, XlsxHelper
-from apps.main_functions.string_parser import analyze_digit, translit
+from apps.main_functions.string_parser import analyze_digit, translit, kill_quotes
 from apps.main_functions.views_helper import (show_view,
                                               edit_view,
                                               search_view,
@@ -554,18 +554,23 @@ def fast_create_props(request):
         props.append({
             'name': request.POST.get('name_%s' % i).strip(),
             'code': request.POST.get('code_%s' % i).strip(),
+            'cat': request.POST.get('cat_%s' % i).strip(),
         })
     already_exists = 0
     created = 0
     for prop in props:
+        cat = None
         if not prop['name']:
             continue
         code = prop['code'] or translit(prop['name'])
-        analog = Property.objects.filter(code=code)
+        cat_id = kill_quotes(prop['cat'], 'int')
+        if cat_id:
+            cat = Blocks.objects.filter(pk=cat_id).first()
+        analog = Property.objects.filter(code=code, cat=cat)
         if analog:
             already_exists += 1
             continue
-        analog = Property.objects.create(name=prop['name'], code=code)
+        analog = Property.objects.create(name=prop['name'], code=code, cat=cat)
         created += 1
     result['success'] = 'Данные успешно сохранены'
     if already_exists:
@@ -627,10 +632,56 @@ def show_props(request, *args, **kwargs):
         if request.POST.get('props2cat'):
             # Быстрое добавление свойств к товарам по рубрике
             return fast_props2cat(request)
-    return show_view(request,
-                     model_vars = props_vars,
-                     cur_app = CUR_APP,
-                     extra_vars = None, )
+
+    mh_vars = props_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, disable_fas=True)
+    mh.select_related_add('cat')
+
+    filters_and_sorters = tabulator_filters_and_sorters(request)
+    for rsorter in filters_and_sorters['sorters']:
+        if not rsorter in ('cat', '-cat'):
+            mh.order_by_add(rsorter)
+    for rfilter in filters_and_sorters['filters']:
+        mh.filter_add(rfilter)
+    mh.context['fas'] = filters_and_sorters['params']
+    # Чтобы получить возможность модифицировать фильтры и сортировщики
+    mh.filters_and_sorters = filters_and_sorters
+
+    context = mh.context
+    only_fields = (
+        'id', 'name', 'code', 'measure', 'search_facet', 'is_active', 'position', 'img',
+        'cat__id',
+        'cat__name',
+        'cat__link',
+    )
+    fk_keys = {
+        'cat': ('id', 'name', 'link'),
+    }
+    # -----------------------------
+    # Вся выборка только через аякс
+    # -----------------------------
+    if request.is_ajax():
+        rows = mh.standard_show(only_fields=only_fields)
+        result = []
+        for row in rows:
+            item = object_fields(row, only_fields=only_fields, fk_only_keys=fk_keys)
+            item['actions'] = row.id
+            item['folder'] = row.get_folder()
+            item['thumb'] = row.thumb()
+            item['imagine'] = row.imagine()
+            if row.cat:
+                item['cat__name'] = item['cat']['name']
+            result.append(item)
+
+        if request.GET.get('page'):
+            result = {'data': result,
+                      'last_page': mh.raw_paginator['total_pages'],
+                      'total_records': mh.raw_paginator['total_records'],
+                      'cur_page': mh.raw_paginator['cur_page'],
+                      'by': mh.raw_paginator['by'], }
+        return JsonResponse(result, safe=False)
+    template = '%stable.html' % (mh.template_prefix, )
+    return render(request, template, context)
 
 @login_required
 def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
@@ -638,7 +689,10 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
     mh_vars = props_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     mh.get_permissions(Products) # Права от товаров/услуг
+    mh.select_related_add('cat')
+    mh.select_related_add('cat__container')
     row = mh.get_row(row_id)
+
     context = mh.context
     special_model_vars(mh, mh_vars, context)
 
@@ -661,6 +715,9 @@ def edit_prop(request, action: str, row_id: int = None, *args, **kwargs):
             context['pvalues'] = [object_fields(prop, pass_fields=('prop', ))
                 for prop in mh.row.propertiesvalues_set.all()]
             context['pvalues_ends'] = analyze_digit(len(context['pvalues']), end = ('запись', 'записей', 'записи'))
+            if row.cat:
+                fill_parents([row.cat], Blocks)
+                context['parents_array'] = row.cat.parents_array
 
         elif action == 'drop' and row:
             if mh.permissions['drop']:
@@ -1107,13 +1164,17 @@ def facet_filters(request, cat_id):
     """Получение фасетных фильтров
        :param cat_id: ид категории
     """
+    result = {}
     method = request.GET if request.method == 'GET' else request.POST
     search_facet = True if method.get('search_facet') else False
+    allowed_facets = method['allowed_facets'].split(',') if method.get('allowed_facets') else None
     force_new = True if method.get('force_new') else False
     strategy = get_search_strategy()
-    result = strategy.get_facet_filters(
+    result['facets'] = strategy.get_facet_filters(
         cat_id=cat_id,
         search_facet=search_facet,
         force_new=force_new,
+        allowed_facets=allowed_facets,
     )
+    result['strategy'] = str(strategy)
     return JsonResponse(result, safe=False)

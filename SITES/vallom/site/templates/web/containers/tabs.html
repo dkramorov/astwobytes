@@ -1,0 +1,68 @@
+{% load mtags %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12 col-md-12">
+      <div class="roundedImgTabs">
+        <div id="tab-{{ container.id }}">
+          <ul class="resp-tabs-list">
+            {% for block in blocks %}
+              <li>
+                {% if block.img %}
+                  <div class="img"><img src="{{ block.thumb }}" /></div>
+                {% endif %}
+                <div class="title">{{ block.name }}</div>
+              </li>
+            {% endfor %}
+          </ul>
+          <div class="resp-tabs-container">
+            {% for block in blocks %}
+              <div>
+                {% if block.sub %}
+                  <ul class="tabSubmenu">
+                    {% for item in block.sub %}
+                      <li>
+                        <a href="{% if item.link %}{{ item.link }}{% else %}javascript:void(0);{% endif %}">
+                          <span>{{ item.name }}</span>
+                          {% if item.img %}<img src="{{ item.thumb }}" {% if item.class_name %}class="{{ item.class_name }}"{% endif %} />{% endif %}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                  <div class="clearfix"></div>
+                {% endif %}
+                {% if block.html %}
+                  <div>
+                    {{ block.html|safe }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+var tabs_{{ container.id }} = function() {
+  function get_tabs_{{ container.id }}() {
+    $('#tab-{{ container.id }}').easyResponsiveTabs({
+      type: 'default', //Types: default, vertical, accordion
+      width: 'auto', //auto or any width like 600px
+      fit: true,   // 100% fit in a container
+      closed: 'accordion', // Start closed if in accordion view
+      /* activate: function(event) {
+        console.log('actived');
+      } */
+    });
+  }
+  load_lazy_css('/media/css/tabs.css');
+  var isReadyEasyResponsiveTabs = $("").easyResponsiveTabs;
+  if(isReadyEasyResponsiveTabs == undefined) {
+    load_lazy_js('/media/js/easyResponsiveTabs.js', get_tabs_{{ container.id }});
+  } else {
+    get_tabs_{{ container.id }}();
+  }
+};
+window.inline_scripts.push(tabs_{{ container.id }});
+</script>

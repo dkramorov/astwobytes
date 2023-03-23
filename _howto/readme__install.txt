@@ -5,7 +5,9 @@ apt-get install uwsgi-plugin-python3
 
 plugins = python3
 
-в /usr/lib/uwsgi/plugins и посмотри какие плагины есть по типу python3_plugin.so python_plugin.so
+в
+/usr/lib/uwsgi/plugins
+и посмотри какие плагины есть по типу python3_plugin.so python_plugin.so
 
 если нет нужного установить
 
@@ -21,6 +23,7 @@ sudo apt install uwsgi-plugin-python
 # sudo apt-get install python3.6
 
 $ sudo apt-get install python3.6 python3.6-dev uwsgi uwsgi-src uuid-dev libcap-dev libpcre3-dev libssl-dev
+Обязательно apt install uwsgi-src (чтобы появился /usr/src/uwsgi/plugins/python)
 $ cd ~
 $ export PYTHON=python3.6
 $ uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python36"
@@ -41,6 +44,18 @@ Python version: 3.6.0b2 (default, ...) [GCC 6.2.0 ...]
   harakiri = 40
   wsgi-file = /home/jocker/sites/astwobytes_spamcha/conf/wsgi.py
   pythonpath = /home/jocker/sites/astwobytes_spamcha/env/lib/python3.6/site-packages
+  buffer-size = 8192
+
+[uwsgi]
+  processes = 2
+  master = true
+  plugins = python2
+  #chdir = /home/jocker/sites/django/
+  #env = DJANGO_SETTINGS_MODULE=irkdvor.settings
+  #module = django.core.handlers.wsgi:WSGIHandler()
+  harakiri = 40
+  wsgi-file = /home/jocker/sites/django/bin/irkdvor_wsgi
+  pythonpath = /home/jocker/sites/django/parts/django/
   buffer-size = 8192
 
 #################################################
@@ -200,12 +215,20 @@ MAILTO='dkramorov@mail.ru'
 */2 * * * * /home/v/vallom/vallomcrm_new/public_html/env/bin/python /home/v/vallom/vallomcrm_new/public_html/manage.py jdocs_get_lots --get_lots
 
 
-
-
 WARNING: The scripts pip, pip2 and pip2.7 are installed in '/home/a/a223223/.local/bin' which is not on PATH.
 export PYTHONPATH="${PYTHONPATH}:/home/a/a223223/.local/bin"
 export PATH="${PATH}:/home/a/a223223/.local/bin"
 pip --user install MySQL-python
 pip install MySQL-python config --global http.sslVerify false
 pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org MySQL-python
+
+
+      OSError: mysql_config not found
+apt-get install libmysqlclient-dev
+
+#error "FreeType version 2.3 or higher is required
+apt-get install libfreetype6-dev
+apt-get install pkg-config
+apt-get install libpng12-dev
+apt-get install pkg-config
 

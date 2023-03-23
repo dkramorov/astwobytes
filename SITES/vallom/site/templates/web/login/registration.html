@@ -1,0 +1,152 @@
+{% extends "skeleton.html" %}
+{% load flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+  .stylization .btn{
+    display: inline-block;
+    border: none;
+    transition: all 0.2s;
+    font-weight: 500;
+    background: #373d54;
+    padding: 10px 35px;
+    color: #ffffff;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  .social i{
+    font-size:18px;
+  }
+</style>
+{% if request.session.shopper %}
+<script type="text/javascript">
+  window.location.href = '/profile/';
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container stylization">
+  <div class="row">
+{% if request.session.shopper %}
+  <div class="col-md-12">
+    <h2>
+      Спасибо, что зашли {{ request.session.shopper.name }}
+    </h2>
+  </div>
+{% else %}
+<div class="col-md-6">
+  <div class="auth-col">
+    <h2>Вход</h2>
+    <form action="/login/" method="post" id="login_form">
+      {% csrf_token %}
+      <fieldset>
+        <div class="form-group">
+          <label>Телефон (логин) <span class="required"></span></label>
+          <input type="text" name="login" class="phone form-control required" data-msg="Введите телефон">
+        </div>
+      </fieldset>
+      <fieldset>
+        <div class="form-group">
+          <label>Пароль <span class="required"></span></label>
+          <input type="password" name="passwd" class="form-control required" data-msg="Введите пароль">
+        </div>
+      </fieldset>
+      <div class="feedback_alerts"></div>
+      <fieldset class="auth-submit">
+        <button title="Вход" class="button orange" type="submit">
+          <span><span>Вход</span></span>
+        </button>
+      </fieldset>
+    </form>
+  </div>
+  <br>
+  <div class="social">
+    <p>
+      <a class="btn btn-default" href="{{ vk_link }}">Войти через <i class="fa fa-vk"></i></a>
+      <a class="btn btn-default" href="{{ yandex_link }}">Войти через Yandex</a>
+    </p>
+  </div>
+  <br>
+</div>
+<div class="col-md-6">
+  <div class="auth-col">
+    <h2>Регистрация</h2>
+    <form action="/registration/" method="post" id="register_form">
+      {% csrf_token %}
+      <fieldset>
+        <div class="form-group">
+          <label>Телефон (логин) <span class="required"></span></label>
+          <input type="text" name="login" class="phone form-control required" data-msg="Введите телефон">
+        </div>
+      </fieldset>
+      <fieldset>
+        <div class="form-group">
+          <label>Пароль <span class="required"></span></label>
+          <input type="password" name="passwd" class="form-control required" data-msg="Введите пароль">
+        </div>
+        <div class="form-group">
+          <label>Повторите пароль <span class="required"></span></label>
+          <input type="password" name="passwd2" class="form-control required" data-msg="Повторите пароль">
+        </div>
+      </fieldset>
+      <div class="feedback_alerts"></div>
+      <fieldset class="auth-submit">
+        <button title="Регистрация" class="button orange" type="submit">
+          <span><span>Регистрация</span></span>
+        </button>
+      </fieldset>
+    </form>
+    <br>
+  </div>
+</div>
+{% endif %}
+  </div>
+</div>
+
+  {% for container in page.containers %}
+    {% flatcontent request page container.container.tag %}
+  {% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script src="/static/js/jquery.form.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/jquery.maskedinput.min.js"></script>
+<script src="/static/js/feedback.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("input[type='text'].phone").mask("8(999)9 999-999");
+    function redirect_to_profile(result){
+      setTimeout(function(){
+          window.location.href = result['redirect'];
+      }, 800);
+    }
+    var reg = new FeedBack("register_form", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Пользователь создан",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": redirect_to_profile,
+      "callback_error": "",
+      "dont_reset_on_submit": 1, // or 1
+      //"errorClass": "invalid",
+    });
+    var auth = new FeedBack("login_form", {
+      "wait": "Ждите...",
+      //"send": "Отправить",
+      "success": "Вы вошли",
+      "progress": "Пожалуйста, ждите...",
+      "error": "Произошла ошибка, сообщите нам по телефону",
+      "error_captcha": "Не пройдена проверка на работа",
+      "callback_success": redirect_to_profile,
+      "callback_error": "",
+      "dont_reset_on_submit": 1, // or 1
+      //"errorClass": "invalid",
+    });
+  });
+</script>
+{% endblock %}

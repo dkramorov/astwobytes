@@ -1,1 +1,0 @@
-To determine how many files there are in the current directory, put in ls -1 | wc -l

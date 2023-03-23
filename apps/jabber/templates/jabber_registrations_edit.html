@@ -56,9 +56,22 @@
               <input type="text" placeholder="Платформа" class="form-control" name="platform" value="{% if row.platform %}{{ row.platform }}{% endif %}" autocomplete="off">
             </div>
           </div>
+
           {% include "core/forms/row_image.html" %}
           {% include "core/forms/row_position.html" %}
           {% include "core/forms/row_is_active.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Статус (кол-во попыток ввода кода подтверждения)</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Статус (кол-во попыток ввода кода подтверждения)" class="form-control" name="state" value="{% if row.state %}{{ row.state }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">HashCode</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="HashCode" class="form-control" name="hash_code" value="{% if row.hash_code %}{{ row.hash_code }}{% endif %}" autocomplete="off">
+            </div>
+          </div>
         </div>
         {% include "core/forms/footer_buttons.html" %}
       </form>

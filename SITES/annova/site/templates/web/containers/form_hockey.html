@@ -18,20 +18,6 @@
           <h3 class="col-md-10">Оформить страховку на ребенка:</h3>
           <div class="col-md-6">
             <ul class="data-list">
-<!--
-              <li><input type="text" name="firstname" class="required form-control" placeholder="Ваше имя"></li>
-              <li><input type="text" name="lastname" class="required form-control" placeholder="Ваша фамилия"></li>
--->
-              <li><input type="text" name="name" class="required form-control" placeholder="ФИО ребенка"></li>
-              <li>
-                <input type="text" name="passport_birthday" class="required date form-control" placeholder="Дата рождения ребенка">
-              </li>
-              <li><input type="text" name="phone" class="required form-control phone" placeholder="Ваш телефон"></li>
-              <input id="website" name="website" type="hidden" value="" ><!-- Leave for security protection, read docs for details -->
-            </ul>
-          </div>
-          <div class="col-md-6">
-            <ul class="data-list">
               <li>
                 <div class="styled-select">
                   {% with request|insurance_products as products %}
@@ -45,30 +31,15 @@
                 </div>
               </li>
             </ul>
+          </div>
+          <div class="col-md-6">
             <ul class="data-list">
               <li>
                 <input type="text" name="started" class="required date form-control" min='{% tomorrow %}' placeholder="Дата начала программы" value="{% tomorrow %}">
                 <span class="input_helper">Ближайшая дата: {% tomorrow %}</span>
               </li>
-              <li><input type="email" name="email" class="required form-control" placeholder="Ваш email"></li>
+              <input id="website" name="website" type="hidden" value="" ><!-- Leave for security protection, read docs for details -->
             </ul>
-<!--
-            <ul class="data-list">
-              <li>
-              <div class="qty-buttons">
-                <input type="button" value="+" class="qtyplus" name="quantity">
-                <input type="text" name="quantity" value="" class="qty form-control required" placeholder="none">
-                <input type="button" value="-" class="qtyminus" name="quantity">
-                <span>Сумма</span>
-              </div>
-              </li>
-            </ul>
-            <ul class="data-list floated clearfix">
-              <li id="age"><input type="text" name="age" class="required form-control" placeholder="Сумма"></li>
-              <li><input name="gender" type="radio" class="required check_radio" value="Male"><label class="label_gender"> Муж</label></li>
-              <li><input name="gender" type="radio" class="required check_radio" value="Female"><label class="label_gender"> Жен</label></li>
-            </ul>
--->
           </div>
         </div>
         <div class="row">
@@ -91,11 +62,78 @@
       </div>
 
       <div class="step row">
-        <div class="col-md-10">
-          <h3>Паспортные данные ребенка</h3>
+        <div class="col-md-6">
+          <h3>Данные ребенка</h3>
           <ul class="data-list-2">
-            <li><input type="text" name="passport_series" class="required form-control" placeholder="Серия"></li>
-            <li><input type="text" name="passport_number" class="required form-control" placeholder="Номер"></li>
+
+            <li><input type="text" name="child_last_name" class="required form-control rus_letters" placeholder="Фамилия"></li>
+            <li><input type="text" name="child_first_name" class="required form-control rus_letters" placeholder="Имя"></li>
+            <li><input type="text" name="child_middle_name" class="required form-control rus_letters" placeholder="Отчество"></li>
+          </ul>
+
+          <ul class="data-list-2" style="margin: 0;">
+            <li>
+              <label>
+                <input name="passport_ptype" type="radio" class="check_radio passport_type required" value="1" checked> паспорт гражданина России
+              </label>
+            </li>
+            <li>
+              <label>
+                <input name="passport_ptype" type="radio" class="check_radio passport_type required" value="2"> свидетельство о рождении
+              </label>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <div class="passport_type_2 passport_type">
+            <h3>Свидетельство о рождении</h3>
+            <ul class="data-list-2">
+              <li><input type="text" name="birthday_cert" class="form-control required" placeholder="Свидетельство о рождении"></li>
+              <li>
+                <input type="text" name="child_passport_birthday" class="date form-control child_passport_birthday_2" placeholder="Дата рождения ребенка">
+              </li>
+            </ul>
+          </div>
+
+          <div class="passport_type_1 passport_type">
+            <h3>Паспорт ребенка</h3>
+            <ul class="data-list-2">
+              <li>
+                <input type="text" name="child_passport_birthday" class="date form-control child_passport_birthday_1" placeholder="Дата рождения ребенка">
+              </li>
+              <li><input type="text" name="child_passport_series" class="form-control passport_series required" placeholder="Серия"></li>
+              <li><input type="text" name="child_passport_number" class="form-control passport_number required" placeholder="Номер"></li>
+            </ul>
+            <ul class="data-list-2">
+              <li><input type="text" name="child_passport_issued" class="form-control" placeholder="Кем выдан"></li>
+              <li><input type="text" name="child_passport_issued_date" class="date form-control" placeholder="Когда выдан"></li>
+            </ul>
+            <ul class="data-list-2">
+              <li><input type="text" name="child_passport_registration" class="form-control" placeholder="Место регистрации"></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="step row">
+        <div class="col-md-6">
+          <h3>Данные страхователя (родителя)</h3>
+          <ul class="data-list-2">
+            <li><input type="text" name="last_name" class="required form-control rus_letters" placeholder="Фамилия"></li>
+            <li><input type="text" name="first_name" class="required form-control rus_letters" placeholder="Имя"></li>
+            <li><input type="text" name="middle_name" class="required form-control rus_letters" placeholder="Отчество"></li>
+            <li><input type="text" name="phone" class="required form-control phone" placeholder="Ваш телефон"></li>
+            <li><input type="email" name="email" class="required form-control" placeholder="Ваш email"></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h3>Паспорт страхователя (родителя)</h3>
+          <ul class="data-list-2">
+            <li>
+              <input type="text" name="passport_birthday" class="required date form-control" placeholder="Дата рождения страхователя">
+            </li>
+            <li><input type="text" name="passport_series" class="form-control passport_series required" placeholder="Серия"></li>
+            <li><input type="text" name="passport_number" class="form-control passport_number required" placeholder="Номер"></li>
           </ul>
           <ul class="data-list-2">
             <li><input type="text" name="passport_issued" class="required form-control" placeholder="Кем выдан"></li>
@@ -124,3 +162,30 @@
     </div>
   </form>
 </div>
+
+<script type="text/javascript">
+function select_passport_type() {
+  var passport_type = ($("input.passport_type:checked").val());
+  $("div.passport_type").hide();
+  $("div.passport_type_" + passport_type).show();
+  if (passport_type == 1) {
+    $("input[name='birthday_cert']").addClass("disabled");
+    $("input[name='child_passport_series']").removeClass("disabled");
+    $("input[name='child_passport_number']").removeClass("disabled");
+    $("input.child_passport_birthday_2").attr("name","");;
+    $("input.child_passport_birthday_1").attr("name", "child_passport_birthday");
+  } else {
+    $("input[name='child_passport_series']").addClass("disabled");
+    $("input[name='child_passport_number']").addClass("disabled");
+    $("input[name='birthday_cert']").removeClass("disabled");
+    $("input.child_passport_birthday_1").attr("name","");;
+    $("input.child_passport_birthday_2").attr("name", "child_passport_birthday");
+  }
+}
+$(document).ready(function(){
+  select_passport_type();
+  $("input.passport_type").click(function(){
+    select_passport_type();
+  });
+});
+</script>

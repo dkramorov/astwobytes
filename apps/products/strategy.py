@@ -86,14 +86,19 @@ class SearchStrategy:
 class DBSearchStrategy(SearchStrategy):
     """Класс для поиска по базе данных"""
 
+    def __str__(self):
+        return 'DBSearchStrategy'
+
     def get_facet_filters_list(self,
                                cat_id: int,
                                search_facet: bool = True,
+                               allowed_facets: list = None,
                                cache_time: int = 300,
                                force_new: bool = False):
         """Получение фильтров по рубрике
            :param cat_id: ид выбранной категории
            :param search_facet: только фасеты для поиска (search_facet)
+           :param allowed_facets: фасеты, которые запрашиваем
            :param cache_time: время кэширования
            :param force_new: игнорить кэш
            :return result: словарь фильтров
@@ -122,13 +127,19 @@ class DBSearchStrategy(SearchStrategy):
         # 4) Находим привязанные значения свойств для товаров
         products = list(products)
         ids_values = ProductsProperties.objects.filter(product__in=products)
-        # Только фасеты поиска
+
         if search_facet:
+            # Только фасеты поиска
             ids_search_props = Property.objects.filter(search_facet=True, is_active=True).values_list('id', flat=True)
             ids_values = ids_values.filter(prop__prop__search_facet=True)
+        else:
+            # Только свойства привязанные к категории
+            # TODO: djapian
+            ids_values = ids_values.filter(prop__prop__cat=cat)
+        if allowed_facets:
+            ids_values = ids_values.filter(prop__prop__code__in=allowed_facets)
 
         ids_values = ids_values.values_list('prop', flat=True) # это PropertiesValues
-
         ids_values = set(ids_values)
         # 5) Находим значения свойств
         pvalues = PropertiesValues.objects.filter(pk__in=ids_values, is_active=True)
@@ -187,22 +198,20 @@ class DBSearchStrategy(SearchStrategy):
         # поэтому отфильтровываем по каждому
         facet_query = Q()
         ids_products = []
-        first_filter = True
+        filtered_products = []
         for k, v in facet_filters.items():
-            prop_query = Q()
-            for item in v:
-                prop_query.add(Q(prop__id=item), Q.OR)
-            if first_filter:
-                ids_products = ProductsProperties.objects.filter(prop_query).values_list('product', flat=True)
+            if not filtered_products:
+                filtered_products = [0]
+                ids_products = ProductsProperties.objects.filter(prop__id__in=v).values_list('product', flat=True)
+                filtered_products += ids_products
             else:
-                # Уже первый фильтр нихера не вернул,
-                # можно не продолжать
-                if not ids_products:
-                    return {
-                        'ids_products': [],
-                        'facet_filters': facet_filters,
-                    }
-                ids_products = ProductsProperties.objects.filter(prop_query).filter(product__in=ids_products).values_list('product', flat=True)
+                ids_products = ProductsProperties.objects.filter(prop__id__in=v, product__in=filtered_products).values_list('product', flat=True)
+                filtered_products = ids_products
+            if not ids_products:
+                return {
+                   'ids_products': [0],
+                   'facet_filters': facet_filters,
+                }
         return {
             'ids_products': list(ids_products),
             'facet_filters': facet_filters,
@@ -213,6 +222,7 @@ class DBSearchStrategy(SearchStrategy):
                           facet_filters: dict = None,
                           cat_id: int = None,
                           search_facet: bool = True,
+                          allowed_facets: list = None,
                           force_new: bool = False):
         """Получение фасетных фильтров
            Функция обертка для совместимости
@@ -221,11 +231,13 @@ class DBSearchStrategy(SearchStrategy):
                                  по принципу {property_id: [value_id, ]}
            :param cat_id: ид категории по которой фильтруем
            :param search_facet: поиск только свойств, которые помечены как фасет
+           :param allowed_facets: фасеты, которые запрашиваем
            :param force_new: флаг кэша
         """
         return self.get_facet_filters_list(
             cat_id=cat_id,
             search_facet=search_facet,
+            allowed_facets = allowed_facets,
             force_new=force_new,
         )
 
@@ -234,12 +246,17 @@ class IndexSearchStrategy(SearchStrategy):
        list(Property.indexer.search(xapian.Query.MatchAll))[0].tags
        list(Property.indexer.search('id:2579 OR id:2679'))
     """
+
+    def __str__(self):
+        return 'IndexSearchStrategy'
+
     def get_facet_filters_list(self,
                                cat_id: int,
                                search_facet: bool = True,
+                               allowed_facets: list = None,
                                cache_time: int = 300,
                                force_new: bool = False):
-        # TODO: is_active
+        # TODO: is_active, allowed_facets
         result = {}
 
         # 0) Проверяем в кэше
@@ -376,6 +393,7 @@ class IndexSearchStrategy(SearchStrategy):
                           facet_filters: dict = None,
                           cat_id: int = None,
                           search_facet: bool = True,
+                          allowed_facets: list = None,
                           force_new: bool = False):
         """Получение фасетных фильтров
            :param facet_filters: словарь с фильтрами, которые выбраны,
@@ -383,6 +401,7 @@ class IndexSearchStrategy(SearchStrategy):
                                  по принципу {property_id: [value_id, ]}
            :param cat_id: ид категории по которой фильтруем
            :param search_facet: поиск только свойств, которые помечены как фасет
+           :param allowed_facets: фасеты, которые запрашиваем
            :param force_new: флаг кэша
         """
         if not facet_filters:
@@ -390,6 +409,7 @@ class IndexSearchStrategy(SearchStrategy):
         filters_for_cat = self.get_facet_filters_list(
             cat_id=cat_id,
             search_facet=search_facet,
+            allowed_facets = allowed_facets,
             force_new=force_new,
         )
         search_filters = self.get_filters_for_search(

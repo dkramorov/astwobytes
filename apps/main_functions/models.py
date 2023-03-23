@@ -18,6 +18,7 @@ from apps.main_functions.files import (
     extension,
     catch_file,
     open_file,
+    analyze_res_path,
     imagine_image,
     grab_image_by_url,
     create_captcha,
@@ -36,9 +37,11 @@ class Standard(models.Model):
     parents = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
     class Meta:
-      abstract = True
+        abstract = True
 
     def get_folder(self):
+        """Папка для модели (например, для изображений)
+        """
         if not self.id:
             return ''
         return '%s_%s/%s%s/' % (self._meta.app_label.lower(), self._meta.object_name.lower(), get_smart_folder(self.id), self.id)
@@ -192,16 +195,16 @@ class Standard(models.Model):
         return new_fname
 
     def delete(self, *args, **kwargs):
-      """Удаление объекта с подобъектами"""
-      parents = self.parents
-      if not parents:
-          parents = ''
-      children = self.__class__.objects.filter(parents='%s_%s' % (parents, self.id))
-      for child in children:
-          child.delete()
-          child.drop_media()
-      self.drop_media()
-      super(Standard, self).delete(*args, **kwargs)
+        """Удаление объекта с подобъектами"""
+        parents = self.parents
+        if not parents:
+            parents = ''
+        children = self.__class__.objects.filter(parents='%s_%s' % (parents, self.id))
+        for child in children:
+            child.delete()
+            child.drop_media()
+        self.drop_media()
+        super(Standard, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
       """Сохранение объекта"""
@@ -217,25 +220,21 @@ class Standard(models.Model):
     def imagine(self):
         """Возвращаем полный путь к картинке
            Аналогично mtags => imagine,
-           files => imagine_image only ПУТЬ"""
-
-        img_path = ''
-        if self.img:
-            if self.img.startswith('http'):
-                return self.img
-            img_path = '/media/%s%s' % (self.get_folder(), self.img)
-        return img_path
+           files => imagine_image only ПУТЬ
+        """
+        path = analyze_res_path(self.img, self.get_folder())
+        if path.startswith('http') or path.startswith('/static/'):
+            return path
+        return '/media/%s' % path
 
     def thumb(self, size: str = '150x150'):
         """Путь до миниатюры
            :param size: размер фото через x, например, 123х321
         """
-        if self.img:
-            if self.img.startswith('http'):
-                return '%s?size=150x150' % self.img
-            return imagine_image(self.img, size, self.get_folder())
-        # можно в settings положить путь к пустой картинке
-        return '/static/img/ups.png'
+        path = analyze_res_path(self.img, self.get_folder())
+        if path.startswith('http') or path.startswith('/static/'):
+            return path # ?size=150x150
+        return imagine_image(self.img, size, self.get_folder(), 'resized')
 
 class Config(Standard):
     """Различные настройки"""

@@ -1,0 +1,192 @@
+{% extends "skeleton.html" %}
+{% load mtags flatcontent_tags %}
+
+{% block extrahead %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12 col-md-12">
+      <div class="cart">
+        <div class="page-title title-buttons">
+          <h1>{{ page.name }}</h1>
+        </div>
+        <div class="overflow-table">
+          <table id="shopping-cart-table" class="data-table cart-table">
+            <col width="1" />
+            <col />
+            <col width="1" />
+            <col width="1" />
+            <col width="1" />
+            <col width="1" />
+            <thead>
+              <tr>
+                <th rowspan="1">&nbsp;</th>
+                <th rowspan="1"><span class="nobr">Наименование</span></th>
+                <th class="a-center" colspan="1"><span class="nobr">Цена</span></th>
+                <th rowspan="1" class="a-center">Кол-во</th>
+                <th class="a-center" colspan="1">Итого</th>
+                <th rowspan="1" class="a-center">&nbsp;</th>
+              </tr>
+            </thead>
+{% comment %}<!--
+            <tfoot>
+              <tr>
+                <td colspan="50" class="a-right">
+                  <button type="button" title="Очистить корзину" class="button btn-continue"><span><span>Очистить корзину</span></span></button>
+                </td>
+              </tr>
+            </tfoot>
+-->{% endcomment %}
+            <tbody>
+              {% for purchase in cart.purchases %}
+                <tr>
+                  <td>
+                    <a href="{{ purchase.link }}" title="{{ purchase.product_name|textize }}" class="product-image"><img src="{{ purchase.thumb }}" alt="{{ purchase.product_name|textize }}" /></a>
+                  </td>
+                  <td>
+                    <h2 class="product-name">
+                      <a href="{{ purchase.link }}">{{ purchase.product_name }} {% if purchase.cost_type %}{{ purchase.cost_type.name }}{% endif %}</a>
+                    </h2>
+                  </td>
+                  <td class="a-right">
+                    <span class="cart-price">
+                      <span class="price">{{ purchase.cost|money_format }} ₽</span>
+                    </span>
+                  </td>
+                  <td class="a-center">
+                    <input value="{{ purchase.count }}" size="4" title="Количество" class="input-text qty" id="quantity_{{ purchase.id }}" />
+                  </td>
+                  <td class="a-right">
+                    <span class="cart-price">
+                      <span class="price">{{ purchase.total|money_format }} ₽</span>
+                    </span>
+                  </td>
+                  <td class="a-center">
+                    <a id="purchase_drop_{{ purchase.id }}" href="javascript:void(0);" title="Удалить" class="btn-remove btn-remove2">Удалить</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="cart-collaterals">
+          <div class="row">
+            {% comment %}<!--
+              {% include "web/order/recommended_products.html" %}
+            -->{% endcomment %}
+            <div class="col-1 col-lg-4 col-md-4 col-sm-6 col-xs-12">
+              <div class="discount">
+                <h2>Скидочный купон</h2>
+                <div class="discount-form">
+                  <label for="coupon_code">Ввердите код скидочного купона</label>
+                  <div class="input-box">
+                    <input class="input-text" id="coupon_code" name="coupon_code" />
+                  </div>
+                  <div class="buttons-set">
+                    <button type="button" title="Применить купон" class="button">
+                      <span><span>Применить купон</span></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-1 col-lg-4 col-md-4 col-sm-6 col-xs-12">
+              <div class="shipping">
+                <h2>Доставка</h2>
+                <div class="shipping-form">
+                  <p>Введите информацию для доставки</p>
+                  <ul class="form-list">
+                    <li>
+                      <label for="delivery_address">Адрес для доставки</label>
+                      <div class="input-box">
+                        <input type="text" id="delivery_address" name="address"  title="Адрес для доставки" class="input-text" />
+                      </div>
+                    </li>
+                  </ul>
+                  <div class="buttons-set">
+                    <button type="button" title="Сохранить адрес" class="button">
+                      <span><span>Сохранить</span></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 total-wrapper">
+              <div class="totals">
+                <table id="shopping-cart-totals-table">
+                  <col />
+                  <col width="1" />
+                  <tfoot>
+                    <tr>
+                      <td class="a-right" colspan="1">
+                        <strong>Итого</strong>
+                      </td>
+                      <td class="a-right">
+                        <strong><span class="price">{{ cart.total|money_format  }} ₽</span></strong>
+                      </td>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+                    <tr>
+                      <td class="a-right" colspan="1">Заказ на сумму</td>
+                      <td class="a-right">
+                        <span class="price">{{ cart.total|money_format }} ₽</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="a-right" colspan="1">Скидка</td>
+                      <td class="a-right">
+                        <span class="price">-</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="a-right" colspan="1">Доставка</td>
+                      <td class="a-right">
+                        <span class="price">-</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <ul class="checkout-types">
+                  <li>
+                    <button type="button" title="Оформить заказ" class="button btn-proceed-checkout btn-checkout" id="goto_checkout_order">
+                      <span><span>Оформить заказ</span></span>
+                   </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag %}
+{% endfor %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#goto_checkout_order").click(function(){
+      window.location.href = "/shop/checkout/";
+    });
+    {% for purchase in cart.purchases %}
+      quantity_listener("{{ purchase.id }}",
+                        $("#qbuttons_{{ purchase.id }} .cart-plus"),
+                        $("#qbuttons_{{ purchase.id }} .cart-minus"),
+                        true // сразу обновить
+      );
+      purchase_drop_listener("{{ purchase.id }}",
+                             $("#purchase_drop_{{ purchase.id }}")
+      );
+    {% endfor %}
+  });
+</script>
+{% endblock %}

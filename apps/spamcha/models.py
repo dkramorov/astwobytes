@@ -37,6 +37,14 @@ class EmailAccount(Standard):
         verbose_name_plural = 'Рассылка - Аккаунты'
         #default_permissions = []
 
+    def __str__(self):
+        return 'smtp_server: %s, smtp_port: %s, email: %s, passwd: %s' % (
+            self.smtp_server,
+            self.smtp_port,
+            self.email,
+            self.passwd,
+        )
+
     def send_email(self, msg, recipient: str = 'dk@223-223.ru'):
         """Отправка email сообщения
            Сообщение =>

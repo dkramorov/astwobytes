@@ -89,7 +89,7 @@
 
 var props_table = null;
 function fill_props(){
-  // Заполнение формы настройками,
+  // Заполнение формы,
   // вызываем перед отправкой в $("#props_create_form").submit
   $("#props_form").html();
   var values_data = "";
@@ -99,6 +99,7 @@ function fill_props(){
     values = props[i].getData();
     values_data += "<input type='hidden' name='name_" + i + "' value='" + values['name'] + "' />";
     values_data += "<input type='hidden' name='code_" + i + "' value='" + values['code'] + "' />";
+    values_data += "<input type='hidden' name='cat_" + i + "' value='" + values['cat'] + "' />";
   }
   values_data += "<input type='hidden' name='props' value='" + props.length + "' />";
   $("#props_form").html($(values_data));
@@ -118,6 +119,100 @@ $(document).ready(function(){
     result += "</div>";
     return result;
   };
+  var catFormatter = function(cell, formatterParams, onRendered){
+    var data = cell.getRow().getData();
+    if(!data['cat']){
+      return "";
+    }
+    var cat = data['cat'];
+    var result = "<div class='padding-rl5'>";
+    result += " <a class='btn' target='_blank' href='" + cat['link'] + "'>" + cat['name'] + "</a><br />";
+    result += "</div>";
+    return result;
+  };
+
+  var catFilterEditor = function(cell, onRendered, success, cancel, editorParams){
+    var container = document.createElement("select");
+    container.id = "products_cat_filter";
+
+    function buildValues(e){
+      console.log("searching products by cat", container.value);
+      success(container.value);
+    }
+    // changed - custom event (instead of change)
+    container.addEventListener("changed", buildValues);
+    //container.addEventListener("blur", buildValues);
+    //container.addEventListener("keydown", keypress);
+
+    return container;
+  };
+
+  var catEditor = function(cell, onRendered, success, cancel){
+    //cell - the cell component for the editable cell
+    //onRendered - function to call when the editor has been rendered
+    //success - function to call to pass thesuccessfully updated value to Tabulator
+    //cancel - function to call to abort the edit and return to a normal cell
+
+    var container = document.createElement("select");
+    container.id = "products_cat_filter";
+
+    onRendered(function(){
+    $("#products_cat_filter").select2({
+        placeholder: 'Выберите категорию',
+        width: '100%',
+        //tags: true,
+        allowClear: true,
+        ajax: {
+          delay: 150,
+          url: "{% url 'flatcontent:search_blocks' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              only_cats: 1,
+              page: params.page || 1,
+            }
+            return query;
+          },
+
+          //data: "only_cats=1",
+          cache: false,
+          dataType: 'json',
+        }
+      }).change(function(){
+
+        var select = document.querySelector("#products_cat_filter");
+        select.value = $(this).val();
+
+        cell.getRow().update({
+          'cat': select.value,
+          'cat_name': $(this).text(),
+        });
+        //console.log(cell.getRow().getData());
+        select.dispatchEvent(new Event('changed'));
+      });
+    });
+
+    function buildValues(e){
+      console.log("searching products by cat", container.value);
+      success(container.value);
+    }
+    container.addEventListener("changed", buildValues);
+    return container;
+  };
+
+  var catNameFormatter = function(cell, formatterParams, onRendered){
+    //console.log(cell.getRow().getData());
+    var cat = '';
+    var data = cell.getRow().getData();
+    if(!data['cat_name']){
+      cat = data['cat'];
+    } else {
+      cat = data['cat_name'];
+    }
+    var result = "<div class='padding-rl5'>" + cat + "</div>";
+    return result;
+  };
 
   main_table = new Tabulator("#main-table", {
     {% include "core/tabulator_table_params.html" %}
@@ -132,6 +227,16 @@ $(document).ready(function(){
         headerFilter: "input",
         headerFilterFunc: "like",
         minWidth: 80,
+      },
+      {
+        title: "Категория",
+        field: "cat",
+        headerSort: false,
+        headerFilterPlaceholder: "Категория",
+        headerFilter: catFilterEditor,
+        headerFilterFunc: "=",
+        formatter: catFormatter,
+        width: 100,
       },
       {
         title: "Ед измерения",
@@ -208,40 +313,46 @@ $(document).ready(function(){
       {
         title: "Название свойства",
         field: "name",
-        headerFilterPlaceholder: "Название свойства",
-        headerFilter: "input",
-        headerFilterFunc: "like",
+        headerSort: false,
         editor: "input",
         width: 150,
       },
       {
         title: "Код свойства",
         field: "code",
-        headerFilterPlaceholder: "Код свойства",
-        headerFilter: "input",
-        headerFilterFunc: "like",
+        headerSort: false,
         editor: "input",
         width: 150,
       },
       {
+        title: "Категория",
+        field: "cat",
+        headerSort: false,
+        formatter: catNameFormatter,
+        editor: catEditor,
+        width: 150,
+      },
+      {
         title: "Действия",
+        headerSort: false,
         formatter: "buttonCross",
         width: 120,
-        align:"center",
-        cellClick:function(e, cell){
+        align: "center",
+        cellClick: function(e, cell){
           cell.getRow().delete();
         }
       },
     ],
   });
+
   $("#add_prop").click(function(){
     var rows = props_table.getRows();
     props_table.addRow({
       'name': 'НовоеСвойство',
       'code': '',
+      'cat': '',
     });
   });
-
 
   $("#props2cat_form").submit(function(e) {
     var $form = $(this);
@@ -313,6 +424,40 @@ $(document).ready(function(){
       //data: "only_cats=1",
       cache: false,
       dataType: 'json',
+    }
+  });
+
+  $(".tabulator-headers .tabulator-col").each(function(){
+    if($(this).attr("tabulator-field") === "cat"){
+      $("#products_cat_filter").select2({
+        placeholder: 'Выберите категорию',
+        width: '100%',
+        //tags: true,
+        allowClear: true,
+        ajax: {
+          delay: 150,
+          url: "{% url 'flatcontent:search_blocks' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              only_cats: 1,
+              page: params.page || 1,
+            }
+            return query;
+          },
+
+          //data: "only_cats=1",
+          cache: false,
+          dataType: 'json',
+        }
+      }).change(function(){
+        //console.log('cat', $(this).val());
+        var select = document.querySelector("#products_cat_filter");
+        select.value = $(this).val();
+        // changed - custom event (instead of change)
+        select.dispatchEvent(new Event('changed'));
+      });
     }
   });
 

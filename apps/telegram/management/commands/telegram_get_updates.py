@@ -32,6 +32,11 @@ class Command(BaseCommand):
             type = str,
             default = False,
             help = 'Set bot proxy')
+        parser.add_argument('--create_invite_link',
+            action = 'store_true',
+            dest = 'create_invite_link',
+            default = False,
+            help = 'Create invite link for chat')
     def handle(self, *args, **options):
         kwargs = {}
         token = options.get('token')
@@ -50,4 +55,6 @@ class Command(BaseCommand):
         bot = TelegramBot(**kwargs)
         logger.info(json_pretty_print(bot.get_updates()))
 
+        if options.get('create_invite_link'):
+            print(bot.create_invite_link())
 

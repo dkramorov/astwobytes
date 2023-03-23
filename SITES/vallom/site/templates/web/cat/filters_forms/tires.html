@@ -1,0 +1,40 @@
+<script type="text/javascript">
+  allowed_facets = [
+    'TireSectionWidth', // Ширина
+    'TireAspectRatio', // Высота профиля
+    'RimDiameter', // Посадочный диаметр
+    'TireType', // Протектор
+    'InSetQuantity', // Количество шин в комплекте
+    'RunFlat', // RunFlat
+  ];
+</script>
+<div class="mainFilters">
+  <form class="filtersForm">
+    <div class="filtersTable">
+      <div class="filterItem">
+        <div class="filterTitle">
+          <h3>Подобрать шины по параметрам</h3>
+          <div class="img"><img src="/media/misc/tire_black.png" /></div>
+        </div>
+        <div class="filterBody">
+          <div class="filters">
+            <fieldset><select class="TireSectionWidth"><option>Ширина</option></select></fieldset>
+            <fieldset><select class="TireAspectRatio"><option>Высота профиля</option></select></fieldset>
+            <fieldset><select class="RimDiameter"><option>Посадочный диаметр</option></select></fieldset>
+          </div>
+
+          <div class="filters">
+            <fieldset><select class="TireType"><option>Протектор</option></select></fieldset>
+            <fieldset><select class="InSetQuantity"><option>Количество шин в комплекте</option></select></fieldset>
+            <fieldset><select class="RunFlat"><option>RunFlat</option></select></fieldset>
+          </div>
+          <div class="center">
+            <button title="Найти" class="button orange">
+              <span><span>Подобрать</span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -187,6 +187,30 @@ class FreeswitchBackend(object):
             result[reg['reg_user']] = reg['network_ip']
         return result
 
+    def get_list_users(self, username: str = None):
+        """Получить список пользователей"""
+        result = {}
+        if username:
+            users = self.server.freeswitch.api('list_users', 'user %s' % username)
+        else:
+            users = self.server.freeswitch.api('list_users', '')
+        if users:
+            fields = []
+            for user in users.split('\n'):
+                if not '|' in user:
+                    continue
+                if 'effective_caller_id_number' in user:
+                    fields = user.split('|')
+                    continue
+                rows = user.split('|')
+                if not len(rows) == len(fields):
+                    continue
+                row = {}
+                for i, field in enumerate(fields):
+                    row[field] = rows[i]
+                result[row['userid']] = row
+        return result
+
     def get_channels(self):
         """Получить каналы"""
         return self.do_json_request('channels as json')

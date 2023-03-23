@@ -1,0 +1,41 @@
+<script type="text/javascript">
+  allowed_facets = [
+    'RimDiameter', // Диаметр
+    'RimBoltsDiameter', // Сверловка (PCD)
+    'RimOffset', // Вылет (ET)
+    'RimWidth', // Ширина диска
+    'RimType', // Тип
+    'InSetQuantity', // Количество дисков в комплекте
+    'Condition', // Состояние товара
+  ];
+</script>
+<div class="mainFilters">
+  <form class="filtersForm">
+    <div class="filtersTable">
+      <div class="filterItem">
+        <div class="filterTitle">
+          <h3>Подобрать диски по параметрам</h3>
+          <div class="img"><img src="/media/misc/disc_black.png" /></div>
+        </div>
+        <div class="filterBody">
+          <div class="filters">
+            <fieldset><select class="RimDiameter"><option>Диаметр</option></select></fieldset>
+            <fieldset><select class="RimBoltsDiameter"><option>Сверловка (PCD)</option></select></fieldset>
+            <fieldset><select class="RimOffset"><option>Вылет (ET)</option></select></fieldset>
+            <fieldset><select class="RimWidth"><option>Ширина диска</option></select></fieldset>
+          </div>
+          <div class="filters">
+            <fieldset><select class="RimType"><option>Тип</option></select></fieldset>
+            <fieldset><select class="InSetQuantity"><option>Количество дисков в комплекте</option></select></fieldset>
+            <fieldset><select class="Condition"><option>Состояние товара</option></select></fieldset>
+          </div>
+          <div class="center">
+            <button title="Найти" class="button orange">
+              <span><span>Подобрать</span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

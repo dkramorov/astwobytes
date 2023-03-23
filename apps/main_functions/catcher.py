@@ -12,15 +12,28 @@ REGA_EMAIL = re.compile('^([a-z0-9\._-]{1,50})@([a-z0-9\._-]{1,50})\.([a-z]{2,4}
 REGA_IMG = re.compile('<img src=[\'"]([^\'"]+)', re.I)
 REGA_A = re.compile('<a href=[\'"]([^\'"]+)', re.I)
 
-def json_pretty_print(json_obj, pass_fields: list = None):
+def json_unknown_type2default(obj):
+    """Пример фукнции десериализации для json.dumps
+       :param obj: десериализуемый объект
+    """
+    from decimal import Decimal
+    if isinstance(obj, Decimal):
+        return float(obj)
+    return str(obj)
+
+def json_pretty_print(json_obj, pass_fields: list = None, default_deserializator=str):
     """Вывести json в человеческом виде
        :parm json_obj: джисонина
        :param pass_fields: пропустить поля (верхний уровень словаря пока)
+       :param default: функция вызываемая при Object of type X is not JSON serializable 
+       json.dumps(obj, default=str) - если встречается неизвестный тип, будет вызван default сериализатор
     """
     if pass_fields and isinstance(json_obj, dict):
         new_json_obj = {k: v for k, v in json_obj.copy().items() if not k in pass_fields}
-        return json.dumps(new_json_obj, sort_keys=True, indent=2, separators=(',', ': '), ensure_ascii=False)
-    return json.dumps(json_obj, sort_keys=True, indent=2, separators=(',', ': '), ensure_ascii=False)
+        return json.dumps(new_json_obj, sort_keys=True, indent=2,
+                          separators=(',', ': '), ensure_ascii=False, default=default_deserializator)
+    return json.dumps(json_obj, sort_keys=True, indent=2,
+                      separators=(',', ': '), ensure_ascii=False, default=default_deserializator)
 
 def defiz_phone(phone):
     """Дефизы в телефоне

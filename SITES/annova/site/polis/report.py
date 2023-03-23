@@ -831,42 +831,92 @@ def fill_polis_row(indexes, row_number, sheet, ptype: str, params: dict):
 
 def polis_report_hockey(start_date, end_date, ptype: str = 'simple'):
     """Формирование отчета по полисам"""
-    dest = 'report.xlsx'
+    dest = 'report_%s.xlsx' % ptype
+
+    row_number = 0
+    header = PolisCruisesReport.simple_header
+    indexes = PolisCruisesReport.simple_indexes
+
+    now = datetime.datetime.now()
+    yesterday = now - datetime.timedelta(days=1)
+    from_date = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0)
+    to_date = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
+    if start_date:
+        from_date = start_date
+    if end_date:
+        to_date = end_date
+
+    if ptype == 'global':
+        dest = 'Bordero on %s (Astoria Grande).xlsx' % to_date.strftime('%d-%m-%Y')
+
     book = xlsxwriter.Workbook(full_path(dest))
     sheet = book.add_worksheet('Лист 1')
 
-    row_number = 0
-    header = [
-        '№ п.п.',
-        'Фамилия Имя Отчество',
-        'Дата рождения',
-        [
-            'Паспортные данные',
-            [
-                'серия',
-                'номер',
-                'кем выдан',
-                'дата выдачи',
-            ],
-        ],
-        'Адрес места регистрации',
-        'Срок страхования',
-        'Страховая сумма на одно (каждое) Застрахованное лицо, руб.',
-        'Страховая премия на одно (каждое) Застрахованное лицо, руб.',
-    ]
-    indexes = {
-        'number': 0,
-        'name': 1,
-        'birthday': 2,
-        'passport_series': 3,
-        'passport_number': 4,
-        'passport_issued': 5,
-        'passport_issued_date': 6,
-        'address': 7,
-        'insurance_period': 8,
-        'insuranse_sum': 9,
-        'insuranse_premium': 10,
-    }
+    merge_format = book.add_format({'align': 'center'})
+    # Формирование шапки
+    if ptype == 'global':
+        header = PolisCruisesReport.global_header
+        indexes = PolisCruisesReport.global_indexes
+        merges = PolisCruisesReport.global_header_merge
+        for line in (
+            'Список застрахованных СК "Согласие"',
+            'Компания ассистанс : EVCALYPT GLOBAL',
+            'Бордеро',
+            'Дата: %s' % to_date.strftime(DATE_FORMATTER),
+        ):
+            sheet.write(row_number, 0, line)
+            row_number += 1
+        row_number += 1 # Пустая строка
+
+        # Добавить в шапку мерж ячеек
+        for merge in merges:
+            sheet.merge_range(
+                row_number + merge['srow'], # стартовая строка
+                merge['col'], # стартовый столбик
+                row_number + merge['srow'] + merge['hsize'], # конечная строка
+                merge['col'] + merge['wsize'], # конечный столбик
+                merge['name'], # содержимое ячейки
+                merge_format,
+            )
+        row_number += 2 # учет мержей
+        #row_number += 1 # Пустая строка
+    elif ptype == 'dsu':
+        header = PolisCruisesReport.dsu_header
+        indexes = PolisCruisesReport.dsu_indexes
+        merges = PolisCruisesReport.dsu_header_merge
+        for line in ('Приложение №1', ):
+            sheet.write(row_number, 0, line)
+            row_number += 1
+
+        # Добавить в шапку мерж ячеек
+        for merge in merges:
+            sheet.merge_range(
+                row_number + merge['srow'], # стартовая строка
+                merge['col'], # стартовый столбик
+                row_number + merge['srow'] + merge['hsize'], # конечная строка
+                merge['col'] + merge['wsize'], # конечный столбик
+                merge['name'], # содержимое ячейки
+                merge_format,
+            )
+        row_number += 2 # учет мержей
+
+    elif ptype == 'dsu_hockey':
+        header = PolisCruisesReport.dsu_header_hockey
+        indexes = PolisCruisesReport.dsu_indexes_hockey
+        merges = PolisCruisesReport.dsu_header_merge_hockey
+
+        # Добавить в шапку мерж ячеек
+        for merge in merges:
+            sheet.merge_range(
+                row_number + merge['srow'], # стартовая строка
+                merge['col'], # стартовый столбик
+                row_number + merge['srow'] + merge['hsize'], # конечная строка
+                merge['col'] + merge['wsize'], # конечный столбик
+                merge['name'], # содержимое ячейки
+                merge_format,
+            )
+        row_number += 1 # Пустая строка
+
     inc = 0 # для увеличения i
     for i, item in enumerate(header):
         if isinstance(item, (list, tuple)):
@@ -876,16 +926,27 @@ def polis_report_hockey(start_date, end_date, ptype: str = 'simple'):
                 sheet.write(row_number + 1, j + i, subitem)
         else:
             sheet.write(row_number, i + inc, item)
-    row_number += 2
+    row_number += 1
+
+    sber = SberPaymentProvider()
+
+    polises = Polis.objects.select_related('order', 'order__shopper').filter(order__isnull=False, created__gt=from_date, created__lt=to_date).order_by('from_date')
+
+    print('polises count: %s' % len(polises), from_date, to_date)
+
     i = 0
-    polises = Polis.objects.select_related('order__shopper', 'order').all()
     for polis in polises:
         order = polis.order
-        if not order:
-            continue
         passport = Passport.objects.filter(shopper=order.shopper).last()
+
+        members = list(polis.polismember_set.all())
+        if polis.already_safe:
+            member = PolisMember(polis=polis, name=polis.name, birthday=polis.birthday)
+            member.is_main = True
+            members.insert(0, member)
+
         main_member = {}
-        main_name, main_birthday = order.shopper.name, polis.birthday
+        main_name, main_birthday = order.shopper.name or '', polis.birthday
         name_parts = main_name.split(' ')
         main_surname, main_first_name, main_middle_name = None, None, None
         for item in name_parts:
@@ -900,112 +961,91 @@ def polis_report_hockey(start_date, end_date, ptype: str = 'simple'):
             if item and not main_middle_name:
                 main_middle_name = item
                 continue
-        i += 1
-        params = {
-            'i': i,
-            'number': polis.number,
-            'order': order,
-            'order_total': '%s' % order.total,
-            'surname': main_surname,
-            'first_name': main_first_name,
-            'middle_name': main_middle_name,
-            'fio': main_name,
-            'purchases': [{
-                'code': 'G1' if 'G' in purchase.product_code else 'B',
-                'purchase': purchase,
-                'product_price': purchase.product_price,
-                'cost': purchase.cost,
-                'social_program': '-',
-                'social_insurance_limit': '-',
-                'law_program': '-',
-                'law_insurance_limit': '-',
-            } for purchase in order.purchases_set.all() if purchase.product_code != 'markup'],
-            'from_date': polis.from_date.strftime(DATE_FORMATTER) if polis.from_date else '',
-            'to_date': polis.to_date.strftime(DATE_FORMATTER) if polis.to_date else '',
-            'birthday': main_birthday.strftime(DATE_FORMATTER) if main_birthday else '',
-            'days': polis.days,
-            'program': '', # В purchase для каждого program = code
-            'currency': 'EUR',
-            'country': 'WORLD-WIDE',
-            'code': 'AL',
-            'coverage': '',
-            'created': polis.created.strftime(DATE_FORMATTER),
-            'franchise': '',
-            'franchise_type': '',
-            'franchise_value_type': '',
-            'additional': '',
-            'service_company': 'EVCALYPT GLOBAL',
-            'insurance_person_type': 'ФЛ',
-            'law_orgform': '',
-            'law_name': '',
-            'law_inn': '',
-            'law_ogrn': '',
-            'law_okved': '',
-            'law_address': '',
-            'doc_type': passport.get_ptype_display(),
-            'doc_series': passport.series,
-            'doc_number': passport.number,
-            'doc_issued': passport.issued,
-            'doc_issued_date': passport.issued_date.strftime(DATE_FORMATTER) if passport.issued_date else '',
-            'doc_registration': passport.registration,
-            'address': '',
-            'variant': '',
-            'total_cost': '',
-            'total_cost_rub': '',
-            'additional_name': '',
-            'main_name': main_name,
-            'main_surname': main_surname,
-            'main_first_name': main_first_name,
-            'main_middle_name': main_middle_name,
-            'main_birthday': main_birthday.strftime(DATE_FORMATTER) if main_birthday else '',
-        }
 
-        row_number = fill_polis_row(
-            indexes=indexes,
-            row_number=row_number,
-            sheet=sheet,
-            ptype=ptype,
-            params=params,
-        )
-        """
-        ind = indexes['number']
-        sheet.write(row_number, ind, polis.number)
+        for member in members:
+            name, birthday = member.name, member.birthday
+            name_parts = name.split(' ')
+            surname, first_name, middle_name = None, None, None
+            for item in name_parts:
+                if not item:
+                    continue
+                if item and not surname:
+                    surname = item
+                    continue
+                if item and not first_name:
+                    first_name = item
+                    continue
+                if item and not middle_name:
+                    middle_name = item
+                    continue
+            i += 1
+            params = {
+                'i': i,
+                'is_main': True if hasattr(member, 'is_main') else False,
+                'number': polis.get_number7(),
+                'order': order,
+                'order_total': '%s' % order.total,
+                'surname': surname,
+                'first_name': first_name,
+                'middle_name': middle_name,
+                'fio': name,
+                'purchases': [{
+                    'code': 'G1' if 'G' in purchase.product_code else 'B',
+                    'purchase': purchase,
+                    'product_price': purchase.product_price,
+                    'cost': purchase.cost,
+                    'social_program': '-',
+                    'social_insurance_limit': '-',
+                    'law_program': '-',
+                    'law_insurance_limit': '-',
+                } for purchase in order.purchases_set.all() if purchase.product_code != 'markup'],
+                'from_date': polis.from_date.strftime(DATE_FORMATTER) if polis.from_date else '',
+                'to_date': polis.to_date.strftime(DATE_FORMATTER) if polis.to_date else '',
+                'birthday': birthday.strftime(DATE_FORMATTER) if birthday else '',
+                'days': polis.days,
+                'program': '', # В purchase для каждого program = code
+                'currency': 'EUR',
+                'country': 'WORLD-WIDE',
+                'code': 'AL',
+                'coverage': '',
+                'created': polis.created.strftime(DATE_FORMATTER),
+                'franchise': '',
+                'franchise_type': '',
+                'franchise_value_type': '',
+                'additional': '',
+                'service_company': 'EVCALYPT GLOBAL',
+                'insurance_person_type': 'ФЛ',
+                'law_orgform': '',
+                'law_name': '',
+                'law_inn': '',
+                'law_ogrn': '',
+                'law_okved': '',
+                'law_address': '',
+                'doc_type': passport.get_ptype_display(),
+                'doc_series': passport.series,
+                'doc_number': passport.number,
+                'doc_issued': passport.issued,
+                'doc_issued_date': passport.issued_date.strftime(DATE_FORMATTER) if passport.issued_date else '',
+                'doc_registration': passport.registration,
+                'address': '',
+                'variant': '',
+                'total_cost': '',
+                'total_cost_rub': '',
+                'additional_name': '',
+                'main_name': main_name,
+                'main_surname': main_surname,
+                'main_first_name': main_first_name,
+                'main_middle_name': main_middle_name,
+                'main_birthday': main_birthday.strftime(DATE_FORMATTER) if main_birthday else '',
+            }
 
-        ind = indexes['name']
-        sheet.write(row_number, ind, polis.name)
-
-        ind = indexes['birthday']
-        sheet.write(row_number, ind, polis.birthday.strftime(DATE_FORMATTER))
-
-        ind = indexes['name']
-        sheet.write(row_number, ind, polis.name)
-
-        passport = polis.order.shopper.passport_set.all().first()
-        ind = indexes['passport_series']
-        sheet.write(row_number, ind, passport.series)
-        ind = indexes['passport_number']
-        sheet.write(row_number, ind, passport.number)
-        ind = indexes['passport_issued']
-        sheet.write(row_number, ind, passport.issued)
-        ind = indexes['passport_issued_date']
-        sheet.write(row_number, ind, passport.issued_date.strftime(DATE_FORMATTER) if passport.issued_date else '')
-        ind = indexes['address']
-        sheet.write(row_number, ind, passport.registration)
-
-        ind = indexes['insurance_period']
-        from_date = polis.from_date.strftime(DATE_FORMATTER) if polis.from_date else ''
-        to_date = polis.to_date.strftime(DATE_FORMATTER) if polis.to_date else ''
-        sheet.write(row_number, ind, '%s - %s' % (from_date, to_date))
-
-        for purchase in polis.order.purchases_set.all():
-            ind = indexes['insuranse_sum']
-            sheet.write(row_number, ind, purchase.cost)
-
-        ind = indexes['insuranse_premium']
-        sheet.write(row_number, ind, polis.insurance_sum)
-
-        row_number += 1
-        """
+            row_number = fill_polis_row(
+                indexes=indexes,
+                row_number=row_number,
+                sheet=sheet,
+                ptype=ptype,
+                params=params,
+            )
 
     book.close()
     return dest

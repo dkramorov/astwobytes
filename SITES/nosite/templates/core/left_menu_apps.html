@@ -3,6 +3,10 @@
 <ul class="nav">
   <li class="nav-heading">&nbsp;</li>
 
+  {% if 'net_tools' in apps %}
+    {% include "net_tools_admin_menu.html" %}
+  {% endif %}
+
   {% if 'flatcontent' in apps %}
     {% include "flatcontent_admin_menu.html" %}
   {% endif %}

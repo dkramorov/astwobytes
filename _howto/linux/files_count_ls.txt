@@ -1,0 +1,8 @@
+To determine how many files there are in the current directory, put in ls -1 | wc -l
+
+
+For example, to find all files in the current directory that have been modified since yesterday (24 hours ago) use:
+
+find . -maxdepth 1 -mtime -1
+
+Note that to find files modified before 24 hours ago, you have to use -mtime +1 instead of -mtime -1.

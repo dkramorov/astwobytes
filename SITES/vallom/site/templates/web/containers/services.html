@@ -1,0 +1,118 @@
+{% load mtags %}
+<style type="text/css">
+/* SERVICES */
+.mainServices {
+  background-image:url('/media/img/texture_diag.png');
+}
+.mainServices h2 {
+  color: #fff;
+  font-size: 28px;
+  text-align: center;
+  padding: 30px 0;
+}
+.mainServices .serviceItems {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-weight: bold;
+  align-items: stretch;
+  margin-bottom: 40px;
+}
+.mainServices .serviceItem {
+  border: 1px solid #fff;
+  border-radius: 16px;
+  background-color: #fff;
+  margin-bottom: 30px;
+}
+.mainServices .serviceTitle {
+  text-align: center;
+  color: #000;
+  font-size: 22px;
+}
+.mainServices .serviceTitle a {
+  display: block;
+  padding: 20px 0;
+}
+.mainServices .serviceTitle img {
+  display: none;
+}
+.mainServices .serviceBody {
+  height: 300px;
+  width: 350px;
+  background-size: cover;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+}
+.mainServices .button {
+  margin: 20px auto;
+  width: 150px;
+}
+@media (min-width: 992px) and (max-width: 1200px) {
+  .mainServices .serviceBody {
+    width: 306px;
+  }
+}
+@media (max-width: 992px) {
+  .mainServices .serviceItems {
+    flex-direction: column;
+  }
+  .mainServices .serviceBody {
+    display: none;
+  }
+  .mainServices .serviceItem {
+    background-color: #ff3d1f;
+    border: 0;
+  }
+  .mainServices .serviceTitle {
+    position: relative;
+    text-align: left;
+  }
+  .mainServices .serviceTitle img {
+    position: absolute;
+    display: block;
+    right: 30px;
+    top: 5px;
+    width: 65px;
+  }
+  .mainServices .serviceTitle a {
+    padding-left: 30px;
+    color: #fff;
+  }
+}
+@media (max-width: 480px) {
+
+}
+</style>
+<div class="container-fluid">
+  <div class="mainServices">
+    <h2>{{ container.name }}</h2>
+    <div class="container">
+      <div class="serviceItems">
+        {% for block in blocks %}
+          <div class="serviceItem">
+            <div class="serviceTitle">
+              <a href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">{{ block.name }}</a>
+              {% if block.sub %}
+                {% for item in block.sub %}
+                  <img src="{{ item.thumb }}" />
+                {% endfor %}
+              {% endif %}
+            </div>
+            <div class="serviceBody" style="{% if block.img %}background-image:url('{% imagine block.img '800x600' block.get_folder True %}');{% endif %}">
+              {% if block.html %}
+                <a class="button orange" href="{% if block.link %}{{ block.link }}{% else %}javascript:void(0);{% endif %}">
+                  <span><span>{{ block.html|safe }}</span></span>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+</script>

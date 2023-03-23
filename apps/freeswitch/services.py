@@ -152,18 +152,36 @@ def analyze_logs():
             logger.info('Dropping %s' % (cur_path, ))
             drop_file(cur_path)
 
-def voice_code(dest, digit, script: str = 'hello.say_digit'):
+def voice_code(dest: str,
+               digit: str,
+               script: str = 'hello.say_digit',
+               allowed_phones: list = None,
+               additional_params: dict = None):
     """Апи-метод, чтобы позвонить на телефон и продиктовать код
        :param dest: номер назначение
        :param digit: число, которое сообщаем в назначение
        Вызывается скрипт hello/say_digit.py
     """
+    full_settings = settings.FULL_SETTINGS_SET
+    if not 'FREESWITCH_SERVICES_URI' in full_settings:
+        uri = settings.FREESWITCH_URI
+    else:
+        uri = full_settings['FREESWITCH_SERVICES_URI']
+
     if not script in ['hello.say_digit', 'reg_call.lua']:
         return 'error: script not supported'
     if not dest or not digit:
         return 'error: phone or digit is absent'
     if len(dest) != 11:
-        return 'error: phone is not 11 digits'
-    fs = FreeswitchBackend(settings.FREESWITCH_URI)
-    return fs.call_script(script, [dest, digit])
+        if dest in allowed_phones:
+            pass # allowed_phones can call
+        else:
+            return 'error: phone is not 11 digits'
+    fs = FreeswitchBackend(uri)
+    args = [dest, digit]
+    if additional_params:
+        for key, value in additional_params.items():
+            if value:
+                args.append(value)
+    return fs.call_script(script, args)
 

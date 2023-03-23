@@ -23,7 +23,7 @@ def drop_half_files(source_folder):
             drop_file(src)
 
 class Command(BaseCommand):
-    """Проверка формирования файла с заказами"""
+    """Подготовка спиннера"""
     def add_arguments(self, parser):
         parser.add_argument('--folder',
             action = 'store',

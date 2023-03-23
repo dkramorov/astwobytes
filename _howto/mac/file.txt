@@ -1,0 +1,3 @@
+file (which wine)
+
+If it says something in the lines of Mach-O executable i386: Apple dropped support for 32bit executables with Catalina 10.15.

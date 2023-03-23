@@ -265,12 +265,14 @@ table.nopadding {
     </tr>
   </table>
   <table class="pt3 nopadding">
+    {% for member in members %}
     <tr class="bold">
       <td colspan="15"><p>ФИО</p></td>
-      <td colspan="55"><p class="lorange_bg">{{ main_name }}</p></td>
+      <td colspan="55"><p class="lorange_bg">{{ member.name }}</p></td>
       <td colspan="20"><p>Дата рождения</p></td>
-      <td colspan="20"><p class="lorange_bg">{{ main_birthday|date:'d.m.Y' }}</p></td>
+      <td colspan="20"><p class="lorange_bg">{{ member.passport.birthday|date:'d.m.Y' }}</p></td>
     </tr>
+    {% endfor %}
   </table>
   <table class="pt3 nopadding">
     <tr class="bold">

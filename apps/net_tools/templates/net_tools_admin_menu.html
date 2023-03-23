@@ -1,0 +1,21 @@
+{% if perms.net_tools.view_ip_address %}
+<li{% ifequal menu 'net_tools' %} class="active"{% endifequal %} id="left_menu_net_tools">
+  <a{% comment %} class="has-submenu" data-toggle="collapse-next"{% endcomment %} href="{% url 'net_tools:show_ip_address' %}">
+    <em class="fa fa-globe"></em>
+    <div class="label label-primary pull-right"><i class="fa fa-angle-down"></i></div>
+    <span class="item-text">IP Адреса</span>
+  </a>
+  <ul class="nav collapse{% ifequal menu 'net_tools' %} in{% endifequal %}">
+    <li{% ifequal submenu 'ip_address' %} class="active"{% endifequal %} id="left_menu_net_tools_objects_ip_address">
+      <a class="no-submenu" data-toggle="" href="{% url 'net_tools:show_ip_address' %}">
+        <span class="item-text">IP Адреса</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'ip_range' %} class="active"{% endifequal %} id="left_menu_net_tools_objects_ip_range">
+      <a class="no-submenu" data-toggle="" href="{% url 'net_tools:show_ip_range' %}">
+        <span class="item-text">Диапазоны ip адресов</span>
+      </a>
+    </li>
+  </ul>
+</li>
+{% endif %}

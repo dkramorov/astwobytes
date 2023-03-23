@@ -123,8 +123,8 @@ if env('SHOP_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.shop')
 if env('UPLOAD_TASKS_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.upload_tasks')
-if env('WELD_APP', cast=bool, default=False):
-    CUSTOM_APPS.append('apps.weld')
+if env('NET_TOOLS_APP', cast=bool, default=False):
+    CUSTOM_APPS.append('apps.net_tools')
 if env('ADDRESSES_APP', cast=bool, default=False):
     CUSTOM_APPS.append('apps.addresses')
 if env('CONTRACTORS_APP', cast=bool, default=False):
@@ -204,11 +204,12 @@ WSGI_APPLICATION = 'conf.wsgi.application'
 # mysql с autoreload.py вызывает иногда embedded null byte error
 # mysqlclient==1.4... вызывал проблему
 # mysqlclient==1.3.13 решил проблему
+conf_dir = os.path.join(BASE_DIR, 'conf')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-            'read_default_file': os.path.join(BASE_DIR, 'conf', 'my.cnf'),
+            'read_default_file': os.path.join(conf_dir, 'my.cnf'),
             'sql_mode': 'traditional',
         },
         #'NAME': 'astwobytes',
@@ -218,6 +219,18 @@ DATABASES = {
         #'PORT': '3306',
     }
 }
+
+# Смотрим список _xxx.cnf файлов, подтягиваем их как базы
+for item in os.listdir(conf_dir):
+    if item.endswith('.cnf') and item.startswith('_'):
+        conn_name = item[1:-4]
+        DATABASES[conn_name] = {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'read_default_file': os.path.join(conf_dir, item),
+                'sql_mode': 'traditional',
+            },
+        }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

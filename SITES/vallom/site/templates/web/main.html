@@ -1,0 +1,28 @@
+{% extends "skeleton.html" %}
+{% load tags flatcontent_tags %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+{% for container in page.containers %}
+  {% flatcontent request page container.container.tag 'top_fwidth' %}
+{% endfor %}
+
+{% comment %}<!--
+  <div class="row">
+    <div class="col-lg-3 col-md-12 hidden-sm hidden-xs wrapper-megamenu-vertical">
+      {% block left %}{% catalogue_home request %}{% endblock %}
+    </div>
+    <div class="col-lg-9 col-md-12">
+      {% block right %}
+        {% flatcontent request page "slider" %}
+      {% endblock %}
+    </div>
+  </div>
+-->{% endcomment %}
+  {% for container in page.containers %}
+    {% flatcontent request page container.container.tag %}
+  {% endfor %}
+
+{% endblock %}

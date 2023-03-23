@@ -1,0 +1,77 @@
+$ adb devices
+List of devices attached
+emulator-5554	device
+
+$ adb -s emulator-5554 shell
+
+$ run-as ru.masterme.chat.masterme_chat ls -l /data/user/0/ru.masterme.chat.masterme_chat/databases/
+total 13368
+-rw------- 1 u0_a178 u0_a178    61440 2023-01-29 11:45 chatDB.db
+-rw------- 1 u0_a178 u0_a178        0 2023-01-29 11:45 chatDB.db-journal
+-rw-rw---- 1 u0_a178 u0_a178    57344 2022-12-03 14:04 com.google.android.datatransport.events
+-rw-rw---- 1 u0_a178 u0_a178        0 2022-12-03 14:04 com.google.android.datatransport.events-journal
+-rw------- 1 u0_a178 u0_a178 13537280 2023-01-29 11:45 companiesDB.db
+-rw------- 1 u0_a178 u0_a178        0 2023-01-29 11:45 companiesDB.db-journal
+
+# копировать базу
+$ adb -s emulator-5554 -d shell "run-as ru.masterme.chat.masterme_chat cat /data/user/0/ru.masterme.chat.masterme_chat/databases/chatDB.db" > /Users/jocker/Downloads/chatDB.db
+
+$ adb shell
+$ run-as {app-package-name}
+$ cd /data/data/{app-package-name}
+$ chmod 777 {file}
+$ cp {file} /mnt/sdcard/
+
+
+-------------------------------------------------
+
+1- Go to your platform-tools folder in a command prompt
+
+2- Enter the command adb devices to get the list of your devices
+
+C:\Android\adt-bundle-windows-x86_64\sdk\platform-tools>adb devices
+List of devices attached
+emulator-xxxx   device
+
+3- Connect a shell to your device:
+
+C:\Android\adt-bundle-windows-x86_64\sdk\platform-tools>adb -s emulator-xxxx shell
+
+4a- You can bypass this step on rooted device
+
+run-as <your-package-name> 
+
+4b- Navigate to the folder containing your db file:
+
+cd data/data/<your-package-name>/databases/
+
+5- run sqlite3 to connect to your db:
+
+sqlite3 <your-db-name>.db
+
+6- run sqlite3 commands that you like eg:
+
+Select * from table1 where ...;
+
+    Note: Find more commands to run below.
+
+SQLite cheatsheet
+
+There are a few steps to see the tables in an SQLite database:
+
+    List the tables in your database:
+
+    .tables
+
+    List how the table looks:
+
+    .schema tablename
+
+    Print the entire table:
+
+    SELECT * FROM tablename;
+
+    List all of the available SQLite prompt commands:
+
+    .help
+

@@ -1,0 +1,93 @@
+https://repo.process-one.net/
+
+Setup
+
+On APT-based Linux distributions, run:
+
+curl -o /etc/apt/sources.list.d/ejabberd.list https://repo.process-one.net/ejabberd.list
+curl -o /etc/apt/trusted.gpg.d/ejabberd.gpg https://repo.process-one.net/ejabberd.gpg
+apt update
+apt install ejabberd
+
+On DNF-based Linux distributions, run:
+
+dnf config-manager --add-repo https://repo.process-one.net/ejabberd.repo
+dnf install ejabberd
+systemctl --now enable ejabberd
+
+On other Linux systems, download the installer (.run) and:
+
+chmod +x ejabberd-*.run
+sudo ./ejabberd-*.run
+
+Configuration and log files can be found in /opt/ejabberd.
+
+-------------------------------------------------
+
+mcedit /lib/systemd/system/ejabberd.service
++ systemctl daemon-reload
+
+Same issue with error on ejabberd log:
+2022-06-01 09:14:31.218448+03:00 [error] <0.356.0>@ejabberd_systemd:handle_info/2:135 Cannot ping watchdog: {badmatch,{error,eacces}}
+
+That seems to be erlang notifier access right to notify systemd.
+
+Меняем Type=notify на Type=simple в старт скрипте и появляется новая проблема
+2022-11-01 15:54:36.797932+08:00 [error] <0.520.0>@ejabberd_systemd:handle_cast/2:122 Cannot send READY=1 notification: {badmatch,{error,eacces}}
+2022-11-01 15:54:51.325959+08:00 [error] <0.520.0>@ejabberd_systemd:handle_info/2:135 Cannot ping watchdog: {badmatch,{error,eacces}}
+
+[Unit]
+Description=XMPP Server
+After=network.target
+
+[Service]
+#Type=notify
+Type=simple
+User=ejabberd
+Group=ejabberd
+LimitNOFILE=65536
+Restart=on-failure
+RestartSec=5
+WatchdogSec=30
+ExecStart=/usr/sbin/ejabberdctl foreground
+#ExecStart=/bin/sh -c '/usr/sbin/ejabberdctl start && /usr/sbin/ejabberdctl started'
+ExecStop=/bin/sh -c '/usr/sbin/ejabberdctl stop && /usr/sbin/ejabberdctl stopped'
+ExecReload=/usr/sbin/ejabberdctl reload_config
+NotifyAccess=all
+PrivateDevices=true
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+TimeoutSec=300
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
+Сработало с таким конфигом
+
+root@new:/opt/ejabberd/logs# cat /lib/systemd/system/ejabberd.service
+[Unit]
+Description=XMPP Server
+After=network.target
+
+[Service]
+Type=notify
+#Type=simple
+User=ejabberd
+Group=ejabberd
+LimitNOFILE=65536
+Restart=on-failure
+RestartSec=5
+WatchdogSec=30
+ExecStart=/usr/sbin/ejabberdctl foreground
+#ExecStart=/bin/sh -c '/usr/sbin/ejabberdctl start && /usr/sbin/ejabberdctl started'
+ExecStop=/bin/sh -c '/usr/sbin/ejabberdctl stop && /usr/sbin/ejabberdctl stopped'
+ExecReload=/usr/sbin/ejabberdctl reload_config
+NotifyAccess=all
+#PrivateDevices=true
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+TimeoutSec=300
+PrivateDevices=false
+NoNewPrivileges=false
+
+[Install]
+WantedBy=multi-user.target

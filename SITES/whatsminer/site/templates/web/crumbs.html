@@ -1,0 +1,46 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="d-flex align-items-center justify-content-between welcome-content mb-3">
+      {% if breadcrumbs %}
+      <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+          <ul class="breadcrumb mb-0">
+            {% for crumb in breadcrumbs %}
+              {% if forloop.last or not crumb.link %}
+                <li class="breadcrumb-item active" aria-current="page">{{ crumb.name }}</li>
+              {% else %}
+                <li class="breadcrumb-item"><a href="{{ crumb.link }}">My Drive</a></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+      <div class="d-flex align-items-center">
+        <div class="list-grid-toggle mr-4">
+          <span class="icon icon-grid i-grid"><i class="ri-layout-grid-line font-size-20"></i></span>
+          <span class="icon icon-grid i-list"><i class="ri-list-check font-size-20"></i></span>
+          <span class="label label-list">Список</span>
+        </div>
+        <div class="dashboard1-dropdown d-flex align-items-center">
+          <div class="dashboard1-info rounded">
+            <a href="#calander" class="collapsed" data-toggle="collapse" aria-expanded="false">
+              <i class="ri-arrow-down-s-line"></i>
+            </a>
+            <ul id="calander" class="iq-dropdown collapse list-inline m-0 p-0 mt-2">
+              <li class="mb-2">
+                <a href="#" data-toggle="tooltip" data-placement="right" title="" data-original-title="Календарь"><i class="las la-calendar iq-arrow-left"></i></a>
+              </li>
+              <li class="mb-2">
+                <a href="#" data-toggle="tooltip" data-placement="right" title="" data-original-title="Добавить"><i class="las la-lightbulb iq-arrow-left"></i></a>
+              </li>
+              <li>
+                <a href="#" data-toggle="tooltip" data-placement="right" title="" data-original-title="Задачи"><i class="las la-tasks iq-arrow-left"></i></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

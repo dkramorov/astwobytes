@@ -1,0 +1,112 @@
+{% load mtags %}
+<style type="text/css">
+/* FILTERS */
+.virtFilter {
+  margin: 40px 0;
+}
+.virtFilter .title {
+  font-size:30px;
+  text-align: center;
+  color: #000;
+  margin: 20px 0 40px 0;
+}
+.virtFilter .filterBody {
+  padding: 24px 18px;
+  background-color: #e7e7e7;
+  border-radius: 16px;
+}
+.virtFilter .filterBody .filters {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-weight: bold;
+  align-items: stretch;
+}
+.virtFilter .filterBody .filters fieldset {
+  flex-grow: 1;
+  padding: 0 5px;
+}
+.virtFilter .filterBody .filters fieldset select {
+  height: 100%;
+}
+.virtFilter .filterBody .button {
+  margin-left: 10px;
+}
+.virtFilter .img {
+  margin-top: 40px;
+  width: 100%;
+}
+@media (min-width: 992px) and (max-width: 1200px) {
+}
+@media (max-width: 992px) {
+  .virtFilter .filterBody {
+    background-color: transparent;
+  }
+  .virtFilter .filterBody .filters {
+    flex-direction: column;
+  }
+  .virtFilter .filterBody .filters fieldset {
+    height: 50px;
+    margin: 5px 0;
+  }
+  .virtFilter .filterBody .filters fieldset select {
+    background-color: #e7e7e7;
+  }
+  .virtFilter .center {
+    margin-top: 20px;
+  }
+}
+@media (max-width: 480px) {
+}
+</style>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12 col-md-12">
+      <div class="virtFilter">
+        <h3 class="title">{{ container.name }}</h3>
+        <form class="filtersForm">
+          <div class="filtersTable">
+            <div class="filterItem">
+              <div class="filterBody">
+                <div class="filters">
+                  <fieldset>
+                    <select>
+                      <option selected> Марка</option>
+                    </select>
+                  </fieldset>
+                  <fieldset>
+                    <select>
+                      <option selected>Модель</option>
+                    </select>
+                  </fieldset>
+                  <fieldset>
+                    <select>
+                      <option selected>Кузов и год</option>
+                    </select>
+                  </fieldset>
+                  <fieldset>
+                    <select>
+                      <option selected>Двигатель</option>
+                    </select>
+                  </fieldset>
+                  <div class="center">
+                    <a class="button orange" href="{% if blocks.0.link %}{{ blocks.0.link }}{% else %}javascript:void(0);{% endif %}" style="display: block;">
+                      <span><span>Подобрать</span></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="img">
+          <img src="/media/misc/hidden_car.jpg" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+</script>

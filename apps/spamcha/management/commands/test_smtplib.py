@@ -30,6 +30,12 @@ class Command(BaseCommand):
             type = str,
             default = False,
             help = 'Set email for send')
+        parser.add_argument('--custom_account',
+            action = 'store',
+            dest = 'custom_account',
+            type = str,
+            default = False,
+            help = 'Set custom account [login;passwd;smtp_server;port] for send')
 
     def handle(self, *args, **options):
         """Тестовая отправка почты smtplib
@@ -41,6 +47,18 @@ class Command(BaseCommand):
         accounts = EmailAccount.objects.all()
         if options.get('email'):
             accounts = accounts.filter(email=email)
+
+        if options.get('custom_account'):
+            custom_account = options['custom_account'].split(';')
+            acc = EmailAccount(
+                email=custom_account[0],
+                passwd=custom_account[1],
+                smtp_server=custom_account[2],
+                smtp_port=custom_account[3],
+            )
+            print('custom_account', acc)
+            accounts = [acc]
+
         if not accounts:
             logger.warning('There are no email accounts in db')
             return

@@ -1,0 +1,54 @@
+<script type="text/javascript">
+  allowed_facets = [
+    'TireSectionWidth', // Ширина
+    'TireAspectRatio', // Высота профиля
+    'RimDiameter', // Диаметр
+    'TireType', // Протектор
+    'InSetQuantity', // Количество шин в комплекте
+    'RunFlat', // RunFlat
+    'DIA', // Диаметр ЦО (DIA) (мм.)
+    'RimBoltsDiameter', // Сверловка (PCD)
+    'RimWidth', // Ширина диска
+    'RimType', // Тип
+    //'InSetQuantity', // Количество дисков в комплекте
+    'WheelTireWear', // Износ
+  ];
+</script>
+<div class="mainFilters">
+  <form class="filtersForm">
+    <div class="filtersTable">
+      <div class="filterItem">
+        <div class="filterTitle">
+          <h3>Подобрать колеса по параметрам</h3>
+          <div class="img"><img src="/media/misc/tire_black.png" /></div>
+        </div>
+        <div class="filterBody">
+          <div class="filters">
+            <fieldset><select class="TireSectionWidth"><option>Ширина</option></select></fieldset>
+            <fieldset><select class="TireAspectRatio"><option>Высота профиля</option></select></fieldset>
+            <fieldset><select class="RimDiameter"><option>Диаметр</option></select></fieldset>
+          </div>
+          <div class="filters">
+            <fieldset><select class="TireType"><option>Протектор</option></select></fieldset>
+            <fieldset><select class="InSetQuantity"><option>Количество шин в комплекте</option></select></fieldset>
+            <fieldset><select class="RunFlat"><option>RunFlat</option></select></fieldset>
+          </div>
+          <div class="filters">
+            <fieldset><select class="DIA"><option>Диаметр ЦО (DIA) (мм.)</option></select></fieldset>
+            <fieldset><select class="RimBoltsDiameter"><option>Сверловка (PCD)</option></select></fieldset>
+            <fieldset><select class="RimWidth"><option>Ширина диска</option></select></fieldset>
+          </div>
+          <div class="filters">
+            <fieldset><select class="RimType"><option>Тип</option></select></fieldset>
+            <fieldset><select class="WheelTireWear"><option>Износ</option></select></fieldset>
+          </div>
+          <div class="center">
+            <button title="Найти" class="button orange">
+              <span><span>Подобрать</span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

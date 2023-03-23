@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 class TelegramBot:
     # proxies = {'http': 'socks5://10.10.9.1:3333', 'https': 'socks5://10.10.9.1:3333'}
     # proxies = {'http': 'http://10.10.9.1:3128', 'https': 'https://10.10.9.1:3128'}
+    proxies = None
+
     def __init__(self, token=None, proxies=None, chat_id=None):
         token_from_settings = None
         if hasattr(settings, 'TELEGRAM_TOKEN'):
@@ -22,12 +24,13 @@ class TelegramBot:
             assert False
 
         self.api_url = 'https://api.telegram.org/bot{}/'.format(token)
-        if not proxies and settings.TELEGRAM_PROXY:
-            proxies = {
-                'http': settings.TELEGRAM_PROXY,
-                'https': settings.TELEGRAM_PROXY,
-            }
-        self.proxies = proxies
+        #if not proxies and settings.TELEGRAM_PROXY:
+        #    proxies = {
+        #        'http': settings.TELEGRAM_PROXY,
+        #        'https': settings.TELEGRAM_PROXY,
+        #    }
+        if isinstance(proxies, dict) and 'http' in proxies:
+            self.proxies = proxies
         self.chat_id = chat_id or settings.TELEGRAM_CHAT_ID
 
     def get_emoji(self, code=None):
@@ -93,7 +96,7 @@ class TelegramBot:
             )
             if not resp.status_code == 200:
                 logger.error('Telegram response: %s' % (resp.text, ))
-                return {}
+                return {'error': resp.text, 'status': resp.status_code}
             return resp.json()
         except Exception as e:
             logger.error('Telegram и медный таз встретились на раз! %s' % str(e))
@@ -149,3 +152,12 @@ class TelegramBot:
         except Exception as e:
             logger.error('Telegram и медный таз встретились на раз! %s' % str(e))
         return {}
+
+    def create_invite_link(self, chat_id: int = None):
+        """Ссылка для приглашения пользователя
+           https://core.telegram.org/bots/api#createchatinvitelink
+           :param chat_id: ид чата, куда приглашаем
+        """
+        params = {'chat_id': chat_id or self.chat_id}
+        return self.do_request(method='createChatInviteLink', kwargs=params)
+

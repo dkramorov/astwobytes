@@ -1,3 +1,5 @@
+ls -l /usr/lib/uwsgi/plugins/|grep python
+
 $ sudo apt install \
 python3.6 python3.6-dev uwsgi uwsgi-src uuid-dev libcap-dev libpcre3-dev libssl-dev
 $ cd ~
@@ -9,3 +11,14 @@ $ sudo chmod 644 /usr/lib/uwsgi/plugins/python36_plugin.so
 $ uwsgi --plugin python36 -s :0
 ...
 Python version: 3.6.0b2 (default, ...) [GCC 6.2.0 ...]
+
+
+
+plugins = python3
+
+в /usr/lib/uwsgi/plugins и посмотри какие плагины есть по типу python3_plugin.so python_plugin.so
+
+если нет нужного установить
+
+sudo apt install uwsgi-plugin-python3
+sudo apt install uwsgi-plugin-python

@@ -7,6 +7,7 @@ import re
 import shutil
 import time
 import random
+import traceback
 
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 
@@ -219,6 +220,58 @@ def imageThumb(img, *args):
             drop_file(our_img)
             return False
     return True
+
+def imageResize(img: str, min_size: int = 800, new_name_prefix: str = 'resized_'):
+    """Изменение размеров изображения пропорционально
+       1) Находим соотношение
+           max_size - 100%
+           other    - x
+           ratio = 100 * other / max_size
+       2) БОльшую сторону рассчитываем добавлением соотношения
+           max_size - 100%
+           x        - ratio
+           diff = max_size * ratio / 100
+           other_side = max_size + diff
+       3) проверяем снова находя соотношение между вычисленными сторонами
+       :param img: путь к изображению
+       :param min_size: минимальная сторона (не важно ширина или высота)
+       :param new_name_prefix: префикс для имени файла масштабированного изображения
+    """
+    if img.endswith(".svg"):
+        return True
+    our_img = os.path.join(DEFAULT_FOLDER, img)
+    if not our_img.startswith(DEFAULT_FOLDER):
+        return False
+    try:
+        im = Image.open(our_img)
+    except IOError:
+        traceback.print_exc()
+        return False
+
+    original_width, original_height = im.size
+    if original_width > original_height:
+        height = min_size
+        ratio = original_height * 100 / original_width
+        diff = height * ratio / 100
+        width = height + diff
+    elif original_width < original_height:
+        width = min_size
+        ratio = original_width * 100 / original_height
+        diff = width * ratio / 100
+        height = width + diff
+    else:
+        width = height = min_size
+    try:
+        width = int(width)
+        height = int(height)
+        resized = im.resize((width, height), Image.ANTIALIAS)
+        folder, fname = os.path.split(our_img)
+        dest = os.path.join(folder, '%s%s' % (new_name_prefix, fname))
+        resized.save(dest)
+        return True
+    except Exception:
+        traceback.print_exc()
+    return False
 
 def reduce_opacity(im, opacity: float):
     """Возвращает изображение с пониженной прозрачностью,
@@ -639,24 +692,44 @@ def extract_archive(archive):
         return tree
     return 0
 
+def analyze_res_path(img, get_folder_path):
+    """Разбираем путь по которому нам дали медиа файл
+       :param img: путь к медиа файлу
+       :param get_folder_path: результат get_folder()
+    """
+    if not img:
+        return '/static/img/ups.png'
+    if img.startswith('http'):
+        return img
+    if img.startswith('/media/'):
+        return '%s%s' % (get_folder_path, img.replace('/media/', ''))
+    if img.startswith('/'):
+        return img[1:]
+    return '%s%s' % (get_folder_path, img)
+
 def imagine_image(img, size, source, dest='resized'):
-    """img - имя файла, например 1.jpg
-       size - размер, например 150х150 икс разделитель
-       source - папка с исходным изображением, например, logos
-       dest - папка, куда будем складировать
-       масштабированные изображения, например id_parent"""
+    """Изменение размера изображения
+       :param img: имя файла, например 1.jpg
+       :param size: размер, например 150х150 x - разделитель
+       :param source: папка с исходным изображением, например, logos или get_folder()
+       :param dest: папка, куда будем складировать
+    """
+    # TODO: в settings положить путь к пустой картинке
     ups = '/static/img/ups.png'
-    dest = str(dest)
+    path_img = analyze_res_path(img, source)
+    if path_img.startswith('/static/') or path_img.startswith('http'):
+        return path_img
+    if img.endswith('.svg'):
+        return os.path.join('/media/', path_img)
     size_array = size.split('x')
-    path_img = os.path.join(source, img)
+    #path_img = os.path.join(source, img) # заменил на analyze_res_path
     if check_path(path_img):
         return ups
+    dest = str(dest)
     path_resized = os.path.join(source, dest)
-    if img.endswith('.svg'):
-        return os.path.join("/media/", path_img)
     if check_path(path_resized):
         make_folder(path_resized)
-    path_resized_img =  os.path.join(path_resized, size+"_"+img)
+    path_resized_img =  os.path.join(path_resized, '%s_%s' % (size, img.split('/')[-1]))
     if check_path(path_resized_img):
         copy_file(path_img, path_resized_img)
         imageThumb(path_resized_img, size_array[0], size_array[1])

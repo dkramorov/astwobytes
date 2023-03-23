@@ -1,0 +1,52 @@
+{% load mtags %}
+<div class="cartpro-wrapper">
+  {% if not cart %}
+    <p class="empty">Вы еще ничего не выбрали</p>
+  {% else %}
+    <p class="label-recent">Добавлено в корзинку</p>
+    <div class="cartpro-products">
+      <ul class="cartpro-products-inner">
+        {% for purchase in cart.purchases %}
+          <li class="item">
+            <a href="{{ purchase.link }}" title="{{ purchase.product_name|textize }}" class="product-image"><img src="{{ purchase.thumb }}" alt="{{ purchase.product_name|textize }}"></a>
+            <div class="product-details">
+              <p class="product-name"><a href="{{ purchase.link }}">{{ purchase.product_name }}</a></p>
+              <!-- rating ? -->
+              {% if purchase.cost_type %}{{ purchase.cost_type.name }}{% endif %}
+              <div class="product-price">
+                <span class="price-value">
+                  <span class="price">{{ purchase.cost|money_format }} ₽</span>
+                </span>
+              </div>
+              <div class="product-qty">
+                <span class="qty-label">x</span>
+                <span class="qty-value">
+                  {% comment %}<!--
+                  <input class="qty cart-item-quantity input-text" value="{{ purchase.count }}" readonly>
+                  <button class="button quantity-button">ok</button>
+                  -->{% endcomment %}
+                  {{ purchase.count }}
+                </span>
+              </div>
+              <div class="product-action">
+                <a href="javascript:void(0);" title="Удалить" class="fa fa-times remove" onclick="purchase_drop({{ purchase.id }})"></a>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div id="cartpro-widgets"></div>
+    <div class="cartpro-subtotal">
+      <span class="label">Итого:</span>
+      <span class="price">{{ cart.total|money_format }} ₽</span>
+    </div>
+    <div class="cartpro-actions">
+      <a class="button cart-link" href="/shop/cart/">Корзина</a>
+      <a title="Оформить заказ" class="button checkout-button" href="/shop/cart/">Заказать</a>
+    </div>
+  {% endif %}
+</div>
+<!-- usage: items and total puts into items-selector and total-selector -->
+<div class="hidden" id="ajax_cart_info" data-items="{% if cart.items %}{{ cart.items }}{% else %}0{% endif %}" data-total="{% if cart.total %}{{ cart.total|money_format }} ₽{% else %}Ваша корзина пуста{% endif %}" data-items-selector="#sm_cartpro .info-minicart .cartpro-count" data-total-selector="#sm_cartpro .info-minicart .price"></div>
+

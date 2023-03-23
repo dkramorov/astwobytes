@@ -329,10 +329,13 @@ def fill_catalogue(json_obj: dict):
             obj = {
                 'id': cat.id,
                 'name': cat.name,
-                'icon': cat.icon,
                 'count': orgs_count[cat.id],
                 'search_terms': search_terms,
                 'position': cat.position,
             }
+            if cat.img:
+                obj['img'] = cat.thumb()
+            if cat.icon:
+                obj['icon'] = cat.icon
             #print(json_pretty_print(obj))
             json_obj['catalogue'].append(obj)

@@ -19,45 +19,45 @@ from apps.main_functions.views_helper import (show_view,
 from .models import DemoModel
 
 CUR_APP = 'demo_app'
-demo_app_vars = {
+demo_model_vars = {
     'singular_obj': 'Объект',
     'plural_obj': 'Объекты',
     'rp_singular_obj': 'объекта',
     'rp_plural_obj': 'объектов',
-    'template_prefix': 'demo_app_',
+    'template_prefix': 'demo_model_',
     'action_create': 'Создание',
     'action_edit': 'Редактирование',
     'action_drop': 'Удаление',
     'menu': 'demo_app',
-    'submenu': 'demo_app',
-    'show_urla': 'show_demo_app',
-    'create_urla': 'create_demo_app',
-    'edit_urla': 'edit_demo_app',
+    'submenu': 'demo_model',
+    'show_urla': 'show_demo_model',
+    'create_urla': 'create_demo_model',
+    'edit_urla': 'edit_demo_model',
     'model': DemoModel,
+    'search_result_format': ('{} (id={})', 'name id'),
     #'custom_model_permissions': DemoModel,
 }
 
-def api(request, action: str = 'demo_app'):
+def api(request, action: str = 'demo_model'):
     """Апи-метод для получения всех данных
        :param request: HttpRequest
        :param action: к какой модели обращаемся
     """
-    #if action == 'demo_app':
-    #    result = ApiHelper(request, demo_app_vars, CUR_APP)
-    result = ApiHelper(request, demo_app_vars, CUR_APP)
-    return result
+    #if action == 'demo_model':
+    #    return ApiHelper(request, demo_model_vars, CUR_APP)
+    return ApiHelper(request, demo_model_vars, CUR_APP)
 
 @login_required
-def show_demo_app(request, *args, **kwargs):
+def show_demo_model(request, *args, **kwargs):
     """Вывод объектов
        :param request: HttpRequest
     """
     return show_view(request,
-                     model_vars = demo_app_vars,
+                     model_vars = demo_model_vars,
                      cur_app = CUR_APP,
                      extra_vars = None, )
 
-    mh_vars = demo_app_vars.copy()
+    mh_vars = demo_model_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP)
     context = mh.context
 
@@ -85,20 +85,20 @@ def show_demo_app(request, *args, **kwargs):
     return render(request, template, context)
 
 @login_required
-def edit_demo_app(request, action: str, row_id: int = None, *args, **kwargs):
+def edit_demo_model(request, action: str, row_id: int = None, *args, **kwargs):
     """Создание/редактирование объекта
        :param request: HttpRequest
        :param action: действие над объектом (создание/редактирование/удаление)
        :param row_id: ид записи
     """
     return edit_view(request,
-                     model_vars = demo_app_vars,
+                     model_vars = demo_model_vars,
                      cur_app = CUR_APP,
                      action = action,
                      row_id = row_id,
                      extra_vars = None, )
 
-    mh_vars = demo_app_vars.copy()
+    mh_vars = demo_model_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, action)
     row = mh.get_row(row_id)
     context = mh.context # Контекст дозаполняется в get_row
@@ -155,28 +155,28 @@ def edit_demo_app(request, action: str, row_id: int = None, *args, **kwargs):
     return render(request, template, context)
 
 @login_required
-def demo_app_positions(request, *args, **kwargs):
+def demo_model_positions(request, *args, **kwargs):
     """Изменение позиций объектов
        :param request: HttpRequest
     """
     result = {}
-    mh_vars = demo_app_vars.copy()
+    mh_vars = demo_model_vars.copy()
     mh = create_model_helper(mh_vars, request, CUR_APP, 'positions')
     result = mh.update_positions()
     return JsonResponse(result, safe=False)
 
-def search_demo_app(request, *args, **kwargs):
+def search_demo_model(request, *args, **kwargs):
     """Поиск объектов
        :param request: HttpRequest
     """
     return search_view(request,
-                       model_vars = demo_app_vars,
+                       model_vars = demo_model_vars,
                        cur_app = CUR_APP,
                        sfields = None, )
 
     result = {'results': []}
     mh = ModelHelper(DemoModel, request)
-    mh_vars = demo_app_vars.copy()
+    mh_vars = demo_model_vars.copy()
     for k, v in mh_vars.items():
         setattr(mh, k, v)
     mh.search_fields = ('id', 'name')

@@ -271,10 +271,10 @@ def fill_parents(obj_array, model):
     # которые надо достать скопом
     # ------------------------------------
     for obj in obj_array:
+        obj.ids_parents = []
         if hasattr(obj, 'parents'):
             if obj.parents:
                 if '_' in obj.parents:
-                    obj.ids_parents = []
                     parents_array = obj.parents.split('_')
                     for parent in parents_array:
                         try:
@@ -303,8 +303,8 @@ def fill_parents(obj_array, model):
     # объект насувать нужные parents
     # ----------------------------------
     for obj in obj_array:
+        obj.parents_array = []
         if hasattr(obj, 'ids_parents'):
-            obj.parents_array = []
             for parent in obj.ids_parents:
                 if parent in ids_parents:
                     obj.parents_array.append(ids_parents[parent])

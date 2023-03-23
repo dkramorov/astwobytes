@@ -315,6 +315,7 @@ class Property(Standard):
         (2, 'Выпадающий список с множественным выбором multiselect'),
         (3, 'Выбор из вариантов radio'),
         (4, 'Множественный выбор из вариантов checkbox'),
+        (5, 'Текст (используем как select), для совместимости'),
     )
     name = models.CharField(max_length=255,
         blank=True, null=True, db_index=True)
@@ -329,6 +330,7 @@ class Property(Standard):
         verbose_name='Отображать в фильтрах для поиска')
     group = models.ForeignKey(PropertyGroup, blank=True, null=True,
         verbose_name='Группа свойств', on_delete=models.SET_NULL)
+    cat = models.ForeignKey(Blocks, blank=True, null=True, on_delete=models.SET_NULL)
 
     def save(self, *args, **kwargs):
         super(Property, self).save(*args, **kwargs)
@@ -368,7 +370,6 @@ class PropertiesValues(Standard):
     def get_prop_id(self):
        """Возвращает ид свойства"""
        return self.prop_id
-
 
 class ProductsProperties(models.Model):
     """Линковка значения свойства к товару"""

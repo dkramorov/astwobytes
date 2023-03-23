@@ -1,0 +1,40 @@
+{% load mtags %}
+{% ifequal tag "mainmenu" %}
+<div class="yt-menu">
+  <div class="menu-under">
+    <div class="container">
+      <div class="menu-larger">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="sm_megamenu_wrapper_horizontal_menu sambar">
+              <div class="sambar-inner">
+                <ul class="css_effect sm-megamenu-hover sm_megamenu_menu sm_megamenu_menu_black">
+{% comment %}<!--
+                  {% include "web/header/megamenu_item.html" %}
+-->{% endcomment %}
+                  {% include "web/header/simple_menu_items.html" %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% include "web/header/mobile_menu.html" %}
+    </div>
+  </div>
+</div>
+{% endifequal %}
+{% ifequal tag "bottommenu" %}
+  {% for menu in menus %}
+    <div class="col-lg-2 col-md-2">
+      <div class="block-footer">
+        <h4 class="title-footer">{{ menu.name }}</h4>
+        <ul>
+          {% for item in menu.sub %}
+            <li><a title="{{ item.name|textize }}" href="{{ item.link }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endfor %}
+{% endifequal %}

@@ -1,0 +1,121 @@
+/* TABS */
+.roundedImgTabs {
+  margin: 20px 0 0 0;
+}
+.roundedImgTabs .resp-tabs-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px solid #000;
+}
+.roundedImgTabs .resp-tab-content {
+  border: 0;
+  padding: 0;
+  margin-bottom: 30px;
+}
+.roundedImgTabs .resp-tab-active {
+  color: #ff3d1f;
+  border-color: #ff3d1f !important;
+}
+.roundedImgTabs h2.resp-tab-active span.resp-arrow {
+  border-bottom: 12px solid #ff3d1f;
+}
+.roundedImgTabs .resp-tabs-list li {
+  padding-left: 120px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  position: relative;
+  background: #ff3d1f;
+  color: #fff;
+  border: 0;
+  margin-top: 25px;
+  margin-right: 0;
+}
+.roundedImgTabs .resp-tabs-list li.resp-tab-active {
+  background: #000;
+  color: #fff;
+}
+.roundedImgTabs .resp-tabs-list li .title {
+  padding: 5px;
+}
+.roundedImgTabs .resp-tabs-list li .img {
+  position: absolute;
+  left: 15px;
+  bottom: 0;
+}
+.roundedImgTabs .resp-tabs-list li .img img {
+  width: 90px;
+}
+.roundedImgTabs .tabSubmenu {
+  list-style: none;
+  font-weight: bold;
+}
+.roundedImgTabs .tabSubmenu li {
+  float: left;
+  margin-right: 30px;
+  padding-top: 10px;
+}
+.roundedImgTabs .tabSubmenu li a {
+  display: inline;
+  padding-top: 5px;
+}
+.roundedImgTabs .tabSubmenu li a img {
+  padding-left: 5px;
+}
+.roundedImgTabs .tabSubmenu li .icon-left {
+  float: left;
+  padding-right: 5px;
+  padding-left: 0;
+}
+@media (max-width: 1200px) {
+  .roundedImgTabs .resp-tabs-list li {
+    padding-left: 65px;
+    margin-top: 15px;
+  }
+  .roundedImgTabs .resp-tabs-list li .title {
+    padding: 2px;
+  }
+  .roundedImgTabs .resp-tabs-list li .img {
+    left: 1px;
+    max-width: 60px;
+  }
+}
+@media (max-width: 768px) { /* 768 для верхней границы */
+  .roundedImgTabs .resp-tabs-list {
+    display: none;
+  }
+  .roundedImgTabs h2.resp-accordion {
+    position: relative;
+    height: 100px;
+    margin-bottom: 40px;
+    background-color: #ff3d1f;
+    border: 0;
+  }
+  .roundedImgTabs .resp-tabs-container .img {
+    position: absolute;
+    left: 15px;
+    bottom: 0;
+  }
+  .roundedImgTabs .resp-accordion .title {
+    color: #fff;
+    width: 100%;
+    text-align: right;
+    padding-right: 50px;
+    padding-top: 25px;
+    font-size: 20px;
+  }
+  .roundedImgTabs h2.resp-accordion {
+    border-radius: 16px;
+  }
+  .roundedImgTabs .resp-arrow {
+    border-top: 12px solid #fff;
+  }
+  .roundedImgTabs h2.resp-tab-active span.resp-arrow {
+    border-bottom: 12px solid #000;
+  }
+  .roundedImgTabs .resp-tab-content-active {
+    margin-bottom: 50px;
+  }
+}

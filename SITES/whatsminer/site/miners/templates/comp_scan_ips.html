@@ -1,0 +1,142 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<style type="text/css">
+  label.err {
+    color: #f00;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include "core/title/page_title_table.html" %}
+{% include "core/breadcrumbs.html" %}
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{{ root_url }}" id="current_edit_form">
+        <div class="panel-body">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="col-lg-2 control-label">
+              <span class="label_for_translate row_command_label" attr-class_name="row_command_label" attr-edit_mode="popup" attr-placement="bottom">Диапазон ip адресов</span>
+            </label>
+            <div class="col-lg-5">
+              <input type="text" placeholder="Начальный ip адрес" class="form-control ip" name="start_ip" data-parsley-required/>
+            </div>
+            <div class="col-lg-5">
+              <input type="text" placeholder="Конечный ip адрес" class="form-control ip" name="end_ip" data-parsley-required />
+            </div>
+          </div>
+          <div class="col-lg-2"></div>
+          <div class="col-lg-10">
+            <label class="err ip_error"></label>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <div class="col-lg-12 col-sm-12 padding-tb5 text-center">
+            <button type="submit" class="btn btn-labeled btn-success">
+              <span class="btn-label"><i class="fa fa-search"></i></span>
+              <span class="label_for_translate footer_button_save_label" attr-class_name="footer_button_save_label" attr-edit_mode="popup" attr-placement="right">Сканировать</span>
+            </button>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="col-sm-12" class="scan_result">
+    <div class="panel-body">
+      <div id="main-table" class="tabulator_table"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script src="/static/admin/js/parsley.min.js"></script>
+<script src="/static/net_tools_app/ip_range.js"></script>
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+
+$(document).ready(function(){
+  var tableData = []
+
+  main_table_columns = [
+    {
+      title: "IP",
+      field: "ip",
+      headerFilterPlaceholder: "IP",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      editor: "input",
+      width: 150,
+    },
+  ];
+
+  main_table = new Tabulator("#main-table", {
+    data: tableData,
+    persistentLayout: true,
+    persistentSort: true,
+    persistenceID: "{{ root_url }}",
+    persistentFilter: false,
+    layout: "fitColumns",
+    columns: main_table_columns,
+  });
+
+
+  $("#current_edit_form").parsley();
+  listen_input_for_ip_address();
+  $("#current_edit_form").submit(function(e) {
+    //отмена действия по умолчанию для кнопки submit
+    e.preventDefault();
+    var isRangeError = check_ip_range_from_form();
+    if (isRangeError) {
+      $(".ip_error").html("Начальный ip адрес больше конечного");
+      return false;
+    }
+
+    var $form = $(this);
+    var msg = 'Произошла ошибка, обновите страничку';
+    var status = 'danger'; // success, warning, info, danger
+
+    $("#current_edit_form button[type='submit']").attr("disabled", true);
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: $form.serialize()
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      $("#current_edit_form button[type='submit']").attr("disabled", false);
+      tableData = [];
+      for (var i=0; i<r['new_ips'].length; i++) {
+        tableData.push({'ip': r['new_ips'][i]});
+      }
+      main_table.replaceData(tableData);
+
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+      $("#current_edit_form button[type='submit']").attr("disabled", false);
+    });
+    return false;
+  });
+});
+</script>
+{% endblock %}

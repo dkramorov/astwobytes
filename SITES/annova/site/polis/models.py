@@ -29,9 +29,11 @@ def pdf_order(order_id,
     if hasattr(order, 'polis') and order.polis:
         polis = order.polis
     shopper = order.shopper
-    passport = Passport.objects.filter(shopper=shopper).first()
-
+    passport = Passport.objects.filter(shopper=shopper).last()
     main_name, main_birthday = order.shopper.name, polis.birthday
+    if passport.birthday: # polis.birthday deprecated
+        main_birthday = passport.birthday
+
     name_parts = main_name.split(' ')
     main_surname, main_first_name, main_middle_name = None, None, None
     for item in name_parts:
@@ -46,6 +48,7 @@ def pdf_order(order_id,
         if item and not main_middle_name:
             main_middle_name = item
             continue
+    members = polis.polismember_set.select_related('passport').all()
     kop = int(str(order.total).split('.')[-1])
     context.update({
         'logo': full_path('misc/soglasie_logo.png'),
@@ -63,8 +66,8 @@ def pdf_order(order_id,
         'summa': digit_to_str(order.total),
         'ends': analyze_digit(order.total, end=('рубль', 'рублей', 'рубля')),
         'kop': '%s %s' % (digit_to_str(kop), analyze_digit(kop, end=('копейка', 'копеек', 'копейки'))),
+        'members': members,
     })
-
     ptype = settings.FULL_SETTINGS_SET.get('REPORT_TYPE') or 'hockey'
     if ptype == 'hockey':
         context['logo'] = full_path('misc/soglasie_logo.png')
@@ -111,9 +114,11 @@ class Polis(Standard):
     number = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Номер полюса/заказа')
+    # depricated (TODO: use shopper instead)
     name = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='ФИО')
+    # depricated (TODO: use passport instead)
     birthday = models.DateField(blank=True, null=True, db_index=True,
         verbose_name='Дата рождения')
     insurance_sum = models.IntegerField(blank=True, null=True, db_index=True,
@@ -189,5 +194,11 @@ class PolisMember(Standard):
     name = models.CharField(max_length=255,
         blank=True, null=True, db_index=True,
         verbose_name='Имя застрахованного')
+    # depricated (TODO: use passport instead)
     birthday = models.DateField(blank=True, null=True, db_index=True,
         verbose_name='Дата рождения застрахованного')
+    # new logic for polis memeber
+    passport = models.OneToOneField(Passport,
+        blank=True, null=True, db_index=True,
+        on_delete=models.SET_NULL,
+        verbose_name='Паспорт страхуемого')

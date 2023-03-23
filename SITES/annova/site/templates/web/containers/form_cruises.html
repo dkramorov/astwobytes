@@ -78,7 +78,7 @@ table.cruise.bordered th {
               <li><input type="text" name="last_fname" class="required form-control letters" placeholder="Фамилия страхователя на латинице"></li>
               <li><input type="text" name="first_fname" class="required form-control letters" placeholder="Имя страхователя на латинице"></li>
               <li>
-                <input type="text" name="passport_birthday" class="required date form-control" placeholder="Дата рождения страхователя"  max='{% adult_date %}'>
+                <input type="text" name="passport_birthday" class="required date form-control" placeholder="Дата рождения страхователя" max='{% adult_date %}'>
                 <span class="input_helper">Условие: совершеннолетие ({% adult_date %})</span>
               </li>
               <li><input type="text" name="phone" class="required form-control phone" placeholder="Ваш телефон"></li>
@@ -97,12 +97,12 @@ table.cruise.bordered th {
             <ul class="data-list-2" style="margin: 0;">
               <li>
                 <label>
-                  <input name="passport_ptype" type="radio" class="check_radio passport_type passport_type required" value="1"> паспорт гражданина России
+                  <input name="passport_ptype" type="radio" class="check_radio passport_type required" value="1"> паспорт гражданина России
                 </label>
               </li>
               <li>
                 <label>
-                  <input name="passport_ptype" type="radio" class="check_radio passport_type passport_type required" value="2"> загранпаспорт гражданина России
+                  <input name="passport_ptype" type="radio" class="check_radio passport_type required" value="2"> загранпаспорт гражданина России
                 </label>
               </li>
             </ul>

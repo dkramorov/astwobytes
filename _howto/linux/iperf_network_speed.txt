@@ -1,0 +1,13 @@
+iptraf 
+
+iPerf is designed to do exactly that and it is cross-platform. Download the version for your OS.
+
+On one of the computers run 
+
+iperf -s (this is the server)
+
+and on the other run
+
+iperf -c <server hostname or IP> (this is the client).
+
+Then wait for the results. There are many options to tweak the measuring. Check iperf -hfor a complete list of options.

@@ -1,0 +1,6 @@
+lsof -i tcp|grep LISTEN
+
+lsof -Pni4 | grep LISTEN | grep php
+
+что висит на 8000 порту
+lsof -i :8000
