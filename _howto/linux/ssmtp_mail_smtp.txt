@@ -11,7 +11,7 @@ rewriteDomain=masterme.ru
 root=admin@masterme.ru
 mailhub=smtp.timeweb.ru:2525
 AuthUser=admin@masterme.ru
-AuthPass=Cnfylfhnysq1
+AuthPass=PASSWD
 UseSTARTTLS=YES
 #FromLineOverride=YES
 

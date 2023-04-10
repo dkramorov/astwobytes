@@ -1,0 +1,164 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+<style type="text/css">
+  .ip_error {
+    color: #f00;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% include "core/title/page_title_edit.html" %}
+{% include "core/breadcrumbs.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
+        <div class="panel-heading">{{ singular_obj }}</div>
+        <div class="panel-body">
+          {% csrf_token %}
+          {% include "core/forms/row_name.html" %}
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Начальный IP адрес</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Начальный IP адрес" class="form-control ip" name="start_ip" value="{% if row.start_ip %}{{ row.start_ip }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Конечный IP адрес</label>
+            <div class="col-lg-10">
+              <input type="text" placeholder="Конечный IP адрес" class="form-control ip" name="end_ip" value="{% if row.end_ip %}{{ row.end_ip }}{% endif %}" autocomplete="off" data-parsley-required>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-2"></div>
+            <div class="ip_error" col-lg-10></div>
+          </div>
+          {% include "core/forms/row_image.html" %}
+          {% include "core/forms/row_position.html" %}
+          {% include "core/forms/row_is_active.html" %}
+        </div>
+        {% include "core/forms/footer_buttons.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="/static/admin/js/parsley.min.js"></script>
+  <script src="/static/net_tools_app/ip_range.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      listen_input_for_ip_address();
+      $("#current_edit_form").parsley();
+      $("#current_edit_form").submit(function(e) {
+        var isRangeError = check_ip_range_from_form();
+        if (isRangeError) {
+          $(".ip_error").html("Начальный ip адрес больше конечного");
+          return false;
+        }
+        var $form = $(this);
+        var msg = 'Произошла ошибка, обновите страничку';
+        var status = 'danger'; // success, warning, info, danger
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: $form.serialize()
+        }).done(function(r) {
+          if(r.error){
+            msg = r.error;
+          }else if(r.success){
+            msg =  r.success;
+            status = 'success';
+            //$("#current_edit_form").attr("action", r.redirect);
+            {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+          }
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+          // Обновление ссылок
+          update_links(r);
+
+        }).fail(function() {
+          $.notify({
+            message: msg,
+          },{
+            status: status,
+          });
+        });
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+      });
+
+      $('#linkcontainer_select2').select2({
+        placeholder: 'Какие странички привязать',
+        width: '100%',
+        tags: true,
+        ajax: {
+          url: "{% url 'flatcontent:search_containers' %}",
+
+          data: function (params) {
+            var query = {
+              q: params.term,
+              without_templates: 1,
+              without_menus: 1,
+              without_main: 1,
+              page: params.page || 1,
+            }
+            return query;
+          },
+
+          //data: "without_templates=1&without_menus=1&without_main=1",
+          cache: false,
+          dataType: 'json',
+        }
+      });
+
+      function update_links(r){
+        var thumb = r['row']['thumb'];
+        if(thumb === ''){
+          thumb = '/static/img/empty.png';
+        }
+        $("#preview_img").attr("src", thumb + "?_=" + Date.now());
+      }
+      {% if row %}
+        var progressbar = $('#progressbar-files'),
+          bar         = progressbar.find('.progress-bar-files'),
+          settings    = {
+            action: '{% url "net_tools:edit_ip_range" "img" row.id %}', // upload url
+            allow : '*.*',
+            param: 'img',
+            params: {csrfmiddlewaretoken: getCookie('csrftoken')},
+            loadstart: function() {
+              bar.css('width', '0%').text('0%');
+              progressbar.removeClass('hidden');
+            },
+            progress: function(percent) {
+              percent = Math.ceil(percent);
+              bar.css('width', percent+'%').text(percent+'%');
+            },
+            allcomplete: function(response) {
+              bar.css('width', '100%').text('100%');
+              setTimeout(function(){
+                progressbar.addClass('hidden');
+              }, 750);
+              // Upload Completed
+              //alert(response);
+
+              // Обновление ссылок
+              var r = JSON.parse(response);
+              update_links(r);
+            }
+          };
+        var select = new $.upload.select($('#upload-select-files'), settings),
+        drop   = new $.upload.drop($('#upload-drop-files'), settings);
+      {% endif %}
+    });
+  </script>
+{% endblock %}

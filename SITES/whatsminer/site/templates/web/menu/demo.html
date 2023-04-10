@@ -1,0 +1,288 @@
+<li{% ifequal menu 'demo_ui' %} class="active"{% endifequal %}>
+  <a href="#otherpage" {% ifequal menu 'demo_ui' %}{% else %}class="collapsed"{% endifequal %} aria-expanded="{% ifequal menu 'demo_ui' %}true{% else %}false{% endifequal %}" data-toggle="collapse">
+    <i class="lab la-wpforms iq-arrow-left"></i>
+    <span>Демо UI</span>
+    <i class="las la-angle-right iq-arrow-right arrow-active"></i>
+    <i class="las la-angle-down iq-arrow-right arrow-hover"></i>
+  </a>
+  <ul id="otherpage" class="iq-submenu collapse{% ifequal menu 'demo_ui' %} show{% endifequal %}" data-parent="#iq-sidebar-toggle">
+    <li {% if 'user_' in submenu %} class="active"{% endif %}>
+      <a href="#user" {% if 'user_' in submenu %}{% else %}class="collapsed"{% endif %} aria-expanded="{% if 'user_' in submenu %}true{% else %}false{% endif %}" data-toggle="collapse">
+        <i class="las la-user-cog"></i>
+        <span>Пользователь</span>
+        <i class="las la-angle-right iq-arrow-right arrow-active"></i>
+        <i class="las la-angle-down iq-arrow-right arrow-hover"></i>
+      </a>
+      <ul id="user" class="iq-submenu collapse{% if 'user_' in submenu %} show{% endif %}" data-parent="#otherpage">
+        <li {% ifequal submenu 'user_profile' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/user_profile/">
+            <i class="las la-id-card"></i>
+            <span>Профиль</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'user_add' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/user_add/">
+            <i class="las la-user-plus"></i>
+            <span>Добавить</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'user_list' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/user_list/">
+            <i class="las la-list-alt"></i>
+            <span>Список</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li {% if 'ui_' in submenu %} class="active"{% endif %}>
+      <a href="#ui" {% if 'ui_' in submenu %}{% else %}class="collapsed"{% endif %} aria-expanded="{% if 'ui_' in submenu %}true{% else %}false{% endif %}" data-toggle="collapse">
+        <i class="lab la-uikit iq-arrow-left"></i>
+        <span>Элементы</span>
+        <i class="las la-angle-right iq-arrow-right arrow-active"></i>
+        <i class="las la-angle-down iq-arrow-right arrow-hover"></i>
+      </a>
+      <ul id="ui" class="iq-submenu collapse{% if 'ui_' in submenu %} show{% endif %}" data-parent="#otherpage">
+        <li {% ifequal submenu 'ui_avatars' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_avatars/">
+            <i class="las la-user-tie"></i>
+            <span>Аватары</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_alerts' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_alerts/">
+            <i class="las la-exclamation-triangle"></i>
+            <span>Сообщения</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_badges' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_badges/">
+            <i class="las la-id-badge"></i>
+            <span>Бейджи</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_breadcrumb' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_breadcrumb/">
+            <i class="las la-ellipsis-h"></i>
+            <span>Хлебные крошки</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_buttons' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_buttons/">
+            <i class="las la-ticket-alt"></i>
+            <span>Кнопки</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_buttons_group' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_buttons_group/">
+            <i class="las la-object-group"></i>
+            <span>Группы кнопок</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_boxshadow' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_boxshadow/">
+            <i class="las la-boxes"></i>
+            <span>Блоки с тенью</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_colors' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_colors/">
+            <i class="las la-brush"></i>
+            <span>Цвета</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_cards' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_cards/">
+            <i class="las la-credit-card"></i>
+            <span>Карточки</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_carousel' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_carousel/">
+            <i class="las la-sliders-h"></i>
+            <span>Карусели</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_grid' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_grid/">
+            <i class="las la-th-large"></i>
+            <span>Сетка</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_helper_classes' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_helper_classes/">
+            <i class="las la-hands-helping"></i>
+            <span>Вспомогательные</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_images' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_images/">
+            <i class="las la-image"></i>
+            <span>Изображения</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_list_group' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_list_group/">
+            <i class="las la-list-alt"></i>
+            <span>Группы списков</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_media_object' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_media_object/">
+            <i class="las la-photo-video"></i>
+            <span>Медиа</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_modal' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_modal/">
+            <i class="las la-columns"></i>
+            <span>Модалки</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_notifications' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_notifications/">
+            <i class="las la-bell"></i>
+            <span>Уведомления</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_pagination' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_pagination/">
+            <i class="las la-ellipsis-h"></i>
+            <span>Пагинация</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_popovers' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_popovers/">
+            <i class="las la-spinner"></i>
+            <span>Всплывашки</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_progressbars' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_progressbars/">
+            <i class="las la-heading"></i>
+            <span>Загрузчики</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_typography' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_typography/">
+            <i class="las la-tablet"></i>
+            <span>Типография</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_tabs' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_tabs/">
+            <i class="las la-tablet"></i>
+            <span>Вкладки</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_tooltips' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_tooltips/">
+            <i class="las la-magnet"></i>
+            <span>Подсказки</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'ui_embed_video' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/ui_embed_video/">
+            <i class="las la-play-circle"></i>
+            <span>Видео</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li {% if 'auth_' in submenu %} class="active"{% endif %}>
+      <a href="#auth" {% if 'auth_' in submenu %}{% else %}class="collapsed"{% endif %} aria-expanded="{% if 'auth_' in submenu %}true{% else %}false{% endif %}" data-toggle="collapse">
+        <i class="las la-torah iq-arrow-left"></i>
+        <span>Авторизация</span>
+        <i class="las la-angle-right iq-arrow-right arrow-active"></i>
+        <i class="las la-angle-down iq-arrow-right arrow-hover"></i>
+      </a>
+      <ul id="auth" class="iq-submenu collapse{% if 'auth_' in submenu %} show{% endif %}" data-parent="#otherpage">
+        <li {% ifequal submenu 'auth_sign_in' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/auth_sign_in/">
+            <i class="las la-sign-in-alt"></i>
+            <span>Вход</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'auth_sign_up' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/auth_sign_up/">
+            <i class="las la-registered"></i>
+            <span>Регистрация</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'auth_recoverpw' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/auth_recoverpw/">
+            <i class="las la-unlock-alt"></i>
+            <span>Восстановление</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'auth_confirm_mail' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/auth_confirm_mail/">
+            <i class="las la-envelope-square"></i>
+            <span>Подтерждение</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'auth_lock_screen' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/auth_lock_screen/">
+            <i class="las la-lock"></i>
+            <span>Экран блокировки</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li {% if 'pricing_' in submenu %} class="active"{% endif %}>
+      <a href="#pricing" {% if 'pricing_' in submenu %}{% else %}class="collapsed"{% endif %} aria-expanded="{% if 'pricing_' in submenu %}true{% else %}false{% endif %}" data-toggle="collapse">
+        <i class="las la-coins"></i>
+        <span>Цены</span>
+        <i class="las la-angle-right iq-arrow-right arrow-active"></i>
+        <i class="las la-angle-down iq-arrow-right arrow-hover"></i>
+      </a>
+      <ul id="pricing" class="iq-submenu collapse{% if 'pricing_' in submenu %} show{% endif %}" data-parent="#otherpage">
+        <li {% ifequal submenu 'pricing' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/pricing/">
+            <i class="las la-weight"></i>
+            <span>Цены 1</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'pricing_two' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/pricing_two/">
+            <i class="las la-dna"></i>
+            <span>Цены 2</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li {% if 'pages_' in submenu %} class="active"{% endif %}>
+      <a href="#pages-error" {% if 'pages_' in submenu %}{% else %}class="collapsed"{% endif %} aria-expanded="{% if 'pages_' in submenu %}true{% else %}false{% endif %}" data-toggle="collapse">
+        <i class="las la-exclamation-triangle"></i>
+        <span>Ошибки</span>
+        <i class="las la-angle-right iq-arrow-right arrow-active"></i>
+        <i class="las la-angle-down iq-arrow-right arrow-hover"></i>
+      </a>
+      <ul id="pages-error" class="iq-submenu collapse{% if 'pages_' in submenu %} show{% endif %}" data-parent="#otherpage">
+        <li {% ifequal submenu 'pages_error' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/pages_error/">
+            <i class="las la-bomb"></i>
+            <span>Ошибка 404</span>
+          </a>
+        </li>
+        <li {% ifequal submenu 'pages_server_error' %} class="active"{% endifequal %}>
+          <a href="/demo_ui/pages_server_error/">
+            <i class="las la-exclamation-circle"></i>
+            <span>Ошибка 500</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li {% ifequal submenu 'pages_blank_page' %} class="active"{% endifequal %}>
+      <a href="/demo_ui/pages_blank_page/">
+        <i class="las la-pager"></i>
+        <span>Пустая страница</span>
+      </a>
+    </li>
+    <li {% ifequal submenu 'pages_maintenance' %} class="active"{% endifequal %}>
+      <a href="/demo_ui/pages_maintenance/">
+        <i class="las la-cubes"></i>
+        <span>Обслуживание</span>
+      </a>
+    </li>
+  </ul>
+</li>

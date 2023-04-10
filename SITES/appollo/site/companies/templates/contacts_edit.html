@@ -11,7 +11,7 @@
   <div class="col-sm-12">
     <div class="panel panel-default">
       <form class="form-horizontal" method="post" action="{% if action == 'create' %}{{ url_create }}{% endif %}{% if action == 'edit' %}{{ url_edit }}{% endif %}" id="current_edit_form">
-        <input type="hidden" name="main_company" value="{% if row.value %}{{ row.value }}{% endif %}" autocomplete="off"/>
+        <input type="hidden" name="main_company" value="{% if row.value %}{{ row.value }}{% endif %}" autocomplete="off" id="main_company" />
         <div class="panel-heading">{{ singular_obj }}</div>
         <div class="panel-body">
           {% csrf_token %}
@@ -43,6 +43,17 @@
             <div class="col-lg-10">
               <input type="text" placeholder="Телефон" class="form-control phone" name="value" value="{% if row.value %}{{ row.value }}{% endif %}" autocomplete="off">
             </div>
+
+            <div class="col-lg-offset-2 col-lg-10">
+              <div class="checkbox c-checkbox">
+                <label>
+                  <input type="checkbox" value="10" name="state" autocomplete="off"{% ifequal row.state 10 %} checked{% endifequal %}>
+                  <span class="fa fa-check"></span>
+                  <strong> Управление компанией</strong>
+                </label>
+              </div>
+            </div>
+
           </div>
           <div class="form-group ctype_choice" id="ctype_2">
             <label class="col-lg-2 control-label">Сайт</label>
@@ -103,7 +114,7 @@
       });
 
       $('#company_select2').select2({
-        placeholder: 'Выберите компанию',
+        placeholder: 'Выберите филиал компании',
         allowClear: true,
         width: '100%',
         ajax: {

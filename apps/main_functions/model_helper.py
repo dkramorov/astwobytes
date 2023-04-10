@@ -518,7 +518,10 @@ class ModelHelper:
            :param query: QuerySet
         """
         if types[key] in ('int', 'float', 'primary_key', 'boolean', 'foreign_key'):
-            query = query.filter(**{key: value})
+            if value in ('None', ):
+                query = query.filter(**{'%s__isnull' % key: True})
+            else:
+                query = query.filter(**{key: value})
         # --------------------------------------
         # По дате производим нестандартный поиск
         # --------------------------------------
@@ -731,7 +734,7 @@ class ModelHelper:
         if only_query:
             return query
 
-        total_records = query.aggregate(Count("id"))['id__count']
+        total_records = query.aggregate(Count('id'))['id__count']
         paginator, records = myPaginator(total_records, self.q_string['page'], self.q_string['by'])
         self.raw_paginator = paginator
         self.context['raw_paginator'] = self.raw_paginator

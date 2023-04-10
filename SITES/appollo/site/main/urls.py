@@ -8,6 +8,8 @@ app_name = 'main'
 urlpatterns = [
     # Главная страничка сайта
     path('', views.home, name='home'),
+    # Настройки приложений (переопределяем)
+    url('^(?P<app>[a-z_]{1,20})/admin/settings/$', views.site_settings, name='settings'),
     # demo
     path('demo/', views.demo, name='demo'),
     # Каталог

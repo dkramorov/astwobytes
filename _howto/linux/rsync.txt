@@ -12,14 +12,6 @@ Introduction
 
 Rsync, which stands for "remote sync", is a remote and local file synchronization tool. It uses an algorithm that minimizes the amount of data copied by only moving the portions of files that have changed.
 
-In this guide, we will cover the basic usage of this powerful utility. We will be using an Ubuntu 12.04 VPS in the examples, but you can use any modern Linux distribution to follow along.
-What Is Rsync?
-
-Rsync is a very flexible network-enabled syncing tool. It can also refer to the network protocol developed to utilize this tool. When we reference rsync in this guide, we are mainly referring to the utility, and not the protocol.
-
-Due to its ubiquity on Linux and Unix-like systems and its popularity as a tool for system scripts, it is included on most Linux distributions by default.
-Basic Syntax
-
 The basic syntax of rsync is very straightforward, and operates in a way that is similar to ssh, scp, and cp.
 We will create two test directories and some test files with the following commands:
 

@@ -145,7 +145,7 @@ curl -XPOST -u elastic 'localhost:9200/_xpack/security/role/events_admin' -H "Co
 }'
 
 curl -XPOST -u elastic 'localhost:9200/_xpack/security/user/admin' -H "Content-Type: application/json" -d '{
-  "password" : "cnfylfhnysq",
+  "password" : "PASSWD",
   "full_name" : "Kibana user",
   "email" : "admin@223-223.ru",
   "roles" : [ "events_admin" ]

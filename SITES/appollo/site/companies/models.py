@@ -134,8 +134,6 @@ class MainCompany(Standard):
         # можно в settings положить путь к пустой картинке
         return '/static/img/ups.png'
 
-
-
 class MainCompany2Category(models.Model):
     """Связка группы компаний с категориями"""
     main_company = models.ForeignKey(MainCompany, blank=True, null=True, on_delete=models.CASCADE)
@@ -188,6 +186,9 @@ class Contact(Standard):
         (4, 'twitter'),
         (5, 'facebook'),
         (6, 'instagram'),
+    )
+    state_choices = (
+        (10, 'company_owner'),
     )
     main_company = models.ForeignKey(MainCompany,
         blank=True, null=True, on_delete=models.CASCADE)

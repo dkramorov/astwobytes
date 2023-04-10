@@ -345,5 +345,32 @@ class EjabberdApi:
         logger.info('get_room_options, params %s' % params)
         return self.session.post(url=endpoint, json=params)
 
+    def drop_muc(self, name: str, service: str):
+        """https://docs.ejabberd.im/developer/ejabberd-api/admin-api/#destroy-room
+           Destroy a MUC room
+           Arguments:
+               name :: string : Room name
+               service :: string : MUC service
+           Result:
+               res :: integer : Status code (0 on success, 1 otherwise)
+           Tags: muc_room
+           Module: mod_muc_admin
+           Examples:
+           POST /api/destroy_room
+           {
+               "name": "room1",
+               "service": "muc.example.com"
+           }
+           HTTP/1.1 200 OK
+        """
+        endpoint = '%s/api/destroy_room' % self.host
+        params = {
+            'name': name,
+            'service': service,
+        }
+        logger.info('drop_muc, params %s' % params)
+        return self.session.post(url=endpoint, json=params)
+
+
 ejabberd_manager = EjabberdApi()
 

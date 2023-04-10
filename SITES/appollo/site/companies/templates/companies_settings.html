@@ -1,0 +1,201 @@
+{% extends "core/base.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h3>
+  <span class="label_for_translate page_title_{{ menu }}_{{ submenu }}_label" attr-class_name="page_title_{{ menu }}_{{ submenu }}_label">{{ singular_obj }}</span><br />
+  <small class="label_for_translate page_subtitle_{{ menu }}_{{ submenu }}_label" attr-class_name="page_subtitle_{{ menu }}_{{ submenu }}_label">Настройки {{ rp_singular_obj }}</small>
+</h3>
+
+{% include "core/breadcrumbs.html" %}
+<form class="panel panel-default" action="{{ root_url }}" method="post" id="current_edit_form">
+  {% csrf_token %}
+  <div class="panel-heading">
+    <span class="label_for_translate settings_{{ menu }}_{{ submenu }}_table_title_label" attr-class_name="settings_{{ menu }}_{{ submenu }}_table_title_label">{{ title }}</span>
+  </div>
+  <div class="panel-body">
+    <div id="main-table" class="tabulator_table"></div>
+  </div>
+  <div class="panel-footer">
+    <div class="col-lg-6 col-sm-6 padding-tb5">
+      <button type="submit" class="btn btn-labeled btn-success">
+        <span class="btn-label"><i class="fa fa-check"></i></span>
+        <span class="label_for_translate footer_button_save_label" attr-class_name="footer_button_save_label" attr-edit_mode="popup" attr-placement="right">Сохранить</span>
+      </button>
+    </div>
+    <div class="col-lg-6 col-sm-6 text-right-not-xs padding-tb5">
+      <a id="add_settings" href="javascript:void(0);" class="btn btn-default">
+        <span class="label_for_translate footer_button_add_config_label" attr-class_name="footer_button_add_config_label" attr-edit_mode="popup" attr-placement="left">Добавить настройку</span>
+      </a>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div id="settings_form"></div>
+</form>
+{% endblock %}
+
+{% block extracontent %}
+<div>
+  <strong class="label_for_translate settings_not_depends_from_user_label" attr-class_name="settings_not_depends_from_user_label" attr-edit_mode="popup" attr-placement="right">Настройки не зависят от пользователя (то есть, они не персонально ваши, а действуют глобально)</strong>
+</div>
+<span class="label_for_translate examples_label" attr-class_name="examples_label" attr-edit_mode="popup" attr-placement="right">Примеры:</span>
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>
+        <span class="label_for_translate result_label" attr-class_name="result_label" attr-edit_mode="popup" attr-placement="right">Настройка</span>
+      </th>
+      <th>
+        <span class="label_for_translate attribute_label" attr-class_name="attribute_label" attr-edit_mode="popup" attr-placement="right">Атрибут</span>
+      </th>
+      <th>
+        <span class="label_for_translate value_label" attr-class_name="value_label" attr-edit_mode="popup" attr-placement="right">Значение</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <span class="label_for_translate default_email_hint_label" attr-class_name="default_email_hint_label" attr-edit_mode="popup" attr-placement="right">Зарегистрированный аккаунт в ejabberd для связи, если нет официальных представителей</span>
+      </td>
+      <td>default_admin</td>
+      <td>89148959224</td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+function fill_settings(){
+  // Заполнение формы настройками,
+  // вызываем перед отправкой в $("#current_edit_form").submit
+  $("#settings_form").html('');
+  var settings_data = "";
+  var settings = main_table.getRows();
+  var setting = null;
+  for(var i=0; i<settings.length; i++){
+    setting = settings[i].getData();
+    settings_data += "<input type='hidden' name='name_" + i + "' value='" + setting['name'] + "' />";
+    settings_data += "<input type='hidden' name='attr_" + i + "' value='" + setting['attr'] + "' />";
+    settings_data += "<input type='hidden' name='value_" + i + "' value='" + setting['value'] + "' />";
+  }
+  settings_data += "<input type='hidden' name='settings' value='" + settings.length + "' />";
+  $("#settings_form").html($(settings_data));
+}
+$(document).ready(function(){
+  //$("#current_edit_form").parsley();
+  $("#current_edit_form").submit(function(e) {
+    var $form = $(this);
+    // ---------------------------
+    // Добавляем настройки в форму
+    // ---------------------------
+    fill_settings();
+
+    var data = $form.serialize();
+    var msg = 'Произошла ошибка, обновите страничку';
+    var status = 'danger'; // success, warning, info, danger
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: data,
+    }).done(function(r) {
+      if(r.error){
+        msg = r.error;
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+        {% ifequal action 'create' %}window.location.href = r.redirect;{% endifequal %}
+      }
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    }).fail(function() {
+      $.notify({
+        message: msg,
+      },{
+        status: status,
+      });
+    });
+    //отмена действия по умолчанию для кнопки submit
+    e.preventDefault();
+  });
+
+  var tableData = [
+    {% for row in rows %}
+      {
+        'id': '{{ row.id }}',
+        'name': '{{ row.name }}',
+        'attr': '{{ row.attr }}',
+        'value': '{{ row.value }}',
+      },
+    {% endfor %}
+  ]
+
+  main_table_columns = [
+    {
+      title: "Настройка",
+      field: "name",
+      headerFilterPlaceholder: "Название",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      editor: "input",
+      width: 150,
+    },
+    {
+      title: "Атрибут",
+      field: "attr",
+      headerFilterPlaceholder: "Атрибут",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      editor: "input",
+      width: 150,
+    },
+    {
+      title: "Значение",
+      field: "value",
+      headerFilterPlaceholder: "Название",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      editor: "input",
+      width: 250,
+    },
+    {
+      title: "Действия",
+      field: "actions",
+      formatter: "buttonCross",
+      width: 120,
+      align:"center",
+      cellClick:function(e, cell){
+        cell.getRow().delete();
+      }
+    },
+  ];
+
+  main_table = new Tabulator("#main-table", {
+    data: tableData,
+    persistentLayout: true,
+    persistentSort: true,
+    persistenceID: "{{ root_url }}",
+    persistentFilter: false,
+    layout: "fitColumns",
+    columns: main_table_columns,
+  });
+
+  $("#add_settings").click(function(){
+    var rows = main_table.getRows();
+    main_table.addRow({
+      'name': 'Новая настройка',
+      'attr': '',
+      'value': '',
+    });
+  });
+});
+</script>
+{% endblock %}

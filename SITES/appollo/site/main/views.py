@@ -14,7 +14,7 @@ from apps.flatcontent.models import Blocks
 from apps.flatcontent.views import SearchLink
 from apps.flatcontent.flatcat import get_cat_for_site, get_product_for_site
 from apps.main_functions.string_parser import kill_quotes, GenPasswd
-from apps.main_functions.views import DefaultFeedback
+from apps.main_functions.views import DefaultFeedback, settings as settings_view
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.date_time import str_to_date
 
@@ -49,6 +49,21 @@ def home(request):
     context['containers'] = containers
 
     return render(request, template, context)
+
+def site_settings(request, app: str = 'flatcontent'):
+    """Настройки для разделов
+       :param app: приложение
+       :param store: хранилище с настройками приложения
+    """
+    store = {
+        'companies': {
+            'singular_obj': 'Раздел "Компании"',
+            'rp_singular_obj': 'раздела "Компаний"',
+            'name': 'Настройки раздела "Компаний"',
+            'user_defined': False,
+        },
+    }
+    return settings_view(request, app, store=store)
 
 demo_vars = {
     'singular_obj': 'Демо-страничка',

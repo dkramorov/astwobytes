@@ -127,6 +127,8 @@ def product_on_site(request, product_id: int):
     template = 'web/cat/%sproduct.html' % (mh_vars['template_prefix'], )
 
     page = SearchLink(q_string, request, containers)
+    if not page:
+        page = context['product']
     context['page'] = page
     context['containers'] = containers
 

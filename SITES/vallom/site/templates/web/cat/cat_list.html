@@ -128,6 +128,9 @@
           {% endifequal %}
 
           <div class="category-products">
+            {% if not products %}
+              <h3>К сожалению, ничего не найдено{% if q_string.q.q %} по запросу "{{ q_string.q.q }}"{% endif %}</h3>
+            {% endif %}
             <div class="toolbar-top">
               {% if paginator %}{{ paginator|safe }}{% endif %}
             </div>

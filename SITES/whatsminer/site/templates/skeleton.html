@@ -1,10 +1,12 @@
 {% load mtags tags flatcontent_tags %}﻿<!doctype html><html lang="en"><head>
 {% include "skeleton_header.html" %}
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="stylesheet" href="/media/css/backend-plugin.min.css">
+<!--<link rel="stylesheet" href="/media/css/backend-plugin.min.css">-->
 <link rel="stylesheet" href="/media/css/backend.css">
-<link rel="stylesheet" href="/media/css/all.min.css">
+<!--<link rel="stylesheet" href="/media/css/all.min.css">-->
+<!-- Иконки на хлебных крошках grep -rl 'ri-' apps/site -->
 <link rel="stylesheet" href="/media/css/remixicon.css">
+<!-- https://icons8.com/line-awesome -->
 <link rel="stylesheet" href="/media/css/line-awesome.min.css">
 
 <!--PDF
@@ -23,6 +25,9 @@
 <!--officeToHtml
 <link rel="stylesheet" href="/media/css/officeToHtml.css">
 -->
+
+<link rel="stylesheet" href="/media/tabulator/tabulator_semanticui.css">
+
 {% block extrahead %}{% endblock %}
 </head>
 <body>
@@ -36,7 +41,9 @@
   {% include "web/topbar.html" %}
   <div class="content-page">
     <div class="container-fluid">
-      {% include "web/crumbs.html" %}
+      {% block breadcrumbs %}
+        {% include "web/crumbs.html" %}
+      {% endblock %}
       {% block content %}{% endblock %}
     </div>
   </div>

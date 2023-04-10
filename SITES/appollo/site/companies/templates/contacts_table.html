@@ -57,6 +57,20 @@ $(document).ready(function(){
       width: 150,
     },
     {
+      title: "Управление",
+      field: "state",
+      headerFilterPlaceholder: "Управление",
+      headerFilter: true,
+      headerFilterFunc: "=",
+      headerFilterParams: {
+        values: {"": "Без фильтра", "None": "Нет", "10": "Да"},
+      },
+      editable: false,
+      editor: "select",
+      formatter: booleanFormatter,
+      width: 90,
+    },
+    {
       title: "Комментарий",
       field: "comment",
       headerFilterPlaceholder: "Комментарий",

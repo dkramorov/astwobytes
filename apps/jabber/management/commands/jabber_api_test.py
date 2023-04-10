@@ -63,6 +63,12 @@ class Command(BaseCommand):
             dest = 'get_room_options',
             default = False,
             help = 'Get room options')
+        parser.add_argument('--drop_muc',
+            action = 'store',
+            type = str,
+            dest = 'drop_muc',
+            default = False,
+            help = 'Drop MUC room by name')
 
     def handle(self, *args, **options):
         """Тестирование апи ejabberd
@@ -149,3 +155,10 @@ class Command(BaseCommand):
         if options.get('get_room_options'):
             room_name = options.get('get_room_options')
             resp = ejabberd_manager.get_room_options(name=room_name, service=conference_domain)
+
+        if options.get('drop_muc'):
+            # company10808901659-86-23, vcard GROUP_company_1080_89016598623@chat.masterme.ru
+            room_name = options.get('drop_muc')
+            resp = ejabberd_manager.drop_muc(name=room_name, service=conference_domain)
+            print(resp.text)
+

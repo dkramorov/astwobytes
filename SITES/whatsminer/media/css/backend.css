@@ -374,7 +374,6 @@ h6, .h6 {
       font-size: calc(1.725rem + 5.7vw) ; }
  }
 
-
 .display-2 {
   font-size: 5.5rem;
   font-weight: 300;
@@ -394,7 +393,6 @@ h6, .h6 {
       font-size: calc(1.575rem + 3.9vw) ; }
  }
 
-
 .display-4 {
   font-size: 3.5rem;
   font-weight: 300;
@@ -403,7 +401,6 @@ h6, .h6 {
     .display-4 {
       font-size: calc(1.475rem + 2.7vw) ; }
  }
-
 
 hr {
   margin-top: 1rem;
@@ -557,12 +554,10 @@ pre {
     max-width: 960px; }
  }
 
-
 @media (min-width: 1200px) {
   .container, .container-sm, .container-md, .container-lg, .container-xl {
     max-width: 1140px; }
  }
-
 
 .row {
   display: flex;
@@ -2010,7 +2005,6 @@ textarea.form-control {
     left: auto; }
  }
 
-
 @media (min-width: 1200px) {
   .dropdown-menu-xl-left {
     right: auto;
@@ -2019,7 +2013,6 @@ textarea.form-control {
     right: 0;
     left: auto; }
  }
-
 
 .dropup .dropdown-menu {
   top: auto;
@@ -7259,8 +7252,7 @@ a.text-pink:hover, a.text-pink:focus {
         -ms-flex-align: center;
         align-items: center;
         overflow: hidden;
-        border-radius: 0px;
-        text-transform: capitalize; }
+        border-radius: 0px;}
         .iq-sidebar-menu .iq-menu li a i {
           font-size: 20px;
           margin-right: 10px;

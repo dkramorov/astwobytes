@@ -1,0 +1,5 @@
+git update-index --skip-worktree <file-list>
+
+Reverse it by:
+
+git update-index --no-skip-worktree <file-list>

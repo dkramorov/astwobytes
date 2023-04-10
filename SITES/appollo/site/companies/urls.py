@@ -34,4 +34,6 @@ urlpatterns = [
     path('admin/contacts/positions/', views.contacts_positions, name='contacts_positions'),
     # аякс-поиск
     path('contacts/search/', views.search_contacts, name='search_contacts'),
+
+    path('chat/', views.chat, name='chat'),
 ]

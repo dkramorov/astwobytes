@@ -5,11 +5,12 @@
       <div class="navbar-breadcrumb">
         <nav aria-label="breadcrumb">
           <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/">Главная</a></li>
             {% for crumb in breadcrumbs %}
               {% if forloop.last or not crumb.link %}
                 <li class="breadcrumb-item active" aria-current="page">{{ crumb.name }}</li>
               {% else %}
-                <li class="breadcrumb-item"><a href="{{ crumb.link }}">My Drive</a></li>
+                <li class="breadcrumb-item"><a href="{{ crumb.link }}">{{ crumb.name }}</a></li>
               {% endif %}
             {% endfor %}
           </ul>

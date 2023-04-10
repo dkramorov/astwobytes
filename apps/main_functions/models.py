@@ -254,6 +254,11 @@ class Config(Standard):
         verbose_name = 'Админка - Настройка'
         verbose_name_plural = 'Админка - Настройки'
 
+    def __str__(self):
+        return 'id=%s, name=%s, attr=%s, value=%s, user_id=%s' % (
+            self.id, self.name, self.attr, self.value, self.user_id,
+        )
+
 
 class Tasks(Standard):
     """Задачи для call_command"""

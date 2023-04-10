@@ -7,10 +7,12 @@ from django.urls import reverse, resolve
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from django.core import management
 
 from apps.flatcontent.models import Blocks
+from apps.main_functions.models import Config
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import (
     create_model_helper,
@@ -32,6 +34,9 @@ from .models import (
     Company2Category,
     MainCompany2Category,
 )
+from apps.telegram.telegram import TelegramBot
+from apps.jabber.models import Registrations
+from apps.jabber.views import single_push
 
 CUR_APP = 'companies'
 companies_vars = {
@@ -586,6 +591,8 @@ def edit_contact(request, action: str, row_id: int = None, *args, **kwargs):
                     context['success'] = 'Данные успешно записаны'
                 else:
                     context['error'] = 'Недостаточно прав'
+            if mh.row and mh.row.company and mh.row.company.main_company.id != mh.row.main_company_id:
+                Contact.objects.filter(pk=mh.row.id).update(main_company_id=mh.row.company.main_company_id)
         elif action == 'img' and request.FILES:
             mh.uploads()
     if mh.row:
@@ -638,3 +645,63 @@ def update_app(request, *args, **kwargs):
     result['status'] = management.call_command('app_archive')
     return JsonResponse(result, safe=False)
 
+@csrf_exempt
+def chat(request, *args, **kwargs):
+    """Запрос на создание чата с компанией
+       :param request: HttpRequest
+    """
+    result = {}
+    body = None
+    if request.body:
+        try:
+            body = json.loads(request.body)
+        except Exception as e:
+            result['error'] = str(e)
+    if body:
+        credentials = body.get('credentials')
+        jid = body.get('JID')
+        muc = body.get('MUC')
+        if not muc.startswith('company_') or not muc.count('_') == 2:
+            assert False
+        muc = muc.replace('company_', '')
+        company_id, phone = muc.split('@')[0].split('_')
+        result['company_id'] = company_id
+        result['phone'] = phone
+
+        analog = Registrations.objects.filter(phone=jid, is_active=True).first()
+        if analog and analog.get_hash() == credentials:
+            # Порядок - берем компанию и смотрим кто в ее контактах,
+            # все кто зареган владеют ей
+            phones = list(Contact.objects.filter(ctype=1, main_company_id=company_id).values_list('indexed_value', flat=True))
+            result['phones'] = phones
+            reged = list(set(Registrations.objects.filter(phone__in=phones).values_list('phone', flat=True)))
+            if not reged:
+                # Если нет зареганных, будем добавлять админов по умолчанию
+                default_admins = Config.objects.filter(attr='%s_default_admin' % CUR_APP).values_list('value', flat=True)
+                reged = list(default_admins)
+
+            result['reged'] = reged
+            if reged:
+                result['tg_resp'] = TelegramBot().send_message('Запрос на чат от %s в группу %s, зарегистированные представители %s' % (jid, muc, reged))
+                company = MainCompany.objects.filter(pk=company_id).first()
+                for user in reged:
+                    if not company:
+                        break
+                    user_body = {
+                        'credentials': credentials,
+                        'toJID': user,
+                        'fromJID': jid,
+                        'body': 'Компания %s' % company.name,
+                        'name': 'Пользователь %s создал чат' % jid,
+                        'additional_data': {
+                            'action': 'chat',
+                            'group': 'company_%s' % muc,
+                        },
+                        'only_data': True,
+                    }
+                    result['body'] = body
+                    if 'credentials' in result['body']:
+                        del result['body']['credentials']
+                    push_resp = single_push(app_id='mastermechat', body=user_body)
+
+    return JsonResponse(result, safe=False)

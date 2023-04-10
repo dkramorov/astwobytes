@@ -24,6 +24,7 @@ from apps.main_functions.views_helper import (
     edit_view,
     search_view,
 )
+from apps.net_tools.views import show_ip_range, edit_ip_range
 from apps.site.miners.models import (
     Comp,
 )
@@ -95,6 +96,8 @@ def show_comps(request, *args, **kwargs):
                       'by': mh.raw_paginator['by'], }
         return JsonResponse(result, safe=False)
     template = '%stable.html' % (mh.template_prefix, )
+    if kwargs.get('template_prefix'):
+        template = '%s%s' % (kwargs['template_prefix'], template)
     return render(request, template, context)
 
 @login_required
@@ -244,3 +247,41 @@ def scan_ips(request, *args, **kwargs):
             result['error'] = error
             return JsonResponse(result, safe=False)
     return render(request, template, context)
+
+@login_required
+def miners_show_comps(request, *args, **kwargs):
+    """Вывод компьютеров
+       :param request: HttpRequest
+    """
+    kwargs['template_prefix'] = 'miners_'
+    return show_comps(request, *args, **kwargs)
+
+@login_required
+def miners_edit_comp(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование компьютеров
+       :param request: HttpRequest
+       :param action: действие над объектом (создание/редактирование/удаление)
+       :param row_id: ид записи
+    """
+    kwargs['template_prefix'] = 'miners_'
+    return edit_comp(request, action, row_id, *args, **kwargs)
+
+
+@login_required
+def miners_show_ip_range(request, *args, **kwargs):
+    """Вывод объектов
+       :param request: HttpRequest
+    """
+    kwargs['template_prefix'] = 'miners_'
+    return show_ip_range(request, *args, **kwargs)
+
+@login_required
+def miners_edit_ip_range(request, action: str, row_id: int = None, *args, **kwargs):
+    """Создание/редактирование объекта
+       :param request: HttpRequest
+       :param action: действие над объектом (создание/редактирование/удаление)
+       :param row_id: ид записи
+    """
+    kwargs['template_prefix'] = 'miners_'
+    return edit_ip_range(request, action, row_id, *args, **kwargs)
+

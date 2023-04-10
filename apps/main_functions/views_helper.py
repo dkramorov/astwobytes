@@ -127,6 +127,9 @@ def show_view(request,
                       'by': mh.raw_paginator['by'], }
         return JsonResponse(result, safe=False)
     template = '%stable.html' % (mh.template_prefix, )
+    if extra_vars.get('template_prefix'):
+        # Для переиспользования метода в других views
+        template = '%s%s' % (extra_vars['template_prefix'], template)
     return render(request, template, context)
 
 def edit_view(request,
@@ -218,6 +221,9 @@ def edit_view(request,
     if request.is_ajax() or action == 'img':
         return JsonResponse(context, safe=False)
     template = '%sedit.html' % (mh.template_prefix, )
+    if extra_vars.get('template_prefix'):
+        # Для переиспользования метода в других views
+        template = '%s%s' % (extra_vars['template_prefix'], template)
     return render(request, template, context)
 
 def positions_view(request,

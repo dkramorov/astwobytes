@@ -176,6 +176,9 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO user;
 -- For viewing privileges
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO user;
 
+ERROR: permission denied to create extension "btree_gist"
+ALTER USER postgres WITH SUPERUSER;
+
 \q - ВЫХОД
 
 # ----------------

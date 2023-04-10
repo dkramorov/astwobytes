@@ -47,6 +47,9 @@ function load_lazy_js(path, callback) {
   }
 }
 </script>
+{% if containers.main.tags.yandex_metrika.html %}
+  {{ containers.main.tags.yandex_metrika.html|safe }}
+{% endif %}
 {% block extrahead %}{% endblock %}
 </head>
 <body class=" cms-index-index cms-home-demo-01 wide-style home-page-1 header-1">

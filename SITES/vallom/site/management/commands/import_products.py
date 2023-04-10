@@ -113,6 +113,7 @@ class CRMProducts(CRMAbstract):
         'frozen_price',
         'video_link',
         'custom_id',
+        'to_site',
     )
 
 def load_categories():
@@ -201,7 +202,7 @@ def load_products():
                 instance.info = product['description']
                 instance.code = product['custom_id'] or product_id
                 instance.is_active = False
-                if instance.count and instance.count > 0:
+                if instance.count and instance.count > 0 and product['to_site']:
                     instance.is_active = True
                 instance.save()
                 # Категория товара
@@ -418,6 +419,8 @@ class Command(BaseCommand):
     """Работа с товарами CRM
        ln -s /Users/jocker/django/SITES/vallomcrm/media/products media/
        ln -s /home/v/vallom/vallomsu/public_html/vallomcrm/media/products media/
+
+       python manage.py import_products --products --properties --products_links
     """
     def add_arguments(self, parser):
         parser.add_argument('--folder',

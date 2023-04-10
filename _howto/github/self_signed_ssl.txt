@@ -18,6 +18,8 @@ Note that using local git config here (i.e. without --global) means that this se
 GIT_SSL_CAINFO=/Users/jocker/KVINT/ca-gitlab-prod-kvint-io.crt git clone https://gitlab.prod.kvint.io/integration/service-ubrr-calls.git
 git config http.sslCAInfo /Users/jocker/KVINT/ca-gitlab-prod-kvint-io.crt
 
+git config [--global] http.sslVerify false
+
 --- KVINT ---
 GIT_SSL_CAINFO=/opt/ca-gitlab-prod-kvint-io.crt git clone https://gitlab.prod.kvint.io/integration/service-ubrr-calls.git
 git config http.sslCAInfo /opt/ca-gitlab-prod-kvint-io.crt
@@ -72,3 +74,8 @@ ssh-add ~/.ssh/dkramorov_rsa
 cat /root/.ssh/dkramorov_rsa.pub
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCvwrDpZri4yxGnS1kXgnwf3XE3MTX46JxQ/94uAXydhnVmBmmsPwBEYa7CDderRYXjNAoaWbZ1oUatpepn5Ef0grTvVEipYgfVX0OzfL8sylsBcJrve9kAFliW15VAq1FGg1/8d3fmcft3vsmXejikfUUvwRkiyrTw2sr3AOapvAHvorxcpCxZjnPuvJVkwMOFFtwl4rJ83pml7vDSKOuyGeKZUiX318Ny/ftihWSLUjhIC2bIj9+tkG3gmyyJxu3to2rQswMv0Fh6n3CjRFj748JilzCuEw5/OMbGXYQh1hBkvs4lgP30gFuSX21uaVGOxdIicgYCxcKoOXqbqppj0rGpwEk3jZBpjh2wwPyqyu7OzrjQOPRK20w5VPrwdg/67RWQv1CpskmZQ3hz8cJzHS5lYg3h+CuL4y8++o8pR/47SuAp9prarzvev8M07X1+1yTrLJfZAl4K5+sgKXN7N7lJ1oPIOBTc3/5f5RfZkKFw1Es0I3DESR8GHZA+QVZGWNEOgY5l5BoRF/nIKzBZt9L78byHIid9efN1PGA9IeRtoMyC1sQ8H1vqtb2rL/MAgJgZNfPTuZe66f33ho/IYrIGKxaU95gb/Kh7f7lQ7trAag0NbIE+PeDqix/FyEaxq3tre3akRBfsZP5H52CT9Q+RbLWXPBav4clnZkiPbQ== dkramorov@mail.ru
 
+На серерве подложить сертификат можно для раннеров
+- положить новый сертификат в /usr/local/share/ca-certificates
+- update-ca-certificates
+- service gitlab-runner restart
+- service docker restart

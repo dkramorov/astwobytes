@@ -5,6 +5,7 @@ import random
 import requests
 import datetime
 import traceback
+import base64
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -714,7 +715,7 @@ accept: application/json
                 del result['body']['credentials']
 
             # Отправлена группа на которую надо разослать, вытаскиваем по ней пользователей
-            to_group_jid = kill_quotes(body.get('toGroupJid', ''), 'strinct_text')
+            to_group_jid = kill_quotes(body.get('toGroupJid', ''), 'just_text')
             if to_group_jid:
                 additional_data['group'] = to_group_jid
                 group_name = 'GROUP_%s' % to_group_jid.split('@')[0]
@@ -773,56 +774,35 @@ accept: application/json
 
     return JsonResponse(result, safe=False)
 
-@csrf_exempt
-def notification_helper(request, app_id: str = None):
-    """Апи-метод для отправки уведомления (пуша)
-       https://firebase.google.com/docs/cloud-messaging/migrate-v1
-       :param request: HttpRequest
-       :param app_id: ид приложения (для получения файла json с ключем)
-    """
+def single_push(app_id: str, body: dict):
+    """Отправка одиночного пуша"""
     result = {}
-    ip_white_list = ['138.68.109.138']
-    result['user_ip'] = get_request_ip(request)
 
-    method = request.GET if request.method == 'GET' else request.POST
-    body = None
     tokens = []
-
     to_token = None
-    to_jid = None
-    from_jid = None
-    msg_body = None
-    name = None
     only_data = False # только data push
     additional_data = {} # доп параметры в data push
 
-    if request.body:
-        try:
-            body = json.loads(request.body)
-        except Exception as e:
-            result['error'] = str(e)
-        if body:
+    credentials = body.get('credentials')
+    to_jid = body.get('toJID')
+    from_jid = body.get('fromJID') # не преобразуем т/к хэш будет неправильный
+    msg_body = body.get('body')
+    name = body.get('name')
+    result['body'] = body
+    # Только data push
+    if 'only_data' in body:
+        only_data = True
+    if 'additional_data' in body:
+        additional_data = body['additional_data']
+    if 'credentials' in result['body']:
+        del result['body']['credentials']
 
-            credentials = body.get('credentials')
-            to_jid = body.get('toJID')
-            from_jid = body.get('fromJID') # не преобразуем т/к хэш будет неправильный
-
-            msg_body = body.get('body')
-            name = body.get('name')
-            result['body'] = body
-            # Только data push
-            if 'only_data' in body:
-                only_data = True
-            if 'additional_data' in body:
-                additional_data = body['additional_data']
-            if 'credentials' in result['body']:
-                del result['body']['credentials']
-
-            analog = Registrations.objects.filter(phone=from_jid, is_active=True).first()
-            if analog and analog.get_hash() == credentials:
-                tokens = list(FirebaseTokens.objects.filter(login=to_jid).values_list('token', flat=True))
-            else:
-                result['error'] = 'Restricted access'
+    analog = Registrations.objects.filter(phone=from_jid, is_active=True).first()
+    if analog and analog.get_hash() == credentials:
+        tokens = list(FirebaseTokens.objects.filter(login=to_jid).values_list('token', flat=True))
+    else:
+        result['error'] = 'Restricted access'
+        return result
 
     text = trim_firebase_message(msg_body or 'Новое сообщение от %s' % from_jid)
     title = name or 'Новое сообщение'
@@ -849,11 +829,35 @@ def notification_helper(request, app_id: str = None):
 
         if drop_broken_token(token, resp):
             result[token] = 'DELETED'
-
     if not tokens:
         result['fail'] = 'tokens not found'
+
     result['url'] = url
+    return result
+
+@csrf_exempt
+def notification_helper(request, app_id: str = None):
+    """Апи-метод для отправки уведомления (пуша)
+       https://firebase.google.com/docs/cloud-messaging/migrate-v1
+       :param request: HttpRequest
+       :param app_id: ид приложения (для получения файла json с ключем)
+    """
+    result = {}
+    ip_white_list = ['138.68.109.138']
+
+    method = request.GET if request.method == 'GET' else request.POST
+    body = None
+
+    if request.body:
+        try:
+            body = json.loads(request.body)
+        except Exception as e:
+            result['error'] = str(e)
+        if body:
+            result = single_push(app_id, body)
+
     result['app_id'] = app_id
+    result['user_ip'] = get_request_ip(request)
     return JsonResponse(result, safe=False)
 
 def get_registered_users():
@@ -939,7 +943,7 @@ def group_vcard(request):
             if not '@conference.' in to_group:
                 to_group = None
             else:
-                to_group = kill_quotes(body.get('to_group', '').split('@')[0], 'strict_text')
+                to_group = kill_quotes(body.get('to_group', '').split('@')[0], 'just_text')
             result['phone'] = phone
             result['credentials'] = credentials
             result['to_group'] = to_group
@@ -1053,17 +1057,16 @@ def set_device_contacts(request):
     """
     result = {}
     method = request.GET if request.method == 'GET' else request.POST
-    jid = ''
+    jid = credentials = None
     contacts = []
     if request.body:
         try:
             body = json.loads(request.body)
-        except Exception as e:
-            result['error'] = str(e)
-        if body:
             credentials = body.get('credentials')
             jid = kill_quotes(body.get('JID'), 'int')
-            contacts = body.get('contacts', [])
+            contacts = json.loads(base64.b64decode(body.get('contacts', [])))
+        except Exception as e:
+            result['error'] = str(e)
 
     if jid and credentials and contacts:
         reg = Registrations.objects.filter(phone=jid, is_active=True).first()

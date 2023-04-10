@@ -1,0 +1,22 @@
+<li{% ifequal menu 'miners' %} class="active"{% endifequal %}>
+  <a href="#miners_comp" {% ifequal menu 'miners' %}{% else %}class="collapsed"{% endifequal %} aria-expanded="{% ifequal menu 'miners' %}true{% else %}false{% endifequal %}" data-toggle="collapse">
+    <i class="las la-server"></i>
+    <span>Парк машин</span>
+    <i class="las la-angle-right iq-arrow-right arrow-active"></i>
+    <i class="las la-angle-down iq-arrow-right arrow-hover"></i>
+  </a>
+  <ul id="miners_comp" class="iq-submenu collapse{% ifequal menu 'miners' %} show{% endifequal %}" data-parent="#iq-sidebar-toggle">
+    <li{% ifequal submenu 'comps' %} class="active"{% endifequal %}>
+      <a href="{% url 'miners:miners_show_comps' %}">
+        <i class="las la-server"></i>
+        <span>Компьютеры</span>
+      </a>
+    </li>
+    <li{% ifequal submenu 'ip_range' %} class="active"{% endifequal %}>
+      <a href="{% url 'miners:miners_show_ip_range' %}">
+        <i class="las la-network-wired"></i>
+        <span>Группы ip адресов</span>
+      </a>
+    </li>
+  </ul>
+</li>

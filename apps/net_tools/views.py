@@ -92,10 +92,10 @@ def search_ip_address(request, *args, **kwargs):
                        sfields = None, )
 
 ip_range_vars = {
-    'singular_obj': 'Диапазон ip',
-    'plural_obj': 'Диапазоны ip',
-    'rp_singular_obj': 'диапазона ip',
-    'rp_plural_obj': 'диапазонов ip',
+    'singular_obj': 'Группа ip адресов',
+    'plural_obj': 'Группы ip адресов',
+    'rp_singular_obj': 'группы ip адресов',
+    'rp_plural_obj': 'групп ip адресов',
     'template_prefix': 'ip_range_',
     'action_create': 'Создание',
     'action_edit': 'Редактирование',
@@ -118,11 +118,7 @@ def show_ip_range(request, *args, **kwargs):
     return show_view(request,
                      model_vars = ip_range_vars,
                      cur_app = CUR_APP,
-                     extra_vars = None, )
-
-    mh_vars = ip_range_vars.copy()
-    mh = create_model_helper(mh_vars, request, CUR_APP)
-    context = mh.context
+                     extra_vars = kwargs)
 
 @login_required
 def edit_ip_range(request, action: str, row_id: int = None, *args, **kwargs):
@@ -136,7 +132,7 @@ def edit_ip_range(request, action: str, row_id: int = None, *args, **kwargs):
                      cur_app = CUR_APP,
                      action = action,
                      row_id = row_id,
-                     extra_vars = None, )
+                     extra_vars = kwargs)
 
 @login_required
 def ip_range_positions(request, *args, **kwargs):

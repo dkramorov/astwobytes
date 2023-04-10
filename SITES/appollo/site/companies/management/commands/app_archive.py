@@ -124,7 +124,7 @@ def fill_contacts(json_obj: dict):
        :param json_obj: результирующая джисонина
     """
     json_obj['phones'] = []
-    query = Contact.objects.select_related('company').filter(ctype=1)
+    query = Contact.objects.select_related('company').filter(ctype=1).exclude(state=10)
     total_records = query.aggregate(Count('id'))['id__count']
     total_pages = int(total_records / by) + 1
 

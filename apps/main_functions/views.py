@@ -273,9 +273,10 @@ def DefaultFeedback(request, **kwargs):
     return JsonResponse(result, safe=False)
 
 @login_required
-def settings(request, app: str = 'flatcontent'):
+def settings(request, app: str = 'flatcontent', store: dict = None):
     """Настройки для разделов
        :param app: приложение
+       :param store: хранилище с настройками приложения
     """
     result = {}
     app_label = '%s_' % app
@@ -303,6 +304,9 @@ def settings(request, app: str = 'flatcontent'):
             'user_defined': True,
         },
     }
+    if store:
+        # Добавляем настройки своего приложения
+        settings_store.update(store)
     name = settings_store[app]['name']
     user_defined = settings_store[app]['user_defined']
     root_url = reverse('main_functions:settings', args=[app])

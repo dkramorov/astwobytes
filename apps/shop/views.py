@@ -207,10 +207,10 @@ def search_orders(request, *args, **kwargs):
                        sfields = ('number', ), )
 
 purchases_vars = {
-    'singular_obj': 'Покупка',
-    'plural_obj': 'Покупки',
-    'rp_singular_obj': 'покупки',
-    'rp_plural_obj': 'покупок',
+    'singular_obj': 'Позиция корзины',
+    'plural_obj': 'Позиции корзины',
+    'rp_singular_obj': 'Позиции корзины',
+    'rp_plural_obj': 'Позиций корзины',
     'template_prefix': 'purchases_',
     'action_create': 'Создание',
     'action_edit': 'Редактирование',
@@ -699,7 +699,7 @@ def cart(request, action):
         count = int(quantity)
         if count <= 0:
             count = 1
-        product = Products.objects.filter(pk=product_id).first()
+        product = Products.objects.filter(pk=product_id, is_active=True).first()
         # Проверяем передан ли тип цены
         if cost_type_id and product:
             cost_type = CostsTypes.objects.filter(pk=cost_type_id).first()
@@ -715,7 +715,7 @@ def cart(request, action):
 
         purchase = None
         if not product:
-            result['error'] = 'Товар не найден'
+            result['error'] = 'Товар недоступен для покупки'
         else:
             if not shopper or not shopper.id:
                 shopper = create_shopper(request)
@@ -740,7 +740,7 @@ def cart(request, action):
                     cost_type=cost_type, )
                 result['success'] = 'Добавлено в корзинку'
     elif shopper and action == 'quantity' and purchase_id and quantity:
-        not_found = 'Покупка не найдена или передано неправильное количество'
+        not_found = 'Товар с кол-вом %s недоступен для покупки' % quantity
 
         if purchase_id.isdigit() and quantity.isdigit():
             purchase_id = int(purchase_id)
@@ -754,11 +754,11 @@ def cart(request, action):
         else:
             result['error'] = not_found
     elif shopper and action == 'drop' and purchase_id:
-        not_found = 'Покупка не найдена'
+        not_found = 'Позиция в корзине не найдена'
         if purchase_id.isdigit():
             purchase = get_purchase(purchase_id, shopper)
             purchase.delete()
-            result['success'] = 'Покупка удалена'
+            result['success'] = 'Позиция в корзине удалена'
         else:
             result['error'] = not_found
     elif shopper and action == 'promocode':
