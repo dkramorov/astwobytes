@@ -1,0 +1,165 @@
+<script type="text/javascript">
+var tickCrossEditor = function(cell, onRendered, success, cancel, editorParams){
+  //cell - the cell component for the editable cell
+  //onRendered - function to call when the editor has been rendered
+  //success - function to call to pass the successfuly updated value to Tabulator
+  //cancel - function to call to abort the edit and return to a normal cell
+  //editorParams - params object passed into the editorParams column definition property
+  var editor = document.createElement("input");
+  editor.setAttribute("type", "checkbox");
+  editor.checked = cell.getValue();
+  editor.setAttribute("value", 1);
+  //create and style input
+  editor.style.marginTop = "17px";
+  editor.style.marginLeft = "auto";
+  editor.style.marginRight = "auto";
+  editor.style.display = "block";
+  function successFunc(){
+      success(editor.checked);
+  }
+  editor.addEventListener("change", successFunc);
+  editor.addEventListener("blur", successFunc);
+  return editor;
+};
+var defaultInputEditor = function(cell, onRendered, success, cancel, editorParams){
+  var cellValue = cell.getValue(),
+  input = document.createElement("input");
+  input.setAttribute("type", "text");
+  input.value = $('<div/>').html(cellValue).text();
+  onRendered(function(){
+    input.focus();
+    input.style.height = "100%";
+  });
+  function onChange(){
+    if(input.value != cellValue){
+      success(input.value);
+    }else{
+      cancel();
+    }
+  }
+  //submit new value on blur or change
+  input.addEventListener("change", onChange);
+  input.addEventListener("blur", onChange);
+  //submit new value on enter
+  $(input).on("keydown", function(e){
+    if(e.keyCode == 13){
+      success($(input).val());
+    }
+    if(e.keyCode == 27){
+      cancel();
+    }
+  });
+  return input;
+}
+var actionsFormatter = function(cell, formatterParams, onRendered){
+  var row = cell.getRow();
+  var rowIndex = row.getIndex();
+  var pk = cell.getValue();
+  var actions = "<div class='flex align-items-center list-user-action'>";
+  {% if permissions.edit %}
+    actions += " <a class='iq-bg-primary' data-toggle='tooltip' data-placement='top' data-original-title='Редактировать' href='{{ root_url }}edit/" + pk + "/' title='Редактировать'><i class='ri-pencil-line'></i></a> ";
+  {% endif %}
+  {% if permissions.drop %}
+    actions += " <a class='iq-bg-primary' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");' title='Удалить'><i class='ri-delete-bin-line'></i></a> ";
+  {% endif %}
+  actions += "</div>";
+  return actions;
+};
+var booleanFormatter = function(cell, formatterParams, onRendered){
+  var value = cell.getValue();
+  var result = "<div class='padding-rl5 text-center'>";
+  if(value){
+    result += " <a class='btn text-success' href='javascript:void(0);'><i class='fa fa-check-square-o'></i></a> ";
+  }else{
+    result += " <a class='btn text-danger' href='javascript:void(0);'><i class='fa fa-square-o'></i></a> ";
+  }
+  result += "</div>";
+  return result;
+};
+var imgFormatter = function(cell, formatterParams, onRendered){
+  var value = cell.getValue();
+  var data = cell.getData();
+  var result = "";
+  if(value){
+    result += "<div class='tabulator_img'>";
+    result += "<a href='" + data.imagine + "' target='_blank'>";
+    result += "<img loading='lazy' src='" + data.thumb + "' onload='console.log(\"visible "+ data.thumb +"\");'/>";
+    result += "</a>";
+    result += "</div>";
+  }
+  return result;
+};
+var linkFormatter = function(cell, formatterParams, onRendered){
+  var value = cell.getValue();
+  var result = "";
+  if(value){
+    result += "<a href='" + value + "' target='_blank'>" + value + "</a>";
+  }
+  return result;
+};
+var wordwrapFormatter = function(cell, formatterParams, onRendered){
+  var data = cell.getRow().getData();
+  var value = cell.getValue();
+  var result = "";
+  if(value){
+    result += " <div style='white-space:normal;'>" + value + "</div> ";
+  }
+  result += "";
+  return result;
+};
+var accessor_is_active = function(value, data, type, params, column){
+  // param.test <= accessorDownloadParams: {test: 'test'},
+  //console.log(params, value, value ? 1: 0);
+  return value ? 1: 0;
+}
+var accessor_not_empty = function(value, data, type, params, column){
+  return value ? value : '';
+}
+
+$(document).ready(function(){
+  //trigger download of data.csv file
+  $("#download-csv").click(function(){
+    if($(this).find(".editable").length > 0){
+      return true;
+    }
+    main_table.download("csv", "{{ plural_obj }}.csv");
+  });
+  //trigger download of data.json file
+  $("#download-json").click(function(){
+    if($(this).find(".editable").length > 0){
+      return true;
+    }
+    main_table.download("json", "{{ plural_obj }}.json");
+  });
+  //trigger download of data.xlsx file
+  $("#download-xlsx").click(function(){
+    if($(this).find(".editable").length > 0){
+      return true;
+    }
+    main_table.download("xlsx", "{{ plural_obj }}.xlsx", {sheetName:"{{ plural_obj }}"});
+  });
+  //trigger download of data.pdf file
+  $("#download-pdf").click(function(){
+    if($(this).find(".editable").length > 0){
+      return true;
+    }
+    main_table.download("pdf", "{{ plural_obj }}.pdf", {
+      orientation:"portrait", //set page orientation to portrait
+      title:"{{ plural_obj }}", //add title to report
+    });
+  });
+  //reset persistence settings
+  $("#reset-table-settings").click(function(){
+    if($(this).find(".editable").length > 0){
+      return true;
+    }
+    if(window.localStorage.getItem("tabulator-{{ root_url }}")){
+      window.localStorage.removeItem("tabulator-{{ root_url }}");
+    }
+    if(window.localStorage.getItem("tabulator-{{ root_url }}-sort")){
+      window.localStorage.removeItem("tabulator-{{ root_url }}-sort");
+    }
+    window.location.href = "{{ root_url }}";
+  });
+});
+</script>

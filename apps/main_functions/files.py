@@ -830,3 +830,12 @@ def create_captcha(alphabet: list = None,
     del draw
 
     return [result, img]
+
+def lns_path(path: str):
+    """Находим путь до назначения у символической ссылки
+       :param path: путь к символической ссылке
+    """
+    try:
+        return os.readlink(path)
+    except Exception:
+        traceback.print_exc()

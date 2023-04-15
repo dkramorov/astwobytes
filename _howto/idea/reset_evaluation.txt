@@ -1,0 +1,64 @@
+#!/bin/sh
+# reset jetbrains ide evals
+
+OS_NAME=$(uname -s)
+JB_PRODUCTS="IntelliJIdea CLion PhpStorm GoLand PyCharm WebStorm Rider DataGrip RubyMine AppCode"
+
+if [ $OS_NAME == "Darwin" ]; then
+	echo 'macOS:'
+
+	for PRD in $JB_PRODUCTS; do
+    	rm -rf ~/Library/Preferences/${PRD}*/eval
+    	rm -rf ~/Library/Application\ Support/${PRD}*/eval
+	done
+elif [ $OS_NAME == "Linux" ]; then
+	echo 'Linux:'
+
+	for PRD in $JB_PRODUCTS; do
+    	rm -rf ~/.${PRD}*/config/eval
+	done
+else
+	echo 'unsupport'
+	exit
+fi
+
+echo 'done.'
+
+#~/Library/Caches/IntelliJIdea90
+#~/Library/Logs/IntelliJIdea90
+#~/Library/Preferences/IntelliJIdea90
+#~/Library/Application Support/IntelliJIdea90
+
+# -----------------------------------------------
+# Preferences/com.apple.java.util.prefs.plist содержит ключ тачки
+
+#This helped me, for my Mac os 15+, evaluation now do not bother me. Main thing is to restart service «cfprefsd» with command «killall cfprefsd».
+#Key folders/files to delete for reseting trial:
+
+#~/Library/Application\ Support/JetBrains/$product*/eval
+#~/Library/Application\ Support/JetBrains/$product*/options/other.xml
+#~/Library/Preferences/com.apple.java.util.prefs.plist
+#~/Library/Preferences/com.jetbrains.*.plist
+#~/Library/Preferences/jetbrains...plist
+#killall cfprefsd
+
+#PS: $product is your Jetbrains product config folder
+
+#~/Library/Saved Application State/com.jetbrains.intellij.savedStat
+# -----------------------------------------------
+
+# Короче чистить надо Library в Preferences + Application Support
+
+# /Users/jocker/Library/Preferences/
+# jetbrains.idea.d7ab3053.plist
+
+#iMac-Jocker:licence jocker$ sudo find / -name 'other.xml'
+
+#/Users/jocker/Library/Application Support/JetBrains/IntelliJIdea2020.2/options/other.xml
+# Удалить нах evaluation записи
+#    <property name="evlsprt.202" value="1755e66fff2" />
+#    <property name="evlsprt2.202" value="174fc8e3cc6" />
+#    <property name="evlsprt3.192" value="19" />
+#    <property name="evlsprt3.202" value="19" />
+#    <property name="export.settings.path" value="$USER_HOME$/Documents/HYBRIS/idea_settings.zip" />
+

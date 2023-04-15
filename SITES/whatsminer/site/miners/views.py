@@ -5,7 +5,7 @@ import logging
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.urls import reverse, resolve
+from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
@@ -24,7 +24,7 @@ from apps.main_functions.views_helper import (
     edit_view,
     search_view,
 )
-from apps.net_tools.views import show_ip_range, edit_ip_range
+from apps.net_tools.models import IPRange
 from apps.site.miners.models import (
     Comp,
 )
@@ -266,14 +266,34 @@ def miners_edit_comp(request, action: str, row_id: int = None, *args, **kwargs):
     kwargs['template_prefix'] = 'miners_'
     return edit_comp(request, action, row_id, *args, **kwargs)
 
+ip_range_vars = {
+    'singular_obj': 'Группа ip адресов',
+    'plural_obj': 'Группы ip адресов',
+    'rp_singular_obj': 'группы ip адресов',
+    'rp_plural_obj': 'групп ip адресов',
+    'template_prefix': 'miners_ip_range_',
+    'action_create': 'Создание',
+    'action_edit': 'Редактирование',
+    'action_drop': 'Удаление',
+    'menu': 'net_tools',
+    'submenu': 'ip_range',
+    'show_urla': 'miners_show_ip_range',
+    'create_urla': 'miners_create_ip_range',
+    'edit_urla': 'miners_edit_ip_range',
+    'model': IPRange,
+    'search_result_format': ('{} (id={})', 'name id'),
+    #'custom_model_permissions': IpRange,
+}
 
 @login_required
 def miners_show_ip_range(request, *args, **kwargs):
     """Вывод объектов
        :param request: HttpRequest
     """
-    kwargs['template_prefix'] = 'miners_'
-    return show_ip_range(request, *args, **kwargs)
+    return show_view(request,
+                     model_vars = ip_range_vars,
+                     cur_app = CUR_APP,
+                     extra_vars = kwargs)
 
 @login_required
 def miners_edit_ip_range(request, action: str, row_id: int = None, *args, **kwargs):
@@ -282,6 +302,10 @@ def miners_edit_ip_range(request, action: str, row_id: int = None, *args, **kwar
        :param action: действие над объектом (создание/редактирование/удаление)
        :param row_id: ид записи
     """
-    kwargs['template_prefix'] = 'miners_'
-    return edit_ip_range(request, action, row_id, *args, **kwargs)
+    return edit_view(request,
+                     model_vars = ip_range_vars,
+                     cur_app = CUR_APP,
+                     action = action,
+                     row_id = row_id,
+                     extra_vars = kwargs)
 

@@ -1,0 +1,57 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <span class="label_for_translate title_for_tabulator_actions_{{ menu }}_{{ submenu }}" attr-class_name="title_for_tabulator_actions_{{ menu }}_{{ submenu }}" attr-edit_mode="popup" attr-placement="right">{{ plural_obj }} - действия</span>
+    <a href="#" data-perform="panel-dismiss" data-toggle="tooltip" title="Закрыть" class="pull-right">
+      <em class="fa fa-times"></em>
+    </a>
+    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Свернуть/Развернуть" class="pull-right">
+      <em class="fa fa-plus"></em>
+    </a>
+  </div>
+  <div class="clearfix"></div>
+  <div class="panel-wrapper collapse">
+    <div class="panel-body">
+      {% block tabulator_actions %}
+{% comment %}<!--
+        <button class="mb-sm btn btn-primary" type="button" id="download-csv">
+          <em class="fa fa-file-text fa-fw mr-sm"></em>Скачать csv
+        </button>
+        <button class="mb-sm btn btn-primary" type="button" id="download-json">
+          <em class="fa fa-file-text-o fa-fw mr-sm"></em>Скачать json
+        </button>
+-->{% endcomment %}
+        <a class="mb-sm btn btn-primary" id="reset-table-settings">
+          <em class="fa fa-times fa-fw mr-sm"></em>
+          <span class="label_for_translate action_button_label_tabulator_reset_settings" attr-class_name="action_button_label_tabulator_reset_settings" attr-edit_mode="popup" attr-placement="bottom">Сброс настроек таблицы</span>
+        </a>
+        <button class="mb-sm btn btn-primary" type="button" id="download-xlsx">
+          <em class="fa fa-files-o fa-fw mr-sm"></em>
+          <span class="label_for_translate  action_button_label_tabulator_download_xlsx" attr-class_name="action_button_label_tabulator_download_xlsx" attr-edit_mode="popup" attr-placement="bottom">Скачать xlsx</span>
+        </button>
+        <a class="mb-sm btn btn-primary" id="main-table-link">
+          <em class="fa fa-link fa-fw mr-sm"></em>
+          <span class="label_for_translate  action_button_label_tabulator_link_for_table" attr-class_name="action_button_label_tabulator_link_for_table" attr-edit_mode="popup" attr-placement="bottom">Ссылка на таблицу</span>
+        </a>
+      {% endblock %}
+      <div id="tabulator_visible_columns" class="row-masonry row-masonry-xl-6 row-masonry-lg-4 row-masonry-md-3 row-masonry-sm-2">
+{% comment %}<!--
+        <div class="col-masonry">
+          <div class="box-placeholder m0">
+            <p>Название поля</p>
+            <label class="switch">
+              <input type="checkbox">
+              <span></span>
+            </label>
+          </div>
+        </div>
+-->{% endcomment %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="panel panel-default main_panel">
+  <div id="main-table" class="tabulator_table"></div>
+  <div id="main-table-footer">
+    <span class="start"></span> - <span class="end"></span> / <span class="max"></span>
+  </div>
+</div>

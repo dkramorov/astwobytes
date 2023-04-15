@@ -207,15 +207,15 @@ class Standard(models.Model):
         super(Standard, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-      """Сохранение объекта"""
-      if not self.position:
-          maxpos = self.__class__.objects.all().aggregate(models.Max('position'))['position__max']
-          if not maxpos:
-              maxpos = 1
-          else:
-              maxpos += 1
-          self.position = maxpos
-      super(Standard, self).save(*args, **kwargs)
+        """Сохранение объекта"""
+        if not self.position:
+            maxpos = self.__class__.objects.all().aggregate(models.Max('position'))['position__max']
+            if not maxpos:
+                maxpos = 1
+            else:
+                maxpos += 1
+            self.position = maxpos
+        super(Standard, self).save(*args, **kwargs)
 
     def imagine(self):
         """Возвращаем полный путь к картинке
