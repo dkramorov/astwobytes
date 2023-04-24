@@ -55,6 +55,7 @@ cairosvg==2.5.2
 # pip install "numpy<1.24" if module 'numpy' has no attribute 'float'
 # SystemError: PY_SSIZE_T_CLEAN macro must be defined for '#' formats
 # pip install git+https://github.com/jcomeauictx/pycrypto
-# или
+# или pip install mysqlclient==1.4.6 если на MySQLdb ругается
 # pip uninstall pycrypto
 # pip install pycryptodome
+pymongo==4.3.3

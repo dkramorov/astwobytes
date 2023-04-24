@@ -7206,6 +7206,11 @@ a.text-pink:hover, a.text-pink:focus {
   -o-box-shadow: 0px 16px 40px 0px #0000000A;
   box-shadow: 0px 16px 40px 0px #0000000A; }
 
+  @media (max-width: 768px) {
+    .card-header.d-flex {
+      flex-direction: column;}
+  }
+
 #sidebar-scrollbar {
   height: 100vh; }
 

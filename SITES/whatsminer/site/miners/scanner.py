@@ -61,7 +61,7 @@ def scan_ips(ip_range: list = None, ports: list = None, exclude_ips: list = None
         ip_range = parsed_ip_range
 
     if ports:
-        logger.info('received ports %s' % ports)
+        logger.info('received ports %s, ip_range: %s-%s' % (ports, ip_range[0], ip_range[-1]))
 
     if isinstance(exclude_ips, str):
         exclude_ips = make_list_from_range(ip_range)

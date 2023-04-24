@@ -3,58 +3,6 @@ from django.db import models
 
 from apps.main_functions.models import Standard
 
-class IPRange(Standard):
-    """Диапазоны IP адресов"""
-    name = models.CharField(max_length=255, blank=True, null=True, db_index=True,
-        verbose_name='Имя хоста')
-    start_ip = models.CharField(max_length=64, blank=True, null=True, db_index=True,
-        verbose_name='Начальный ip адрес')
-    end_ip = models.CharField(max_length=64, blank=True, null=True, db_index=True,
-        verbose_name='Конечный ip адрес')
-
-    class Meta:
-        verbose_name = 'NetTools - IPRange'
-        verbose_name_plural = 'NetTools - IPRange'
-        #permissions = (
-        #    ('view_obj', 'Просмотр объектов'),
-        #    ('create_obj', 'Создание объектов'),
-        #    ('edit_obj', 'Редактирование объектов'),
-        #    ('drop_obj', 'Удаление объектов'),
-        #)
-        #default_permissions = []
-
-    def save(self, *args, **kwargs):
-        super(IPRange, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return 'id=%s, name=%s, %s-%s' % (self.id, self.name, self.start_ip, self.end_ip)
-
-class IPAddress(Standard):
-    """IP адрес"""
-    name = models.CharField(max_length=255, blank=True, null=True, db_index=True,
-        verbose_name='Имя хоста')
-    ip = models.CharField(max_length=64, blank=True, null=True, db_index=True,
-        verbose_name='IP адрес')
-    mac = models.CharField(max_length=64, blank=True, null=True, db_index=True,
-        verbose_name='MAC адрес')
-
-    class Meta:
-        verbose_name = 'NetTools - IPAddress'
-        verbose_name_plural = 'NetTools - IPAddresses'
-        #permissions = (
-        #    ('view_obj', 'Просмотр объектов'),
-        #    ('create_obj', 'Создание объектов'),
-        #    ('edit_obj', 'Редактирование объектов'),
-        #    ('drop_obj', 'Удаление объектов'),
-        #)
-        #default_permissions = []
-
-    def save(self, *args, **kwargs):
-        super(IPAddress, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return 'id=%s ip=%s, mac=%s, name=%s' % (self.id, self.ip, self.mac, self.name)
-
 def make_list_from_range(ip_range: str = '127.0.0.1-127.0.0.2'):
     """Создаем список ip-адресов из строки с диапазоном
        :param ip_range: диапазон строкой ip адресов
@@ -112,7 +60,6 @@ def make_list_from_range(ip_range: str = '127.0.0.1-127.0.0.2'):
     start = start_ip_parts
     end = end_ip_parts
     while True:
-        print(start, end)
         if start == end:
             if end[3] != 0 and end[0] != 0:
                 result.append('.'.join([str(item) for item in start]))
@@ -133,4 +80,61 @@ def make_list_from_range(ip_range: str = '127.0.0.1-127.0.0.2'):
             #print(result)
             assert False
     return result
+
+class IPRange(Standard):
+    """Диапазоны IP адресов"""
+    name = models.CharField(max_length=255, blank=True, null=True, db_index=True,
+        verbose_name='Имя хоста')
+    start_ip = models.CharField(max_length=64, blank=True, null=True, db_index=True,
+        verbose_name='Начальный ip адрес')
+    end_ip = models.CharField(max_length=64, blank=True, null=True, db_index=True,
+        verbose_name='Конечный ip адрес')
+
+    class Meta:
+        verbose_name = 'NetTools - IPRange'
+        verbose_name_plural = 'NetTools - IPRange'
+        #permissions = (
+        #    ('view_obj', 'Просмотр объектов'),
+        #    ('create_obj', 'Создание объектов'),
+        #    ('edit_obj', 'Редактирование объектов'),
+        #    ('drop_obj', 'Удаление объектов'),
+        #)
+        #default_permissions = []
+
+    def save(self, *args, **kwargs):
+        super(IPRange, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return 'id=%s, name=%s, %s-%s' % (self.id, self.name, self.start_ip, self.end_ip)
+
+    def get_ips(self):
+        if self.start_ip and self.end_ip:
+            return make_list_from_range('%s-%s' % (self.start_ip, self.end_ip))
+        return []
+
+class IPAddress(Standard):
+    """IP адрес"""
+    name = models.CharField(max_length=255, blank=True, null=True, db_index=True,
+        verbose_name='Имя хоста')
+    ip = models.CharField(max_length=64, blank=True, null=True, db_index=True,
+        verbose_name='IP адрес')
+    mac = models.CharField(max_length=64, blank=True, null=True, db_index=True,
+        verbose_name='MAC адрес')
+
+    class Meta:
+        verbose_name = 'NetTools - IPAddress'
+        verbose_name_plural = 'NetTools - IPAddresses'
+        #permissions = (
+        #    ('view_obj', 'Просмотр объектов'),
+        #    ('create_obj', 'Создание объектов'),
+        #    ('edit_obj', 'Редактирование объектов'),
+        #    ('drop_obj', 'Удаление объектов'),
+        #)
+        #default_permissions = []
+
+    def save(self, *args, **kwargs):
+        super(IPAddress, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return 'id=%s ip=%s, mac=%s, name=%s' % (self.id, self.ip, self.mac, self.name)
 
