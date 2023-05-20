@@ -10,7 +10,7 @@
         </div>
 
       </div>
-      <div class="modal-body">Вы уверены, что хотите выполнить удаление {{ rp_singular_obj }} id=<span id="ajax_drop_obj_id"></span><span class="hidden" id="ajax_drop_obj_ind"></span>?</div>
+      <div id="myModalBody" class="modal-body">Вы уверены, что хотите выполнить удаление {{ rp_singular_obj }} id=<span id="ajax_drop_obj_id"></span><span class="hidden" id="ajax_drop_obj_ind"></span>?</div>
       <div class="modal-footer">
         <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
         <button type="button" data-dismiss="modal" class="btn btn-primary" id="ajax_drop_obj_button">Да</button>
@@ -21,9 +21,13 @@
 <form class="hidden" method="get" action="{{ root_url }}" id="current_drop_form">{% csrf_token %}</form>
 
 <script type="text/javascript">
+if (window.prepare_for_drop == undefined) {
   function prepare_for_drop(pk, row_index){
     $("#ajax_drop_obj_id").html(pk);
     $("#ajax_drop_obj_ind").html(row_index);
     $("#current_drop_form").attr("action", "{{ root_url }}drop/" + pk + "/");
   }
+} else {
+  console.log("custom prepare_for_drop");
+}
 </script>

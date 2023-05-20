@@ -1,0 +1,16 @@
+<li{% ifequal menu 'clients' %} class="active"{% endifequal %}>
+  <a href="#clients_clients" {% ifequal menu 'clients' %}{% else %}class="collapsed"{% endifequal %} aria-expanded="{% ifequal menu 'clients' %}true{% else %}false{% endifequal %}" data-toggle="collapse">
+    <i class="las la-user"></i>
+    <span>Клиенты</span>
+    <i class="las la-angle-right iq-arrow-right arrow-active"></i>
+    <i class="las la-angle-down iq-arrow-right arrow-hover"></i>
+  </a>
+  <ul id="clients_clients" class="iq-submenu collapse{% ifequal menu 'clients' %} show{% endifequal %}" data-parent="#iq-sidebar-toggle">
+    <li{% ifequal submenu 'clients' %} class="active"{% endifequal %}>
+      <a href="{% url 'clients:show_clients' %}">
+        <i class="las la-user"></i>
+        <span>Клиенты</span>
+      </a>
+    </li>
+  </ul>
+</li>

@@ -25,4 +25,5 @@ urlpatterns = [
     path('miners/ip_range/', views.miners_show_ip_range, name='miners_show_ip_range'),
     url('^miners/ip_range/(?P<action>create)/$', views.miners_edit_ip_range, name='miners_create_ip_range'),
     url('^miners/ip_range/(?P<action>edit|drop|img)/(?P<row_id>[0-9]{1,11})/$', views.miners_edit_ip_range, name='miners_edit_ip_range'),
+    path('get_statuses/', views.get_statuses, name='miners_get_statuses'),
 ]

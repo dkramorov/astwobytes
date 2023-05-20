@@ -6,7 +6,7 @@
         <div id="tab-{{ container.id }}">
           <ul class="resp-tabs-list">
             {% for block in blocks %}
-              <li>
+              <li{% if block.link %} onclick="window.location.href='{{ block.link }}';"{% endif %}>
                 {% if block.img %}
                   <div class="img"><img src="{{ block.thumb }}" /></div>
                 {% endif %}

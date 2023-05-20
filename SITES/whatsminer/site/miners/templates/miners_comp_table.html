@@ -1,16 +1,270 @@
 {% extends "skeleton.html" %}
 
 {% block extrahead %}
+<style type="text/css">
+  a.green {
+    color: green;
+  }
+  a.red {
+    color: red;
+  }
+  .btn i {
+    margin-right: 0;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-{% include "core/title/page_title_table.html" %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between">
 
+        <div class="col-md-6">
+          <div class="header-title">
+            {% include "core/title/page_title_table.html" %}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="user-list-files d-flex">
+            {% include "core/forms/default_create.html" %}
+          </div>
+        </div>
+        <div class="clearfix"></div>
+
+      </div>
+      <div class="card-body">
+        <div class="row justify-content-between">
+        </div>
+        {% include "web/tabulator/table.html" %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extrascripts %}
+{% include "web/tabulator/formatters.html" %}
+<script type="text/javascript" src="/static/js/get_cookie.js"></script>
 <script type="text/javascript">
+var pks = '';
+window.tabulator_ajax_response = function(url, params, response){
+  for(var i = 0; i < response.length; i++) {
+    pks += response[i]['id'] + ',';
+  }
+  ask_statuses();
+};
+
+function ask_statuses() {
+  setTimeout(function() {
+    get_statuses();
+  }, 2000);
+}
+
+var main_table = null;
+var main_table_columns = null;
 $(document).ready(function(){
+
+  var jsonFormatter = function(cell, formatterParams, onRendered){
+    var result = '';
+    var value = cell.getValue();
+    result = '<pre>';
+    if (value && value['error']) {
+        result = '<pre style="color: red;">';
+    }
+    return result + JSON.stringify(value, null, 2) + '</pre>';
+  };
+
+  var actionsFormatter = function(cell, formatterParams, onRendered){
+    var row = cell.getRow();
+    var rowIndex = row.getIndex();
+    var pk = cell.getValue();
+    var actions = "<div>";
+    {% if permissions.drop %}
+      actions += " <a class='btn-xs btn btn-danger pull-right' href='javascript:void(0);' data-toggle='modal' data-target='#ajax_drop_obj' onclick='prepare_for_drop(" + pk + ", " + rowIndex + ");' title='Перезагрузить'><i class='la la-redo-alt'></i></a> ";
+    {% endif %}
+    actions += "</div>";
+    return actions;
+  };
+
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {
+      title: "ip адрес",
+      field: "ip__ip",
+      headerFilterPlaceholder: "ip адрес",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 150,
+    },
+    {
+      title: "mac адрес",
+      field: "ip__mac",
+      headerFilterPlaceholder: "адрес",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 200,
+    },
+    {
+      title: "Статус",
+      field: "state",
+      headerSort: false,
+      formatter: jsonFormatter,
+      width: 200,
+    },
+    {
+      title: "Обновлен",
+      field: "updated",
+      headerSort: false,
+      width: 160,
+    },
+    {
+      title: "Температура",
+      field: "temperature",
+      headerSort: false,
+      width: 100,
+    },
+    {
+      title: "Частота (средняя)",
+      field: "freq_avg",
+      headerSort: false,
+      width: 100,
+    },
+    {
+      title: "Вентиллятор",
+      field: "fan",
+      headerSort: false,
+      width: 140,
+    },
+    {
+      title: "Энергия",
+      field: "power",
+      headerSort: false,
+      width: 100,
+    },
+    {
+      title: "Мощность",
+      field: "power_rate",
+      headerSort: false,
+      width: 100,
+    },
+    {
+      title: "Чип, температура",
+      field: "chip_temperature",
+      headerSort: false,
+      width: 180,
+    },
+    {
+      title: "Версия",
+      field: "version",
+      headerSort: false,
+      formatter: jsonFormatter,
+      width: 320,
+    },
+    {
+      title: "Блок питалова",
+      field: "psu",
+      headerSort: false,
+      formatter: jsonFormatter,
+      width: 320,
+    },
+    {
+      title: "API",
+      field: "auth",
+      headerSort: false,
+      formatter: jsonFormatter,
+      width: 250,
+    },
+    {% comment %} /*
+    {
+      title: "Состояние",
+      field: "state",
+      headerFilterPlaceholder: "Состояние",
+      headerFilter: true,
+      headerFilterFunc: "=",
+      headerFilterParams: {
+        values: {"": "Без фильтра", true: "Работает", false: "Не работает"},
+      },
+      editable: false,
+      editor: "select",
+      formatter: stateFormatter,
+      width: 90,
+    },
+    {
+      title: "Информация",
+      field: "info",
+      headerSort: false,
+      formatter: jsonFormatter,
+      width: 200,
+    },
+    {
+      title: "Информация",
+      field: "info",
+      headerSort: false,
+      formatter: jsonFormatter,
+      width: 200,
+    },
+    {% include "core/tabulator_cell/actions.html" %}
+    */{% endcomment %}
+    {
+     title: "Действия",
+     field: "actions",
+     headerSort: false,
+     formatter: actionsFormatter,
+     width: 100,
+     download: false,
+    },
+  ];
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
 });
+
+function prepare_for_drop(pk, row_index){
+  $("#myModalLabel").html("Перезагрузка");
+  $("#myModalBody").html("Вы уверены, что хотите выполнить перезагрузку " + main_table.getData()[row_index-1]['ip']);
+  $("#ajax_drop_obj_id").html(pk);
+  $("#ajax_drop_obj_ind").html(row_index);
+  $("#current_drop_form").attr("action", "/miners/get_statuses/?action=restart&pk=" + pk);
+}
+
+function get_statuses() {
+  // table.replaceData([{id:1, name:"bob", gender:"male"}, {id:2, name:"Jenny", gender:"female"}]);
+  // table.updateData([{id:1, name:"bob", gender:"male"}, {id:2, name:"Jenny", gender:"female"}]);
+  $.ajax({
+    async : true,
+    type: "POST",
+    data: {
+      "csrfmiddlewaretoken": getCookie('csrftoken'),
+      "pks": pks,
+    },
+    url: "/miners/get_statuses/",
+    success : function (r) {
+      var status = 'danger';
+      var msg = 'error';
+      if(r.error){
+        msg = r.error;
+        $.notify({
+          message: msg,
+        },{
+          status: status,
+        });
+      }else if(r.success){
+        msg =  r.success;
+        status = 'success';
+        main_table.updateData(r.results);
+
+      }
+    },
+    complete: function(r) {
+      ask_statuses();
+    }
+  });
+}
+
 </script>
+
 {% endblock %}

@@ -36,6 +36,7 @@ from apps.main_functions.files import (check_path,
 
 from apps.jabber.models import Registrations, FirebaseTokens, DeviceContacts
 from apps.jabber.ejabberd_api import ejabberd_manager
+from apps.jabber.ejabberd_bot import EjabberdBot
 
 JABBER_API = 'https://%s:5443' % settings.JABBER_DOMAIN
 
@@ -636,6 +637,7 @@ def drop_broken_token(token: str, resp: dict):
 @csrf_exempt
 def notification_batch_helper(request, app_id: str = None):
     """Апи-метод пакетной отправки пушей
+       Формируем батч
        curl --data-binary @batch.txt -H 'Content-Type: multipart/mixed; boundary="subrequest_boundary"' -H 'Authorization: Bearer ya29....' https://fcm.googleapis.com/batch
 
        Содержимое файла
@@ -682,8 +684,6 @@ accept: application/json
 
     method = request.GET if request.method == 'GET' else request.POST
     body = None
-    tokens = []
-
     to_token = None
     to_jids = []
     to_tokens = [] # связка логин: токен кому шлем
@@ -715,6 +715,7 @@ accept: application/json
                 del result['body']['credentials']
 
             # Отправлена группа на которую надо разослать, вытаскиваем по ней пользователей
+            # TODO: переделать на ejabberd_manager.get_muc_users_helper(to_group_jid)
             to_group_jid = kill_quotes(body.get('toGroupJid', ''), 'just_text')
             if to_group_jid:
                 additional_data['group'] = to_group_jid
@@ -731,10 +732,7 @@ accept: application/json
 
             analog = Registrations.objects.filter(phone=from_jid, is_active=True).first()
             if analog and analog.get_hash() == credentials:
-                tokens = list(FirebaseTokens.objects.filter(login__in=to_jids).values('token', 'login'))
-                to_tokens = {}
-                for token in tokens:
-                    to_tokens[token['login']] = token['token']
+                to_tokens = get_registered_tokens(to_jids=to_jids)
             else:
                 result['error'] = 'Restricted access'
 
@@ -745,12 +743,13 @@ accept: application/json
     headers['Content-Type'] = 'multipart/mixed; boundary="subrequest_boundary"'
     template = get_firebase_batch_template(app_id=app_id)
 
+    # TODO: перенести на send_firebase_batch_notifications
     tokens_order = []
     batch = ''
     for to_jid, token in to_tokens.items():
         data = create_notification_data(from_jid, to_jid, title, text, only_data, additional_data)
         data['message']['token'] = token
-        # Надо подписать от кого поибашило сообщение по книге контактов кому прибашило
+        # Надо подписать от кого поибашило сообщение по книге контактов кому приебашило
         # значит, надо достать контакты того кому шлем
         set_name_from_phonebook(to_jid, from_jid, data)
         json_data = json_pretty_print(data)
@@ -1119,3 +1118,140 @@ def notification_batch(request, app_id: str):
        :param app_id: ид приложения
     """
     return notification_batch_helper(request, app_id=app_id)
+
+
+@csrf_exempt
+def notification_from_bot(request, app_id: str):
+    """Апи-метод для отправки пушей батчем от бота
+       :param app_id: ид приложения
+    """
+    result = {}
+    result['user_ip'] = get_request_ip(request)
+    method = request.GET if request.method == 'GET' else request.POST
+    # TODO: passwd заменить на токен
+    channel = text = passwd = None
+    additional_data = {}
+    only_data = False
+    if request.body:
+        try:
+            body = json.loads(request.body)
+            channel = body.get('channel')
+            text = body.get('text')
+            passwd = body.get('passwd')
+            # Только data push
+            if 'only_data' in body:
+                only_data = True
+            if 'additional_data' in body:
+                additional_data = body['additional_data']
+        except Exception as e:
+            result['error'] = str(e)
+
+    if method == request.GET and method.get('demo_mode'):
+        result['demo_mode'] = True
+        channel = 'dbupdates'
+        text = method.get('text') or 'Тестовое сообщение'
+        result['text'] = text
+        passwd = method.get('passwd')
+        only_data = True
+        additional_data = {
+            'action': 'chat',
+        }
+
+    if channel and text and passwd:
+        result['channel'] = channel
+        result['text'] = text
+        #result['passwd'] = passwd
+        bot = EjabberdBot(name=channel, passwd=passwd)
+
+        channel_name = bot.get_channel_name()
+        # group ключ нужен в приложении
+        additional_data['group'] = '%s@conference.%s' % (channel_name, bot.domain)
+        # Находим пользователей группы (канала)
+        result['users'] = ejabberd_manager.get_muc_users_helper(channel_name)
+        if not result['users']:
+            return JsonResponse(result, safe=False)
+        # Проверяем авторизацию бота
+        result['auth'] = bot.auth()
+        if isinstance(result['auth'], int):
+            return JsonResponse(result, safe=False)
+
+        # Формируем батч на пуш
+        to_tokens = get_registered_tokens(result['users'])
+
+        send_firebase_batch_notifications(
+            title=channel,
+            text=text,
+            only_data=only_data,
+            additional_data=additional_data,
+            from_jid=bot.get_bot_name(),
+            to_tokens=to_tokens,
+            result=result,
+            app_id=app_id,
+        )
+
+        bot.send_channel_message(text=text)
+        bot.disconnect()
+
+    return JsonResponse(result, safe=False)
+
+def get_registered_tokens(to_jids: list):
+    """Достаем токены по jid массиву, кому собираемся отправить пуш
+       :param to_jids: список jid кому хотим отправить сообщение
+    """
+    to_tokens = {}
+    tokens = list(FirebaseTokens.objects.filter(login__in=to_jids).values('token', 'login'))
+    to_tokens = {}
+    for token in tokens:
+        to_tokens[token['login']] = token['token']
+    return to_tokens
+
+def send_firebase_batch_notifications(title: str,
+                                      text: str,
+                                      only_data: bool,
+                                      additional_data: dict,
+                                      from_jid: str,
+                                      to_tokens: dict,
+                                      result: dict,
+                                      app_id: str):
+    """Отправка батча с уведомлениями
+       TODO: сделать
+       :param title: заголовок пуша
+       :param text: текст сообщения
+       :param only_data: отправлять только data-push?
+       :param additional_data: дополнительные параметры для сообщения
+       :param from_jid: отправитель
+       :param to_tokens: словарь с получателями
+       :param result: словарь, куда аккумулируем результат
+       :param app_id: идентификатор приложения
+    """
+    text = trim_firebase_message(text or 'Новое сообщение от %s' % from_jid)
+    url = 'https://fcm.googleapis.com/batch'
+    headers = get_firebase_messaging_headers(app_id=app_id)
+    headers['Content-Type'] = 'multipart/mixed; boundary="subrequest_boundary"'
+    template = get_firebase_batch_template(app_id=app_id)
+
+    tokens_order = []
+    batch = ''
+    for to_jid, token in to_tokens.items():
+        data = create_notification_data(from_jid, to_jid, title, text, only_data, additional_data)
+        data['message']['token'] = token
+        # Надо подписать от кого поибашило сообщение по книге контактов кому приебашило
+        # значит, надо достать контакты того кому шлем
+        set_name_from_phonebook(to_jid, from_jid, data)
+        json_data = json_pretty_print(data)
+        batch += template.format(json_data)
+        tokens_order.append(token)
+    batch += '--subrequest_boundary--'
+
+    r = requests.post(url, data=batch.encode('utf-8'), headers=headers)
+    result['url'] = url
+    result['app_id'] = app_id
+
+    try:
+        responses = parse_batch_response(r.text)
+        if len(responses) == len(tokens_order):
+            for i, response in enumerate(responses):
+                if drop_broken_token(tokens_order[i], response):
+                    result[tokens_order[i]] = 'DELETED'
+    except Exception as e:
+        traceback.print_exc()

@@ -3,6 +3,10 @@
 
 {% block extrahead %}
 <style type="text/css">
+#shopping-cart-table tfoot {
+  color: red;
+  font-weight: bold;
+}
 </style>
 {% endblock %}
 
@@ -41,6 +45,24 @@
               </tr>
             </tfoot>
 -->{% endcomment %}
+            {% if modifications %}
+            <tfoot>
+              {% for item in modifications.fordel %}
+                <tr>
+                  <td colspan="6">
+                    Товар {{ item.product_name }} закончился и был удален из корзины
+                  </td>
+                </tr>
+              {% endfor %}
+              {% for item in modifications.modify %}
+                <tr>
+                  <td colspan="6">
+                    Товар {{ item.product_name }} недоступен в запрашиваемом вами количестве, кол-во было изменено
+                  </td>
+                </tr>
+              {% endfor %}
+            </tfoot>
+            {% endif %}
             <tbody>
               {% for purchase in cart.purchases %}
                 <tr>
@@ -58,7 +80,7 @@
                     </span>
                   </td>
                   <td class="a-center">
-                    <input value="{{ purchase.count }}" size="4" title="Количество" class="input-text qty" id="quantity_{{ purchase.id }}" />
+                    <input value="{{ purchase.count }}" size="4" title="Количество" class="input-text qty" id="quantity_{{ purchase.id }}" autocomplete="off" />
                   </td>
                   <td class="a-right">
                     <span class="cart-price">
@@ -66,18 +88,25 @@
                     </span>
                   </td>
                   <td class="a-center">
+{% if not preview %}
                     <a id="purchase_drop_{{ purchase.id }}" href="javascript:void(0);" title="Удалить" class="btn-remove btn-remove2">Удалить</a>
+{% endif %}
                   </td>
                 </tr>
               {% endfor %}
             </tbody>
           </table>
+
         </div>
         <div class="cart-collaterals">
           <div class="row">
             {% comment %}<!--
               {% include "web/order/recommended_products.html" %}
             -->{% endcomment %}
+{% if preview %}
+            <div class="col-1 col-lg-4 col-md-4 col-sm-6 col-xs-12"></div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 total-wrapper"></div>
+{% else %}
             <div class="col-1 col-lg-4 col-md-4 col-sm-6 col-xs-12">
               <div class="discount">
                 <h2>Скидочный купон</h2>
@@ -115,6 +144,7 @@
                 </div>
               </div>
             </div>
+{% endif %}
             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 total-wrapper">
               <div class="totals">
                 <table id="shopping-cart-totals-table">
@@ -151,6 +181,7 @@
                     </tr>
                   </tbody>
                 </table>
+{% if not preview %}
                 <ul class="checkout-types">
                   <li>
                     <button type="button" title="Оформить заказ" class="button btn-proceed-checkout btn-checkout" id="goto_checkout_order">
@@ -158,8 +189,11 @@
                    </button>
                   </li>
                 </ul>
+{% endif %}
               </div>
             </div>
+
+            <div class="clearfix"></div><br>
           </div>
         </div>
       </div>
@@ -172,6 +206,7 @@
 {% endblock %}
 
 {% block extrascripts %}
+{% if not preview %}
 <script type="text/javascript">
   $(document).ready(function(){
     $("#goto_checkout_order").click(function(){
@@ -189,4 +224,5 @@
     {% endfor %}
   });
 </script>
+{% endif %}
 {% endblock %}

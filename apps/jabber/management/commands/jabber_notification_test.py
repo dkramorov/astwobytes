@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import datetime
 import time
 import json
 import requests
@@ -38,7 +39,6 @@ class Command(BaseCommand):
             dest = 'notification_batch_request',
             default = False,
             help = 'Send push over notification_batch_request function')
-
         parser.add_argument('--notification_sender',
             action = 'store_true',
             dest = 'notification_sender',
@@ -59,6 +59,12 @@ class Command(BaseCommand):
             dest = 'push',
             default = False,
             help = 'Send push notification')
+        parser.add_argument('--notification_from_bot',
+            action = 'store',
+            type = str,
+            dest = 'notification_from_bot',
+            default = False,
+            help = 'Send push notification from bot to channel')
         parser.add_argument('--token',
             action = 'store',
             type = str,
@@ -71,6 +77,7 @@ class Command(BaseCommand):
             dest = 'app_id',
             default = False,
             help = 'Set app_id')
+
     def handle(self, *args, **options):
         """Тестирования пуш уведомления и дата уведомления
         """
@@ -125,6 +132,10 @@ class Command(BaseCommand):
                 'cKkZOrFISqKBwPLUc4iZmK:APA91bGCBlyQaARO6LB_Hi8HMvw0dj1ej63DRcEawvSbZF-PAml0j0ClgMMBnBtyBVPT3BW9j9fGF-Q_UkkQ9Z2CA2WAiW-gV3kNS4m3ajdcVXBaKivlzT5Hz5AdwMNMhUg0L-H4eMUs',
             ]
             notification_batch_sender(tokens=tokens, app_id='mastermechat', only_data=only_data)
+
+        if options.get('notification_from_bot'):
+            text = options['notification_from_bot']
+            notification_from_bot(text=text, app_id='mastermechat')
 
 def notification_request(app_id: str = 'chateriha',
                          only_data: bool = False,
@@ -267,4 +278,25 @@ def notification_batch_sender(tokens: list = None,
     print(r.status_code, r.text)
     print(json_pretty_print(parse_batch_response(r.text)))
 
+def notification_from_bot(text: str = None, app_id: str = 'mastermechat'):
+    """Отправка группового сообщения от бота
+       1) Принимаем данные - от кого (бот, по нему найдем канал) и сообщение
+    """
+    domain = 'http://127.0.0.1:8000'
+    if not settings.DEBUG:
+        domain = 'https://chat.masterme.ru'
+    url = '%s/jabber/notification_from_bot/%s/' % (domain, app_id)
+    if not text:
+        text = 'hello %s' % datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    data = {
+        'channel': 'dbupdates',
+        'text': text,
+        'passwd': '75ij5tvx49',
+        'only_data': True,
+        'additional_data': {
+            'action': 'chat',
+        },
+    }
+    r = requests.post(url, json=data)
+    print(r.text)
 

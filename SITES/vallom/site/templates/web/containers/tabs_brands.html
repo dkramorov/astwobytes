@@ -1,47 +1,4 @@
 {% load mtags %}
-<style type="text/css">
-/* TABS BRANDS - REQUIRED TABS styles */
-.roundedImgTabs.brands {
-  background-image:url('/media/img/texture_diag2.png');
-  padding-bottom: 50px;
-}
-.roundedImgTabs.brands .title {
-  font-size:30px;
-  text-align: center;
-  color: #000;
-  margin: 20px 0 40px 0;
-}
-.roundedImgTabs.brands .resp-tabs-container {
-  background-color: transparent;
-}
-.roundedImgTabs.brands .resp-tabs-list li {
-  padding-left: 0;
-}
-.roundedImgTabs.brands .resp-tabs-list li .img {
-  position: relative;
-  left: auto;
-  top: auto;
-  right: auto;
-  bottom: auto;
-  max-width: 130px;
-  padding: 5px 10px;
-}
-.roundedImgTabs.brands .resp-tabs-list li .img img {
-  width: 100%;
-  vertical-align: middle;
-}
-@media (max-width: 1200px) {
-}
-@media (max-width: 768px) { /* 768 для верхней границы */
-  .roundedImgTabs.brands .resp-tabs-container .img {
-    position: relative;
-    padding-top: 10px;
-  }
-  .roundedImgTabs.brands .resp-tabs-container .img img {
-    width: 180px;
-  }
-}
-</style>
 <div class="container-fluid">
   <div class="roundedImgTabs brands">
     <div class="container">
@@ -98,7 +55,7 @@ var tabs_brands_{{ container.id }} = function() {
       } */
     });
   }
-  load_lazy_css('/media/css/tabs.css');
+  load_lazy_css('/media/css/tabs.css?v=2');
   var isReadyEasyResponsiveTabs = $("").easyResponsiveTabs;
   if(isReadyEasyResponsiveTabs == undefined) {
     load_lazy_js('/media/js/easyResponsiveTabs.js', tabs_brands_{{ container.id }});

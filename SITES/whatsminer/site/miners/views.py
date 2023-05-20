@@ -2,6 +2,8 @@
 import os
 import json
 import logging
+import traceback
+import datetime
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -13,11 +15,16 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core import management
 from django.core.cache import cache
 
+from concurrent.futures import ThreadPoolExecutor
+
+from apps.mongo.base import get_collection, get_sort_desc, find_one_last
 from apps.main_functions.catcher import json_pretty_print
 from apps.main_functions.functions import object_fields
 from apps.main_functions.model_helper import create_model_helper
 from apps.main_functions.api_helper import ApiHelper, XlsxHelper
 from apps.main_functions.string_parser import get_request_ip
+from apps.main_functions.models import Tasks
+
 
 from apps.main_functions.views_helper import (
     show_view,
@@ -28,6 +35,7 @@ from apps.net_tools.models import IPRange
 from apps.site.miners.models import (
     Comp,
 )
+from apps.site.miners.whatsminer import WhatsMinerApi
 
 logger = logging.getLogger('main')
 
@@ -309,3 +317,91 @@ def miners_edit_ip_range(request, action: str, row_id: int = None, *args, **kwar
                      row_id = row_id,
                      extra_vars = kwargs)
 
+def check_ip(task):
+    now = datetime.datetime.utcnow()
+    collection = get_collection()
+    info = find_one_last(collection, {'ip': task['ip']})
+    if not info:
+        return task
+    del info['_id']
+    task['info'] = info
+    task['updated'] = info['date'].strftime('%H:%M:%S %d-%m-%Y')
+
+    summary = info.get('summary', {})
+    if summary:
+        if summary.get('STATUS') == 'E':
+            task['state'] = summary
+        else:
+            summary = summary.get('SUMMARY')
+            if summary:
+                summary = summary[0]
+                uptime = summary.get('Uptime')
+                if uptime:
+                    try:
+                        uptime = int(uptime / 60)
+                    except Exception as e:
+                        traceback.print_exc()
+                task['state'] = {'ok': 'Работает %s мин' % uptime}
+                task['temperature'] = summary.get('Temperature')
+                task['freq_avg'] = summary.get('freq_avg')
+                task['fan'] = 'in/out: %s/%s' % (summary.get('Fan Speed In'), summary.get('Fan Speed Out'))
+                task['power'] = summary.get('Power')
+                task['power_rate'] = summary.get('Power Rate')
+                task['chip_temperature'] = 'min/max/avg: %s/%s/%s' % (summary.get('Chip Temp Min'), summary.get('Chip Temp Max'), summary.get('Chip Temp Avg'))
+    version = info.get('version', {})
+    if version.get('STATUS') == 'E':
+        task['version'] = version
+    else:
+        task['version'] = version.get('Msg')
+    psu = info.get('psu', {})
+    if psu.get('STATUS') == 'E':
+        task['psu'] = psu
+    else:
+        task['psu'] = psu.get('Msg')
+
+    if (now - info['date']).total_seconds() > 600:
+        task['state'] = {'error': 'Ошибка: Недоступен более 10 минут'}
+    return task
+
+@login_required
+def get_statuses(request, *args, **kwargs):
+    """Вывод статусов
+       :param request: HttpRequest
+    """
+    mh_vars = comps_vars.copy()
+    mh = create_model_helper(mh_vars, request, CUR_APP, 'show')
+
+    result = {'comps': []}
+    ips = []
+    action = request.GET.get('action')
+    pk = request.GET.get('pk')
+    if action and pk:
+        if action == 'restart':
+            if mh.permissions['drop']:
+                #management.call_command('task_scan_ips', restart=pk)
+                #Tasks.objects.create(command='task_scan_ips --restart=%s' % pk, name='Перезагрузка компьютера %s' % pk)
+                comps = Comp.objects.select_related('ip').filter(pk=pk, ip__isnull=False)
+                for comp in comps:
+                    result.update(comp.check_authorization())
+                    #reboot = api.reboot()
+                    #print('---reboot %s ---' % ip, reboot)
+                    #if reboot.get('STATUS') == 'E':
+                    #    result['error'] = '%s, code %s' % (reboot.get('Msg'), reboot.get('Code'))
+
+                result['success'] = 'Компьютер %s отправлен на перезагрузку' % pk
+                return JsonResponse(result, safe=False)
+
+    pks = request.POST.get('pks')
+    if pks:
+        comps = Comp.objects.select_related('ip').filter(pk__in=[pk for pk in pks.split(',') if pk])
+        for comp in comps:
+            if comp.ip and comp.ip.ip:
+                result['comps'].append(object_fields(comp))
+                ips.append({'id': comp.id, 'ip': comp.ip.ip, 'auth': comp.get_token_data()})
+        result['success'] = 1
+
+    if ips:
+        with ThreadPoolExecutor(len(ips)) as executor:
+            results = executor.map(check_ip, ips)
+        result['results'] = list(results)
+    return JsonResponse(result, safe=False)

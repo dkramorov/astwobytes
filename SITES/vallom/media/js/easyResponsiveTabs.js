@@ -60,6 +60,13 @@
                     $tabItemh2 = $(this);
                     var $tabItem = $respTabs.find('.resp-tab-item:eq(' + itemCount + ')');
                     var $accItem = $respTabs.find('.resp-accordion:eq(' + itemCount + ')');
+
+                    // onclick от вкладки
+                    var clickFunc = $tabItem.attr('onclick');
+                    if (clickFunc) {
+                      $accItem.attr('onclick', clickFunc);
+                    }
+
                     $accItem.append($tabItem.html());
                     $accItem.data($tabItem.data());
                     $tabItemh2.attr('aria-controls', 'tab_item-' + (itemCount));

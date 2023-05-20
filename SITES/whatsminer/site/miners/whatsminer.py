@@ -1,23 +1,30 @@
 # -*- coding:utf-8 -*-
 import json
+import time
 import socket
 import hashlib
 import binascii
 import datetime
 import base64
+import traceback
+import requests
 
 from apps.main_functions.simple_logger import logger
 from passlib.hash import md5_crypt
 from Crypto.Cipher import AES
 
 class WhatsMinerApi:
-    def __init__(self, ip: str, port: int = 4028, passwd='admin'):
+    token_data = {}
+    def __init__(self, ip: str, port: int = 4028, passwd: str = 'admin', token_data: dict = None):
         self.ip = ip
         self.port = port
         self.passwd = passwd
         self.last_login = datetime.datetime.now() - datetime.timedelta(days=1)
         # cgiminer => {"command":"CMD","parameter":"PARAM"}
         self.version = None
+        if token_data:
+            self.token_data = token_data
+        self.luci_session = None
 
     def add_to_16(self, src):
         """Дописать нульбайт, TODO: rfill"""
@@ -30,7 +37,7 @@ class WhatsMinerApi:
         socket.setdefaulttimeout(10)
         if 'cmd' in cmd:
             # Дублируем в command (cgiminer => {"command":"CMD","parameter":"PARAM"})
-            cmd['command'] = cmd['cmd']
+            #cmd['command'] = cmd['cmd']
             if 'param' in cmd:
                 cmd['parameter'] = cmd['param']
         data = json.dumps(cmd)
@@ -41,7 +48,11 @@ class WhatsMinerApi:
         s.close()
         #print(resp)
         resp = resp.decode('utf-8').replace('\n', '').replace('\x00', '').replace(',}', '}')
-        return json.loads(resp)
+        try:
+            return json.loads(resp.replace(':inf,', ':"",').replace(':nan,', ':"",'))
+        except Exception:
+            traceback.print_exc()
+            print('[ERROR]: req %s, ip %s, port %s, resp not json %s' % (cmd, self.ip, self.port, resp))
 
     def exec(self, cmd: str = None, param: str = None):
         """Выполнение команды cmd
@@ -91,15 +102,17 @@ class WhatsMinerApi:
         try:
             if 'STATUS' in json_response and json_response['STATUS'] == 'E':
                 msg = json_response['Msg']
-                logger.error(msg)
-                raise Exception(msg)
+                logger.error('[ERROR]: %s' % msg)
+                self.token_data = None
+                return
 
             resp_ciphertext = base64.b64decode(json_response['enc'])
             resp_plaintext = self.cipher.decrypt(resp_ciphertext).decode().split('\x00')[0]
             resp = json.loads(resp_plaintext)
         except Exception as e:
             logger.exception('Error decoding encrypted response')
-            raise e
+            self.token_data = None
+            return
         return resp
 
     def gen_credentials(self, time: str, salt: str, new_salt: str):
@@ -133,16 +146,34 @@ class WhatsMinerApi:
         phrase = '%s%s' % (key, time)
         self.token = md5_crypt.hash(phrase, salt=new_salt).split('$')[-1]
         self.last_login = datetime.datetime.now()
+        return {
+            'token': self.token,
+            'last_login': self.last_login,
+        }
 
     def authorization(self):
+        if self.token_data:
+            self.gen_credentials(
+                time=self.token_data['time'],
+                salt=self.token_data['salt'],
+                new_salt=self.token_data['newsalt'],
+            )
+            return self.token_data
         data = self.exec(cmd='get_token')
-        logger.info('get_token response:', data)
+        if data.get('STATUS') and isinstance(data['STATUS'], (list, tuple)) and data['STATUS'][0]['STATUS'] == 'E':
+            # {'STATUS': 'E', 'When': 1682414431, 'Code': 136, 'Msg': 'over max connect'}
+            return data
+        logger.info('get_token response: %s, type=%s' % (data, type(data)))
+        if not isinstance(data, dict):
+            return {'error': 'Пустой ответ на запрос токена'}
         msg = data['Msg']
+        self.token_data = msg
         self.gen_credentials(
             time=msg['time'],
             salt=msg['salt'],
             new_salt=msg['newsalt'],
         )
+        return msg
 
     def write_operation(self, cmd):
         """Операции с API для записи"""
@@ -179,6 +210,13 @@ class WhatsMinerApi:
         }
         return self.write_operation(cmd=cmd_manage_led)
 
+    def reboot(self):
+        """Перезагрузка системы"""
+        cmd_reboot = {
+            'cmd': 'reboot',
+        }
+        return self.write_operation(cmd=cmd_reboot)
+
     def change_passwd(self):
         """Изменение пароля от аккаунта admin"""
         cmd_modify_passwd = {
@@ -187,3 +225,25 @@ class WhatsMinerApi:
             'new': 'admin1',
         }
         return self.write_operation(cmd=cmd_modify_passwd)
+
+    def set_zone(self, timezone: str = 'CST-8', zonename = 'Asia/Shanghai'):
+        """Задаем часовой пояс, по совместительству проверяем, что токен в поряде"""
+        cmd_set_zone = {
+            'cmd': 'set_zone',
+            'timezone': timezone,
+            'zonename': zonename,
+        }
+        return self.write_operation(cmd=cmd_set_zone)
+
+    def auth_luci(self):
+        self.luci_session = requests.Session()
+        auth = {'luci_username': 'admin', 'luci_password': 'admin'}
+        self.luci_session.post('https://%s/cgi-bin/luci/' % self.ip, data=auth, verify=False)
+
+    def get_luci_lan(self):
+        try:
+            r = self.luci_session.get('https://%s/cgi-bin/luci/admin/network/iface_status/lan?_=%s' % (self.ip, time.time()), verify=False)
+            return r.json()
+        except Exception:
+            traceback.print_exc()
+

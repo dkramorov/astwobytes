@@ -242,7 +242,8 @@ class ModelHelper:
 
     def get_all_related_objects(self, pass_related:tuple = ('somemodel_set', )):
         """Получаем все связанные модели
-           Например, чтобы не удалять их"""
+           Например, чтобы не удалять их
+        """
         related_queries = []
         if self.row:
             # ------------------------------------------------

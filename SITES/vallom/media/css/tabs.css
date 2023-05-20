@@ -119,3 +119,45 @@
     margin-bottom: 50px;
   }
 }
+
+/* TABS BRANDS - REQUIRED TABS styles */
+.roundedImgTabs.brands {
+  background-image:url('/media/img/texture_diag2.png');
+  padding-bottom: 50px;
+}
+.roundedImgTabs.brands .title {
+  font-size:30px;
+  text-align: center;
+  color: #000;
+  margin: 20px 0 40px 0;
+}
+.roundedImgTabs.brands .resp-tabs-container {
+  background-color: transparent;
+}
+.roundedImgTabs.brands .resp-tabs-list li {
+  padding-left: 0;
+}
+.roundedImgTabs.brands .resp-tabs-list li .img {
+  position: relative;
+  left: auto;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  max-width: 130px;
+  padding: 5px 0 5px 10px;
+}
+.roundedImgTabs.brands .resp-tabs-list li .img img {
+  width: 100%;
+  vertical-align: middle;
+}
+@media (max-width: 1200px) {
+}
+@media (max-width: 768px) { /* 768 для верхней границы */
+  .roundedImgTabs.brands .resp-tabs-container .img {
+    position: relative;
+    padding-top: 10px;
+  }
+  .roundedImgTabs.brands .resp-tabs-container .img img {
+    width: 180px;
+  }
+}

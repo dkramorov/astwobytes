@@ -18,7 +18,10 @@ from apps.personal.oauth import VK, Yandex
 from apps.personal.utils import save_user_to_request, remove_user_from_request
 from apps.personal.auth import register_from_site, login_from_site, update_profile_from_site
 from apps.shop.cart import calc_cart, get_shopper, create_new_order
+from apps.shop.order import get_order
 from apps.shop.models import Orders
+
+from apps.site.main.cart_strategy import check_cart
 
 CUR_APP = 'main'
 main_vars = {
@@ -305,6 +308,7 @@ def show_cart(request):
 
     context['page'] = page
     context['containers'] = containers
+    context['modifications'] = check_cart(request)
     context['cart'] = calc_cart(shopper, min_info=False)
 
     return render(request, template, context)
@@ -337,6 +341,7 @@ def checkout(request):
 
     context['page'] = page
     context['containers'] = containers
+    context['modifications'] = check_cart(request)
     cart = calc_cart(shopper, min_info=False)
     context['cart'] = cart
 
@@ -344,5 +349,34 @@ def checkout(request):
     context.update(**create_new_order(request, shopper, cart))
     if 'order' in context and context['order']:
         template = 'web/order/confirmed.html'
+
+    return render(request, template, context)
+
+def show_order(request, order_id: int):
+    """Просмотр оформленного ранее заказа"""
+    mh_vars = cart_vars.copy()
+    mh_vars['singular_obj'] = 'Просмотр заказа'
+    q_string = {}
+    containers = {}
+    shopper = get_shopper(request)
+    context = get_order(shopper, order_id)
+    if 'purchases' in context:
+        context['cart']['purchases'] = context['purchases']
+
+    if request.is_ajax():
+        return JsonResponse(context, safe=False)
+    template = 'web/order/cart.html'
+
+    page = SearchLink(q_string, request, containers)
+    if not page:
+        page = Blocks(name=mh_vars['singular_obj'])
+    context['breadcrumbs'] = [{
+        'name': mh_vars['singular_obj'],
+        'link': reverse('%s:%s' % (CUR_APP, 'show_order'), kwargs={'order_id': order_id}),
+    }]
+
+    context['page'] = page
+    context['containers'] = containers
+    context['preview'] = True
 
     return render(request, template, context)

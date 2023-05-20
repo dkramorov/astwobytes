@@ -7,6 +7,7 @@ from django.conf import settings
 from django.db.models import Count
 from django.db import connections
 
+from apps.main_functions.catcher import json_pretty_print
 from apps.site.miners.whatsminer import WhatsMinerApi
 
 logger = logging.getLogger('main')
@@ -16,6 +17,7 @@ class Command(BaseCommand):
        vpn connect then
        sudo route add 10.10.11.0/24 10.10.6.1
        sudo route add 10.10.10.0/24 10.10.6.1
+       sudo route add 10.10.5.0/24 10.10.6.1
     """
     def add_arguments(self, parser):
         parser.add_argument('--folder',
@@ -41,17 +43,19 @@ class Command(BaseCommand):
 
         # включено апи
         #print('----------')
-        api = WhatsMinerApi(ip='10.10.10.161', passwd='admin')
-        #api.authorization()
-        #print(api.manage_led())
+        api = WhatsMinerApi(ip='10.10.5.195', passwd='admin')
+        api.authorization()
+        #print(api.reboot())
+        print(api.manage_led())
         #print(api.exec('summary'))
         #print(api.exec('get_version'))
         #print(api.exec('get_miner_info'))
         #print(api.exec('get_psu'))
         #print(api.exec('devdetails'))
+        #print(json_pretty_print(api.exec('edevs')))
         #print(api.exec('edevs'))
         #print(api.exec('devs'))
-        print(api.exec('pools'))
+        #print(json_pretty_print(api.exec('pools')))
 
         #api.gen_credentials(time='0793', salt='BQ5hoXV9', new_salt='ZulutshE', passwd = 'admin')
         #api.authorization()

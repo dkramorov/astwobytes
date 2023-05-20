@@ -59,7 +59,7 @@ h2.resp-tab-active span.resp-arrow {
                   <td>{{ order.created|date:'d-m-Y H:i:s' }}</td>
                   <td>Оформлен</td>
                   <td>{{ order.total|money_format }} ₽</td>
-                  <td><a href="javascript:void(0);" class="btn">Посмотреть</a></td>
+                  <td><a target="_blank" href="/shop/order/{{ order.id }}/" class="btn">Посмотреть</a></td>
                 </tr>
               {% endfor %}
             </tbody>

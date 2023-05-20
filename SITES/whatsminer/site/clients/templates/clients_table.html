@@ -1,0 +1,80 @@
+{% extends "skeleton.html" %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between">
+
+        <div class="col-md-6">
+          <div class="header-title">
+            {% include "core/title/page_title_table.html" %}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="user-list-files d-flex">
+            {% include "core/forms/default_create.html" %}
+          </div>
+        </div>
+        <div class="clearfix"></div>
+
+      </div>
+      <div class="card-body">
+        <div class="row justify-content-between">
+        </div>
+        {% include "web/tabulator/table.html" %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% include "web/tabulator/formatters.html" %}
+<script type="text/javascript">
+var main_table = null;
+var main_table_columns = null;
+$(document).ready(function(){
+
+  main_table_columns = [
+    {% include "core/tabulator_cell/drag.html" %}
+    {% include "core/tabulator_cell/id.html" %}
+    {% include "core/tabulator_cell/name.html" %}
+    {
+      title: "Код",
+      field: "code",
+      headerFilterPlaceholder: "Код",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "Телефон",
+      field: "phone",
+      headerFilterPlaceholder: "Телефон",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {
+      title: "ИНН",
+      field: "inn",
+      headerFilterPlaceholder: "ИНН",
+      headerFilter: "input",
+      headerFilterFunc: "like",
+      width: 120,
+    },
+    {% include "core/tabulator_cell/actions.html" %}
+  ];
+
+  main_table = new Tabulator("#main-table", {
+    {% include "core/tabulator_table_params.html" %}
+    columns: main_table_columns,
+  });
+});
+</script>
+
+{% endblock %}

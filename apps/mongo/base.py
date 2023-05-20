@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 
 def get_database(host: str = '127.0.0.1',
                  port: str = '27017',
@@ -26,7 +26,7 @@ def insert_many(collection, docs: list = None):
             'name': 'test2',
         }
         docs = [item_1, item_2]
-    collection.insert_many(docs)
+    return collection.insert_many(docs)
 
 def insert_one(collection, doc: dict = None):
     if not doc:
@@ -34,7 +34,13 @@ def insert_one(collection, doc: dict = None):
             'price': 340,
             'name': 'test1',
         }
-    collection.insert_one(doc)
+    return collection.insert_one(doc)
 
 def create_index(collection, fields: str):
-    collection.create_index(fields)
+    return collection.create_index(fields)
+
+def get_sort_desc():
+    return [( '_id', DESCENDING )]
+
+def find_one_last(collection, query):
+    return collection.find_one(query, sort=get_sort_desc())

@@ -62,6 +62,8 @@ cd /opt/homebrew/Cellar/hunspell/1.7.0_2/lib
 
 import hunspell
 
+# hunspell.h для ubuntu - apt-get install libhunspell-dev
+
 """
 
 import os, sys

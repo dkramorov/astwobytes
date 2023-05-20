@@ -30,6 +30,7 @@ urlpatterns = [
     path('group_vcard/', views.group_vcard, name='group_vcard'),
     url('^notification/(?P<app_id>[0-9a-z-]{1,20})/$', views.notification, name='notification'),
     url('^notification_batch/(?P<app_id>[0-9a-z-]{1,20})/$', views.notification_batch, name='notification_batch'),
+    url('^notification_from_bot/(?P<app_id>[0-9a-z-]{1,20})/$', views.notification_from_bot, name='notification_from_bot'),
     path('get_jabber_users/', views.get_jabber_users, name='get_jabber_users'),
     path('set_device_contacts/', views.set_device_contacts, name='set_device_contacts'),
 

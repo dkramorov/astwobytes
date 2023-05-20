@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 import sys
+import time
 import socket
+import requests
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -11,6 +13,16 @@ from apps.net_tools.models import make_list_from_range
 from django.core import management
 management.call_command('scan_ips', ip_range=[127.0.0.1, ], ports=[4028, ])
 """
+
+def luci_lan(ip: str):
+    try:
+        s = requests.Session()
+        auth = {'luci_username': 'admin', 'luci_password': 'admin'}
+        s.post('https://%s/cgi-bin/luci/' % ip, data=auth, verify=False)
+        r = s.get('https://%s/cgi-bin/luci/admin/network/iface_status/lan?_=%s' % (ip, time.time()), verify=False)
+        return r.json()
+    except Exception:
+        traceback.print_exc()
 
 def scan_ip(task):
     """Сканирование ip адреса
@@ -37,6 +49,8 @@ def scan_ip(task):
             #else:
             #    logger.info('IP {}, Port {} closed'.format(ip, port))
             s.close()
+        if result['open']:
+            result['lan'] = luci_lan(ip)
     except KeyboardInterrupt:
         logger.info('\nExiting Program')
     except socket.gaierror:

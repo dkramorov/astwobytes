@@ -1,6 +1,9 @@
+import time
+import json
 import logging
 import requests
 
+from apps.main_functions.string_parser import kill_quotes
 from django.conf import settings
 
 logger = logging.getLogger()
@@ -20,6 +23,12 @@ class EjabberdApi:
         self.session.auth = ('%s@%s' % (
             conf.get('JABBER_ADMIN_LOGIN'),
             self.domain), conf.get('JABBER_ADMIN_PASSWD'))
+
+    def to_jid(self, login: str):
+        """Дописать домен к логину, если нет собаки
+           :param login: логин
+        """
+        return '%s@%s' % (login, self.domain) if '@' not in login else login
 
     def create_user(self, login: str, passwd: str):
         """https://docs.ejabberd.im/developer/ejabberd-api/admin-api/#register
@@ -116,6 +125,26 @@ class EjabberdApi:
         }
         logger.info('get_vcard, params %s' % params)
         return self.session.post(url=endpoint, json=params)
+
+    def get_muc_users_helper(self, group_jid: str):
+        """Вспомогательная функция для получения всех пользователей группового чата
+           Пользователей мы храним в vcard, которая на самом деле виртуальная
+           и связана с группой только названием с префиксом GROUP_
+           в vcard мы храним в поле DESC в json.dumps словаре
+           :param group_jid: jid группы по которой достаем пользователей
+        """
+        result = []
+        group_jid = kill_quotes(group_jid, 'just_text')
+        if group_jid:
+            group_name = 'GROUP_%s' % group_jid.split('@')[0]
+            group_vcard = self.get_vcard(login=group_name, vcard_field='DESC')
+            if group_vcard.status_code == 200:
+                desc = group_vcard.json()['content']
+                if desc:
+                    users = json.loads(desc)['users']
+                    for user in users:
+                        result.append(user)
+        return result
 
 
     def set_vcard(self, login, vcard_field: str, vcard_value: str):
@@ -309,7 +338,7 @@ class EjabberdApi:
         params = {
             'name': name,
             'service': service,
-            'jid': jid,
+            'jid': self.to_jid(jid),
             'affiliation': affiliation,
         }
         logger.info('set_room_affiliation, params %s' % params)
@@ -369,6 +398,107 @@ class EjabberdApi:
             'service': service,
         }
         logger.info('drop_muc, params %s' % params)
+        return self.session.post(url=endpoint, json=params)
+
+    def create_muc(self, name: str, service: str):
+        """https://docs.ejabberd.im/developer/ejabberd-api/admin-api/#create-room
+           Create a MUC room name@service in host
+           Arguments:
+               name :: string : Room name
+               service :: string : MUC service
+               host :: string : Server host
+           Result:
+               res :: integer : Status code (0 on success, 1 otherwise)
+           Tags: muc_room
+           Module: mod_muc_admin
+           Examples:
+           POST /api/create_room
+           {
+               "name": "room1",
+               "service": "muc.example.com",
+               "host": "example.com"
+           }
+           HTTP/1.1 200 OK
+       """
+        endpoint = '%s/api/create_room' % self.host
+        params = {
+            'name': name,
+            'service': service,
+            'host': self.domain,
+        }
+        logger.info('create_muc, params %s' % params)
+        return self.session.post(url=endpoint, json=params)
+
+    def send_message(self, from_login: str, to_login: str, subject: str, body: str, mtype: str = 'chat'):
+        """https://docs.ejabberd.im/developer/ejabberd-api/admin-api/#send-message
+           Send a message to a local or remote bare of full JID
+           When sending a groupchat message to a MUC room,
+           FROM must be the full JID of a room occupant,
+           or the bare JID of a MUC service admin,
+           or the bare JID of a MUC/Sub subscribed user
+           Arguments:
+               type :: string : Message type: normal, chat, headline, groupchat
+               from :: string : Sender JID
+               to :: string : Receiver JID
+               subject :: string : Subject, or empty string
+               body :: string : Body
+           Result:
+               res :: integer : Status code (0 on success, 1 otherwise)
+           Tags: stanza
+           Module: mod_admin_extra
+           Examples:
+           POST /api/send_message
+           {
+               "type": "headline",
+               "from": "admin@localhost",
+               "to": "user1@localhost",
+               "subject": "Restart",
+               "body": "In 5 minutes"
+           }
+           HTTP/1.1 200 OK
+        """
+        endpoint = '%s/api/send_message' % self.host
+        sender = self.to_jid(from_login)
+        receiver = self.to_jid(to_login)
+        params = {
+            'from': sender,
+            'to': receiver,
+            'type': mtype,
+            'subject': subject,
+            'body': body,
+        }
+        logger.info('send_message, params %s' % params)
+        return self.session.post(url=endpoint, json=params)
+
+    def send_stanza(self, from_login: str, to_login: str, stanza: str):
+        """https://docs.ejabberd.im/developer/ejabberd-api/admin-api/#send-stanza
+           Send a stanza; provide From JID and valid To JID
+           Arguments:
+               from :: string : Sender JID
+               to :: string : Destination JID
+               stanza :: string : Stanza
+           Result:
+               res :: integer : Status code (0 on success, 1 otherwise)
+           Tags: stanza
+           Module: mod_admin_extra
+           Examples:
+           POST /api/send_stanza
+           {
+               "from": "admin@localhost",
+               "to": "user1@localhost",
+               "stanza": "<message><ext attr='value'/></message>"
+           }
+           HTTP/1.1 200 OK
+        """
+        endpoint = '%s/api/send_stanza' % self.host
+        sender = self.to_jid(from_login)
+        receiver = self.to_jid(to_login)
+        params = {
+            'from': sender,
+            'to': receiver,
+            'stanza': stanza,
+        }
+        logger.info('send_stanza, params %s' % params)
         return self.session.post(url=endpoint, json=params)
 
 
