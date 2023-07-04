@@ -403,7 +403,6 @@ def to_string(el):
 
 def auth():
     """Авторизация на https://www.rupool.ru/enter/
-       6493289 / XL440G
        :param s: сессия
     """
     s = requests.Session()
