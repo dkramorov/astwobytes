@@ -31,6 +31,11 @@ class Command(BaseCommand):
             type = str,
             default = False,
             help = 'Set template for grabbing')
+        parser.add_argument('--another_page',
+            action = 'store_true',
+            dest = 'another_page',
+            default = False,
+            help = 'Set another page for continue grabbing')
 
     def handle(self, *args, **options):
         """Спистануть с темфореста шаблон
@@ -38,11 +43,20 @@ class Command(BaseCommand):
                https://demo.hasthemes.com/greenfarm-preview/greenfarm/index-2.html
         """
         template = options.get('template')
+        another_page = False
+        file_name = 'index.html'
+        if options.get('another_page'):
+            another_page = True
+            path_parts = template.split('/')
+            file_name = path_parts[-1]
+            if not file_name.endswith('.html'):
+                logger.info('[ERROR]: another page not ends with .html: %s' % file_name)
+                return
         if template:
-            logger.info(template)
-            t = Parser(template)
+            logger.info('parsing %s, another_page %s : %s' % (template, another_page, file_name))
+            t = Parser(template, another_page=another_page)
             t.create_structure()
-            t.get_index_html()
+            t.get_index_html(file_name=file_name)
             t.fix_links()
             t.get_misc_files()
             t.get_js_files()
@@ -57,12 +71,14 @@ class Parser:
     def __init__(self, url_template: str,
                  template: str = 'new_template',
                  local_index: bool = False,
-                 params: str = ''):
+                 params: str = '',
+                 another_page: bool = False):
         """Инициализация класса
            :param url_template: какой шаблон тырим (полный путь к index)
            :param template: как называется шаблон (наша папка)
            :param local_index: если у нас уже есть локально index.html
            :param params: строка с гет параметрами
+           :param another_page: качаем другую страничку к существующему сайту
         """
         self.url_template = url_template
         self.template = template
@@ -70,7 +86,7 @@ class Parser:
         self.with_params = params #with_params = "?q=123&w=321"
 
         self.session = requests.Session()
-        ua = 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:37.0) Gecko/20100101 Firefox/37.0'
+        ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/111.0'
         self.session.headers.update({
             'User-Agent': ua,
             'Referer': self.url_template
@@ -84,6 +100,8 @@ class Parser:
         self.img_repeated = []
 
         self.z = 0
+        # Качаем другую страничку (но файлы уже должны быть основные)
+        self.another_page = another_page
 
         self.base_path = None
         self.template_path = None
@@ -112,12 +130,17 @@ class Parser:
 
     def create_structure(self):
         """Создаем структуру"""
-        make_folder(self.themeforest)
         self.template_path = '%s/%s' % (self.themeforest, self.template)
         self.css_path = os.path.join(self.template_path, 'css')
         self.js_path = os.path.join(self.template_path, 'js')
         self.img_path = os.path.join(self.template_path, 'img')
         self.misc_path = os.path.join(self.template_path, 'misc')
+
+        if self.another_page: 
+            # Не инициализируем папку если берем другую страничку
+            return
+
+        make_folder(self.themeforest)
 
         drop_folder(self.css_path)
         drop_folder(self.js_path)
@@ -142,6 +165,7 @@ class Parser:
         if 'base64,' in url:
             logger.info('NEED to decode BASE64')
             return contents
+
         try:
             r = self.session.get(url, timeout=10)
         except:
@@ -154,9 +178,11 @@ class Parser:
             contents = contents.replace('\t', '  ')
         return contents
 
-    def get_index_html(self):
-        """Получить индексный файл"""
-        self.index_file = os.path.join(self.template_path, 'index.html')
+    def get_index_html(self, file_name: str = 'index.html'):
+        """Получить индексный файл
+           :param file_name: альтернативное имя файла
+        """
+        self.index_file = os.path.join(self.template_path, file_name)
         if self.local_index:
             return
         contents = self.grab_file(self.url_template)
@@ -281,10 +307,15 @@ class Parser:
             if imga_contents:
                 imga_file_path = os.path.join(self.misc_path, imga_name)
                 imga_file_path = self.clean_path(imga_file_path)
+
                 # -----------------
                 # ПРОВЕРКА НА ДУБЛИ
                 # -----------------
                 if not check_path(imga_file_path):
+                    # Если мы хаваем альтернативную страничку,
+                    # то при наличии файла идем дальше - все норм
+                    if self.another_page:
+                        continue
                     if not imga in self.img_repeated:
                         self.z += 1
                         imga_file_path = imga_file_path + str(self.z)
@@ -314,7 +345,7 @@ class Parser:
             js_name = os.path.split(js)[1]
             js_name = self.clean_path(js_name)
             contents = contents.replace(item, 'js/%s' % js_name)
-        with open_file(self.index_file, "w+") as f:
+        with open_file(self.index_file, 'w+') as f:
             f.write(contents)
         # ----------------
         # Дергаем JS файлы
@@ -325,7 +356,14 @@ class Parser:
                 continue
             js_name = os.path.split(js)[1]
             js_file = os.path.join(self.js_path, js_name)
-            with open_file(js_file, "wb+") as f:
+
+            if not check_path(js_file):
+                # Если мы хаваем альтернативную страничку,
+                # то при наличии файла идем дальше - все норм
+                if self.another_page:
+                    continue
+
+            with open_file(js_file, 'wb+') as f:
                 f.write(contents)
 
     def fix_links(self, path: str = None):
@@ -415,6 +453,10 @@ class Parser:
 
         css_file = os.path.join(self.css_path, css_name)
         if not check_path(css_file):
+            # Если мы хаваем альтернативную страничку,
+            # то при наличии файла идем дальше - все норм
+            if self.another_page:
+                return
             now = str(time.time()).replace('.', '_')
             css_file = '%s-%s' % (css_file, now)
 
